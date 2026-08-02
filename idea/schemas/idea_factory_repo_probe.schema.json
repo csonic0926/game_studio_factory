@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/idea/idea_factory_repo_probe.schema.json",
+  "title": "Idea Factory Repository Probe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "repository",
+    "candidate_product_materials",
+    "candidate_count_before_limit",
+    "candidate_limit",
+    "interpretation_warning"
+  ],
+  "properties": {
+    "schema_version": {"const": "idea_factory_repo_probe.v1"},
+    "status": {"const": "IDEA_FACTORY_DIALOGUE_REQUIRED"},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "branch", "dirty_paths", "working_tree_sha256", "tracked_or_unignored_file_count", "project_markers"],
+      "properties": {
+        "revision": {"type": "string", "minLength": 7},
+        "branch": {"type": "string", "minLength": 1},
+        "dirty_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "tracked_or_unignored_file_count": {"type": "integer", "minimum": 0},
+        "project_markers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "candidate_product_materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "score"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "score": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "candidate_count_before_limit": {"type": "integer", "minimum": 0},
+    "candidate_limit": {"type": "integer", "minimum": 1, "maximum": 500},
+    "interpretation_warning": {"type": "string", "minLength": 1}
+  }
+}

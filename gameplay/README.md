@@ -13,9 +13,9 @@ Normal usage from the game repo is simply:
 The skill links the repo if necessary and runs the internal initialization
 entry. It distinguishes a total-new project, an existing project joining in
 the middle, and an already initialized repo. Users do not select numbered
-cases or type the internal commands. A new project routes to game definition;
-an existing project reconstructs existing runtime meaning without designing
-gameplay:
+cases or type the internal commands. A new project routes to the umbrella Idea
+Factory for product definition; an existing project reconstructs existing
+runtime meaning without designing gameplay:
 
 ```text
 init.py start
@@ -75,8 +75,9 @@ acceptance remain separate downstream concerns.
 
 ## Initialization states
 
-- `NEW_PROJECT_DEFINITION_REQUIRED` — a blank/genre-only repo needs game
-  definition before Gameplay Factory can compile authority.
+- `NEW_PROJECT_DEFINITION_REQUIRED` — a blank/genre-only repo routes to
+  `idea-factory`; initial progression/action bootstrap remains distinct from
+  product definition.
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — one investigator reconstructs the
   existing progression/actions/rewards and adapters.
 - `GAMEPLAY_FACTORY_ALREADY_READY` — use objective production or gap repair.

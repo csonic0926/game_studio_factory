@@ -19,9 +19,11 @@ gameplay, or silently choose between conflicting runtime systems.
 ### Total-new project
 
 When no implemented runtime is present, `start` returns
-`NEW_PROJECT_DEFINITION_REQUIRED`. Route to game/idea definition. A genre-only
-request is not enough authority to create progression, actions, rewards, or
-adapters.
+`NEW_PROJECT_DEFINITION_REQUIRED`. Route to the umbrella `idea-factory` skill.
+A genre-only request is not enough authority to create progression, actions,
+rewards, or adapters. Idea Factory can establish product direction, but a
+separate new-game Gameplay bootstrap must still create the initial progression
+and action/reward design before this existing-runtime compiler applies.
 
 ### Existing project joining in the middle
 
@@ -124,7 +126,7 @@ remains stable.
 
 Start results:
 
-- `NEW_PROJECT_DEFINITION_REQUIRED` — route to game definition;
+- `NEW_PROJECT_DEFINITION_REQUIRED` — route to `idea-factory`;
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — continue the investigation;
 - `GAMEPLAY_FACTORY_ALREADY_READY` — return to production routing;
 - command error — wrong ownership, non-Git repo, illegal path, or

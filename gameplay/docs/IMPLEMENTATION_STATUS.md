@@ -114,7 +114,10 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   not yet closed a real game-owned gap end to end; in particular, the IMT
   reusable-campfire break motivated the workflow but no IMT repair artifact or
   runtime fix is created by this factory-side implementation;
-- new-project game/idea definition is not implemented by initialization;
+- product/game direction is now implemented by the umbrella Idea Factory;
+  new-project initial progression/action/reward bootstrap remains unimplemented
+  and intentionally separate from both product definition and existing-runtime
+  reconstruction;
 - existing-project initialization has synthetic adversarial coverage but has
   not yet been piloted end to end on a real foreign game repo; its semantic
   reconstruction quality and token cost therefore remain unmeasured;

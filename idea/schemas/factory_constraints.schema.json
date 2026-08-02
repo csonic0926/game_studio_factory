@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/idea/factory_constraints.schema.json",
+  "title": "Compiled Cross-Factory Product Constraints",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "source_input_path",
+    "source_input_sha256",
+    "product_thesis_path",
+    "constraints",
+    "validation_hypotheses",
+    "decision_authority_index",
+    "consumer_rule"
+  ],
+  "properties": {
+    "schema_version": {"const": "factory_constraints.v1"},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "source_input_path": {"const": "design/product/idea/PRODUCT_THESIS_INPUT.json"},
+    "source_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "product_thesis_path": {"const": "design/product/PRODUCT_THESIS.md"},
+    "constraints": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "validation_hypotheses": {"type": "array", "items": {"type": "object"}},
+    "decision_authority_index": {"type": "object", "minProperties": 1},
+    "consumer_rule": {"type": "string", "minLength": 1}
+  }
+}

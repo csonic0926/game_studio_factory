@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/idea/product_thesis_input.schema.json",
+  "title": "Idea Factory Product Thesis Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "repository",
+    "seed",
+    "delegation",
+    "decisions",
+    "product_thesis",
+    "causal_links",
+    "non_goals",
+    "validation_hypotheses",
+    "factory_constraints",
+    "unresolved_material_questions",
+    "ai_assumptions"
+  ],
+  "properties": {
+    "schema_version": {"const": "product_thesis_input.v1"},
+    "project_id": {"$ref": "#/$defs/portableId"},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_revision", "declared_dirty_paths", "working_tree_sha256"],
+      "properties": {
+        "expected_revision": {"type": "string", "minLength": 7},
+        "declared_dirty_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_seed", "existing_material_refs"],
+      "properties": {
+        "user_seed": {"type": "string", "minLength": 1},
+        "existing_material_refs": {"type": "array", "items": {"$ref": "#/$defs/evidenceRef"}}
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorized", "authorization_quote", "scope_decision_ids"],
+      "properties": {
+        "authorized": {"type": "boolean"},
+        "authorization_quote": {"type": "string"},
+        "scope_decision_ids": {
+          "type": "array",
+          "items": {"anyOf": [{"const": "*"}, {"$ref": "#/$defs/portableId"}]},
+          "uniqueItems": true
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/decision"}
+    },
+    "product_thesis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_promise",
+        "audience_relationship",
+        "commercial_shape",
+        "experience_intent",
+        "retention_or_replay_thesis",
+        "differentiation",
+        "scope_shape"
+      ],
+      "properties": {
+        "product_promise": {"$ref": "#/$defs/sourceBlock"},
+        "audience_relationship": {"$ref": "#/$defs/sourceBlock"},
+        "commercial_shape": {"$ref": "#/$defs/sourceBlock"},
+        "experience_intent": {"$ref": "#/$defs/sourceBlock"},
+        "retention_or_replay_thesis": {"$ref": "#/$defs/sourceBlock"},
+        "differentiation": {"$ref": "#/$defs/sourceBlock"},
+        "scope_shape": {"$ref": "#/$defs/sourceBlock"}
+      }
+    },
+    "causal_links": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "link_id",
+          "desired_outcome",
+          "player_reason",
+          "experience_mechanism",
+          "downstream_implications",
+          "forbidden_proxies",
+          "source_decision_ids"
+        ],
+        "properties": {
+          "link_id": {"$ref": "#/$defs/portableId"},
+          "desired_outcome": {"type": "string", "minLength": 1},
+          "player_reason": {"type": "string", "minLength": 1},
+          "experience_mechanism": {"type": "string", "minLength": 1},
+          "downstream_implications": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "forbidden_proxies": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "source_decision_ids": {"$ref": "#/$defs/sourceDecisionIds"}
+        }
+      }
+    },
+    "non_goals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["non_goal_id", "statement", "reason", "source_decision_ids"],
+        "properties": {
+          "non_goal_id": {"$ref": "#/$defs/portableId"},
+          "statement": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1},
+          "source_decision_ids": {"$ref": "#/$defs/sourceDecisionIds"}
+        }
+      }
+    },
+    "validation_hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hypothesis_id",
+          "hypothesis",
+          "why_uncertain",
+          "falsification_signal",
+          "cheapest_test",
+          "source_decision_ids"
+        ],
+        "properties": {
+          "hypothesis_id": {"$ref": "#/$defs/portableId"},
+          "hypothesis": {"type": "string", "minLength": 1},
+          "why_uncertain": {"type": "string", "minLength": 1},
+          "falsification_signal": {"type": "string", "minLength": 1},
+          "cheapest_test": {"type": "string", "minLength": 1},
+          "source_decision_ids": {"$ref": "#/$defs/sourceDecisionIds"}
+        }
+      }
+    },
+    "factory_constraints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["constraint_id", "factories", "requirement", "rationale", "source_decision_ids"],
+        "properties": {
+          "constraint_id": {"$ref": "#/$defs/portableId"},
+          "factories": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"enum": ["all", "gameplay", "story", "asset", "sound", "production"]}
+          },
+          "requirement": {"type": "string", "minLength": 1},
+          "rationale": {"type": "string", "minLength": 1},
+          "source_decision_ids": {"$ref": "#/$defs/sourceDecisionIds"}
+        }
+      }
+    },
+    "unresolved_material_questions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "ai_assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "$defs": {
+    "portableId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sourceDecisionIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/portableId"}
+    },
+    "sourceBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "source_decision_ids"],
+      "properties": {
+        "statement": {"type": "string", "minLength": 1},
+        "source_decision_ids": {"$ref": "#/$defs/sourceDecisionIds"}
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "contains"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "contains": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "topic",
+        "question",
+        "decision",
+        "rationale",
+        "authority",
+        "material_to_downstream",
+        "source_quote",
+        "evidence_refs",
+        "alternatives_considered"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/portableId"},
+        "topic": {"type": "string", "minLength": 1},
+        "question": {"type": "string", "minLength": 1},
+        "decision": {"type": "string", "minLength": 1},
+        "rationale": {"type": "string", "minLength": 1},
+        "authority": {"enum": ["USER_FIXED", "REPO_COMMITMENT", "AI_RECOMMENDED", "AI_DELEGATED", "VALIDATION_REQUIRED"]},
+        "material_to_downstream": {"type": "boolean"},
+        "source_quote": {"type": "string"},
+        "evidence_refs": {"type": "array", "items": {"$ref": "#/$defs/evidenceRef"}},
+        "alternatives_considered": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

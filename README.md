@@ -1,8 +1,13 @@
 # game_ai_factory
 
-Umbrella for four game-production factories, each callable by an AI agent
-through a landing doc and an explicit production contract:
+Umbrella for one product-definition factory plus four production factories,
+each callable by an AI agent through a skill/landing contract:
 
+- **`idea/`** — Idea Factory. An AI producer turns sparse user intent and/or an
+  early repo into a coherent commercial and experiential product thesis. It
+  recommends a complete direction before asking a few decisive questions,
+  supports explicitly delegated AI decisions, and compiles cross-factory
+  constraints without disguising hypotheses as facts.
 - **`asset/`** — game asset factory. Blender-first isometric tile/wall reference
   pairs, prop/object sprites, tile re-skin, chroma-key cleanup. Python CLI
   (`itf.py` + spec JSON). *(retains this repo's original git history)*
@@ -33,15 +38,17 @@ python3 setup.py install
 `install` installs these user-facing skills:
 
 - `init-game-ai-factory` — connect the current game repo to the umbrella;
+- `idea-factory` — define the product with AI producer support;
 - `gameplay-factory` — initialize and run Gameplay Factory;
 - `game-story-factory` — run Story Factory.
 
 By default they are symlinked into `~/.claude/skills` and `~/.codex/skills`, so
-`git pull` updates them immediately. Use `install --copy` only where symlinks
-are unavailable, then rerun `install --copy` after updates. The old `sync`
-command remains an alias. Installation creates missing skill directories,
-deduplicates targets that resolve to the same place, and never replaces a
-foreign entry.
+`git pull` updates existing skills immediately. Rerun `install` after a pull
+that adds, removes, or renames a skill. Use `install --copy` only where
+symlinks are unavailable, then rerun `install --copy` after updates. The old
+`sync` command remains an alias. Installation creates missing skill
+directories, deduplicates targets that resolve to the same place, and never
+replaces a foreign entry.
 
 Then open the target game repo and tell the AI:
 
@@ -57,14 +64,21 @@ works: `/init-game-ai-factory`.
 After that, ordinary requests are enough:
 
 ```text
+Use Idea Factory to help decide what product this early repo should become.
 Use Gameplay Factory to continue the next objective.
 Use Gameplay Factory to repair this broken campfire step.
 ```
 
-The `gameplay-factory` skill routes total-new repos to game definition,
-initializes existing repos, recognizes already-ready repos, writes persistent
-plans, and continues ordinary production through implementation unless the
-user explicitly asks for plan-only. Direct invocation also works:
+The `idea-factory` skill works even when code already exists: its trigger is
+missing or contradictory **product authority**, not an empty repo. It produces
+`design/product/PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json`; the AI fills
+producer-level gaps, while provenance distinguishes user choices, repository
+commitments, AI recommendations, delegated AI decisions, and hypotheses.
+
+The `gameplay-factory` skill routes total-new repos to Idea Factory, initializes
+existing repos, recognizes already-ready repos, writes persistent plans, and
+continues ordinary production through implementation unless the user
+explicitly asks for plan-only. Direct invocation also works:
 `/gameplay-factory ...`.
 
 ### Manual/CI fallback
@@ -90,7 +104,7 @@ Factory routing contract, then runs initialization automatically.
 migration categories:
 
 - `NEW_PROJECT_DEFINITION_REQUIRED` — no implemented game exists yet; route to
-  game/idea definition before creating gameplay authority;
+  `idea-factory` before creating gameplay authority;
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — reconstruct the existing runtime
   through one bounded evidence pass, then compile factory state;
 - `GAMEPLAY_FACTORY_ALREADY_READY` — initialization is complete; continue
@@ -199,18 +213,20 @@ experience verdict.
 
 ## Design principle
 
-One umbrella, four factories, **one ownership model**: an AI caller resolves
-the factory contract and project inputs, produces and validates the requested
-artifact, and versions the result with the game. Nothing produced for a game
-lands under this umbrella. Factory contracts, schemas, tools, and blank
-templates remain here; filled designs, plans, runtime evidence, code, data,
-assets, and sound land in the game repo.
+One umbrella, one product-definition layer, four production factories, and
+**one ownership model**: an AI caller resolves the factory contract and project
+inputs, produces and validates the requested artifact, and versions the result
+with the game. Nothing produced for a game lands under this umbrella. Factory
+contracts, schemas, tools, and blank templates remain here; filled product
+authority, designs, plans, runtime evidence, code, data, assets, and sound land
+in the game repo.
 
 ## Layout
 
 ```
 AI_CALLER_LANDING.md     route here first
 skills/  init-game-ai-factory
+idea/    idea.py, skill idea-factory, product-definition workflow, schemas/tests
 asset/   itf.py, pipeline/, docs/, examples/ …   (original git history)
 story/   skills/, core/steps|craft|schemas/, adapters/
 gameplay/ skills/gameplay-factory, AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py,

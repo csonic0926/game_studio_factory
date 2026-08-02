@@ -11,8 +11,9 @@ one initialization entry and two ongoing production workflows:
 3. **Gap repair** — close one concrete missing or broken gameplay contract
    inside an already-authored progression unit.
 
-Runtime evidence reading remains independently invoked. New-project game/idea
-definition is a separate future workflow; initialization must not invent it.
+Runtime evidence reading remains independently invoked. Product/game direction
+is owned by the umbrella Idea Factory; Gameplay initialization must not invent
+it.
 
 ## 1. Resolve the target before routing
 
@@ -38,6 +39,12 @@ Determine initialization state before demanding adapters:
 - existing game missing factory-readable state:
   `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
 - complete trustworthy adapters/model/state: ordinary production.
+
+Before routing, read `design/product/PRODUCT_THESIS.md` and applicable
+`design/product/FACTORY_CONSTRAINTS.json` entries when present. If high-level
+commercial/experiential direction is explicitly unresolved or Gameplay would
+need to invent it, invoke the `idea-factory` skill first. Existing code alone
+does not prove a product commitment.
 
 For ordinary production, read the game-owned adapters/model:
 
@@ -136,8 +143,11 @@ asking the user to paste internal instructions.
 
 ### Total-new project
 
-`NEW_PROJECT_DEFINITION_REQUIRED` routes to game/idea definition. Do not create
-fake progression, actions, rewards, or adapters from only a genre request.
+`NEW_PROJECT_DEFINITION_REQUIRED` routes to the installed `idea-factory` skill.
+Do not create fake progression, actions, rewards, or adapters from only a genre
+request. `IDEA_FACTORY_READY` establishes product direction; a separate
+new-game Gameplay bootstrap remains responsible for initial progression and
+action/reward design.
 
 ### Existing project joining in the middle
 

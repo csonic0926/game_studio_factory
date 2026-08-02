@@ -176,6 +176,7 @@ class LinkGameRepoTest(unittest.TestCase):
                 body = handle.read()
             self.assertEqual(body.count(factory_setup.BLOCK_BEGIN), 1)
             self.assertIn("# Game rules", body)
+            self.assertIn("`idea-factory` skill", body)
             self.assertIn("`gameplay-factory` skill", body)
 
     def test_existing_claude_md_is_untouched(self):
@@ -219,6 +220,9 @@ class ShippedSkillContractTest(unittest.TestCase):
     def test_public_entry_skills_have_valid_minimal_frontmatter(self):
         root = os.path.dirname(SETUP_PATH)
         expected = {
+            "idea-factory": os.path.join(
+                root, "idea", "skills", "idea-factory", "SKILL.md"
+            ),
             "init-game-ai-factory": os.path.join(
                 root, "skills", "init-game-ai-factory", "SKILL.md"
             ),
@@ -239,7 +243,12 @@ class ShippedSkillContractTest(unittest.TestCase):
         names = [name for name, _ in factory_setup.discover_skills(root)]
         self.assertEqual(
             names,
-            ["game-story-factory", "gameplay-factory", "init-game-ai-factory"],
+            [
+                "game-story-factory",
+                "gameplay-factory",
+                "idea-factory",
+                "init-game-ai-factory",
+            ],
         )
 
 

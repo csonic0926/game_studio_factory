@@ -1,10 +1,12 @@
 # AI caller landing — game_ai_factory
 
-Umbrella for four game-production factories. If you are an AI agent from another
-repo, **start here**, pick the factory, then read that factory's own landing doc.
+Umbrella for one product-definition factory plus four production factories. If
+you are an AI agent from another repo, **start here**, pick the factory, then
+read that factory's own landing doc.
 
 ```
 game_ai_factory/
+  idea/    game idea/product factory — AI producer positioning + product constraints
   asset/   game asset factory  — isometric tiles, walls, props, tile re-skin, bg cleanup
   story/   game story factory  — world / character / cast / chapter narrative production
   gameplay/ gameplay factory   — initialize + next objective + gap repair
@@ -15,6 +17,7 @@ game_ai_factory/
 
 | You need | Factory | Entry point |
 | --- | --- | --- |
+| Decide what product this should be: audience, business shape, retention/replay reason, expression/emotion, differentiation, scope | **idea** | skill `idea-factory` → `idea/AGENTS.md` |
 | Floor/wall iso tiles, props, tile re-skin, validated sprites | **asset** | `asset/docs/AI_CALLER_LANDING.md` → `python3 asset/itf.py ...` |
 | World/characters/cast/chapters, staged story text | **story** | skill `game-story-factory` (installed) → `story/skills/game-story-factory/SKILL.md` |
 | Initialize gameplay support, continue the next objective, or repair a known objective gap | **gameplay** | skill `gameplay-factory` → `gameplay/AGENTS.md` |
@@ -22,6 +25,12 @@ game_ai_factory/
 
 ## Calling conventions (shared)
 
+- **idea** is an AI-producer skill. It accepts sparse human intent and/or an
+  early repo, makes one complete commercial/experiential recommendation before
+  asking a few high-leverage questions, and supports explicitly delegated AI
+  decisions. It compiles game-owned `PRODUCT_THESIS.md` plus cross-factory
+  `FACTORY_CONSTRAINTS.json`; uncertain market/player beliefs remain labeled
+  validation hypotheses rather than hidden product facts.
 - **asset** and **sound** are Python CLIs driven by a **spec JSON**; run from
   their own dir, then read `<run>/artifact_status.json` first, then
   `deliverables/`.
@@ -51,8 +60,10 @@ game_ai_factory/
 
 ## Cross-factory flows (why the umbrella)
 
-The factories compose. A playable story sequence can draw on all four:
+The factories compose. Idea Factory commissions the product; a playable story
+sequence can then draw on all four production factories:
 
+- **idea** defines the product promise, tradeoffs, and downstream constraints,
 - **story** produces the scene's staged beats + dialogue (locale keys),
 - **gameplay** turns its anchors into a continuous player-action/control/reception contract,
 - **asset** produces any new props/tiles the scene needs,
@@ -65,7 +76,7 @@ relevant sub-factory via normal commits.
 ## Setup and game-repo linking
 
 - `python3 setup.py install` — install/refresh `init-game-ai-factory`,
-  `gameplay-factory`, `game-story-factory`, and future factory skills
+  `idea-factory`, `gameplay-factory`, `game-story-factory`, and future skills
   (`sync` remains an alias; `--copy` is the no-symlink fallback).
 - In a target game repo, invoke `init-game-ai-factory`. It resolves and runs
   the underlying `setup.py link` operation, writes the managed routing block,

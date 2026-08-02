@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/idea/idea_factory_result.schema.json",
+  "title": "Idea Factory Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "project_id",
+    "repository_revision",
+    "source_input_path",
+    "source_input_sha256",
+    "generated_artifacts"
+  ],
+  "properties": {
+    "schema_version": {"const": "idea_factory_result.v1"},
+    "status": {"const": "IDEA_FACTORY_READY"},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "repository_revision": {"type": "string", "minLength": 7},
+    "source_input_path": {"const": "design/product/idea/PRODUCT_THESIS_INPUT.json"},
+    "source_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "generated_artifacts": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"enum": ["design/product/PRODUCT_THESIS.md", "design/product/FACTORY_CONSTRAINTS.json"]},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  }
+}

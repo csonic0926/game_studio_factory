@@ -20,6 +20,19 @@ cases, paste internal schemas, or issue a second “write the code” prompt.
    only the selected workflow contract it names; do not duplicate its whole
    workflow from memory.
 
+Before Gameplay initialization, inspect product authority when present:
+
+```text
+design/product/PRODUCT_THESIS.md
+design/product/FACTORY_CONSTRAINTS.json
+```
+
+If the user says the product's commercial/experiential direction is unresolved,
+or Gameplay would have to invent audience, monetization, retention/replay,
+expression/emotion, differentiation, or scope priorities, invoke
+`idea-factory` first and continue in the same call. Do not infer product
+direction from an early mechanic merely because code exists.
+
 ## Always initialize before production routing
 
 Run:
@@ -30,8 +43,9 @@ python3 <FACTORY_ROOT>/gameplay/init.py start --game-repo <GAME_REPO>
 
 Continue the returned branch:
 
-- `NEW_PROJECT_DEFINITION_REQUIRED`: stop before inventing progression,
-  actions, or rewards; route to game/idea definition when available.
+- `NEW_PROJECT_DEFINITION_REQUIRED`: invoke `idea-factory`; after
+  `IDEA_FACTORY_READY`, route to new-game Gameplay bootstrap when available.
+  Do not invent progression, actions, or rewards inside initialization.
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED`: follow
   `GAMEPLAY_FACTORY_INIT_WORKFLOW.md` with one bounded evidence investigator,
   then run `compile` and `check`. This is reconstruction, not design.

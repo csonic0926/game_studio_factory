@@ -41,7 +41,8 @@ span/sheet/run: <operation-specific id>
 
 Initialize before requiring adapters:
 
-- blank/genre-only input returns `NEW_PROJECT_DEFINITION_REQUIRED`;
+- blank/genre-only input returns `NEW_PROJECT_DEFINITION_REQUIRED` and routes
+  to the umbrella `idea-factory` skill;
 - an existing non-blank game repo without complete trustworthy gameplay
   adapters/model/state returns `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
 - a repo with those prerequisites returns `GAMEPLAY_FACTORY_ALREADY_READY`.
@@ -119,6 +120,11 @@ semantics return `BLOCKED_BY_INIT_MATERIAL`; conflicting existing
 factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`. Only
 `GAMEPLAY_FACTORY_READY` enters production. `NOT_AVAILABLE` observation capability is honest
 and blocks runtime acceptance, but does not fake evidence.
+
+When a repo has mechanics but the user identifies unresolved product
+positioning, route to Idea Factory before reconstruction. Existing code does
+not authorize Gameplay Factory to invent audience, commercial shape,
+retention/replay purpose, expression/emotion, differentiation, or scope.
 
 ## Objective-production preconditions
 

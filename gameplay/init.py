@@ -584,7 +584,8 @@ def start_factory_init(game_repo_text: str) -> FactoryInitResult:
             warnings=[
                 "No implemented game runtime was found. Define the game before "
                 "compiling progression/action/reward adapters; initialization "
-                "must not invent the game from a blank or genre-only repo."
+                "must not invent the game from a blank or genre-only repo. "
+                "Route product definition through the installed idea-factory skill."
             ],
         )
     return probe_repository(game_repo_text, PROBE_RELATIVE.as_posix())

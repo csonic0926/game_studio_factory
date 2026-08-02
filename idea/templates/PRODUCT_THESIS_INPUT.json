@@ -1,0 +1,104 @@
+{
+  "schema_version": "product_thesis_input.v1",
+  "project_id": "replace-me",
+  "repository": {
+    "expected_revision": "REPLACE_ME_FROM_PROBE",
+    "declared_dirty_paths": [],
+    "working_tree_sha256": "REPLACE_ME_FROM_PROBE"
+  },
+  "seed": {
+    "user_seed": "REPLACE_ME_WITH_THE_USER'S_WORDS_OR_CONCISE_REQUEST",
+    "existing_material_refs": []
+  },
+  "delegation": {
+    "authorized": false,
+    "authorization_quote": "",
+    "scope_decision_ids": []
+  },
+  "decisions": [
+    {
+      "decision_id": "product-promise",
+      "topic": "product promise",
+      "question": "What relationship should this product create with its players?",
+      "decision": "REPLACE_ME_WITH_ONE_COMPLETE_AI_PRODUCER_RECOMMENDATION",
+      "rationale": "REPLACE_ME_WITH_CAUSAL_PRODUCT_REASONING",
+      "authority": "AI_RECOMMENDED",
+      "material_to_downstream": true,
+      "source_quote": "",
+      "evidence_refs": [],
+      "alternatives_considered": [
+        "REPLACE_ME_WITH_THE_STRONGEST_REJECTED_ALTERNATIVE"
+      ]
+    }
+  ],
+  "product_thesis": {
+    "product_promise": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "audience_relationship": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "commercial_shape": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "experience_intent": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "retention_or_replay_thesis": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "differentiation": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    },
+    "scope_shape": {
+      "statement": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    }
+  },
+  "causal_links": [
+    {
+      "link_id": "product-causality",
+      "desired_outcome": "REPLACE_ME",
+      "player_reason": "REPLACE_ME",
+      "experience_mechanism": "REPLACE_ME",
+      "downstream_implications": ["REPLACE_ME"],
+      "forbidden_proxies": ["REPLACE_ME_WITH_A_COMMON_BUT_WRONG_PROXY"],
+      "source_decision_ids": ["product-promise"]
+    }
+  ],
+  "non_goals": [
+    {
+      "non_goal_id": "explicit-sacrifice",
+      "statement": "REPLACE_ME_WITH_WHAT_THIS_PRODUCT_WILL_NOT_OPTIMIZE",
+      "reason": "REPLACE_ME_WITH_THE_TRADEOFF_REASON",
+      "source_decision_ids": ["product-promise"]
+    }
+  ],
+  "validation_hypotheses": [
+    {
+      "hypothesis_id": "player-response-risk",
+      "hypothesis": "REPLACE_ME_WITH_AN_UNPROVEN_PLAYER_OR_MARKET BELIEF",
+      "why_uncertain": "REPLACE_ME",
+      "falsification_signal": "REPLACE_ME",
+      "cheapest_test": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    }
+  ],
+  "factory_constraints": [
+    {
+      "constraint_id": "product-direction",
+      "factories": ["all"],
+      "requirement": "REPLACE_ME_WITH_A_DOWNSTREAM-USABLE CONSTRAINT",
+      "rationale": "REPLACE_ME",
+      "source_decision_ids": ["product-promise"]
+    }
+  ],
+  "unresolved_material_questions": [],
+  "ai_assumptions": []
+}

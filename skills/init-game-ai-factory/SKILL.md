@@ -42,6 +42,7 @@ state, story state, code, or assets.
 
 ## Same-call handoff
 
-If the user also requested Gameplay Factory work, immediately invoke the
-`gameplay-factory` workflow after the link. Do not make the user issue a second
-prompt. Otherwise finish after verified umbrella linkage.
+If the user also requested product definition or a factory production task,
+immediately invoke the owning `idea-factory`, `gameplay-factory`,
+`game-story-factory`, Asset, or Sound workflow after the link. Do not make the
+user issue a second prompt. Otherwise finish after verified umbrella linkage.
