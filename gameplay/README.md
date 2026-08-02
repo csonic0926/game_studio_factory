@@ -1,8 +1,25 @@
 # Gameplay Factory
 
-Gameplay Factory has two compact **Case 3** production paths for an already
-factory-readable game repo. The canonical caller entry and router is
+Gameplay Factory has one **Case 2** engineering path for onboarding an
+existing foreign repo and two compact **Case 3** production paths for a
+factory-readable repo. The canonical caller entry and router is
 [`AGENTS.md`](AGENTS.md).
+
+**Foreign-repo onboarding** reconstructs existing runtime meaning; it does not
+design gameplay:
+
+```text
+bounded repo probe
+  -> one evidence-focused CASE2_ONBOARDING_INPUT.json
+  -> onboard.py compile
+  -> adapters + GAMEPLAY_DESIGN_MODEL + empty state + initial frontier
+  -> onboard.py check
+  -> CASE3_READY
+```
+
+The probe binds revision plus working-tree state. The compiler creates only
+missing canonical files, refuses differing existing state, rejects unresolved
+material gaps and AI assumptions, and reuses the Case 3 material gate.
 
 **Progression production** makes/completes the primary progression's next unit:
 
@@ -49,11 +66,13 @@ acceptance remain separate downstream concerns.
 ## Case boundary
 
 - **Case 1:** blank/genre-only request — future idea factory.
-- **Case 2:** non-factory repo — future onboarding/refactoring flow.
+- **Case 2:** existing non-factory game repo — current engineering onboarding
+  flow; reconstruct, compile, and verify Case 3 prerequisites without gameplay
+  invention.
 - **Case 3:** factory-produced/onboarded repo with readable progression and
   action/reward state — current supported creative workflow.
 
-## Step 1
+## Case 3 progression — Step 1
 
 `GAMEPLAY_DESIGN_MODEL.json` stores the primary progression driver and
 action/reward vocabulary once. `prepare.py context` merges it with a small
@@ -68,14 +87,14 @@ and player actions with rewards. It emits:
 It never treats locale-only text as implemented gameplay and never creates an
 output directory before ownership validation.
 
-## Step 2
+## Case 3 progression — Step 2
 
 One author uses the compact Step 1 result to produce one complete
 `OBJECTIVE_GAMEPLAY.md`. Necessary-action, problem, pressure, player-desire,
 action/reward, and meaningful-choice deductions occur inside that pass rather
 than becoming separate workers and review artifacts.
 
-## Step 3
+## Case 3 progression — Step 3
 
 The factory user may choose a Plan Mode model or an ordinary model. Both must
 write the same persistent game-owned contract: one
@@ -86,7 +105,7 @@ checks dependencies and portable repo paths, and rejects shared planned-file
 ownership. The plans compile design into production requirements; they may
 return `BLOCKED_BY_PLAN_GAP` but may not redesign gameplay silently.
 
-## Step 4
+## Case 3 progression — Step 4
 
 `READY_FOR_EXECUTION` is an intermediate control signal, not a final answer to
 an ordinary "make gameplay" request. The original caller automatically
@@ -124,6 +143,28 @@ decision.
 See
 [`docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md).
 
+## Case 2 onboarding commands
+
+Link an unlinked game repo first, then probe, compile, and check:
+
+```bash
+python3 setup.py link --game-repo <GAME_REPO>
+
+python3 gameplay/onboard.py probe \
+  --game-repo <GAME_REPO> \
+  --out design/gameplay/onboarding/CASE2_REPO_PROBE.json
+
+python3 gameplay/onboard.py compile \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+
+python3 gameplay/onboard.py check \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+```
+
+See [`docs/CASE2_ONBOARDING_WORKFLOW.md`](docs/CASE2_ONBOARDING_WORKFLOW.md).
+
 ## Runtime evidence tooling
 
 `reader.py` remains the dependency-free evidence tool. It validates raw
@@ -136,18 +177,24 @@ fun.
 
 ```text
 AGENTS.md                              hard caller rules
+docs/CASE2_ONBOARDING_WORKFLOW.md
 docs/CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md
 docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md
+onboard.py                             Case 2 probe/compiler/checker
 prepare.py                             Step 1 context validator/compiler
 plan.py                                Step 3 production-plan validator
 repair.py                              repair context validator/compiler
 repair_plan.py                         repair production-plan validator
 schemas/next_gameplay_unit_input.schema.json
 schemas/gameplay_design_model.schema.json
+schemas/case2_repo_probe.schema.json
+schemas/case2_onboarding_input.schema.json
+schemas/case2_onboarding_result.schema.json
 schemas/production_plan_manifest.schema.json
 schemas/gameplay_gap_input.schema.json
 schemas/repair_plan_manifest.schema.json
 templates/GAMEPLAY_DESIGN_MODEL.json
+templates/CASE2_ONBOARDING_INPUT.json
 templates/NEXT_GAMEPLAY_UNIT_INPUT.json
 templates/OBJECTIVE_GAMEPLAY.md
 templates/PRODUCTION_PLAN_MANIFEST.json

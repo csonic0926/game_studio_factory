@@ -5,6 +5,20 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 
 ## Implemented in factory core
 
+- Case 2 foreign-repo onboarding: explicit non-blank Git-repo ownership gate,
+  optional umbrella routing link, bounded non-semantic file/locale/test-source
+  probe, and exact Git revision plus dirty-path/content binding;
+- dependency-free `onboard.py probe|compile|check` workflow driven by one
+  structured evidence-focused investigation: it validates portable exact
+  evidence, live progression authority, objective locale plus runtime
+  selection/completion, implemented actions/rewards, production mappings, and
+  honest observation capability before reusing the Case 3 material gate;
+- Case 2 schemas/template and preflighted compiler for only-missing
+  `PROJECT_GAMEPLAY_PROFILE.md`, Production/Observation Adapters,
+  `GAMEPLAY_DESIGN_MODEL.json`, empty design-state ledgers, initial objective
+  frontier, and SHA-bound onboarding result; differing existing factory state,
+  unresolved material gaps, AI assumptions, and stale repo/input/artifact state
+  fail closed before mutation;
 - Case 3 objective-gameplay front end: explicit blank/foreign/factory-native
   case boundary, primary-progression-first object model, script-first Step 1,
   and one-artifact Step 2 contract;
@@ -93,8 +107,10 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   not yet closed a real game-owned gap end to end; in particular, the IMT
   reusable-campfire break motivated the workflow but no IMT repair artifact or
   runtime fix is created by this factory-side implementation;
-- Case 1 idea discovery and Case 2 foreign-repo onboarding/refactoring are not
-  implemented by this workflow;
+- Case 1 idea discovery is not implemented by this workflow;
+- Case 2 has synthetic adversarial coverage but has not yet been piloted end to
+  end on a real foreign game repo; its semantic reconstruction quality and
+  token cost therefore remain unmeasured;
 
 - no real game-owned Beat Sheet -> implementation -> actual build evidence
   pilot has been supplied or run from this factory task;

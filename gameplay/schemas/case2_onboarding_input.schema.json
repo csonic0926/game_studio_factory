@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/case2_onboarding_input.schema.json",
+  "title": "Case 2 Onboarding Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "onboarding_date",
+    "repository",
+    "gameplay_model",
+    "initial_frontier",
+    "project_profile",
+    "production_adapter",
+    "observation_adapter",
+    "user_rulings",
+    "unresolved_material_gaps",
+    "ai_assumptions"
+  ],
+  "properties": {
+    "schema_version": {"const": "case2_onboarding_input.v1"},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "onboarding_date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_revision",
+        "declared_dirty_paths",
+        "working_tree_sha256"
+      ],
+      "properties": {
+        "expected_revision": {"type": "string", "minLength": 1},
+        "declared_dirty_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "working_tree_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "gameplay_model": {"$ref": "gameplay_design_model.schema.json"},
+    "initial_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "objective_dir",
+        "frontier",
+        "applicable_action_ids",
+        "recent_patterns",
+        "design_constraints"
+      ],
+      "properties": {
+        "objective_dir": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "frontier": {"$ref": "next_gameplay_unit_input.schema.json#/properties/frontier"},
+        "applicable_action_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "recent_patterns": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "design_constraints": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "project_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_locale",
+        "target_runtime",
+        "authoritative_source_refs",
+        "player_frames",
+        "core_fantasy_and_desires",
+        "sovereignty_and_red_lines",
+        "systems_and_spaces",
+        "presentation_and_control",
+        "grammar_and_handoff",
+        "review_and_evidence_owners"
+      ],
+      "properties": {
+        "primary_locale": {"type": "string", "minLength": 1},
+        "target_runtime": {"type": "string", "minLength": 1},
+        "authoritative_source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "player_frames": {"$ref": "#/$defs/nonempty_strings"},
+        "core_fantasy_and_desires": {"$ref": "#/$defs/nonempty_strings"},
+        "sovereignty_and_red_lines": {"$ref": "#/$defs/nonempty_strings"},
+        "systems_and_spaces": {"$ref": "#/$defs/nonempty_strings"},
+        "presentation_and_control": {"$ref": "#/$defs/nonempty_strings"},
+        "grammar_and_handoff": {"$ref": "#/$defs/nonempty_strings"},
+        "review_and_evidence_owners": {"$ref": "#/$defs/nonempty_strings"}
+      }
+    },
+    "production_adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supported_revision",
+        "runtime_surfaces",
+        "gameplay_mappings",
+        "validation_commands",
+        "integration_constraints",
+        "unsupported_capabilities"
+      ],
+      "properties": {
+        "supported_revision": {"type": "string", "minLength": 1},
+        "runtime_surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["surface", "paths", "owner", "evidence_refs"],
+            "properties": {
+              "surface": {"type": "string", "minLength": 1},
+              "paths": {"$ref": "#/$defs/nonempty_strings"},
+              "owner": {"type": "string", "minLength": 1},
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"$ref": "#/$defs/evidence_ref"}
+              }
+            }
+          }
+        },
+        "gameplay_mappings": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["concern", "description", "evidence_refs"],
+            "properties": {
+              "concern": {"type": "string", "minLength": 1},
+              "description": {"type": "string", "minLength": 1},
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"$ref": "#/$defs/evidence_ref"}
+              }
+            }
+          }
+        },
+        "validation_commands": {"$ref": "#/$defs/nonempty_strings"},
+        "integration_constraints": {"$ref": "#/$defs/nonempty_strings"},
+        "unsupported_capabilities": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "observation_adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "supported_revision",
+        "mapping_path",
+        "evidence_sources",
+        "launch_and_capture",
+        "provenance_and_ordering",
+        "validation_commands",
+        "limits_and_gaps"
+      ],
+      "properties": {
+        "status": {"enum": ["AVAILABLE", "NOT_AVAILABLE"]},
+        "supported_revision": {"type": "string", "minLength": 1},
+        "mapping_path": {"type": "string", "minLength": 1},
+        "evidence_sources": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "launch_and_capture": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "provenance_and_ordering": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "validation_commands": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "limits_and_gaps": {"$ref": "#/$defs/nonempty_strings"}
+      }
+    },
+    "user_rulings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "unresolved_material_gaps": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "ai_assumptions": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "$defs": {
+    "nonempty_strings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "evidence_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "path", "contains"],
+      "properties": {
+        "role": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "contains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/case2_onboarding_result.schema.json",
+  "title": "Case 2 Onboarding Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "project_id",
+    "source_revision",
+    "source_dirty_paths",
+    "source_working_tree_sha256",
+    "initial_objective_input_path",
+    "artifact_sha256",
+    "warnings",
+    "handoff"
+  ],
+  "properties": {
+    "schema_version": {"const": "case2_onboarding_result.v1"},
+    "status": {"const": "CASE3_READY"},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "source_revision": {"type": "string", "minLength": 1},
+    "source_dirty_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_working_tree_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "initial_objective_input_path": {"type": "string", "minLength": 1},
+    "artifact_sha256": {
+      "type": "object",
+      "minProperties": 7,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "handoff": {"type": "string", "minLength": 1}
+  }
+}

@@ -1,15 +1,18 @@
 # Gameplay Factory Guide and AI Entry
 
 This file is the canonical entry for an AI caller. Gameplay Factory currently
-supports two **Case 3** production workflows:
+supports one **Case 2** engineering workflow and two **Case 3** production
+workflows:
 
-1. **Progression production** — make/complete the primary progression's next
+1. **Foreign-repo onboarding** — reconstruct an existing repo into verified
+   factory-readable adapters/model/state without designing gameplay.
+2. **Progression production** — make/complete the primary progression's next
    unit and its gameplay.
-2. **Gap repair** — close one concrete missing or broken gameplay contract
+3. **Gap repair** — close one concrete missing or broken gameplay contract
    inside an already-authored progression unit.
 
 Runtime evidence reading remains independently invoked. Case 1 idea discovery
-and Case 2 foreign-repo onboarding are not implemented here.
+is not implemented here.
 
 ## 1. Resolve the target before routing
 
@@ -29,7 +32,13 @@ Reject:
 - a blank or foreign repo disguised as Case 3;
 - committed absolute developer paths.
 
-Read the game-owned adapters/model before production:
+Determine the case before demanding adapters:
+
+- blank/genre-only request: Case 1, stop for a future idea workflow;
+- existing non-blank repo missing factory-readable state: Case 2 onboarding;
+- repo with complete trustworthy adapters/model/state: Case 3.
+
+For Case 3, read the game-owned adapters/model before production:
 
 ```text
 <GAMEPLAY_ROOT>/adapter/PROJECT_GAMEPLAY_PROFILE.md
@@ -38,13 +47,16 @@ Read the game-owned adapters/model before production:
 <GAMEPLAY_ROOT>/adapter/GAMEPLAY_DESIGN_MODEL.json
 ```
 
-Missing or inconsistent answers mean the repo is not ready for normal Case 3
-work.
+Missing or inconsistent answers route an existing repo to explicit Case 2
+onboarding; an ordinary Case 3 production call never creates them implicitly.
 
 ## 2. Route to exactly one workflow
 
 | Current need | Operation | Workflow |
 | --- | --- | --- |
+| Existing non-blank foreign repo lacks factory-readable gameplay state | `onboard_foreign_repo` | [`docs/CASE2_ONBOARDING_WORKFLOW.md`](docs/CASE2_ONBOARDING_WORKFLOW.md) |
+| Only create the bounded Case 2 repository probe | `probe_onboarding` | Case 2 Step 0 |
+| Compile or check the Case 2 handoff | `compile_onboarding` / `check_onboarding` | Case 2 Steps 2–3 |
 | No concrete unresolved gap is known; continue or complete the main progression | `produce_objective` | [`docs/CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`](docs/CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md) |
 | A concrete player-visible causal contract is missing/broken inside an existing objective | `repair_gameplay_gap` | [`docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md) |
 | Only compile forward context | `prepare_objective` | Objective workflow Step 1 |
@@ -55,6 +67,10 @@ work.
 | Validate/read runtime evidence | `observe_runtime` / `runtime_acceptance` | Reader/acceptance docs; never a creative entry |
 
 ### Routing priority
+
+Case selection precedes Case 3 priority. A foreign repo is onboarded once and
+must return `CASE3_READY`; do not disguise missing adapters as objective
+authoring. After onboarding, use the normal Case 3 priority below.
 
 If a concrete repair gap and a request to advance progression are both active,
 repair the known gap first unless the user explicitly defers it. Do not keep
@@ -95,13 +111,46 @@ Use **gap repair** when the question is:
 Use neither when:
 
 - the request is only a genre/blank project — Case 1 / future idea factory;
-- the repo lacks factory-readable progression/action state — Case 2 / future
-  onboarding;
 - it is an ordinary code bug with no material player-visible gameplay effect;
 - it requests an unanchored new feature rather than a next objective or an
   evidenced existing gap.
 
-## 3A. Progression production — mainline next unit
+Use **Case 2 onboarding** when the repo already contains a game but lacks the
+verified adapters/model/state required to answer either Case 3 question.
+
+## 3A. Case 2 onboarding — make a foreign repo factory-readable
+
+Read the full onboarding workflow. Its bounded path is:
+
+```text
+existing foreign game repo
+  -> onboard.py probe
+  -> CASE2_REPO_PROBE.json
+  -> one evidence-focused investigator
+  -> CASE2_ONBOARDING_INPUT.json
+  -> onboard.py compile
+  -> adapters + GAMEPLAY_DESIGN_MODEL + empty state ledgers
+     + initial NEXT_GAMEPLAY_UNIT_INPUT
+  -> onboard.py check
+  -> CASE3_READY
+```
+
+The probe assigns no semantic authority. The investigator reconstructs only
+existing runtime facts with exact repo-relative evidence. If the foreign repo
+is not linked to this umbrella, run root `setup.py link` before the probe;
+linkage supplies routing only and grants no gameplay authority. `compile`
+creates only missing canonical files, never overwrites differing state,
+rejects AI assumptions/unresolved material gaps, and reuses the Case 3
+material gate.
+
+`NOT_AVAILABLE` observation capability is honest and may permit compact Case 3
+design/production, but it blocks runtime evidence/acceptance claims until
+instrumentation exists.
+
+Only `CASE3_READY` returns to this router. Then route an `OPEN` repair first;
+otherwise use the generated initial frontier for progression production.
+
+## 3B. Progression production — mainline next unit
 
 Read the full objective workflow. Its compact path is:
 
@@ -125,7 +174,7 @@ Step 2 author. Only `READY_FOR_EXECUTION` starts production. For an ordinary
 make/continue request, the caller executes the plans automatically rather than
 asking the user to say “write the code”.
 
-## 3B. Gap repair — current/previous unit closure
+## 3C. Gap repair — current/previous unit closure
 
 Read the full repair workflow. It mirrors the compact four-step shape without
 regenerating the base objective:
@@ -163,6 +212,13 @@ not self-mark `CLOSED`.
 
 ## Shared hard rules
 
+- **Onboarding reconstructs; it does not design.** Existing runtime evidence
+  or persisted user rulings must settle every Case 2 material claim.
+- **Foreign state is never overwritten.** After all-target preflight, Case 2
+  creates missing canonical files and blocks on any differing existing
+  adapter/model/state.
+- **Repository study stays bound.** Probe revision, declared dirty paths, and
+  dirty working-tree content hash must still match at compile/check time.
 - **Known gap before forward expansion.** Unless explicitly deferred, close a
   concrete known break before producing the next progression unit.
 - **Primary progression first.** A mission, stage, spatial frontier, or
@@ -210,11 +266,20 @@ creative context, invent gameplay, or issue a final experience verdict.
 
 ## Current contracts
 
-### Entry and Case 3 production
+### Entry and workflow contracts
 
 - `docs/AI_CALLER_LANDING.md`
+- `docs/CASE2_ONBOARDING_WORKFLOW.md`
 - `docs/CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`
 - `docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`
+
+### Foreign-repo onboarding
+
+- `onboard.py`
+- `schemas/case2_repo_probe.schema.json`
+- `schemas/case2_onboarding_input.schema.json`
+- `schemas/case2_onboarding_result.schema.json`
+- `templates/CASE2_ONBOARDING_INPUT.json`
 
 ### Progression production
 

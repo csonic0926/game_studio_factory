@@ -1,0 +1,158 @@
+{
+  "schema_version": "case2_onboarding_input.v1",
+  "project_id": "<PROJECT_ID>",
+  "onboarding_date": "<YYYY-MM-DD>",
+  "repository": {
+    "expected_revision": "<PROBE_REVISION>",
+    "declared_dirty_paths": [],
+    "working_tree_sha256": "<PROBE_WORKING_TREE_SHA256>"
+  },
+  "gameplay_model": {
+    "schema_version": "gameplay_design_model.v1",
+    "project_id": "<PROJECT_ID>",
+    "primary_progression_driver": {
+      "system_id": "<EXISTING_SYSTEM_ID>",
+      "system_kind": "<mission_chain|stage_sequence|spatial_poi_frontier|round_sequence|other>",
+      "progression_unit": "<EXISTING_UNIT>",
+      "description": "<WHAT_EXISTING_RUNTIME_ADVANCES>",
+      "evidence_refs": [
+        {
+          "role": "progression_authority",
+          "path": "<REPO_RELATIVE_RUNTIME_PATH>",
+          "contains": ["<EXACT_LIVE_PROGRESSION_TOKEN>"]
+        }
+      ]
+    },
+    "player_actions": [
+      {
+        "action_id": "<IMPLEMENTED_ACTION_ID>",
+        "description": "<WHAT_THE_PLAYER_ACTUALLY_DOES>",
+        "availability": "<EXACT_RUNTIME_PRECONDITION>",
+        "rewards": [
+          {
+            "reward_id": "<REWARD_ID>",
+            "kind": "<information|access|items|power|recovery|progress|other>",
+            "description": "<ACTUAL_CONSEQUENCE_OR_REWARD>"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "role": "runtime_action",
+            "path": "<REPO_RELATIVE_RUNTIME_PATH>",
+            "contains": ["<EXACT_ACTION_TOKEN>"]
+          }
+        ]
+      }
+    ],
+    "recent_patterns": [],
+    "design_constraints": ["<EXISTING_RUNTIME_OR_USER_LOCKED_CONSTRAINT>"]
+  },
+  "initial_frontier": {
+    "objective_dir": "<PORTABLE_OBJECTIVE_DIRECTORY>",
+    "frontier": {
+      "decision": "COMPLETE_CURRENT_UNIT",
+      "current_state": "<CURRENT_EXISTING_PROGRESSION_STATE>",
+      "objective_id": "<EXISTING_OBJECTIVE_ID>",
+      "objective_locale": {
+        "path": "<REPO_RELATIVE_LOCALE_CSV>",
+        "key_column": "keys",
+        "locale_column": "zh_Hant",
+        "key": "<EXISTING_LOCALE_KEY>",
+        "expected_text": "<EXACT_PLAYER_FACING_TEXT>"
+      },
+      "completion_condition": "<EXISTING_RUNTIME_COMPLETION_CONDITION>",
+      "successor_handoff": {
+        "status": "WIRED",
+        "description": "<EXISTING_POST_COMPLETION_HANDOFF>"
+      },
+      "evidence_refs": [
+        {
+          "role": "runtime_selection",
+          "path": "<REPO_RELATIVE_RUNTIME_PATH>",
+          "contains": ["<EXACT_SELECTION_TOKEN>"]
+        },
+        {
+          "role": "runtime_completion",
+          "path": "<REPO_RELATIVE_RUNTIME_PATH>",
+          "contains": ["<EXACT_COMPLETION_TOKEN>"]
+        }
+      ]
+    },
+    "applicable_action_ids": ["<IMPLEMENTED_ACTION_ID>"],
+    "recent_patterns": [],
+    "design_constraints": []
+  },
+  "project_profile": {
+    "primary_locale": "<LOCALE>",
+    "target_runtime": "<ENGINE_PLATFORM_AND_MODE>",
+    "authoritative_source_refs": [
+      {
+        "role": "current_state_source",
+        "path": "<REPO_RELATIVE_PATH>",
+        "contains": ["<EXACT_CURRENT_STATE_TOKEN>"]
+      }
+    ],
+    "player_frames": ["<EVIDENCED_PLAYER_FRAME_OR_USER_RULING>"],
+    "core_fantasy_and_desires": ["<EXISTING_GAME_PROMISE_OR_USER_RULING>"],
+    "sovereignty_and_red_lines": ["<EXISTING_CONTROL_RULE_OR_USER_RULING>"],
+    "systems_and_spaces": ["<IMPLEMENTED_SYSTEM_OR_PLAYABLE_SPACE>"],
+    "presentation_and_control": ["<IMPLEMENTED_CONTROL_AND_PRESENTATION_RULE>"],
+    "grammar_and_handoff": ["<EXISTING_RHYTHM_OR_HANDOFF_RULE>"],
+    "review_and_evidence_owners": ["<USER_OR_REPO_PATH_THAT_OWNS_RULINGS>"]
+  },
+  "production_adapter": {
+    "supported_revision": "<PROBE_REVISION>",
+    "runtime_surfaces": [
+      {
+        "surface": "<RUNTIME_SURFACE>",
+        "paths": ["<REPO_RELATIVE_PATH>"],
+        "owner": "<SYSTEM_OR_COMPONENT>",
+        "evidence_refs": [
+          {
+            "role": "runtime_surface",
+            "path": "<REPO_RELATIVE_PATH>",
+            "contains": ["<EXACT_SURFACE_TOKEN>"]
+          }
+        ]
+      }
+    ],
+    "gameplay_mappings": [
+      {
+        "concern": "objective_selection",
+        "description": "<EXISTING_MAPPING>",
+        "evidence_refs": [{"role": "mapping", "path": "<PATH>", "contains": ["<TOKEN>"]}]
+      },
+      {
+        "concern": "objective_completion",
+        "description": "<EXISTING_MAPPING>",
+        "evidence_refs": [{"role": "mapping", "path": "<PATH>", "contains": ["<TOKEN>"]}]
+      },
+      {
+        "concern": "player_actions",
+        "description": "<EXISTING_MAPPING>",
+        "evidence_refs": [{"role": "mapping", "path": "<PATH>", "contains": ["<TOKEN>"]}]
+      },
+      {
+        "concern": "rewards_and_state",
+        "description": "<EXISTING_MAPPING>",
+        "evidence_refs": [{"role": "mapping", "path": "<PATH>", "contains": ["<TOKEN>"]}]
+      }
+    ],
+    "validation_commands": ["<EXACT_EXISTING_TEST_OR_BUILD_COMMAND>"],
+    "integration_constraints": ["<EXISTING_FILE_OR_STATE_OWNERSHIP_RULE>"],
+    "unsupported_capabilities": []
+  },
+  "observation_adapter": {
+    "status": "NOT_AVAILABLE",
+    "supported_revision": "<PROBE_REVISION>",
+    "mapping_path": "NOT_AVAILABLE",
+    "evidence_sources": [],
+    "launch_and_capture": [],
+    "provenance_and_ordering": [],
+    "validation_commands": [],
+    "limits_and_gaps": ["Runtime evidence acceptance is blocked until instrumentation is added."]
+  },
+  "user_rulings": [],
+  "unresolved_material_gaps": [],
+  "ai_assumptions": []
+}

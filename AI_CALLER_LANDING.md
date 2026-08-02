@@ -7,7 +7,7 @@ repo, **start here**, pick the factory, then read that factory's own landing doc
 game_ai_factory/
   asset/   game asset factory  — isometric tiles, walls, props, tile re-skin, bg cleanup
   story/   game story factory  — world / character / cast / chapter narrative production
-  gameplay/ gameplay factory   — next-objective production + gameplay gap repair
+  gameplay/ gameplay factory   — foreign-repo onboarding + next objective + gap repair
   sound/   game sound factory  — text->SFX (ElevenLabs) + de-silence/normalize
 ```
 
@@ -17,7 +17,7 @@ game_ai_factory/
 | --- | --- | --- |
 | Floor/wall iso tiles, props, tile re-skin, validated sprites | **asset** | `asset/docs/AI_CALLER_LANDING.md` → `python3 asset/itf.py ...` |
 | World/characters/cast/chapters, staged story text | **story** | skill `game-story-factory` (installed) → `story/skills/game-story-factory/SKILL.md` |
-| Continue a factory-readable game's next objective or repair a known gap inside an existing objective | **gameplay** | `gameplay/AGENTS.md` routes to the progression or repair workflow |
+| Onboard an existing foreign game repo, continue a factory-readable game's next objective, or repair a known objective gap | **gameplay** | `gameplay/AGENTS.md` routes Case 2 onboarding or Case 3 production |
 | A game SFX (generate + trim to drop-in) | **sound** | `sound/docs/AI_CALLER_LANDING.md` → `python3 sound/sfx.py run --spec ...` |
 
 ## Calling conventions (shared)
@@ -27,7 +27,12 @@ game_ai_factory/
   `deliverables/`.
 - **story** is a Claude **skill** (`/game-story-factory <project_id> ...`) backed
   by adapter + step machines; artifacts land in the *game repo's* `<STORY_ROOT>`.
-- **gameplay** currently supports two compact Case 3 pipelines. Progression
+- **gameplay** supports one Case 2 engineering pipeline and two compact Case 3
+  pipelines. Case 2 uses a bounded mechanical repo probe, one evidence-focused
+  investigation, and a fail-closed compiler/checker to create only missing
+  adapters/model/state plus the initial objective frontier; it reconstructs
+  existing runtime meaning and never designs gameplay or overwrites foreign
+  state. Progression
   production mechanically resolves the primary driver/next objective and
   proven actions/rewards before one complete objective authoring pass. Gap
   repair binds one evidenced break to an exact existing objective revision,

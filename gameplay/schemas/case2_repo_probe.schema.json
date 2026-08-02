@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/case2_repo_probe.schema.json",
+  "title": "Case 2 Repository Probe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "repository",
+    "candidate_files",
+    "candidate_file_count_before_limit",
+    "candidate_limit",
+    "locale_candidates",
+    "validation_command_source_candidates",
+    "interpretation_warning"
+  ],
+  "properties": {
+    "schema_version": {"const": "case2_repo_probe.v1"},
+    "status": {"enum": ["CASE2_PROBE_READY", "ALREADY_CASE3"]},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "branch",
+        "dirty_paths",
+        "working_tree_sha256",
+        "tracked_or_unignored_file_count",
+        "project_markers"
+      ],
+      "properties": {
+        "revision": {"type": "string", "minLength": 1},
+        "branch": {"type": "string", "minLength": 1},
+        "dirty_paths": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "working_tree_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "tracked_or_unignored_file_count": {"type": "integer", "minimum": 1},
+        "project_markers": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "candidate_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "score"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "score": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "candidate_file_count_before_limit": {"type": "integer", "minimum": 0},
+    "candidate_limit": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "locale_candidates": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "validation_command_source_candidates": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "interpretation_warning": {"type": "string", "minLength": 1}
+  }
+}

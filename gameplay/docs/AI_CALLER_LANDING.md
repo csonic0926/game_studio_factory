@@ -3,8 +3,12 @@
 The canonical entry and routing guide is [`../AGENTS.md`](../AGENTS.md). Read
 it first.
 
-Gameplay Factory currently has two compact Case 3 production entries:
+Gameplay Factory currently has one Case 2 engineering entry and two compact
+Case 3 production entries:
 
+- [`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md) reconstructs
+  an existing foreign repo into verified factory-readable state without
+  designing gameplay;
 - [`CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`](CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md)
   produces/completes the primary progression's next objective;
 - [`CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](CASE3_GAMEPLAY_REPAIR_WORKFLOW.md)
@@ -24,6 +28,7 @@ Identify the operation and target game repo:
 ```text
 factory: <FACTORY_REPO>/gameplay
 operation: produce_objective | prepare_objective | author_objective | plan_production |
+           onboard_foreign_repo | probe_onboarding | compile_onboarding | check_onboarding |
            repair_gameplay_gap | prepare_repair | plan_repair |
            legacy_quantify_span | realize_walkthrough | compile_packets | landing_review |
            observe_runtime | runtime_acceptance
@@ -33,6 +38,17 @@ span/sheet/run: <operation-specific id>
 ```
 
 ## Route before authoring
+
+Determine the case before requiring adapters:
+
+- blank/genre-only input is Case 1 and stops for the future idea workflow;
+- an existing non-blank game repo without complete trustworthy gameplay
+  adapters/model/state is Case 2 and routes to `onboard_foreign_repo`;
+- a repo with those prerequisites is Case 3.
+
+Use `onboard_foreign_repo` only to reconstruct existing runtime meaning and
+compile Case 3 prerequisites. It may not invent a progression driver, player
+action, reward, objective rule, or unsupported observation capability.
 
 Use `produce_objective` when there is no concrete unresolved gap and the work
 is to continue/complete the main progression.
@@ -63,21 +79,41 @@ Read `GAMEPLAY_DESIGN_MODEL.json`, `PROJECT_GAMEPLAY_PROFILE.md`,
 `<GAMEPLAY_ROOT>/adapter/`. An ordinary production call never creates missing
 answers. Missing/blank/inconsistent answers mean `BLOCKED_BY_ADAPTER`.
 
-## Explicit onboarding only
+## Case 2 foreign-repo onboarding
 
-Create only missing paths/files; never overwrite:
+Read [`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md). If the
+game repo is not yet linked to the umbrella, run `setup.py link` before the
+probe; routing linkage does not make gameplay claims.
 
-```text
-<GAMEPLAY_ROOT>/adapter/PROJECT_GAMEPLAY_PROFILE.md
-<GAMEPLAY_ROOT>/adapter/PRODUCTION_ADAPTER.md
-<GAMEPLAY_ROOT>/adapter/OBSERVATION_ADAPTER.md
-<GAMEPLAY_ROOT>/adapter/GAMEPLAY_DESIGN_MODEL.json
-<GAMEPLAY_ROOT>/state/GAMEPLAY_GRAMMAR_STATE.md
-<GAMEPLAY_ROOT>/state/EXPERIENCE_LESSONS.md
+```bash
+python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
+
+python3 gameplay/onboard.py probe \
+  --game-repo <GAME_REPO> \
+  --out design/gameplay/onboarding/CASE2_REPO_PROBE.json
 ```
 
-Seed from `../adapters/_template/` and `../templates/`. Create other artifact
-directories only when their first real game-owned artifact is produced.
+One investigator uses the bounded probe, exact repo evidence, and persisted
+user rulings to fill the canonical
+`design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json`. Then run:
+
+```bash
+python3 gameplay/onboard.py compile \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+
+python3 gameplay/onboard.py check \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+```
+
+The probe binds the revision, dirty paths, and dirty working-tree content.
+`compile` preflights every target, creates only missing canonical files, never
+overwrites differing state, and reuses the Case 3 material gate. Missing
+semantics return `BLOCKED_BY_ONBOARDING_MATERIAL`; conflicting existing
+factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`. Only `CASE3_READY`
+returns to the Case 3 router. `NOT_AVAILABLE` observation capability is honest
+and blocks runtime acceptance, but does not fake evidence.
 
 ## Case 3 progression-production preconditions
 

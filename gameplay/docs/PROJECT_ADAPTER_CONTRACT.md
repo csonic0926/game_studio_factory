@@ -201,8 +201,16 @@ presentation/reception, or observation.
 
 ## Onboarding
 
-Only an explicit onboarding request may create game-owned adapter/state paths.
-Seed the three blank adapter sheets, `GAMEPLAY_DESIGN_MODEL.json`, and the
-grammar/experience blank states; never overwrite existing files. Ordinary
-production calls fail closed rather than generating missing answers. No
-factory document preselects a pilot game.
+Only explicit Case 2 onboarding may create game-owned adapter/state paths. Use
+[`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md) and
+`../onboard.py`; do not seed blanks and ask later workers to rediscover the
+answers.
+
+The Case 2 probe is non-semantic and binds the exact Git revision plus dirty
+working-tree state. One investigator supplies repo-relative exact evidence and
+persisted user rulings. The compiler validates the Case 3 material projection,
+creates only missing canonical adapter/model/state/frontier files, and refuses
+all differing existing state. `NOT_AVAILABLE` Observation Adapter capability
+is permitted only as an explicit blocker for runtime evidence/acceptance. Only
+`CASE3_READY` enters ordinary production; ordinary Case 3 calls still fail
+closed rather than generating missing answers.
