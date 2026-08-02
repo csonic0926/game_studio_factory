@@ -3,22 +3,22 @@
 The canonical entry and routing guide is [`../AGENTS.md`](../AGENTS.md). Read
 it first.
 
-Gameplay Factory currently has one Case 2 engineering entry and two compact
-Case 3 production entries:
+Gameplay Factory has one initialization entry and two compact production
+entries:
 
-- [`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md) reconstructs
-  an existing foreign repo into verified factory-readable state without
-  designing gameplay;
-- [`CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`](CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md)
+- [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](GAMEPLAY_FACTORY_INIT_WORKFLOW.md)
+  routes a total-new project to game definition, reconstructs an existing repo,
+  or recognizes an already initialized repo;
+- [`OBJECTIVE_GAMEPLAY_WORKFLOW.md`](OBJECTIVE_GAMEPLAY_WORKFLOW.md)
   produces/completes the primary progression's next objective;
-- [`CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](CASE3_GAMEPLAY_REPAIR_WORKFLOW.md)
+- [`GAMEPLAY_REPAIR_WORKFLOW.md`](GAMEPLAY_REPAIR_WORKFLOW.md)
   closes one concrete gameplay gap inside an existing objective without
   rewriting that objective.
 
 If a concrete known gap and a request to advance progression coexist, repair
 the gap first unless the user explicitly defers it. The older quant/Beat
 Sheet/walkthrough loop below is retained for existing pilot lineages and is
-**not** automatically run for either compact Case 3 workflow. `../reader.py`
+**not** automatically run for either compact production workflow. `../reader.py`
 is a runtime evidence tool, not a creative step machine or acceptance oracle.
 
 ## Invocation
@@ -28,7 +28,7 @@ Identify the operation and target game repo:
 ```text
 factory: <FACTORY_REPO>/gameplay
 operation: produce_objective | prepare_objective | author_objective | plan_production |
-           onboard_foreign_repo | probe_onboarding | compile_onboarding | check_onboarding |
+           init_gameplay_factory | probe_existing_project | compile_init | check_init |
            repair_gameplay_gap | prepare_repair | plan_repair |
            legacy_quantify_span | realize_walkthrough | compile_packets | landing_review |
            observe_runtime | runtime_acceptance
@@ -39,16 +39,21 @@ span/sheet/run: <operation-specific id>
 
 ## Route before authoring
 
-Determine the case before requiring adapters:
+Initialize before requiring adapters:
 
-- blank/genre-only input is Case 1 and stops for the future idea workflow;
+- blank/genre-only input returns `NEW_PROJECT_DEFINITION_REQUIRED`;
 - an existing non-blank game repo without complete trustworthy gameplay
-  adapters/model/state is Case 2 and routes to `onboard_foreign_repo`;
-- a repo with those prerequisites is Case 3.
+  adapters/model/state returns `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
+- a repo with those prerequisites returns `GAMEPLAY_FACTORY_ALREADY_READY`.
 
-Use `onboard_foreign_repo` only to reconstruct existing runtime meaning and
-compile Case 3 prerequisites. It may not invent a progression driver, player
-action, reward, objective rule, or unsupported observation capability.
+The normal user-facing operation is `init_gameplay_factory`, implemented by:
+
+```bash
+python3 gameplay/init.py start --game-repo <GAME_REPO>
+```
+
+The AI caller continues the returned branch. It may not invent a progression
+driver, player action, reward, objective rule, or observation capability.
 
 Use `produce_objective` when there is no concrete unresolved gap and the work
 is to continue/complete the main progression.
@@ -79,45 +84,44 @@ Read `GAMEPLAY_DESIGN_MODEL.json`, `PROJECT_GAMEPLAY_PROFILE.md`,
 `<GAMEPLAY_ROOT>/adapter/`. An ordinary production call never creates missing
 answers. Missing/blank/inconsistent answers mean `BLOCKED_BY_ADAPTER`.
 
-## Case 2 foreign-repo onboarding
+## Gameplay Factory initialization
 
-Read [`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md). If the
+Read [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](GAMEPLAY_FACTORY_INIT_WORKFLOW.md). If the
 game repo is not yet linked to the umbrella, run `setup.py link` before the
-probe; routing linkage does not make gameplay claims.
+init command; routing linkage does not make gameplay claims.
 
 ```bash
 python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
 
-python3 gameplay/onboard.py probe \
-  --game-repo <GAME_REPO> \
-  --out design/gameplay/onboarding/CASE2_REPO_PROBE.json
+python3 gameplay/init.py start --game-repo <GAME_REPO>
 ```
 
-One investigator uses the bounded probe, exact repo evidence, and persisted
-user rulings to fill the canonical
-`design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json`. Then run:
+For an existing project, one investigator uses the generated bounded probe,
+exact repo evidence, and persisted user rulings to fill
+`design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json`. The AI caller then
+runs:
 
 ```bash
-python3 gameplay/onboard.py compile \
+python3 gameplay/init.py compile \
   --game-repo <GAME_REPO> \
-  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+  --input design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json
 
-python3 gameplay/onboard.py check \
+python3 gameplay/init.py check \
   --game-repo <GAME_REPO> \
-  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+  --input design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json
 ```
 
 The probe binds the revision, dirty paths, and dirty working-tree content.
 `compile` preflights every target, creates only missing canonical files, never
-overwrites differing state, and reuses the Case 3 material gate. Missing
-semantics return `BLOCKED_BY_ONBOARDING_MATERIAL`; conflicting existing
-factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`. Only `CASE3_READY`
-returns to the Case 3 router. `NOT_AVAILABLE` observation capability is honest
+overwrites differing state, and reuses the production material gate. Missing
+semantics return `BLOCKED_BY_INIT_MATERIAL`; conflicting existing
+factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`. Only
+`GAMEPLAY_FACTORY_READY` enters production. `NOT_AVAILABLE` observation capability is honest
 and blocks runtime acceptance, but does not fake evidence.
 
-## Case 3 progression-production preconditions
+## Objective-production preconditions
 
-- the repo is already factory-produced/onboarded rather than blank or foreign;
+- Gameplay Factory initialization is complete;
 - its primary progression driver and production frontier can be evidenced;
 - the current/next objective has locale text plus runtime selection and
   completion wiring;
@@ -174,7 +178,7 @@ implementation. A planner-only model returns control and the persisted paths
 to its outer orchestrator, which must continue with an execution-capable model
 when available.
 
-## Case 3 gameplay-gap repair
+## Gameplay-gap repair
 
 A repair anchors one exact known gap to an existing
 `OBJECTIVE_GAMEPLAY.md` id/path/SHA and affected rows. It preserves the base
@@ -241,7 +245,7 @@ After implementation, the caller changes the game-owned gap status from
 Do not infer verbs, budgets, engine hooks, events, camera/HUD behavior, or
 capture capability from code and silently convert inference into authority.
 
-## Previous pilot production loop (not the default Case 3 creative entry)
+## Previous pilot production loop (not the default creative entry)
 
 ### 1. Quantify the span — demand before supply
 

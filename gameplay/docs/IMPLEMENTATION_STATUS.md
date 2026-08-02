@@ -5,21 +5,24 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 
 ## Implemented in factory core
 
-- Case 2 foreign-repo onboarding: explicit non-blank Git-repo ownership gate,
+- single `init.py start` entry that routes total-new, existing-project, and
+  already-initialized repos without exposing numbered lifecycle cases;
+- Gameplay Factory existing-project initialization: explicit non-blank
+  Git-repo ownership gate,
   optional umbrella routing link, bounded non-semantic file/locale/test-source
   probe, and exact Git revision plus dirty-path/content binding;
-- dependency-free `onboard.py probe|compile|check` workflow driven by one
+- dependency-free `init.py start|probe-existing|compile|check` workflow driven by one
   structured evidence-focused investigation: it validates portable exact
   evidence, live progression authority, objective locale plus runtime
   selection/completion, implemented actions/rewards, production mappings, and
-  honest observation capability before reusing the Case 3 material gate;
-- Case 2 schemas/template and preflighted compiler for only-missing
+  honest observation capability before reusing the production material gate;
+- initialization schemas/template and preflighted compiler for only-missing
   `PROJECT_GAMEPLAY_PROFILE.md`, Production/Observation Adapters,
   `GAMEPLAY_DESIGN_MODEL.json`, empty design-state ledgers, initial objective
-  frontier, and SHA-bound onboarding result; differing existing factory state,
+  frontier, and SHA-bound init result; differing existing factory state,
   unresolved material gaps, AI assumptions, and stale repo/input/artifact state
   fail closed before mutation;
-- Case 3 objective-gameplay front end: explicit blank/foreign/factory-native
+- objective-gameplay front end: explicit blank/foreign/factory-native
   case boundary, primary-progression-first object model, script-first Step 1,
   and one-artifact Step 2 contract;
 - dependency-free `prepare.py context` ownership guard and material compiler:
@@ -31,7 +34,7 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 - blank `GAMEPLAY_DESIGN_MODEL.json`, `NEXT_GAMEPLAY_UNIT_INPUT.json`, and
   `OBJECTIVE_GAMEPLAY.md` templates plus machine-readable schemas and
   adversarial preparation tests;
-- model-independent Case 3 production planning: the factory user may choose a
+- model-independent objective production planning: the factory user may choose a
   Plan Mode or ordinary model, while both persist the same SHA-bound
   `PRODUCTION_PLAN_MANIFEST.json` plus `N` Markdown change-unit plans;
 - dependency-free `plan.py validate` checks exact objective-row coverage,
@@ -44,11 +47,11 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   request treats `READY_FOR_EXECUTION` as intermediate, requires the original
   caller/orchestrator to execute the persisted plans without a second user
   prompt, and reserves plan-only stopping for explicit requests;
-- canonical `gameplay/AGENTS.md` entry/router for the two Case 3 operations:
+- canonical `gameplay/AGENTS.md` entry/router for the two production operations:
   progression production when no concrete unresolved gap is active, and
   anchored gameplay-gap repair when an existing objective contains an
   evidenced player-visible causal break;
-- compact Case 3 repair front end: exact base-objective id/path/SHA/row binding,
+- compact repair front end: exact base-objective id/path/SHA/row binding,
   exact gap evidence, affected stable action/reward selection, separated
   existing-design/user-ruling/omitted/conflicting authority states, and the
   distinct `READY_FOR_DIRECT_REPAIR_PLAN`, `READY_FOR_REPAIR_DESIGN`, and
@@ -100,17 +103,17 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 
 ## Not yet proven or complete
 
-- the compact Case 3 Step 1/Step 2/Step 3 format now has one real-project
+- the compact objective Step 1/Step 2/Step 3 format now has one real-project
   design and planning sample, but its planning token cost and implementation
   usefulness are not proven until production executes the persisted plans;
-- the Case 3 repair workflow has synthetic adversarial contract tests but has
+- the repair workflow has synthetic adversarial contract tests but has
   not yet closed a real game-owned gap end to end; in particular, the IMT
   reusable-campfire break motivated the workflow but no IMT repair artifact or
   runtime fix is created by this factory-side implementation;
-- Case 1 idea discovery is not implemented by this workflow;
-- Case 2 has synthetic adversarial coverage but has not yet been piloted end to
-  end on a real foreign game repo; its semantic reconstruction quality and
-  token cost therefore remain unmeasured;
+- new-project game/idea definition is not implemented by initialization;
+- existing-project initialization has synthetic adversarial coverage but has
+  not yet been piloted end to end on a real foreign game repo; its semantic
+  reconstruction quality and token cost therefore remain unmeasured;
 
 - no real game-owned Beat Sheet -> implementation -> actual build evidence
   pilot has been supplied or run from this factory task;

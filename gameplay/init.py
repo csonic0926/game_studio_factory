@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Case 2 foreign-repo onboarding compiler for Gameplay Factory.
+"""Initialize Gameplay Factory for a new or existing game repository.
 
-The workflow is intentionally engineering-oriented. ``probe`` inventories a
-bounded repository surface without assigning gameplay meaning. A single
-investigator then supplies exact evidence in CASE2_ONBOARDING_INPUT.json.
-``compile`` validates that evidence and preflights the minimum canonical Case
-3 adapter/model/state/frontier artifacts before writing. ``check`` proves that
-the generated handoff is still exact and accepted by the Case 3 material gate.
+``start`` detects whether the repo needs new-project definition, existing-
+project reconstruction, or is already factory-readable. The existing-project
+branch uses a bounded non-semantic probe, one evidence-focused input, and a
+preflighted compiler/checker. The new-project branch stops before gameplay
+invention and hands off to game-definition work.
 
 No command invents gameplay, silently chooses between conflicting runtime
 systems, or overwrites existing factory state.
@@ -25,7 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
-try:  # Package import in tests; script import for ``python gameplay/onboard.py``.
+try:  # Package import in tests; script import for ``python gameplay/init.py``.
     from gameplay.prepare import (
         READY_FOR_HOW_DESIGN,
         READY_FOR_NEW_GAMEPLAY_DESIGN,
@@ -39,24 +38,25 @@ except ModuleNotFoundError:  # pragma: no cover - exercised by CLI smoke tests.
     )
 
 
-INPUT_SCHEMA_VERSION = "case2_onboarding_input.v1"
-PROBE_SCHEMA_VERSION = "case2_repo_probe.v1"
-RESULT_SCHEMA_VERSION = "case2_onboarding_result.v1"
+INPUT_SCHEMA_VERSION = "gameplay_factory_init_input.v1"
+PROBE_SCHEMA_VERSION = "gameplay_factory_repo_probe.v1"
+RESULT_SCHEMA_VERSION = "gameplay_factory_init_result.v1"
 MODEL_SCHEMA_VERSION = "gameplay_design_model.v1"
 UNIT_SCHEMA_VERSION = "next_gameplay_unit_input.v1"
 
-CASE2_PROBE_READY = "CASE2_PROBE_READY"
-ALREADY_CASE3 = "ALREADY_CASE3"
-CASE3_READY = "CASE3_READY"
-BLOCKED_BY_ONBOARDING_MATERIAL = "BLOCKED_BY_ONBOARDING_MATERIAL"
+EXISTING_PROJECT_INIT_INPUT_REQUIRED = "EXISTING_PROJECT_INIT_INPUT_REQUIRED"
+NEW_PROJECT_DEFINITION_REQUIRED = "NEW_PROJECT_DEFINITION_REQUIRED"
+GAMEPLAY_FACTORY_ALREADY_READY = "GAMEPLAY_FACTORY_ALREADY_READY"
+GAMEPLAY_FACTORY_READY = "GAMEPLAY_FACTORY_READY"
+BLOCKED_BY_INIT_MATERIAL = "BLOCKED_BY_INIT_MATERIAL"
 BLOCKED_BY_EXISTING_FACTORY_STATE = "BLOCKED_BY_EXISTING_FACTORY_STATE"
 
 FACTORY_ROOT = Path(__file__).resolve().parent.parent
 
-ONBOARDING_ROOT_RELATIVE = Path("design/gameplay/onboarding")
-PROBE_RELATIVE = ONBOARDING_ROOT_RELATIVE / "CASE2_REPO_PROBE.json"
-INPUT_RELATIVE = ONBOARDING_ROOT_RELATIVE / "CASE2_ONBOARDING_INPUT.json"
-RESULT_RELATIVE = ONBOARDING_ROOT_RELATIVE / "CASE2_ONBOARDING_RESULT.json"
+INIT_ROOT_RELATIVE = Path("design/gameplay/init")
+PROBE_RELATIVE = INIT_ROOT_RELATIVE / "GAMEPLAY_FACTORY_REPO_PROBE.json"
+INPUT_RELATIVE = INIT_ROOT_RELATIVE / "GAMEPLAY_FACTORY_INIT_INPUT.json"
+RESULT_RELATIVE = INIT_ROOT_RELATIVE / "GAMEPLAY_FACTORY_INIT_RESULT.json"
 
 PROFILE_RELATIVE = Path("design/gameplay/adapter/PROJECT_GAMEPLAY_PROFILE.md")
 PRODUCTION_RELATIVE = Path("design/gameplay/adapter/PRODUCTION_ADAPTER.md")
@@ -112,6 +112,27 @@ CANDIDATE_EXTENSIONS = {
     ".py",
     ".lua",
 }
+IMPLEMENTATION_EXTENSIONS = {
+    ".gd",
+    ".tscn",
+    ".tres",
+    ".cs",
+    ".ts",
+    ".js",
+    ".py",
+    ".lua",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".rs",
+    ".java",
+    ".kt",
+    ".swift",
+    ".unity",
+    ".prefab",
+}
 CANDIDATE_TERMS = (
     "progress",
     "objective",
@@ -156,12 +177,12 @@ REQUIRED_PRODUCTION_CONCERNS = {
 }
 
 
-class OnboardingError(ValueError):
+class FactoryInitError(ValueError):
     """Raised before any command creates or overwrites an artifact."""
 
 
 @dataclass
-class OnboardingResult:
+class FactoryInitResult:
     status: str
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -180,17 +201,19 @@ def _is_within(path: Path, root: Path) -> bool:
 def _resolve_game_repo(raw_path: str) -> Path:
     game_repo = Path(raw_path).expanduser().resolve()
     if not game_repo.is_dir():
-        raise OnboardingError(f"game repo does not exist: {game_repo}")
+        raise FactoryInitError(f"game repo does not exist: {game_repo}")
     if game_repo == FACTORY_ROOT or _is_within(game_repo, FACTORY_ROOT):
-        raise OnboardingError(
+        raise FactoryInitError(
             "game repo must not be this factory repo or a child of it"
         )
     try:
         git_root = _run_git(game_repo, "rev-parse", "--show-toplevel").strip()
-    except OnboardingError as error:
-        raise OnboardingError("Case 2 requires an existing Git repository") from error
+    except FactoryInitError as error:
+        raise FactoryInitError(
+            "Gameplay Factory initialization requires an existing Git repository"
+        ) from error
     if Path(git_root).resolve() != game_repo:
-        raise OnboardingError(
+        raise FactoryInitError(
             f"game repo must be the Git root, not a child: {game_repo}"
         )
     return game_repo
@@ -205,9 +228,9 @@ def _resolve_cli_owned_path(
     candidate = Path(raw_path).expanduser()
     resolved = (candidate if candidate.is_absolute() else game_repo / candidate).resolve()
     if not _is_within(resolved, game_repo):
-        raise OnboardingError(f"path escapes game repo: {raw_path}")
+        raise FactoryInitError(f"path escapes game repo: {raw_path}")
     if must_exist and not resolved.exists():
-        raise OnboardingError(f"required path does not exist: {raw_path}")
+        raise FactoryInitError(f"required path does not exist: {raw_path}")
     return resolved
 
 
@@ -218,10 +241,10 @@ def _resolve_persisted_owned_path(
     must_exist: bool = False,
 ) -> Path:
     if not isinstance(raw_path, str) or not raw_path.strip():
-        raise OnboardingError("persisted paths must be non-empty strings")
+        raise FactoryInitError("persisted paths must be non-empty strings")
     candidate = Path(raw_path).expanduser()
     if candidate.is_absolute():
-        raise OnboardingError(
+        raise FactoryInitError(
             f"persisted path must be game-repo-relative: {raw_path}"
         )
     return _resolve_cli_owned_path(game_repo, raw_path, must_exist=must_exist)
@@ -238,7 +261,7 @@ def _run_git(game_repo: Path, *args: str) -> str:
     )
     if result.returncode != 0:
         detail = result.stderr.strip() or result.stdout.strip()
-        raise OnboardingError(f"git {' '.join(args)} failed: {detail}")
+        raise FactoryInitError(f"git {' '.join(args)} failed: {detail}")
     return result.stdout
 
 
@@ -251,7 +274,7 @@ def _run_git_bytes(game_repo: Path, *args: str) -> bytes:
     )
     if result.returncode != 0:
         detail = result.stderr.decode("utf-8", errors="replace").strip()
-        raise OnboardingError(f"git {' '.join(args)} failed: {detail}")
+        raise FactoryInitError(f"git {' '.join(args)} failed: {detail}")
     return result.stdout
 
 
@@ -277,9 +300,9 @@ def _load_json_object(path: Path, label: str) -> dict[str, Any]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise OnboardingError(f"cannot read {label} JSON: {error}") from error
+        raise FactoryInitError(f"cannot read {label} JSON: {error}") from error
     if not isinstance(payload, dict):
-        raise OnboardingError(f"{label} JSON must contain an object")
+        raise FactoryInitError(f"{label} JSON must contain an object")
     return payload
 
 
@@ -375,7 +398,7 @@ def _validate_evidence_refs(
             evidence_path = _resolve_persisted_owned_path(
                 game_repo, path_text, must_exist=True
             )
-        except OnboardingError as error:
+        except FactoryInitError as error:
             errors.append(str(error))
             continue
         if not evidence_path.is_file():
@@ -423,7 +446,7 @@ def _dirty_paths(
             continue
         path_text = line[3:]
         normalized = path_text.strip('"')
-        if normalized.startswith(f"{ONBOARDING_ROOT_RELATIVE.as_posix()}/"):
+        if normalized.startswith(f"{INIT_ROOT_RELATIVE.as_posix()}/"):
             continue
         if normalized in ignored:
             continue
@@ -454,7 +477,7 @@ def _working_tree_sha256(
         path
         for path in changed_paths
         if path not in ignored
-        and not path.startswith(f"{ONBOARDING_ROOT_RELATIVE.as_posix()}/")
+        and not path.startswith(f"{INIT_ROOT_RELATIVE.as_posix()}/")
     )
 
     digest = hashlib.sha256()
@@ -493,7 +516,7 @@ def _repo_files(game_repo: Path) -> list[str]:
         parts = Path(relative).parts
         if any(part in IGNORED_DIRECTORY_NAMES for part in parts):
             continue
-        if relative.startswith(f"{ONBOARDING_ROOT_RELATIVE.as_posix()}/"):
+        if relative.startswith(f"{INIT_ROOT_RELATIVE.as_posix()}/"):
             continue
         path = (game_repo / relative).resolve()
         if _is_within(path, game_repo) and path.is_file():
@@ -542,27 +565,54 @@ def _factory_state_complete(game_repo: Path) -> bool:
     return all((game_repo / path).is_file() for path in required)
 
 
+def _has_existing_game_material(game_repo: Path) -> bool:
+    return any(
+        Path(relative).suffix.lower() in IMPLEMENTATION_EXTENSIONS
+        for relative in _repo_files(game_repo)
+    )
+
+
+def start_factory_init(game_repo_text: str) -> FactoryInitResult:
+    """Classify initialization and start the correct branch."""
+
+    game_repo = _resolve_game_repo(game_repo_text)
+    if _factory_state_complete(game_repo):
+        return FactoryInitResult(GAMEPLAY_FACTORY_ALREADY_READY)
+    if not _has_existing_game_material(game_repo):
+        return FactoryInitResult(
+            NEW_PROJECT_DEFINITION_REQUIRED,
+            warnings=[
+                "No implemented game runtime was found. Define the game before "
+                "compiling progression/action/reward adapters; initialization "
+                "must not invent the game from a blank or genre-only repo."
+            ],
+        )
+    return probe_repository(game_repo_text, PROBE_RELATIVE.as_posix())
+
+
 def probe_repository(
     game_repo_text: str,
     output_text: str,
     *,
     max_candidates: int = 200,
-) -> OnboardingResult:
+) -> FactoryInitResult:
     """Write a bounded, non-semantic repository probe at the canonical path."""
 
     game_repo = _resolve_game_repo(game_repo_text)
     output_path = _resolve_cli_owned_path(game_repo, output_text)
     canonical_output = (game_repo / PROBE_RELATIVE).resolve()
     if output_path != canonical_output:
-        raise OnboardingError(
+        raise FactoryInitError(
             f"probe output must be {PROBE_RELATIVE.as_posix()}"
         )
     if max_candidates < 1 or max_candidates > 1000:
-        raise OnboardingError("max_candidates must be between 1 and 1000")
+        raise FactoryInitError("max_candidates must be between 1 and 1000")
 
     files = _repo_files(game_repo)
     if not files:
-        raise OnboardingError("Case 2 requires a non-blank existing repository")
+        raise FactoryInitError(
+            "the existing-project initialization branch requires game files"
+        )
     revision = _run_git(game_repo, "rev-parse", "HEAD").strip()
     branch = _run_git(game_repo, "rev-parse", "--abbrev-ref", "HEAD").strip()
     markers = [marker for marker in PROJECT_MARKERS if (game_repo / marker).is_file()]
@@ -587,7 +637,7 @@ def probe_repository(
         if any(term in relative.lower() for term in TEST_COMMAND_TERMS)
     ][:100]
 
-    status = ALREADY_CASE3 if _factory_state_complete(game_repo) else CASE2_PROBE_READY
+    status = GAMEPLAY_FACTORY_ALREADY_READY if _factory_state_complete(game_repo) else EXISTING_PROJECT_INIT_INPUT_REQUIRED
     payload = {
         "schema_version": PROBE_SCHEMA_VERSION,
         "status": status,
@@ -613,14 +663,14 @@ def probe_repository(
     if output_path.exists():
         existing = output_path.read_text(encoding="utf-8")
         if existing != rendered:
-            raise OnboardingError(
+            raise FactoryInitError(
                 "probe output already exists with different content; remove it "
                 "only after preserving intentional game-owned work"
             )
-        return OnboardingResult(status, verified_paths=[PROBE_RELATIVE.as_posix()])
+        return FactoryInitResult(status, verified_paths=[PROBE_RELATIVE.as_posix()])
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(rendered, encoding="utf-8")
-    return OnboardingResult(status, created_paths=[PROBE_RELATIVE.as_posix()])
+    return FactoryInitResult(status, created_paths=[PROBE_RELATIVE.as_posix()])
 
 
 def _validate_repository_binding(
@@ -640,16 +690,16 @@ def _validate_repository_binding(
         probe: dict[str, Any] = {}
     else:
         try:
-            probe = _load_json_object(probe_path, "Case 2 repository probe")
-        except OnboardingError as error:
+            probe = _load_json_object(probe_path, "Gameplay Factory repository probe")
+        except FactoryInitError as error:
             errors.append(str(error))
             probe = {}
     if probe and probe.get("schema_version") != PROBE_SCHEMA_VERSION:
         errors.append(f"repository probe schema_version must be {PROBE_SCHEMA_VERSION}")
-    if probe and probe.get("status") != CASE2_PROBE_READY:
+    if probe and probe.get("status") != EXISTING_PROJECT_INIT_INPUT_REQUIRED:
         errors.append(
-            "repository probe does not classify this repo as Case 2; route "
-            "ALREADY_CASE3 through gameplay/AGENTS.md"
+            "repository probe is not an existing-project initialization probe; "
+            "route GAMEPLAY_FACTORY_ALREADY_READY through gameplay/AGENTS.md"
         )
     expected_revision = _require_text(
         repository.get("expected_revision"), "repository.expected_revision", errors
@@ -675,12 +725,12 @@ def _validate_repository_binding(
             and probe_repository_data.get("revision") != expected_revision
         ):
             errors.append(
-                "repository.expected_revision does not match CASE2_REPO_PROBE.json"
+                "repository.expected_revision does not match GAMEPLAY_FACTORY_REPO_PROBE.json"
             )
         current_revision = _run_git(game_repo, "rev-parse", "HEAD").strip()
         if current_revision != expected_revision:
             errors.append(
-                "repository revision changed since onboarding study: expected "
+                "repository revision changed since initialization study: expected "
                 f"{expected_revision}, found {current_revision}"
             )
     # Generated outputs must disappear from the post-compile binding, while
@@ -699,11 +749,11 @@ def _validate_repository_binding(
         and probe_repository_data.get("dirty_paths") != declared_dirty
     ):
         errors.append(
-            "repository.declared_dirty_paths does not match CASE2_REPO_PROBE.json"
+            "repository.declared_dirty_paths does not match GAMEPLAY_FACTORY_REPO_PROBE.json"
         )
     if declared_dirty != current_dirty:
         errors.append(
-            "repository dirty paths changed since onboarding study: expected "
+            "repository dirty paths changed since initialization study: expected "
             f"{declared_dirty}, found {current_dirty}"
         )
     if isinstance(probe_repository_data, dict):
@@ -711,14 +761,14 @@ def _validate_repository_binding(
         if probe_working_tree_sha256 != expected_working_tree_sha256:
             errors.append(
                 "repository.working_tree_sha256 does not match "
-                "CASE2_REPO_PROBE.json"
+                "GAMEPLAY_FACTORY_REPO_PROBE.json"
             )
     current_working_tree_sha256 = _working_tree_sha256(
         game_repo, ignored_exact=ignored_outputs
     )
     if expected_working_tree_sha256 != current_working_tree_sha256:
         errors.append(
-            "repository working-tree content changed since onboarding study: "
+            "repository working-tree content changed since initialization study: "
             f"expected {expected_working_tree_sha256}, found "
             f"{current_working_tree_sha256}"
         )
@@ -791,7 +841,7 @@ def _validate_production_adapter(
         for path_text in paths:
             try:
                 _resolve_persisted_owned_path(game_repo, path_text, must_exist=True)
-            except OnboardingError as error:
+            except FactoryInitError as error:
                 errors.append(str(error))
         _validate_evidence_refs(
             game_repo, surface.get("evidence_refs"), f"{label}.evidence_refs", errors
@@ -867,7 +917,7 @@ def _validate_observation_adapter(
                 _resolve_persisted_owned_path(
                     game_repo, mapping_path, must_exist=True
                 )
-            except OnboardingError as error:
+            except FactoryInitError as error:
                 errors.append(str(error))
         else:
             errors.append("AVAILABLE observation adapter requires a mapping_path")
@@ -883,7 +933,7 @@ def _validate_observation_adapter(
             )
         warnings.append(
             "runtime observation/acceptance remains blocked until instrumentation "
-            "and mapping become available; compact Case 3 design may proceed"
+            "and mapping become available; objective production may proceed"
         )
     for field_name in (
         "launch_and_capture",
@@ -912,7 +962,7 @@ def _compile_unit_input(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _validate_case3_material_projection(
+def _validate_factory_ready_material_projection(
     payload: dict[str, Any],
     game_repo: Path,
     errors: list[str],
@@ -1004,7 +1054,7 @@ def _validate_case3_material_projection(
         locale_path = locale.get("path")
         try:
             _resolve_persisted_owned_path(game_repo, locale_path, must_exist=True)
-        except OnboardingError as error:
+        except FactoryInitError as error:
             errors.append(str(error))
     frontier_roles = _validate_evidence_refs(
         game_repo,
@@ -1056,22 +1106,25 @@ def _validate_case3_material_projection(
         "design_constraints": model_design_constraints + initial_design_constraints,
     }
     preparation = validate_materials(full_material_payload, game_repo)
-    errors.extend(f"Case 3 material gate: {error}" for error in preparation.errors)
+    errors.extend(
+        f"factory-ready material gate: {error}" for error in preparation.errors
+    )
     warnings.extend(
-        f"Case 3 material gate: {warning}" for warning in preparation.warnings
+        f"factory-ready material gate: {warning}"
+        for warning in preparation.warnings
     )
     if preparation.status not in {
         READY_FOR_HOW_DESIGN,
         READY_FOR_NEW_GAMEPLAY_DESIGN,
     }:
         errors.append(
-            "compiled frontier does not satisfy the Case 3 material gate: "
+            "compiled frontier does not satisfy the factory-ready material gate: "
             f"{preparation.status}"
         )
     return objective_dir
 
 
-def _validate_onboarding_input(
+def _validate_init_input(
     payload: Any,
     game_repo: Path,
 ) -> tuple[list[str], list[str], str]:
@@ -1082,11 +1135,11 @@ def _validate_onboarding_input(
     if payload.get("schema_version") != INPUT_SCHEMA_VERSION:
         errors.append(f"schema_version must be {INPUT_SCHEMA_VERSION}")
     project_id = _portable_component(payload.get("project_id"), "project_id", errors)
-    onboarding_date = _require_text(
-        payload.get("onboarding_date"), "onboarding_date", errors
+    init_date = _require_text(
+        payload.get("init_date"), "init_date", errors
     )
-    if onboarding_date and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", onboarding_date):
-        errors.append("onboarding_date must use YYYY-MM-DD")
+    if init_date and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", init_date):
+        errors.append("init_date must use YYYY-MM-DD")
 
     _validate_repository_binding(payload, game_repo, errors)
     _validate_profile(payload.get("project_profile"), game_repo, errors)
@@ -1111,7 +1164,7 @@ def _validate_onboarding_input(
                 f"{adapter_name}.supported_revision must match "
                 "repository.expected_revision"
             )
-    objective_dir = _validate_case3_material_projection(
+    objective_dir = _validate_factory_ready_material_projection(
         payload, game_repo, errors, warnings
     )
 
@@ -1126,15 +1179,15 @@ def _validate_onboarding_input(
     )
     if material_gaps:
         errors.append(
-            "unresolved_material_gaps must be empty before Case 3 handoff"
+            "unresolved_material_gaps must be empty before production handoff"
         )
     if assumptions:
         errors.append(
             "ai_assumptions must be empty; obtain evidence or a persisted user "
-            "ruling before Case 3 handoff"
+            "ruling before production handoff"
         )
     if project_id and str(game_repo) in json.dumps(payload, ensure_ascii=False):
-        errors.append("onboarding input must not persist the absolute game repo path")
+        errors.append("factory init input must not persist the absolute game repo path")
     return errors, warnings, objective_dir
 
 
@@ -1146,7 +1199,7 @@ def _render_profile(payload: dict[str, Any]) -> str:
     lines = [
         f"# Project Gameplay Profile — `{project_id}`",
         "",
-        f"- Onboarding date: `{payload['onboarding_date']}`",
+        f"- Initialization date: `{payload['init_date']}`",
         f"- Source revision: `{payload['repository']['expected_revision']}`",
         "- Source working-tree fingerprint: "
         f"`{payload['repository']['working_tree_sha256']}`",
@@ -1178,7 +1231,7 @@ def _render_profile(payload: dict[str, Any]) -> str:
     if payload["user_rulings"]:
         lines.extend(f"- {item}" for item in payload["user_rulings"])
     else:
-        lines.append("- None recorded during onboarding.")
+        lines.append("- None recorded during initialization.")
     lines.extend(["", "## Implemented player actions", ""])
     lines.append(
         "The descriptions, availability, rewards/consequences, and exact runtime "
@@ -1194,7 +1247,7 @@ def _render_profile(payload: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "## Onboarding boundary",
+            "## Initialization boundary",
             "",
             "This file reconstructs existing repo semantics. It does not approve "
             "new gameplay, claim fun, or override runtime evidence.",
@@ -1210,7 +1263,7 @@ def _render_production_adapter(payload: dict[str, Any]) -> str:
     lines = [
         f"# Production Adapter — `{project_id}`",
         "",
-        f"- Adapter version/date: `case2.v1 / {payload['onboarding_date']}`",
+        f"- Adapter version/date: `factory-init.v1 / {payload['init_date']}`",
         f"- Supported revision: `{adapter['supported_revision']}`",
         "- Source working-tree fingerprint: "
         f"`{payload['repository']['working_tree_sha256']}`",
@@ -1271,7 +1324,7 @@ def _render_observation_adapter(payload: dict[str, Any]) -> str:
     lines = [
         f"# Observation Adapter — `{project_id}`",
         "",
-        f"- Adapter version/date: `case2.v1 / {payload['onboarding_date']}`",
+        f"- Adapter version/date: `factory-init.v1 / {payload['init_date']}`",
         f"- Supported revision: `{adapter['supported_revision']}`",
         "- Source working-tree fingerprint: "
         f"`{payload['repository']['working_tree_sha256']}`",
@@ -1306,7 +1359,7 @@ def _render_observation_adapter(payload: dict[str, Any]) -> str:
             "",
             "## Acceptance boundary",
             "",
-            "`NOT_AVAILABLE` permits compact Case 3 design/production planning but "
+            "`NOT_AVAILABLE` permits objective design/production planning but "
             "blocks runtime evidence or acceptance claims that require the missing "
             "capability. The reader never infers absent evidence.",
             "",
@@ -1320,11 +1373,11 @@ def _render_grammar_state(payload: dict[str, Any]) -> str:
     return f"""# Gameplay Grammar State — `{project_id}`
 
 This game-owned ledger is derived gameplay-design state, not runtime truth.
-Case 2 onboarding creates an empty baseline and does not infer a play history.
+Factory initialization creates an empty baseline and does not infer play history.
 
 - Last approved trace/packet: none
 - Source authority: none yet
-- State version/date: `v0 / {payload['onboarding_date']}`
+- State version/date: `v0 / {payload['init_date']}`
 
 ## Recent player verbs
 
@@ -1357,10 +1410,10 @@ def _render_experience_lessons(payload: dict[str, Any]) -> str:
     return f"""# Gameplay Experience Lessons — `{project_id}`
 
 This game-owned ledger stores derived lessons from completed conformance runs
-and human playtests. Case 2 onboarding creates an empty baseline; repository
+and human playtests. Factory initialization creates an empty baseline; repository
 research is not a playtest or acceptance result.
 
-- State version/date: `v0 / {payload['onboarding_date']}`
+- State version/date: `v0 / {payload['init_date']}`
 - Last incorporated acceptance/human-playtest refs: none
 
 ## Confirmed conformance lessons
@@ -1369,15 +1422,15 @@ None recorded.
 
 ## Human playtest rulings
 
-None recorded by onboarding.
+None recorded by initialization.
 
 ## Reception and observability lessons
 
-None recorded by onboarding.
+None recorded by initialization.
 
 ## Open hypotheses
 
-None recorded. AI onboarding assumptions are forbidden from entering Case 3.
+None recorded. AI initialization assumptions cannot enter production authority.
 
 ## Do not infer
 
@@ -1412,7 +1465,7 @@ def _expected_artifacts(
     }
     result_payload = {
         "schema_version": RESULT_SCHEMA_VERSION,
-        "status": CASE3_READY,
+        "status": GAMEPLAY_FACTORY_READY,
         "project_id": payload["project_id"],
         "source_revision": payload["repository"]["expected_revision"],
         "source_dirty_paths": payload["repository"]["declared_dirty_paths"],
@@ -1424,7 +1477,7 @@ def _expected_artifacts(
         "warnings": warnings,
         "handoff": (
             "Return to gameplay/AGENTS.md. Route OPEN repairs first; otherwise "
-            "run Case 3 progression production from the initial objective input."
+            "run objective production from the initial objective input."
         ),
     }
     artifacts[RESULT_RELATIVE] = _json_text(result_payload)
@@ -1435,8 +1488,8 @@ def _prepare_expected(
     game_repo: Path,
     input_path: Path,
 ) -> tuple[dict[str, Any], dict[Path, str], list[str], list[str]]:
-    payload = _load_json_object(input_path, "Case 2 onboarding input")
-    errors, warnings, objective_dir = _validate_onboarding_input(payload, game_repo)
+    payload = _load_json_object(input_path, "Gameplay Factory init input")
+    errors, warnings, objective_dir = _validate_init_input(payload, game_repo)
     if errors or not objective_dir:
         return payload, {}, errors, warnings
     artifacts = _expected_artifacts(payload, objective_dir, warnings)
@@ -1452,24 +1505,24 @@ def _prepare_expected(
     return payload, artifacts, errors, warnings
 
 
-def compile_onboarding(
+def compile_init(
     game_repo_text: str,
     input_text: str,
-) -> OnboardingResult:
+) -> FactoryInitResult:
     """Validate all materials, then create only missing canonical artifacts."""
 
     game_repo = _resolve_game_repo(game_repo_text)
     input_path = _resolve_cli_owned_path(game_repo, input_text, must_exist=True)
     canonical_input = (game_repo / INPUT_RELATIVE).resolve()
     if input_path != canonical_input:
-        raise OnboardingError(f"onboarding input must be {INPUT_RELATIVE.as_posix()}")
+        raise FactoryInitError(f"init input must be {INPUT_RELATIVE.as_posix()}")
     if not input_path.is_file():
-        raise OnboardingError(f"onboarding input is not a file: {input_text}")
+        raise FactoryInitError(f"init input is not a file: {input_text}")
 
     payload, artifacts, errors, warnings = _prepare_expected(game_repo, input_path)
     if errors:
-        return OnboardingResult(
-            BLOCKED_BY_ONBOARDING_MATERIAL, errors=errors, warnings=warnings
+        return FactoryInitResult(
+            BLOCKED_BY_INIT_MATERIAL, errors=errors, warnings=warnings
         )
 
     # Resolve and compare every target before creating any directory or file.
@@ -1495,7 +1548,7 @@ def compile_onboarding(
                 + relative.as_posix()
             )
     if conflicts:
-        return OnboardingResult(
+        return FactoryInitResult(
             BLOCKED_BY_EXISTING_FACTORY_STATE,
             errors=conflicts,
             warnings=warnings,
@@ -1510,29 +1563,29 @@ def compile_onboarding(
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
         created.append(relative.as_posix())
-    return OnboardingResult(
-        CASE3_READY,
+    return FactoryInitResult(
+        GAMEPLAY_FACTORY_READY,
         warnings=warnings,
         created_paths=sorted(created),
         verified_paths=sorted(verified),
     )
 
 
-def check_onboarding(
+def check_init(
     game_repo_text: str,
     input_text: str,
-) -> OnboardingResult:
-    """Verify exact generated artifacts and re-run the Case 3 material gate."""
+) -> FactoryInitResult:
+    """Verify exact generated artifacts and re-run the production material gate."""
 
     game_repo = _resolve_game_repo(game_repo_text)
     input_path = _resolve_cli_owned_path(game_repo, input_text, must_exist=True)
     canonical_input = (game_repo / INPUT_RELATIVE).resolve()
     if input_path != canonical_input:
-        raise OnboardingError(f"onboarding input must be {INPUT_RELATIVE.as_posix()}")
+        raise FactoryInitError(f"init input must be {INPUT_RELATIVE.as_posix()}")
     payload, artifacts, errors, warnings = _prepare_expected(game_repo, input_path)
     if errors:
-        return OnboardingResult(
-            BLOCKED_BY_ONBOARDING_MATERIAL, errors=errors, warnings=warnings
+        return FactoryInitResult(
+            BLOCKED_BY_INIT_MATERIAL, errors=errors, warnings=warnings
         )
 
     verified: list[str] = []
@@ -1550,14 +1603,14 @@ def check_onboarding(
         else:
             verified.append(relative.as_posix())
     if errors:
-        return OnboardingResult(
-            BLOCKED_BY_ONBOARDING_MATERIAL,
+        return FactoryInitResult(
+            BLOCKED_BY_INIT_MATERIAL,
             errors=errors,
             warnings=warnings,
             verified_paths=verified,
         )
-    return OnboardingResult(
-        CASE3_READY,
+    return FactoryInitResult(
+        GAMEPLAY_FACTORY_READY,
         warnings=warnings,
         verified_paths=sorted(verified),
     )
@@ -1567,9 +1620,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    probe_parser = subparsers.add_parser("probe")
+    start_parser = subparsers.add_parser("start")
+    start_parser.add_argument("--game-repo", required=True)
+
+    probe_parser = subparsers.add_parser("probe-existing")
     probe_parser.add_argument("--game-repo", required=True)
-    probe_parser.add_argument("--out", required=True)
     probe_parser.add_argument("--max-candidates", type=int, default=200)
 
     for command in ("compile", "check"):
@@ -1579,7 +1634,7 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_result(result: OnboardingResult) -> None:
+def _print_result(result: FactoryInitResult) -> None:
     print(result.status)
     for path in result.created_paths:
         print(f"CREATED: {path}")
@@ -1594,19 +1649,29 @@ def _print_result(result: OnboardingResult) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
-        if args.command == "probe":
+        if args.command == "start":
+            result = start_factory_init(args.game_repo)
+        elif args.command == "probe-existing":
             result = probe_repository(
-                args.game_repo, args.out, max_candidates=args.max_candidates
+                args.game_repo,
+                PROBE_RELATIVE.as_posix(),
+                max_candidates=args.max_candidates,
             )
         elif args.command == "compile":
-            result = compile_onboarding(args.game_repo, args.input)
+            result = compile_init(args.game_repo, args.input)
         else:
-            result = check_onboarding(args.game_repo, args.input)
-    except OnboardingError as error:
+            result = check_init(args.game_repo, args.input)
+    except FactoryInitError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
     _print_result(result)
-    return 0 if result.status in {CASE2_PROBE_READY, ALREADY_CASE3, CASE3_READY} else 2
+    successful_statuses = {
+        NEW_PROJECT_DEFINITION_REQUIRED,
+        EXISTING_PROJECT_INIT_INPUT_REQUIRED,
+        GAMEPLAY_FACTORY_ALREADY_READY,
+        GAMEPLAY_FACTORY_READY,
+    }
+    return 0 if result.status in successful_statuses else 2
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 {
-  "schema_version": "case2_onboarding_input.v1",
+  "schema_version": "gameplay_factory_init_input.v1",
   "project_id": "<PROJECT_ID>",
-  "onboarding_date": "<YYYY-MM-DD>",
+  "init_date": "<YYYY-MM-DD>",
   "repository": {
     "expected_revision": "<PROBE_REVISION>",
     "declared_dirty_paths": [],

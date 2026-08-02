@@ -1,18 +1,18 @@
-# Case 3 gameplay-gap repair workflow
+# Gameplay-gap repair workflow
 
 This workflow closes one evidenced gameplay gap inside an existing primary
 progression unit. It is the closure-side companion to
-[`CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`](CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md),
+[`OBJECTIVE_GAMEPLAY_WORKFLOW.md`](OBJECTIVE_GAMEPLAY_WORKFLOW.md),
 which moves the game's primary progression forward by producing one objective.
 
-It does **not** discover a new game idea, onboard a foreign repo, rewrite the
+It does **not** discover a new game idea, initialize a foreign repo, rewrite the
 whole anchored objective, or claim that a repaired experience is accepted.
 
 ## When to route here
 
 Route to `repair_gameplay_gap` when all of these are true:
 
-1. the target repo is already Case 3 / factory-readable;
+1. Gameplay Factory initialization is complete and the repo is factory-readable;
 2. a concrete missing or broken player-visible causal contract is known from a
    user report, runtime observation, implementation research, test failure, or
    fresh acceptance result;

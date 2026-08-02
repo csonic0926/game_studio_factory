@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://game-ai-factory.local/gameplay/case2_onboarding_result.schema.json",
-  "title": "Case 2 Onboarding Result",
+  "$id": "https://game-ai-factory.local/gameplay/gameplay_factory_init_result.schema.json",
+  "title": "Gameplay Factory Initialization Result",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,8 +17,8 @@
     "handoff"
   ],
   "properties": {
-    "schema_version": {"const": "case2_onboarding_result.v1"},
-    "status": {"const": "CASE3_READY"},
+    "schema_version": {"const": "gameplay_factory_init_result.v1"},
+    "status": {"const": "GAMEPLAY_FACTORY_READY"},
     "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
     "source_revision": {"type": "string", "minLength": 1},
     "source_dirty_paths": {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate persistent production plans for one Case 3 gameplay repair.
+"""Validate persistent production plans for one gameplay repair.
 
 Repair planning is deliberately separate from objective production planning:
 it binds an exact repair source and its exact base OBJECTIVE_GAMEPLAY.md

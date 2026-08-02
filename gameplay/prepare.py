@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile a game-owned Case 3 objective context before creative authoring.
+"""Compile a game-owned objective context before creative authoring.
 
 The tool is deliberately mechanical.  It verifies that the declared primary
 progression driver, current/next objective, locale text, runtime wiring, player

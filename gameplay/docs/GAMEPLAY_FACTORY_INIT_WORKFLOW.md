@@ -1,41 +1,44 @@
-# Case 2 foreign-repo onboarding workflow
+# Gameplay Factory initialization workflow
 
-This workflow converts an existing non-blank game repo into the exact
-factory-readable state required by the compact Case 3 workflows. It is an
-engineering and semantic-reconstruction operation, not gameplay creation.
+This is the single initialization entry for Gameplay Factory. It distinguishes
+a total-new project, an existing project joining in the middle, and a repo that
+is already factory-readable. Users do not select numbered cases.
 
 ```text
-existing foreign game repo
-  -> bounded mechanical probe
-  -> one evidence-focused onboarding investigation
-  -> preflighted adapter/model/state/frontier compilation
-  -> Case 3 material-gate check
-  -> CASE3_READY
+init.py start
+  -> NEW_PROJECT_DEFINITION_REQUIRED
+     OR existing-project probe -> investigation -> compile -> check
+     OR GAMEPLAY_FACTORY_ALREADY_READY
 ```
 
-It does not decide what game should exist, author meaningful choices, improve
-weak gameplay, or silently choose between conflicting runtime systems.
+Initialization does not invent a game, author meaningful choices, improve weak
+gameplay, or silently choose between conflicting runtime systems.
 
-## Case boundary
+## Initialization branches
 
-Route here only when:
+### Total-new project
 
-- the target is an existing Git game repo with real code/data/content;
-- some or all canonical Gameplay Factory adapters/state are missing;
-- the repo is not a blank/genre-only Case 1 request;
-- the user explicitly wants onboarding or asks Gameplay Factory to operate on
-  the foreign repo.
+When no implemented runtime is present, `start` returns
+`NEW_PROJECT_DEFINITION_REQUIRED`. Route to game/idea definition. A genre-only
+request is not enough authority to create progression, actions, rewards, or
+adapters.
 
-If all Case 3 adapter/model/state files already exist, the probe returns
-`ALREADY_CASE3`; return to [`../AGENTS.md`](../AGENTS.md) rather than compiling
-onboarding again. This status means onboarding found canonical state and will
-not overwrite it; the Case 3 material/adapter checks still decide whether that
-state is trustworthy. Invalid pre-existing state blocks for explicit repair
-instead of looping through onboarding.
+### Existing project joining in the middle
+
+When real code/data/content exists but factory state does not, `start` creates
+the bounded probe and returns `EXISTING_PROJECT_INIT_INPUT_REQUIRED`. Continue
+the evidence-focused reconstruction below.
+
+### Already initialized
+
+When all canonical adapter/model/state files exist, `start` returns
+`GAMEPLAY_FACTORY_ALREADY_READY`. Return to [`../AGENTS.md`](../AGENTS.md).
+Current production material checks still decide whether the state is
+trustworthy; initialization never overwrites invalid pre-existing state.
 
 ## Authority and non-design rule
 
-Case 2 may reconstruct only existing, evidenced semantics:
+Existing-project initialization may reconstruct only existing, evidenced semantics:
 
 - the live primary progression driver and progression unit;
 - the current objective/frontier, locale text, runtime selection, completion,
@@ -52,19 +55,19 @@ legacy system does not become the progression driver because its file name
 looks relevant.
 
 When evidence conflicts or a material semantic decision is absent, record the
-gap and stop `BLOCKED_BY_ONBOARDING_MATERIAL`. Obtain exact runtime evidence or
+gap and stop `BLOCKED_BY_INIT_MATERIAL`. Obtain exact runtime evidence or
 a persisted user ruling; never use an AI assumption to make the repo pass.
 
 ## Game-owned layout
 
-The onboarding workspace and outputs live only in the game repo:
+The initialization workspace and outputs live only in the game repo:
 
 ```text
 design/gameplay/
-  onboarding/
-    CASE2_REPO_PROBE.json
-    CASE2_ONBOARDING_INPUT.json
-    CASE2_ONBOARDING_RESULT.json
+  init/
+    GAMEPLAY_FACTORY_REPO_PROBE.json
+    GAMEPLAY_FACTORY_INIT_INPUT.json
+    GAMEPLAY_FACTORY_INIT_RESULT.json
   adapter/
     PROJECT_GAMEPLAY_PROFILE.md
     PRODUCTION_ADAPTER.md
@@ -80,10 +83,10 @@ design/gameplay/
 The Factory repo owns only tools, schemas, contracts, tests, and blank
 templates.
 
-## Routing link before the probe
+## Routing link before initialization
 
-If the foreign repo has not been linked to the umbrella, run this once before
-capturing the Case 2 probe:
+If the game repo has not been linked to the umbrella, run this once before
+initialization:
 
 ```bash
 python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
@@ -92,20 +95,19 @@ python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
 This managed routing link may update the game repo's `AGENTS.md`, `.gitignore`,
 and an absent `CLAUDE.md`, while keeping the absolute factory checkout only in
 git-ignored `design/AI_FACTORY.local.md`. It does not create gameplay
-authority. Run the probe after linkage so any intentional repo changes are
+authority. Run `start` after linkage so any intentional repo changes are
 included in the study binding.
 
-## Step 0 — bounded mechanical probe
+## Step 1 — start and classify
 
 Run from the Factory repo or with equivalent absolute script resolution:
 
 ```bash
-python3 gameplay/onboard.py probe \
-  --game-repo <GAME_REPO> \
-  --out design/gameplay/onboarding/CASE2_REPO_PROBE.json
+python3 gameplay/init.py start --game-repo <GAME_REPO>
 ```
 
-The probe records:
+For the existing-project branch, `start` writes
+`design/gameplay/init/GAMEPLAY_FACTORY_REPO_PROBE.json`. The probe records:
 
 - exact Git revision, branch, dirty paths, and a dirty working-tree content
   fingerprint;
@@ -115,33 +117,35 @@ The probe records:
 - likely sources of build/test commands.
 
 Candidate paths and scores are search hints only. The probe assigns no
-gameplay meaning and reads no sibling repo. Generated onboarding paths are
+gameplay meaning and reads no sibling repo. Generated initialization paths are
 excluded from dirty-state comparison so the probe/input/output causal chain
 remains stable.
 
-Results:
+Start results:
 
-- `CASE2_PROBE_READY` — continue the onboarding investigation;
-- `ALREADY_CASE3` — canonical state already exists; stop onboarding and return
-  to the Case 3 router for trust validation;
-- command error — wrong ownership, non-Git/blank repo, illegal path, or
+- `NEW_PROJECT_DEFINITION_REQUIRED` — route to game definition;
+- `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — continue the investigation;
+- `GAMEPLAY_FACTORY_ALREADY_READY` — return to production routing;
+- command error — wrong ownership, non-Git repo, illegal path, or
   conflicting existing probe.
 
-## Step 1 — one evidence-focused investigation
+`probe-existing` is an internal repeat operation, not a normal user command.
+
+## Step 2 — one evidence-focused investigation
 
 Use:
 
-- `schemas/case2_onboarding_input.schema.json`
-- `templates/CASE2_ONBOARDING_INPUT.json`
+- `schemas/gameplay_factory_init_input.schema.json`
+- `templates/GAMEPLAY_FACTORY_INIT_INPUT.json`
 
 One investigator reads the probe, then opens only the source files needed to
-settle the Case 3 prerequisites. It writes the canonical
-`CASE2_ONBOARDING_INPUT.json` with:
+settle the production prerequisites. It writes the canonical
+`design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json` with:
 
 1. the exact probe revision, declared dirty paths, and working-tree
    fingerprint;
 2. a complete `GAMEPLAY_DESIGN_MODEL` projection;
-3. one initial objective frontier ready for Case 3 Step 1;
+3. one initial objective frontier ready for objective-production Step 1;
 4. concise project-profile answers;
 5. exact production surfaces/mappings/commands;
 6. an honest observation adapter (`AVAILABLE` or `NOT_AVAILABLE`);
@@ -152,12 +156,12 @@ Do not ask several workers to rediscover progression, actions, rewards, and
 adapters independently. Do not copy the whole repo or all locale text into the
 input. Every material claim uses a repo-relative path plus exact UTF-8 token.
 
-## Step 2 — preflighted compile
+## Step 3 — preflighted compile
 
 ```bash
-python3 gameplay/onboard.py compile \
+python3 gameplay/init.py compile \
   --game-repo <GAME_REPO> \
-  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+  --input design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json
 ```
 
 Before any canonical output is created, `compile` verifies:
@@ -174,7 +178,7 @@ Before any canonical output is created, `compile` verifies:
 - production mappings include objective selection, objective completion,
   player actions, and rewards/state;
 - material gaps and AI assumptions are empty;
-- the compiled projection passes the existing Case 3 `prepare.py` material
+- the compiled projection passes the existing `prepare.py` production material
   gate.
 
 The compiler renders all artifacts in memory, resolves and compares all
@@ -186,55 +190,56 @@ targets before its first write, and then:
   existing canonical file differs;
 - never overwrites an adapter, state ledger, model, or objective input.
 
-Successful compile returns `CASE3_READY` and writes SHA-256 for every generated
-artifact into `CASE2_ONBOARDING_RESULT.json`.
+Successful compile returns `GAMEPLAY_FACTORY_READY` and writes SHA-256 for
+every generated artifact into `GAMEPLAY_FACTORY_INIT_RESULT.json`.
 
 ### Observation capability
 
 `OBSERVATION_ADAPTER.md` is always explicit. `NOT_AVAILABLE` may still produce
-`CASE3_READY` for compact Case 3 design/production, but the result carries a
-warning and runtime evidence/acceptance remains blocked until instrumentation
-and normalization mapping are implemented. Missing evidence is never upgraded
-to a claim.
+`GAMEPLAY_FACTORY_READY` for objective design/production, but the result
+carries a warning and runtime evidence/acceptance remains blocked until
+instrumentation and normalization mapping are implemented. Missing evidence is
+never upgraded to a claim.
 
-## Step 3 — exact handoff check
+## Step 4 — exact handoff check
 
 ```bash
-python3 gameplay/onboard.py check \
+python3 gameplay/init.py check \
   --game-repo <GAME_REPO> \
-  --input design/gameplay/onboarding/CASE2_ONBOARDING_INPUT.json
+  --input design/gameplay/init/GAMEPLAY_FACTORY_INIT_INPUT.json
 ```
 
-`check` revalidates the repository binding and Case 3 material gate, rebuilds
-the expected artifacts in memory, and compares every byte. Any stale evidence,
-modified artifact, unresolved assumption, or source revision/dirty-path change
-returns `BLOCKED_BY_ONBOARDING_MATERIAL`.
+`check` revalidates the repository binding and production material gate,
+rebuilds the expected artifacts in memory, and compares every byte. Any stale
+evidence, modified artifact, unresolved assumption, or source
+revision/dirty-path change returns `BLOCKED_BY_INIT_MATERIAL`.
 
-Only `CASE3_READY` completes Case 2.
+Only `GAMEPLAY_FACTORY_READY` completes Existing-project initialization.
 
-## Handoff to Case 3
+## Handoff to production
 
-After `CASE3_READY`, return to [`../AGENTS.md`](../AGENTS.md):
+After `GAMEPLAY_FACTORY_READY`, return to [`../AGENTS.md`](../AGENTS.md):
 
-1. if an evidenced `OPEN` gameplay gap is already recorded, use Case 3 repair;
-2. otherwise run Case 3 progression production using the generated
+1. if an evidenced `OPEN` gameplay gap is already recorded, use gap repair;
+2. otherwise run objective production using the generated
    `NEXT_GAMEPLAY_UNIT_INPUT.json`;
-3. do not run onboarding again merely because later gameplay state changes.
+3. do not run initialization again merely because later gameplay state changes.
 
-Case 2 produces factory readability, not gameplay acceptance and not a claim
-that the reconstructed design is good.
+Existing-project initialization produces factory readability, not gameplay
+acceptance and not a claim that the reconstructed design is good.
 
 ## Technical remediation boundary
 
-Sometimes the foreign repo cannot satisfy a Case 3 prerequisite—for example,
+Sometimes the existing repo cannot satisfy a production prerequisite—for example,
 objective text exists but no live selection/completion wiring exists. The
-onboarding result must block. An ordinary engineering refactor may then add
+initialization result must block. An ordinary engineering refactor may then add
 missing localization, runtime wiring, tests, or instrumentation **only when the
 intended semantics are already explicit in runtime authority or a user
 ruling**. After that refactor, regenerate the probe/input and compile again.
 
 If remediation requires deciding what the player should do or what a system
-should mean, it has crossed into design and cannot be invented by Case 2.
+should mean, it has crossed into design and cannot be invented by
+initialization.
 
 ## Token discipline
 
@@ -243,6 +248,6 @@ should mean, it has crossed into design and cannot be invented by Case 2.
 - Read exact candidate sources, not the whole repo or every locale row.
 - Store stable progression/action/reward vocabulary once.
 - Generate prose adapters mechanically from structured facts.
-- Reuse the existing Case 3 material validator instead of adding a review
+- Reuse the existing production material validator instead of adding a review
   tower.
 - Fail closed instead of spending creative tokens to fill missing authority.

@@ -21,7 +21,7 @@ may physically be a mandatory independent section of the Production Adapter,
 but its ownership, completeness, version, and blocker semantics remain
 separate. The factory blank template uses a separate file.
 
-Case 3 objective authoring additionally requires a compact machine-checked
+Objective authoring additionally requires a compact machine-checked
 projection, `GAMEPLAY_DESIGN_MODEL.json`. It does not replace the three answer
 surfaces; it records the primary progression driver plus implemented player
 actions/rewards once so every objective worker does not reread and summarize
@@ -52,8 +52,8 @@ Resolve in this order:
 3. ignored `gameplay/adapters/registry.local.md`, only for an explicit
    project id.
 
-Then read all three answer files at the fixed adapter location. Case 3
-objective preparation additionally reads `GAMEPLAY_DESIGN_MODEL.json`. Reject
+Then read all three answer files at the fixed adapter location. Objective
+preparation additionally reads `GAMEPLAY_DESIGN_MODEL.json`. Reject
 a game root inside this factory. Never scan siblings, borrow another factory's
 registry, infer a game from engine code, or commit developer paths.
 
@@ -139,6 +139,10 @@ No persisted object silently serves more than one role.
 
 ```text
 design/gameplay/
+  init/
+    GAMEPLAY_FACTORY_REPO_PROBE.json
+    GAMEPLAY_FACTORY_INIT_INPUT.json
+    GAMEPLAY_FACTORY_INIT_RESULT.json
   adapter/
     PROJECT_GAMEPLAY_PROFILE.md
     PRODUCTION_ADAPTER.md
@@ -199,18 +203,19 @@ Conflicts never silently override authority. Route the first blocked/lost
 transformation to story, experience design, realization, production,
 presentation/reception, or observation.
 
-## Onboarding
+## Initialization
 
-Only explicit Case 2 onboarding may create game-owned adapter/state paths. Use
-[`CASE2_ONBOARDING_WORKFLOW.md`](CASE2_ONBOARDING_WORKFLOW.md) and
-`../onboard.py`; do not seed blanks and ask later workers to rediscover the
+Only explicit Gameplay Factory initialization may create game-owned
+adapter/state paths. Use
+[`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](GAMEPLAY_FACTORY_INIT_WORKFLOW.md) and
+`../init.py`; do not seed blanks and ask later workers to rediscover the
 answers.
 
-The Case 2 probe is non-semantic and binds the exact Git revision plus dirty
+The existing-project probe is non-semantic and binds the exact Git revision plus dirty
 working-tree state. One investigator supplies repo-relative exact evidence and
-persisted user rulings. The compiler validates the Case 3 material projection,
+persisted user rulings. The compiler validates the production material projection,
 creates only missing canonical adapter/model/state/frontier files, and refuses
 all differing existing state. `NOT_AVAILABLE` Observation Adapter capability
 is permitted only as an explicit blocker for runtime evidence/acceptance. Only
-`CASE3_READY` enters ordinary production; ordinary Case 3 calls still fail
+`GAMEPLAY_FACTORY_READY` enters ordinary production; ordinary production calls fail
 closed rather than generating missing answers.

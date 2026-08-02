@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare one compact Case 3 gameplay-gap repair context.
+"""Prepare one compact gameplay-gap repair context.
 
 This is the repair-side counterpart to ``prepare.py context``.  It does not
 advance the primary progression driver and it does not rediscover the whole

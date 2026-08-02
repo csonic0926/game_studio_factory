@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://game-ai-factory.local/gameplay/case2_repo_probe.schema.json",
-  "title": "Case 2 Repository Probe",
+  "$id": "https://game-ai-factory.local/gameplay/gameplay_factory_repo_probe.schema.json",
+  "title": "Gameplay Factory Existing-Project Repository Probe",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,8 +16,8 @@
     "interpretation_warning"
   ],
   "properties": {
-    "schema_version": {"const": "case2_repo_probe.v1"},
-    "status": {"enum": ["CASE2_PROBE_READY", "ALREADY_CASE3"]},
+    "schema_version": {"const": "gameplay_factory_repo_probe.v1"},
+    "status": {"enum": ["EXISTING_PROJECT_INIT_INPUT_REQUIRED", "GAMEPLAY_FACTORY_ALREADY_READY"]},
     "repository": {
       "type": "object",
       "additionalProperties": false,

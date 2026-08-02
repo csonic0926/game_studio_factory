@@ -9,8 +9,8 @@ through a landing doc and an explicit production contract:
 - **`story/`** — game story factory. World / character / cast / chapter narrative
   production with hard `.5` review gates and file-based handoff, driven by the
   `game-story-factory` Claude skill and per-project adapters.
-- **`gameplay/`** — gameplay factory. Onboards an existing foreign game repo
-  into verified factory-readable state, continues its primary progression one
+- **`gameplay/`** — gameplay factory. Initializes a new or existing game repo,
+  continues its primary progression one
   objective at a time, or repairs a concrete gameplay gap inside an existing
   objective. Uses bounded script-first context, persistent model-independent
   production plans, and automatic caller handoff to normal
@@ -51,39 +51,66 @@ in the game repo knows the four departments exist and when to consult each,
 without the user having to name a factory in the prompt. Both commands support
 `--dry-run`.
 
-## Gameplay Factory — Case 2 onboarding and Case 3 production
+On first Gameplay Factory use, run its single initialization entry:
+
+```bash
+python3 gameplay/init.py start --game-repo <GAME_REPO>
+```
+
+The command decides whether the repo is total-new, joining in the middle, or
+already initialized. Numbered lifecycle cases are not part of the user API.
+
+## Gameplay Factory — initialize once, then produce
 
 [`gameplay/AGENTS.md`](gameplay/AGENTS.md) is both the Gameplay Factory guide
-and its canonical AI entry. It resolves the game repo, determines the case,
-then routes to one of three workflows:
+and its canonical AI entry. After linking a game repo, initialize Gameplay
+Factory once:
+
+```bash
+python3 gameplay/init.py start --game-repo <GAME_REPO>
+```
+
+`start` chooses one of three states without asking the user to know internal
+migration categories:
+
+- `NEW_PROJECT_DEFINITION_REQUIRED` — no implemented game exists yet; route to
+  game/idea definition before creating gameplay authority;
+- `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — reconstruct the existing runtime
+  through one bounded evidence pass, then compile factory state;
+- `GAMEPLAY_FACTORY_ALREADY_READY` — initialization is complete; continue
+  ordinary production.
+
+For an AI caller, `EXISTING_PROJECT_INIT_INPUT_REQUIRED` is intermediate: the
+caller follows
+[`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](gameplay/docs/GAMEPLAY_FACTORY_INIT_WORKFLOW.md)
+through `compile` and `check`. The human does not paste the internal probe,
+schema, and evidence instructions.
+
+After initialization, the same entry routes ongoing work:
 
 | Need | Operation | Contract |
 | --- | --- | --- |
-| Convert an existing foreign game repo into verified Case 3 prerequisites | `onboard_foreign_repo` | [`CASE2_ONBOARDING_WORKFLOW.md`](gameplay/docs/CASE2_ONBOARDING_WORKFLOW.md) |
-| Complete or advance the primary progression's next unit | `produce_objective` | [`CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md`](gameplay/docs/CASE3_OBJECTIVE_GAMEPLAY_WORKFLOW.md) |
-| Repair one evidenced player-visible gap inside an existing objective | `repair_gameplay_gap` | [`CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](gameplay/docs/CASE3_GAMEPLAY_REPAIR_WORKFLOW.md) |
+| Initialize Gameplay Factory for a new or existing repo | `init_gameplay_factory` | [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](gameplay/docs/GAMEPLAY_FACTORY_INIT_WORKFLOW.md) |
+| Complete or advance the primary progression's next unit | `produce_objective` | [`OBJECTIVE_GAMEPLAY_WORKFLOW.md`](gameplay/docs/OBJECTIVE_GAMEPLAY_WORKFLOW.md) |
+| Repair one evidenced player-visible gap inside an existing objective | `repair_gameplay_gap` | [`GAMEPLAY_REPAIR_WORKFLOW.md`](gameplay/docs/GAMEPLAY_REPAIR_WORKFLOW.md) |
 
 If both are active, a concrete known gap is repaired before forward expansion
 unless the user explicitly defers it.
 
-Current scope includes **Case 2** for an existing non-blank game repo and
-**Case 3** once trustworthy progression, action/reward, and adapter state
-exists. Genre-only blank projects remain Case 1 and stop for a future idea
-workflow.
-
-### Foreign-repo onboarding
+### Existing-project initialization
 
 ```text
-bounded mechanical probe
-  -> one evidence-focused onboarding input
-  -> onboard.py compile
+init.py start
+  -> bounded mechanical probe
+  -> one evidence-focused init input
+  -> init.py compile
   -> missing adapters/model/empty state + initial objective frontier
-  -> onboard.py check
-  -> CASE3_READY
+  -> init.py check
+  -> GAMEPLAY_FACTORY_READY
 ```
 
-Case 2 reconstructs existing runtime meaning rather than deciding what the
-game should become. It binds the Git revision plus dirty working-tree state,
+Existing-project initialization reconstructs runtime meaning rather than
+deciding what the game should become. It binds the Git revision plus dirty working-tree state,
 requires exact repo-relative evidence, creates only missing canonical files,
 and blocks rather than inventing semantics or overwriting foreign state.
 
@@ -169,7 +196,7 @@ assets, and sound land in the game repo.
 AI_CALLER_LANDING.md     route here first
 asset/   itf.py, pipeline/, docs/, examples/ …   (original git history)
 story/   skills/, core/steps|craft|schemas/, adapters/
-gameplay/ AGENTS.md, onboard.py, prepare.py, plan.py, repair.py, repair_plan.py,
+gameplay/ AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py,
           reader.py, docs/, schemas/, adapters/, templates/, tests/
 sound/   sfx.py, pipeline/, docs/, examples/
 ```

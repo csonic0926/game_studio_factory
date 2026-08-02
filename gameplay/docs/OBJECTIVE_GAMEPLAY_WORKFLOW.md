@@ -1,9 +1,9 @@
-# Case 3 objective-gameplay workflow
+# Objective-gameplay workflow
 
 This is the **progression-production** workflow: it makes or completes the
 primary progression's next unit. A concrete gameplay gap inside an existing
 unit belongs to
-[`CASE3_GAMEPLAY_REPAIR_WORKFLOW.md`](CASE3_GAMEPLAY_REPAIR_WORKFLOW.md)
+[`GAMEPLAY_REPAIR_WORKFLOW.md`](GAMEPLAY_REPAIR_WORKFLOW.md)
 instead. If both are active, repair the known gap first unless the user
 explicitly defers it.
 
@@ -12,24 +12,19 @@ Factory can already continue. It replaces repeated repo study and the previous
 multi-author design front end with one mechanical context compilation, one
 complete creative artifact, and one persistent production-planning contract.
 
-It does not onboard a blank or foreign repo and does not change the independent
+It does not initialize a blank or foreign repo and does not change the independent
 runtime evidence reader. It also does not rewrite an already-authored objective
 merely to close one local runtime/design omission.
 
-## Case boundary
-
-| Case | Meaning | Route |
-| --- | --- | --- |
-| 1 | Blank project or only a genre request | Future idea/brainstorm factory; not this workflow |
-| 2 | Existing repo without factory-readable design/progression state | Future onboarding/refactoring flow |
-| 3 | Factory-produced/onboarded repo with trustworthy state and adapters | This workflow |
+## Readiness boundary
 
 If the primary progression driver, objective source, or action/reward source
-cannot be established, the repo is not ready for Case 3 authoring.
+cannot be established, run Gameplay Factory initialization rather than
+authoring an objective.
 
 If the requested work instead names a concrete player-visible causal break
-inside an existing `OBJECTIVE_GAMEPLAY.md`, the repo may still be Case 3 but
-the operation is `repair_gameplay_gap`, not `produce_objective`.
+inside an existing `OBJECTIVE_GAMEPLAY.md`, the operation is
+`repair_gameplay_gap`, not `produce_objective`.
 
 ## Object model
 

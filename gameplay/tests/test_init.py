@@ -4,25 +4,27 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from gameplay.onboard import (
-    ALREADY_CASE3,
+from gameplay.init import (
+    GAMEPLAY_FACTORY_ALREADY_READY,
     BLOCKED_BY_EXISTING_FACTORY_STATE,
-    BLOCKED_BY_ONBOARDING_MATERIAL,
-    CASE2_PROBE_READY,
-    CASE3_READY,
+    BLOCKED_BY_INIT_MATERIAL,
+    EXISTING_PROJECT_INIT_INPUT_REQUIRED,
+    GAMEPLAY_FACTORY_READY,
+    NEW_PROJECT_DEFINITION_REQUIRED,
     INPUT_RELATIVE,
     MODEL_RELATIVE,
     PROFILE_RELATIVE,
     PROBE_RELATIVE,
     RESULT_RELATIVE,
-    OnboardingError,
-    check_onboarding,
-    compile_onboarding,
+    FactoryInitError,
+    check_init,
+    compile_init,
     probe_repository,
+    start_factory_init,
 )
 
 
-class Case2OnboardingTests(unittest.TestCase):
+class GameplayFactoryInitTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.game_repo = Path(self.temporary_directory.name) / "foreign_game"
@@ -77,9 +79,9 @@ class Case2OnboardingTests(unittest.TestCase):
             "contains": ["PRIMARY_DRIVER"],
         }
         return {
-            "schema_version": "case2_onboarding_input.v1",
+            "schema_version": "gameplay_factory_init_input.v1",
             "project_id": "foreign_game",
-            "onboarding_date": "2026-08-03",
+            "init_date": "2026-08-03",
             "repository": {
                 "expected_revision": self.revision,
                 "declared_dirty_paths": [],
@@ -291,7 +293,7 @@ class Case2OnboardingTests(unittest.TestCase):
         result = probe_repository(
             str(self.game_repo), PROBE_RELATIVE.as_posix(), max_candidates=3
         )
-        self.assertEqual(CASE2_PROBE_READY, result.status)
+        self.assertEqual(EXISTING_PROJECT_INIT_INPUT_REQUIRED, result.status)
         probe = json.loads((self.game_repo / PROBE_RELATIVE).read_text())
         self.assertEqual(self.revision, probe["repository"]["revision"])
         self.assertRegex(probe["repository"]["working_tree_sha256"], r"^[0-9a-f]{64}$")
@@ -299,16 +301,55 @@ class Case2OnboardingTests(unittest.TestCase):
         self.assertIn("locales.csv", probe["locale_candidates"])
         self.assertIn("do not establish", probe["interpretation_warning"])
 
+    def test_start_routes_existing_project_to_reconstruction(self) -> None:
+        result = start_factory_init(str(self.game_repo))
+        self.assertEqual(EXISTING_PROJECT_INIT_INPUT_REQUIRED, result.status)
+        self.assertTrue((self.game_repo / PROBE_RELATIVE).is_file())
+
+    def test_start_routes_blank_project_to_game_definition(self) -> None:
+        blank_repo = Path(self.temporary_directory.name) / "blank_game"
+        blank_repo.mkdir()
+        subprocess.run(
+            ["git", "-C", str(blank_repo), "init", "-b", "main"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        subprocess.run(
+            ["git", "-C", str(blank_repo), "config", "user.email", "test@example.com"],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(blank_repo), "config", "user.name", "Test User"],
+            check=True,
+        )
+        (blank_repo / "README.md").write_text("A fighting game idea.\n")
+        (blank_repo / "project.godot").write_text(
+            '[application]\nconfig/name="Blank Fighting Game"\n'
+        )
+        subprocess.run(["git", "-C", str(blank_repo), "add", "."], check=True)
+        subprocess.run(
+            ["git", "-C", str(blank_repo), "commit", "-m", "initial idea"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        result = start_factory_init(str(blank_repo))
+
+        self.assertEqual(NEW_PROJECT_DEFINITION_REQUIRED, result.status)
+        self.assertFalse((blank_repo / PROBE_RELATIVE).exists())
+
     def test_probe_rejects_illegal_output_before_creating_directory(self) -> None:
         outside = Path(self.temporary_directory.name) / "outside" / "probe.json"
-        with self.assertRaises(OnboardingError):
+        with self.assertRaises(FactoryInitError):
             probe_repository(str(self.game_repo), str(outside))
         self.assertFalse(outside.parent.exists())
 
-    def test_valid_compile_creates_case3_ready_handoff_and_check_passes(self) -> None:
+    def test_valid_compile_creates_factory_ready_handoff_and_check_passes(self) -> None:
         self._write_input()
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, result.status)
         self.assertTrue((self.game_repo / PROFILE_RELATIVE).is_file())
         self.assertTrue((self.game_repo / MODEL_RELATIVE).is_file())
         self.assertTrue((self.game_repo / RESULT_RELATIVE).is_file())
@@ -322,29 +363,29 @@ class Case2OnboardingTests(unittest.TestCase):
         self.assertNotIn(
             str(self.game_repo), (self.game_repo / PROFILE_RELATIVE).read_text()
         )
-        check = check_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, check.status)
+        check = check_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, check.status)
         self.assertEqual(8, len(check.verified_paths))
 
     def test_not_available_observation_is_explicit_warning_not_fake_evidence(self) -> None:
         self._write_input()
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, result.status)
         self.assertTrue(any("acceptance remains blocked" in warning for warning in result.warnings))
         observation = (
             self.game_repo / "design/gameplay/adapter/OBSERVATION_ADAPTER.md"
         ).read_text()
         self.assertIn("Observation status: `NOT_AVAILABLE`", observation)
 
-    def test_case3_successor_warning_survives_onboarding_handoff(self) -> None:
+    def test_successor_warning_survives_init_handoff(self) -> None:
         payload = self._payload()
         payload["initial_frontier"]["frontier"]["successor_handoff"] = {
             "status": "MISSING",
             "description": "The next shop handoff is not wired yet.",
         }
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, result.status)
         self.assertTrue(any("successor" in warning for warning in result.warnings))
 
     def test_missing_runtime_completion_blocks_without_partial_outputs(self) -> None:
@@ -353,8 +394,8 @@ class Case2OnboardingTests(unittest.TestCase):
             payload["initial_frontier"]["frontier"]["evidence_refs"][0]
         ]
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("runtime_completion" in error for error in result.errors))
         self.assertFalse((self.game_repo / MODEL_RELATIVE).exists())
 
@@ -376,8 +417,8 @@ class Case2OnboardingTests(unittest.TestCase):
             }
         )
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(
             any("player_actions[1].rewards" in error for error in result.errors)
         )
@@ -386,8 +427,8 @@ class Case2OnboardingTests(unittest.TestCase):
     def test_missing_probe_blocks_without_factory_state(self) -> None:
         self._write_input()
         (self.game_repo / PROBE_RELATIVE).unlink()
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("missing mechanical repository probe" in error for error in result.errors))
         self.assertFalse((self.game_repo / MODEL_RELATIVE).exists())
 
@@ -395,16 +436,16 @@ class Case2OnboardingTests(unittest.TestCase):
         payload = self._payload()
         payload["unresolved_material_gaps"] = ["Cannot identify the live round owner."]
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("unresolved_material_gaps" in error for error in result.errors))
 
-    def test_ai_assumption_cannot_become_case3_authority(self) -> None:
+    def test_ai_assumption_cannot_become_production_authority(self) -> None:
         payload = self._payload()
         payload["ai_assumptions"] = ["Players probably want faster rounds."]
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("ai_assumptions" in error for error in result.errors))
 
     def test_revision_change_after_study_blocks_handoff(self) -> None:
@@ -412,30 +453,30 @@ class Case2OnboardingTests(unittest.TestCase):
         (self.game_repo / "new.txt").write_text("new committed state\n")
         self._git("add", "new.txt")
         self._git("commit", "-m", "change source revision")
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("revision changed" in error for error in result.errors))
 
     def test_dirty_paths_change_after_study_blocks_handoff(self) -> None:
         self._write_input()
         with (self.game_repo / "game.gd").open("a", encoding="utf-8") as stream:
             stream.write("# changed after study\n")
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("dirty paths changed" in error for error in result.errors))
 
     def test_dirty_file_content_change_with_same_path_blocks_handoff(self) -> None:
         with (self.game_repo / "game.gd").open("a", encoding="utf-8") as stream:
             stream.write("# dirty before study\n")
         result = probe_repository(str(self.game_repo), PROBE_RELATIVE.as_posix())
-        self.assertEqual(CASE2_PROBE_READY, result.status)
+        self.assertEqual(EXISTING_PROJECT_INIT_INPUT_REQUIRED, result.status)
         payload = self._payload()
         payload["repository"]["declared_dirty_paths"] = ["game.gd"]
         self._write_input(payload)
         with (self.game_repo / "game.gd").open("a", encoding="utf-8") as stream:
             stream.write("# changed again after study\n")
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(
             any("working-tree content changed" in error for error in result.errors)
         )
@@ -444,20 +485,20 @@ class Case2OnboardingTests(unittest.TestCase):
         payload = self._payload()
         payload["production_adapter"]["supported_revision"] = "wrong-revision"
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(
             any("supported_revision must match" in error for error in result.errors)
         )
 
-    def test_production_adapter_requires_all_case3_concerns(self) -> None:
+    def test_production_adapter_requires_all_production_concerns(self) -> None:
         payload = self._payload()
         payload["production_adapter"]["gameplay_mappings"] = payload[
             "production_adapter"
         ]["gameplay_mappings"][:-1]
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("rewards_and_state" in error for error in result.errors))
 
     def test_existing_different_factory_state_blocks_all_writes(self) -> None:
@@ -465,7 +506,7 @@ class Case2OnboardingTests(unittest.TestCase):
         profile_path.parent.mkdir(parents=True, exist_ok=True)
         profile_path.write_text("intentional existing profile\n")
         self._write_input()
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_EXISTING_FACTORY_STATE, result.status)
         self.assertFalse((self.game_repo / MODEL_RELATIVE).exists())
         self.assertEqual("intentional existing profile\n", profile_path.read_text())
@@ -486,24 +527,24 @@ class Case2OnboardingTests(unittest.TestCase):
         (self.game_repo / INPUT_RELATIVE).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
         )
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_EXISTING_FACTORY_STATE, result.status)
         self.assertFalse(profile_path.exists())
 
     def test_compile_is_idempotent_when_every_artifact_is_exact(self) -> None:
         self._write_input()
-        first = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        second = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, first.status)
-        self.assertEqual(CASE3_READY, second.status)
+        first = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        second = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, first.status)
+        self.assertEqual(GAMEPLAY_FACTORY_READY, second.status)
         self.assertFalse(second.created_paths)
         self.assertEqual(8, len(second.verified_paths))
 
-    def test_staged_onboarding_files_do_not_invalidate_the_probe(self) -> None:
+    def test_staged_init_files_do_not_invalidate_the_probe(self) -> None:
         self._write_input()
         self._git("add", PROBE_RELATIVE.as_posix(), INPUT_RELATIVE.as_posix())
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(CASE3_READY, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(GAMEPLAY_FACTORY_READY, result.status)
 
     def test_absolute_persisted_evidence_path_is_rejected(self) -> None:
         payload = self._payload()
@@ -511,33 +552,41 @@ class Case2OnboardingTests(unittest.TestCase):
             "path"
         ] = str(self.game_repo / "game.gd")
         self._write_input(payload)
-        result = compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("game-repo-relative" in error for error in result.errors))
 
     def test_check_detects_changed_generated_artifact(self) -> None:
         self._write_input()
-        compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         with (self.game_repo / PROFILE_RELATIVE).open("a", encoding="utf-8") as stream:
             stream.write("changed\n")
-        result = check_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = check_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("stale or changed" in error for error in result.errors))
 
     def test_check_reports_missing_generated_artifact(self) -> None:
         self._write_input()
-        compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         (self.game_repo / PROFILE_RELATIVE).unlink()
-        result = check_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
-        self.assertEqual(BLOCKED_BY_ONBOARDING_MATERIAL, result.status)
+        result = check_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("artifact is missing" in error for error in result.errors))
 
-    def test_probe_recognizes_complete_case3_state(self) -> None:
+    def test_probe_recognizes_complete_factory_state(self) -> None:
         self._write_input()
-        compile_onboarding(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         (self.game_repo / PROBE_RELATIVE).unlink()
         result = probe_repository(str(self.game_repo), PROBE_RELATIVE.as_posix())
-        self.assertEqual(ALREADY_CASE3, result.status)
+        self.assertEqual(GAMEPLAY_FACTORY_ALREADY_READY, result.status)
+
+    def test_start_recognizes_factory_ready_repo_without_new_probe(self) -> None:
+        self._write_input()
+        compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        (self.game_repo / PROBE_RELATIVE).unlink()
+        result = start_factory_init(str(self.game_repo))
+        self.assertEqual(GAMEPLAY_FACTORY_ALREADY_READY, result.status)
+        self.assertFalse((self.game_repo / PROBE_RELATIVE).exists())
 
 
 if __name__ == "__main__":
