@@ -1,19 +1,21 @@
 # Gameplay Factory
 
 Gameplay Factory has one initialization entry and two compact production
-paths. The canonical caller entry and router is
-[`AGENTS.md`](AGENTS.md).
+paths. The installed `gameplay-factory` skill is the normal user/AI entry; it
+loads the canonical router in [`AGENTS.md`](AGENTS.md).
 
-Initialize once after linking the game repo:
+Normal usage from the game repo is simply:
 
-```bash
-python3 gameplay/init.py start --game-repo <GAME_REPO>
+```text
+/gameplay-factory <what gameplay to make, continue, or repair>
 ```
 
-The entry distinguishes a total-new project, an existing project joining in
+The skill links the repo if necessary and runs the internal initialization
+entry. It distinguishes a total-new project, an existing project joining in
 the middle, and an already initialized repo. Users do not select numbered
-cases. A new project routes to game definition; an existing project
-reconstructs existing runtime meaning without designing gameplay:
+cases or type the internal commands. A new project routes to game definition;
+an existing project reconstructs existing runtime meaning without designing
+gameplay:
 
 ```text
 init.py start
@@ -154,7 +156,7 @@ See
 
 ## Existing-project initialization internals
 
-The AI caller, not the human user, continues an
+The `gameplay-factory` skill/AI caller, not the human user, continues an
 `EXISTING_PROJECT_INIT_INPUT_REQUIRED` result through these internal commands:
 
 ```bash

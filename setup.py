@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""game_ai_factory setup — skill sync and game-repo routing link.
+"""game_ai_factory setup — skill installation and game-repo routing link.
 
-Dependency-free. Two subcommands:
+Dependency-free. Two public subcommands:
 
-  sync   Install/refresh factory-provided skills into agent-harness skill
-         directories. Symlink-first: with symlinks, `git pull` on this
-         factory checkout IS the skill update and no re-run is needed.
-         `--copy` exists for filesystems/harnesses without symlink support;
-         copied skills are tracked in a per-target manifest and re-`sync`
-         refreshes them. Only entries owned by this factory are ever
-         touched.
+  install  Install/refresh factory-provided skills into agent-harness skill
+           directories. Symlink-first: with symlinks, `git pull` on this
+           factory checkout IS the skill update and no re-run is needed.
+           `--copy` exists for filesystems/harnesses without symlink support;
+           copied skills are tracked in a per-target manifest and re-running
+           `install` refreshes them. Only entries owned by this factory are
+           ever touched. `sync` remains a compatibility alias.
 
   link   Write the harness-agnostic Game AI Factory routing block into a
          game repo: a git-ignored local pointer file with this machine's
@@ -53,17 +53,31 @@ def factory_version(factory_root):
 
 def discover_skills(factory_root):
     """Return [(skill_name, absolute_skill_dir)] for every
-    <factory>/<dept>/skills/<name>/SKILL.md."""
-    found = []
+    <factory>/skills or <factory>/<dept>/skills entry.
+
+    Skill names are a harness-wide namespace. Duplicate names are rejected
+    rather than letting traversal order silently choose an implementation.
+    """
+    found = {}
+    skill_roots = [os.path.join(factory_root, "skills")]
     for dept in sorted(os.listdir(factory_root)):
         skills_dir = os.path.join(factory_root, dept, "skills")
+        if not os.path.isdir(skills_dir):
+            continue
+        skill_roots.append(skills_dir)
+    for skills_dir in skill_roots:
         if not os.path.isdir(skills_dir):
             continue
         for name in sorted(os.listdir(skills_dir)):
             skill_dir = os.path.join(skills_dir, name)
             if os.path.isfile(os.path.join(skill_dir, "SKILL.md")):
-                found.append((name, skill_dir))
-    return found
+                if name in found:
+                    raise SystemExit(
+                        "duplicate factory skill name %s: %s and %s"
+                        % (name, found[name], skill_dir)
+                    )
+                found[name] = skill_dir
+    return [(name, found[name]) for name in sorted(found)]
 
 
 def is_factory_owned_link(path, factory_root):
@@ -99,15 +113,19 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
     report = []
     skills = discover_skills(factory_root)
     if not skills:
-        report.append("no factory skills found (nothing under */skills/*/SKILL.md)")
+        report.append("no factory skills found (nothing under skills/* or */skills/*)")
         return report
 
     seen_real = set()
     version = factory_version(factory_root)
     for target in targets:
         if not os.path.isdir(target):
-            report.append("skip %s (directory does not exist)" % target)
-            continue
+            if os.path.exists(target):
+                report.append("CONFLICT %s exists and is not a directory; left untouched" % target)
+                continue
+            if not dry_run:
+                os.makedirs(target, exist_ok=True)
+            report.append("create skill directory %s" % target)
         real = os.path.realpath(target)
         if real in seen_real:
             report.append("skip %s (same directory as an earlier target)" % target)
@@ -124,7 +142,7 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
                 owned = name in manifest["skills"]
                 if os.path.islink(dest) and is_factory_owned_link(dest, factory_root):
                     owned = True
-                if os.path.exists(dest) and not owned:
+                if os.path.lexists(dest) and not owned:
                     report.append("CONFLICT %s exists and is not factory-owned; left untouched" % dest)
                     continue
                 if not dry_run:
@@ -140,12 +158,14 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
             else:
                 if os.path.islink(dest):
                     if os.path.realpath(dest) == os.path.realpath(skill_dir):
+                        manifest["skills"][name] = {"mode": "link", "version": version}
                         report.append("ok %s (already linked)" % dest)
                         continue
                     if is_factory_owned_link(dest, factory_root):
                         if not dry_run:
                             os.remove(dest)
                             os.symlink(skill_dir, dest)
+                        manifest["skills"][name] = {"mode": "link", "version": version}
                         report.append("relink %s -> %s" % (dest, skill_dir))
                         continue
                     report.append("CONFLICT %s is a foreign symlink; left untouched" % dest)
@@ -155,17 +175,18 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
                         if not dry_run:
                             shutil.rmtree(dest) if os.path.isdir(dest) else os.remove(dest)
                             os.symlink(skill_dir, dest)
-                            manifest["skills"].pop(name, None)
+                        manifest["skills"][name] = {"mode": "link", "version": version}
                         report.append("replace copy with link %s -> %s" % (dest, skill_dir))
                         continue
                     report.append("CONFLICT %s exists and is not factory-owned; left untouched" % dest)
                     continue
                 if not dry_run:
                     os.symlink(skill_dir, dest)
+                manifest["skills"][name] = {"mode": "link", "version": version}
                 report.append("link %s -> %s" % (dest, skill_dir))
 
         # Remove entries this factory owns that no longer exist upstream.
-        for entry in sorted(os.listdir(real)):
+        for entry in sorted(os.listdir(real) if os.path.isdir(real) else []):
             path = os.path.join(real, entry)
             stale_link = (
                 is_factory_owned_link(path, factory_root)
@@ -183,7 +204,7 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
                     manifest["skills"].pop(entry, None)
                 report.append("remove stale %s" % path)
 
-        if not dry_run and (copy or manifest["skills"]):
+        if not dry_run:
             save_manifest(real, manifest)
     return report
 
@@ -221,8 +242,9 @@ def render_routing_block():
         "  harness has it installed; otherwise read\n"
         "  `$FACTORY_ROOT/story/skills/game-story-factory/SKILL.md`.\n"
         "- **gameplay** — progression objectives, playable-content authoring, gap\n"
-        "  repair, runtime evidence. Entry: `$FACTORY_ROOT/gameplay/AGENTS.md`;\n"
-        "  it initializes new/existing repos automatically before production.\n"
+        "  repair, runtime evidence. Use the `gameplay-factory` skill if\n"
+        "  installed; otherwise read `$FACTORY_ROOT/gameplay/AGENTS.md`. The\n"
+        "  entry initializes new/existing repos automatically before production.\n"
         "- **asset** — new/changed tiles, walls, props, sprites.\n"
         "  Entry: `$FACTORY_ROOT/asset/docs/AI_CALLER_LANDING.md`.\n"
         "- **sound** — new/changed SFX.\n"
@@ -288,7 +310,8 @@ def link_game_repo(factory_root, game_repo, dry_run=False):
     if not os.path.isdir(game_repo):
         raise SystemExit("game repo does not exist: %s" % game_repo)
     real_factory = os.path.realpath(factory_root)
-    if os.path.realpath(game_repo).startswith(real_factory):
+    real_game_repo = os.path.realpath(game_repo)
+    if real_game_repo == real_factory or real_game_repo.startswith(real_factory + os.sep):
         raise SystemExit("refusing to link the factory repo to itself")
 
     pointer_path = os.path.join(game_repo, POINTER_REL_PATH)
@@ -331,19 +354,22 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sync_parser = sub.add_parser("sync", help="install/refresh factory skills into harness skill dirs")
-    sync_parser.add_argument("--target", action="append", default=None,
-                             help="extra/override skill directory (repeatable)")
-    sync_parser.add_argument("--copy", action="store_true",
-                             help="copy instead of symlink (re-run sync after factory updates)")
-    sync_parser.add_argument("--dry-run", action="store_true")
+    install_parser = sub.add_parser(
+        "install", aliases=["sync"],
+        help="install/refresh factory skills (sync is a compatibility alias)",
+    )
+    install_parser.add_argument("--target", action="append", default=None,
+                                help="extra/override skill directory (repeatable)")
+    install_parser.add_argument("--copy", action="store_true",
+                                help="copy instead of symlink (re-run install after updates)")
+    install_parser.add_argument("--dry-run", action="store_true")
 
     link_parser = sub.add_parser("link", help="write factory routing into a game repo")
     link_parser.add_argument("--game-repo", required=True)
     link_parser.add_argument("--dry-run", action="store_true")
 
     args = parser.parse_args(argv)
-    if args.command == "sync":
+    if args.command in {"install", "sync"}:
         targets = args.target if args.target else DEFAULT_SKILL_TARGETS
         lines = sync_skills(FACTORY_ROOT, targets, copy=args.copy, dry_run=args.dry_run)
     else:

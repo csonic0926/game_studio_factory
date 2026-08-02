@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import tempfile
 import unittest
@@ -18,12 +19,34 @@ def make_factory(root, skills=("game-story-factory",)):
     return root
 
 
+def make_root_skill(root, name):
+    skill_dir = os.path.join(root, "skills", name)
+    os.makedirs(skill_dir, exist_ok=True)
+    with open(os.path.join(skill_dir, "SKILL.md"), "w", encoding="utf-8") as handle:
+        handle.write("# %s\n" % name)
+    return skill_dir
+
+
 class DiscoverSkillsTest(unittest.TestCase):
     def test_finds_nested_skill_dirs(self):
         with tempfile.TemporaryDirectory() as root:
             make_factory(root, ("alpha", "beta"))
             names = [name for name, _ in factory_setup.discover_skills(root)]
             self.assertEqual(names, ["alpha", "beta"])
+
+    def test_finds_umbrella_and_department_skills(self):
+        with tempfile.TemporaryDirectory() as root:
+            make_factory(root, ("game-story-factory",))
+            make_root_skill(root, "init-game-ai-factory")
+            names = [name for name, _ in factory_setup.discover_skills(root)]
+            self.assertEqual(names, ["game-story-factory", "init-game-ai-factory"])
+
+    def test_rejects_duplicate_skill_names_across_roots(self):
+        with tempfile.TemporaryDirectory() as root:
+            make_factory(root, ("duplicate",))
+            make_root_skill(root, "duplicate")
+            with self.assertRaises(SystemExit):
+                factory_setup.discover_skills(root)
 
     def test_ignores_dirs_without_skill_md(self):
         with tempfile.TemporaryDirectory() as root:
@@ -86,6 +109,34 @@ class SyncSkillsTest(unittest.TestCase):
             factory_setup.sync_skills(factory, [target], dry_run=True)
             self.assertEqual(os.listdir(target), [])
 
+    def test_install_creates_missing_target_and_locator_manifest(self):
+        with tempfile.TemporaryDirectory() as root:
+            factory = make_factory(os.path.join(root, "factory"))
+            make_root_skill(factory, "init-game-ai-factory")
+            target = os.path.join(root, "new", "skills")
+            factory_setup.sync_skills(factory, [target])
+            self.assertTrue(os.path.islink(os.path.join(target, "game-story-factory")))
+            self.assertTrue(os.path.islink(os.path.join(target, "init-game-ai-factory")))
+            with open(
+                os.path.join(target, factory_setup.MANIFEST_NAME), encoding="utf-8"
+            ) as handle:
+                manifest = json.load(handle)
+            self.assertEqual(manifest["factory_root"], factory)
+            self.assertEqual(manifest["skills"]["init-game-ai-factory"]["mode"], "link")
+
+    def test_install_command_and_sync_alias_are_both_accepted(self):
+        with tempfile.TemporaryDirectory() as root:
+            install_target = os.path.join(root, "install")
+            sync_target = os.path.join(root, "sync")
+            self.assertEqual(
+                factory_setup.main(["install", "--target", install_target]), 0
+            )
+            self.assertEqual(
+                factory_setup.main(["sync", "--target", sync_target]), 0
+            )
+            self.assertTrue(os.path.islink(os.path.join(install_target, "gameplay-factory")))
+            self.assertTrue(os.path.islink(os.path.join(sync_target, "gameplay-factory")))
+
 
 class MarkedBlockTest(unittest.TestCase):
     def test_insert_then_replace_without_duplication(self):
@@ -125,6 +176,7 @@ class LinkGameRepoTest(unittest.TestCase):
                 body = handle.read()
             self.assertEqual(body.count(factory_setup.BLOCK_BEGIN), 1)
             self.assertIn("# Game rules", body)
+            self.assertIn("`gameplay-factory` skill", body)
 
     def test_existing_claude_md_is_untouched(self):
         with tempfile.TemporaryDirectory() as root:
@@ -143,6 +195,16 @@ class LinkGameRepoTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 factory_setup.link_game_repo(factory, os.path.join(factory, "story"))
 
+    def test_accepts_sibling_whose_name_starts_with_factory_path(self):
+        with tempfile.TemporaryDirectory() as root:
+            factory = make_factory(os.path.join(root, "factory"))
+            game = os.path.join(root, "factory-game")
+            os.makedirs(game)
+            factory_setup.link_game_repo(factory, game)
+            self.assertTrue(
+                os.path.isfile(os.path.join(game, "design", "AI_FACTORY.local.md"))
+            )
+
     def test_dry_run_writes_nothing(self):
         with tempfile.TemporaryDirectory() as root:
             factory = make_factory(os.path.join(root, "factory"))
@@ -151,6 +213,34 @@ class LinkGameRepoTest(unittest.TestCase):
             factory_setup.link_game_repo(factory, game, dry_run=True)
             self.assertFalse(os.path.exists(os.path.join(game, "design")))
             self.assertFalse(os.path.exists(os.path.join(game, "CLAUDE.md")))
+
+
+class ShippedSkillContractTest(unittest.TestCase):
+    def test_public_entry_skills_have_valid_minimal_frontmatter(self):
+        root = os.path.dirname(SETUP_PATH)
+        expected = {
+            "init-game-ai-factory": os.path.join(
+                root, "skills", "init-game-ai-factory", "SKILL.md"
+            ),
+            "gameplay-factory": os.path.join(
+                root, "gameplay", "skills", "gameplay-factory", "SKILL.md"
+            ),
+        }
+        for name, path in expected.items():
+            with self.subTest(skill=name), open(path, encoding="utf-8") as handle:
+                body = handle.read()
+            self.assertTrue(body.startswith("---\n"))
+            self.assertIn("\nname: %s\n" % name, body)
+            self.assertIn("\ndescription: ", body)
+            self.assertNotIn("TODO", body)
+
+    def test_repository_discovery_exposes_all_public_skills(self):
+        root = os.path.dirname(SETUP_PATH)
+        names = [name for name, _ in factory_setup.discover_skills(root)]
+        self.assertEqual(
+            names,
+            ["game-story-factory", "gameplay-factory", "init-game-ai-factory"],
+        )
 
 
 if __name__ == "__main__":

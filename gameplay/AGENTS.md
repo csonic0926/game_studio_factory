@@ -124,7 +124,8 @@ adapters/model/state required to answer either production question.
 
 ## 3. Gameplay Factory initialization
 
-The only normal user-facing command is:
+The installed `gameplay-factory` skill is the normal user-facing entry. It
+resolves the target/link and invokes this internal command automatically:
 
 ```bash
 python3 gameplay/init.py start --game-repo <GAME_REPO>

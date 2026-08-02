@@ -85,8 +85,9 @@ templates.
 
 ## Routing link before initialization
 
-If the game repo has not been linked to the umbrella, run this once before
-initialization:
+The installed `gameplay-factory` skill invokes `init-game-ai-factory`
+automatically. For a manual/CI caller, if the game repo has not been linked to
+the umbrella, run this once before initialization:
 
 ```bash
 python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>

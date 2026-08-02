@@ -17,7 +17,7 @@ game_ai_factory/
 | --- | --- | --- |
 | Floor/wall iso tiles, props, tile re-skin, validated sprites | **asset** | `asset/docs/AI_CALLER_LANDING.md` → `python3 asset/itf.py ...` |
 | World/characters/cast/chapters, staged story text | **story** | skill `game-story-factory` (installed) → `story/skills/game-story-factory/SKILL.md` |
-| Initialize gameplay support, continue the next objective, or repair a known objective gap | **gameplay** | `gameplay/AGENTS.md` routes initialization or ongoing production |
+| Initialize gameplay support, continue the next objective, or repair a known objective gap | **gameplay** | skill `gameplay-factory` → `gameplay/AGENTS.md` |
 | A game SFX (generate + trim to drop-in) | **sound** | `sound/docs/AI_CALLER_LANDING.md` → `python3 sound/sfx.py run --spec ...` |
 
 ## Calling conventions (shared)
@@ -64,12 +64,13 @@ relevant sub-factory via normal commits.
 
 ## Setup and game-repo linking
 
-- `python3 setup.py sync` — symlink factory skills into harness skill dirs
-  (`git pull` then IS the update; `--copy` fallback re-syncs stamped copies).
-- `python3 setup.py link --game-repo <GAME_REPO>` — write the harness-agnostic
-  factory routing block into the game repo's `AGENTS.md` (managed markers,
-  idempotent), seed a `CLAUDE.md` pointer if absent, and record the local
-  factory path in git-ignored `design/AI_FACTORY.local.md`.
+- `python3 setup.py install` — install/refresh `init-game-ai-factory`,
+  `gameplay-factory`, `game-story-factory`, and future factory skills
+  (`sync` remains an alias; `--copy` is the no-symlink fallback).
+- In a target game repo, invoke `init-game-ai-factory`. It resolves and runs
+  the underlying `setup.py link` operation, writes the managed routing block,
+  preserves existing instructions, and records the checkout only in
+  git-ignored `design/AI_FACTORY.local.md`.
 
 A linked game repo's agent sessions resolve `$FACTORY_ROOT` from that local
 pointer file; committed game-repo files never contain absolute factory paths.

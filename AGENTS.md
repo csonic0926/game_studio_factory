@@ -12,5 +12,5 @@ four factories: `asset/`, `story/`, `gameplay/`, `sound/`.
 Sub-factory entry points:
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`
 - `story/` → `story/AGENTS.md`, skill `game-story-factory`
-- `gameplay/` → `gameplay/AGENTS.md`, `gameplay/docs/AI_CALLER_LANDING.md`
+- `gameplay/` → skill `gameplay-factory`, `gameplay/AGENTS.md`, `gameplay/docs/AI_CALLER_LANDING.md`
 - `sound/` → `sound/docs/AI_CALLER_LANDING.md`, `sound/sfx.py`

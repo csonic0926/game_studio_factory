@@ -20,55 +20,71 @@ through a landing doc and an explicit production contract:
 
 Start at [`AI_CALLER_LANDING.md`](AI_CALLER_LANDING.md) to route to the right one.
 
-## Setup
+## Quick start
 
 One-time per machine, after cloning this repo:
 
 ```bash
-python3 setup.py sync
+git clone https://github.com/csonic0926/game_ai_factory.git
+cd game_ai_factory
+python3 setup.py install
 ```
 
-`sync` symlinks every factory-provided skill (`*/skills/*/SKILL.md`) into the
-harness skill directories (default `~/.claude/skills` and `~/.codex/skills`,
-deduplicated when they share one real directory). Because they are symlinks,
-`git pull` on this repo **is** the skill update — no re-run needed. Use
-`sync --copy` for harnesses/filesystems without symlink support; copied skills
-carry a `.factory_version` stamp and are refreshed by re-running `sync` after a
-pull. Both modes only ever touch factory-owned entries.
+`install` installs these user-facing skills:
 
-Once per game repo, when connecting it to the factory:
+- `init-game-ai-factory` — connect the current game repo to the umbrella;
+- `gameplay-factory` — initialize and run Gameplay Factory;
+- `game-story-factory` — run Story Factory.
+
+By default they are symlinked into `~/.claude/skills` and `~/.codex/skills`, so
+`git pull` updates them immediately. Use `install --copy` only where symlinks
+are unavailable, then rerun `install --copy` after updates. The old `sync`
+command remains an alias. Installation creates missing skill directories,
+deduplicates targets that resolve to the same place, and never replaces a
+foreign entry.
+
+Then open the target game repo and tell the AI:
+
+```text
+Init Game AI Factory in this repo.
+```
+
+The `init-game-ai-factory` skill resolves the current Git root and cloned
+factory automatically. It writes the harness-agnostic routing block, preserves
+existing repo instructions, and verifies the link. Direct invocation also
+works: `/init-game-ai-factory`.
+
+After that, ordinary requests are enough:
+
+```text
+Use Gameplay Factory to continue the next objective.
+Use Gameplay Factory to repair this broken campfire step.
+```
+
+The `gameplay-factory` skill routes total-new repos to game definition,
+initializes existing repos, recognizes already-ready repos, writes persistent
+plans, and continues ordinary production through implementation unless the
+user explicitly asks for plan-only. Direct invocation also works:
+`/gameplay-factory ...`.
+
+### Manual/CI fallback
+
+The skills call these dependency-free commands internally; humans normally do
+not need them:
 
 ```bash
 python3 setup.py link --game-repo <GAME_REPO>
-```
-
-`link` writes a harness-agnostic **Game AI Factory routing block** into the
-game repo's `AGENTS.md` (between managed markers — idempotent, re-run safe),
-creates a `CLAUDE.md` pointer if the repo has none, and records this machine's
-factory path in the git-ignored `design/AI_FACTORY.local.md` so committed files
-never contain absolute developer paths. After `link`, any agent session opened
-in the game repo knows the four departments exist and when to consult each,
-without the user having to name a factory in the prompt. Both commands support
-`--dry-run`.
-
-On first Gameplay Factory use, run its single initialization entry:
-
-```bash
 python3 gameplay/init.py start --game-repo <GAME_REPO>
 ```
 
-The command decides whether the repo is total-new, joining in the middle, or
-already initialized. Numbered lifecycle cases are not part of the user API.
+`install`, `link`, and their supported operations accept `--dry-run` where
+shown by `--help`.
 
 ## Gameplay Factory — initialize once, then produce
 
-[`gameplay/AGENTS.md`](gameplay/AGENTS.md) is both the Gameplay Factory guide
-and its canonical AI entry. After linking a game repo, initialize Gameplay
-Factory once:
-
-```bash
-python3 gameplay/init.py start --game-repo <GAME_REPO>
-```
+The installed `gameplay-factory` skill is the normal AI entry. It resolves and
+obeys [`gameplay/AGENTS.md`](gameplay/AGENTS.md), the canonical Gameplay
+Factory routing contract, then runs initialization automatically.
 
 `start` chooses one of three states without asking the user to know internal
 migration categories:
@@ -194,9 +210,10 @@ assets, and sound land in the game repo.
 
 ```
 AI_CALLER_LANDING.md     route here first
+skills/  init-game-ai-factory
 asset/   itf.py, pipeline/, docs/, examples/ …   (original git history)
 story/   skills/, core/steps|craft|schemas/, adapters/
-gameplay/ AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py,
+gameplay/ skills/gameplay-factory, AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py,
           reader.py, docs/, schemas/, adapters/, templates/, tests/
 sound/   sfx.py, pipeline/, docs/, examples/
 ```

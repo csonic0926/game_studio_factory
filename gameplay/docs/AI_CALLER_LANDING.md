@@ -46,7 +46,8 @@ Initialize before requiring adapters:
   adapters/model/state returns `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
 - a repo with those prerequisites returns `GAMEPLAY_FACTORY_ALREADY_READY`.
 
-The normal user-facing operation is `init_gameplay_factory`, implemented by:
+The normal user-facing entry is the installed `gameplay-factory` skill. Its
+`init_gameplay_factory` operation invokes:
 
 ```bash
 python3 gameplay/init.py start --game-repo <GAME_REPO>
