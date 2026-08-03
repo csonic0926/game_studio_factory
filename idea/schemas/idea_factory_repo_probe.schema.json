@@ -14,8 +14,8 @@
     "interpretation_warning"
   ],
   "properties": {
-    "schema_version": {"const": "idea_factory_repo_probe.v1"},
-    "status": {"const": "IDEA_FACTORY_DIALOGUE_REQUIRED"},
+    "schema_version": {"const": "idea_factory_repo_probe.v2"},
+    "status": {"const": "IDEA_EXPLORATION_REQUIRED"},
     "repository": {
       "type": "object",
       "additionalProperties": false,

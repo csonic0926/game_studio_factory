@@ -1,112 +1,119 @@
-# Idea Factory product-definition workflow
+# Idea Factory: open discovery and product commission
 
-## Purpose
+## Why there are two phases
 
-Turn a sparse user wish and/or early repository into explicit product authority
-that can constrain Story, Gameplay, Asset, Sound, and ordinary production.
-The workflow supplies producer-level reasoning without pretending AI-generated
-judgment came from the user.
+Idea-level work begins before the answer, its dimensions, or even the right
+question are stable. Requiring a complete product brief at entry makes an AI
+optimize document completion: an incompatibility becomes a feature-extraction
+exercise, a reference becomes an imitation quota, and plausible prose is
+mistaken for discovery.
+
+Idea Factory therefore separates non-binding exploration from binding product
+commission.
 
 ```text
-idea.py start
+idea.py start [--reopen]
   -> bounded repo probe
-  -> one complete AI producer recommendation
-  -> at most three high-leverage user choices, or explicit delegation
-  -> PRODUCT_THESIS_INPUT.json
-  -> idea.py compile
+  -> open exploration (zero, one, or several directions)
+  -> no-fit / open frontier / live directions / emerged direction
+  -> human sees the frontier
+  -> explicit commission gate (optional, later)
+  -> PRODUCT_THESIS_INPUT.json v2
+  -> deterministic compile/check
   -> PRODUCT_THESIS.md + FACTORY_CONSTRAINTS.json
-  -> idea.py check
-  -> IDEA_FACTORY_READY
 ```
 
-## Step 1 — mechanical study boundary
+No-fit and non-convergence are valid work, not incomplete Product Theses.
 
-`start` binds the Git revision, dirty paths, and dirty-content fingerprint. It
-writes a bounded candidate list; candidate paths are not semantic authority.
-The probe works for blank, early, and mature repositories.
+## Phase A1 — mechanical boundary
 
-Study only enough material to answer:
+`start` binds Git revision, dirty paths, and dirty-content fingerprint and
+writes a bounded list of candidate sources. Candidate paths are study hints,
+not authority. `--reopen` refreshes the mechanical probe for an explicitly
+reopened exploration without changing an existing Product Thesis.
 
-- what the user explicitly wants;
-- which existing behaviors are true product commitments versus experiments;
-- which high-level decisions are absent;
-- which current market/platform facts would materially alter the direction.
+## Phase A2 — open exploration record
 
-## Step 2 — AI producer synthesis
+The AI writes `IDEA_EXPLORATION.json` and uses:
 
-One producer creates a whole recommendation. Do not split commercial strategy,
-experience intent, retention, theme, and downstream consequences among several
-workers: they form one causal thesis and must be reconciled together.
+```bash
+python3 idea/idea.py explore --game-repo <GAME_REPO> \
+  --input design/product/idea/IDEA_EXPLORATION.json
+python3 idea/idea.py check-exploration --game-repo <GAME_REPO> \
+  --input design/product/idea/IDEA_EXPLORATION.json
+```
 
-Required dimensions:
+The record contains only:
 
-1. product promise;
-2. audience relationship;
-3. commercial shape;
-4. intended thought/emotion/experience;
-5. retention or replay reason;
-6. differentiation;
-7. scope shape and accepted sacrifices;
-8. product-outcome → player-reason → experience-mechanism causal links;
-9. cross-factory constraints;
-10. cheap falsification tests for uncertain player/market beliefs.
+- the actual user request and supplied references;
+- sourced anchors or explicitly marked AI hypotheses;
+- the relationship, if any, between each reference and the project;
+- zero or more live/rejected/emerged directions;
+- the current frontier, open questions, and highest-information next move.
 
-The producer must provide a best recommendation, reasons, and concise rejected
-alternatives before requesting user input. Questions are reserved for value
-forks that materially reshape the product.
+It does **not** demand answers for business model, retention, emotion,
+differentiation, scope, or downstream constraints. Those are probes the AI may
+use when relevant, not slots it must fill.
 
-## Step 3 — adoption or delegation
+### Frontier states
 
-Use the authority model in [`../AGENTS.md`](../AGENTS.md).
+| State | Meaning | Product authority? |
+| --- | --- | --- |
+| `OPEN` | The question, ontology, or causal frame is still moving | No |
+| `REFERENCE_NO_FIT` | A reference conflicts or has no productive relationship | No |
+| `LIVE_DIRECTIONS` | Possibilities exist but premature selection would discard information | No |
+| `DIRECTION_EMERGED` | One coherent direction now survives the exploration | Still no |
 
-- A user accepting an AI recommendation converts it to `USER_FIXED`; preserve
-  the acceptance quote and keep the AI rationale/alternatives.
-- A user saying the AI should decide converts only the authorized scope to
-  `AI_DELEGATED`; persist the exact authorization text and scoped decision ids.
-- Without adoption/delegation, a material `AI_RECOMMENDED` decision produces
-  `PRODUCT_DIRECTION_REVIEW_REQUIRED`, not a fake ready state.
-- Uncertain response beliefs become validation hypotheses with a falsification
-  signal and cheapest test. They do not need to block unrelated decisions.
+The user-facing turn presents this frontier rather than a compulsory pitch.
 
-## Step 4 — deterministic compile
+## Reference relation before reference extraction
 
-`compile` verifies:
+For each user-supplied reference, ask first:
 
-- game-repo ownership before any mkdir/write;
-- exact repository snapshot and portable paths;
-- exact repo evidence for `REPO_COMMITMENT`;
-- exact user/delegation quotes where required;
-- known, unique decision/source ids;
-- binding authority for every thesis statement, causal link, non-goal, and
-  factory constraint;
-- at least one explicit sacrifice, one causal link, and one downstream
-  constraint;
-- no unresolved placeholders or hidden AI assumptions.
+```text
+Does a productive relationship exist?
+```
 
-It renders every artifact in memory and preflights all existing canonical
-outputs before the first write. Exact outputs are idempotent; differing outputs
-block without overwrite.
+Legal answers include compatible principle, anti-reference, contradiction,
+no productive relationship, and unresolved. “These games should not be
+combined” may be the complete useful finding. Once that finding is reached, the
+workflow must not mine the reference for substitute features to justify its
+continued existence.
 
-The explicit `check` command enforces the creation-time repository snapshot.
-After a successful checked handoff, later normal production commits do not make
-the product thesis stale: `start` revalidates exact compiled artifacts,
-authority, and current `REPO_COMMITMENT` evidence without requiring the whole
-repo to remain at its old revision.
+## Phase B — commission gate
 
-## Step 5 — downstream consumption
+An initial instruction such as “help me decide” or “you decide” delegates
+judgment but does not demand convergence. After seeing the exploration, the
+user must explicitly adopt/freeze/commission one `EMERGED` direction before a
+Product Thesis can be compiled.
 
-`PRODUCT_THESIS.md` is the human-readable product authority.
-`FACTORY_CONSTRAINTS.json` is its machine-readable projection.
+`PRODUCT_THESIS_INPUT.json` v2 binds:
 
-Downstream factories:
+- exact exploration path and SHA-256;
+- selected emerged direction id;
+- exact post-exploration commission quote;
+- repository snapshot and all product decision provenance.
 
-- obey constraints addressed to them or `all`;
-- treat validation hypotheses as tests, not facts;
-- return contradictions to Idea Factory instead of silently selecting another
-  product direction;
-- retain their own domain authority for concrete story/gameplay/asset/sound
-  creation.
+The compiler rejects:
 
-Idea Factory completion is not proof of market success, player retention,
-artistic effect, or fun. It is a coherent, provenance-safe commission for
-production and validation.
+- open, no-fit, or multi-direction frontiers;
+- a complete-looking Product Thesis with no exploration;
+- AI delegation used as a substitute for commission;
+- a stale or different exploration hash;
+- non-binding hypotheses used as downstream authority.
+
+Only after this gate does the familiar complete product commission become
+appropriate: promise, audience relationship, commercial shape, experience,
+retention/replay, differentiation, scope, causal links, sacrifices, validation
+hypotheses, and factory constraints.
+
+## Downstream ownership
+
+`PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json` remain canonical downstream
+authority. `IDEA_EXPLORATION.md` never constrains Story, Gameplay, Asset, Sound,
+or production. Downstream factories must ignore uncommissioned exploration and
+return product-level contradictions to Idea Factory.
+
+Compile/check proves ownership, provenance, commission, and exact handoff. It
+does not prove that exploration was profound or the commissioned product will
+succeed.

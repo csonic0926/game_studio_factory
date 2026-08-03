@@ -25,12 +25,12 @@ game_ai_factory/
 
 ## Calling conventions (shared)
 
-- **idea** is an AI-producer skill. It accepts sparse human intent and/or an
-  early repo, makes one complete commercial/experiential recommendation before
-  asking a few high-leverage questions, and supports explicitly delegated AI
-  decisions. It compiles game-owned `PRODUCT_THESIS.md` plus cross-factory
-  `FACTORY_CONSTRAINTS.json`; uncertain market/player beliefs remain labeled
-  validation hypotheses rather than hidden product facts.
+- **idea** is an open-discovery and commissioning skill. It accepts sparse
+  human intent, references, and/or an early repo without assuming a product
+  answer exists. No-fit, unresolved, and multiple-direction frontiers are valid
+  non-binding outputs. Only after the user sees the frontier and explicitly
+  commissions one emerged direction does it compile game-owned
+  `PRODUCT_THESIS.md` plus `FACTORY_CONSTRAINTS.json`.
 - **asset** and **sound** are Python CLIs driven by a **spec JSON**; run from
   their own dir, then read `<run>/artifact_status.json` first, then
   `deliverables/`.

@@ -149,6 +149,10 @@ request. `IDEA_FACTORY_READY` establishes product direction; a separate
 new-game Gameplay bootstrap remains responsible for initial progression and
 action/reward design.
 
+Open/no-fit/live-direction Idea Factory states are not failures and are not
+product authority. Remain in product exploration; Gameplay must not force them
+into `IDEA_FACTORY_READY` merely to continue its own workflow.
+
 ### Existing project joining in the middle
 
 ```text

@@ -1,127 +1,155 @@
 # Idea Factory Guide and AI Entry
 
-Idea Factory is the product-definition layer above Story, Gameplay, Asset, and
-Sound. It is for blank projects, early repositories, and later projects whose
-commercial/experiential direction is too weak or contradictory to constrain
-production.
+Idea Factory owns open product discovery and the later commissioning boundary
+above Story, Gameplay, Asset, and Sound. It serves blank projects, early repos,
+and mature projects whose product direction is being reconsidered.
 
-The user need not be a producer. The AI producer must complete missing product
-reasoning, recommend one coherent direction, expose decisive tradeoffs in
-ordinary language, and preserve the source and risk of every material choice.
+Its first responsibility is not to produce an answer. It is to preserve the
+real idea frontier without letting a required document, a supplied reference,
+or an AI's urge to be helpful fabricate convergence.
 
-## Entry and ownership
+## Entry, outputs, and causal boundary
 
-The installed `idea-factory` skill is the normal entry. Resolve one explicit
-game repo or the current Git root; never scan siblings. If the repo is not
-linked to the umbrella, invoke `init-game-ai-factory` first.
-
-Run:
+Resolve one explicit/current game Git root; never scan siblings. If unlinked,
+invoke `init-game-ai-factory` first. Run:
 
 ```bash
 python3 <FACTORY_ROOT>/idea/idea.py start --game-repo <GAME_REPO>
 ```
 
-All filled artifacts land in the game repo:
+Use `start --reopen` only when the user explicitly asks to reconsider existing
+product authority. Reopening never deletes or overwrites that authority, and
+the old thesis is not `REPO_COMMITMENT` evidence for reproducing itself.
+
+Filled artifacts land in the game repo:
 
 ```text
 design/product/
-  PRODUCT_THESIS.md
-  FACTORY_CONSTRAINTS.json
+  PRODUCT_THESIS.md                 # only after commission
+  FACTORY_CONSTRAINTS.json          # only after commission
   idea/
     IDEA_FACTORY_REPO_PROBE.json
-    PRODUCT_THESIS_INPUT.json
-    IDEA_FACTORY_RESULT.json
+    IDEA_EXPLORATION.json           # non-binding, AI-authored working state
+    IDEA_EXPLORATION.md             # derived non-binding view
+    PRODUCT_THESIS_INPUT.json       # only after commission
+    IDEA_FACTORY_RESULT.json        # only after commission
 ```
 
-The factory checkout owns only tools, schemas, templates, workflow contracts,
-and tests.
-
-## One AI producer, not a questionnaire tower
-
-After `IDEA_FACTORY_DIALOGUE_REQUIRED`, read the bounded probe and only the
-candidate sources needed to distinguish existing commitments from experiments.
-Then one AI producer writes a **complete recommended product direction** before
-asking the user anything.
-
-The recommendation must connect:
+Allowed causal chain:
 
 ```text
-desired product/business outcome
-  -> acceptable sacrifice
-  -> intended player relationship
-  -> why the player buys/returns/cares
-  -> experience/emotion mechanism
-  -> downstream factory constraints
-  -> cheapest tests for uncertain beliefs
+user/repo/reference evidence
+  -> non-binding exploration
+  -> one direction genuinely emerges
+  -> user sees frontier and explicitly commissions it
+  -> product decision authority
+  -> Product Thesis / Factory Constraints
 ```
 
-Ask no more than three high-leverage, plain-language questions in one round.
-Do not ask the user to supply producer vocabulary, metrics, a GDD, or every
-schema field. Offer one recommended answer with its consequence. A user may
-edit, accept, or delegate the decision.
+Forbidden arrows:
 
-## Authority is provenance, not an AI prohibition
+```text
+reference -> mandatory borrowed feature
+initial “help me decide” -> mandatory Product Thesis
+AI delegation -> forced convergence
+schema completeness -> evidence that an idea exists
+```
 
-Every decision uses exactly one authority:
+## Phase A — open exploration
 
-- `USER_FIXED` — the user stated or adopted it; preserve the exact quote.
-- `REPO_COMMITMENT` — existing shipped/current product behavior genuinely
-  commits the product; exact repo evidence is mandatory. Exploratory code is
-  not automatically a commitment.
-- `AI_RECOMMENDED` — a complete AI producer recommendation awaiting adoption
-  or delegation. It may appear in the draft but cannot compile binding output.
-- `AI_DELEGATED` — the user explicitly authorized AI judgment for this
-  decision/scope. Preserve the authorization quote; this is valid authority.
-- `VALIDATION_REQUIRED` — an uncertain player/market belief. It may define an
-  experiment, never a binding downstream constraint.
+For `IDEA_EXPLORATION_REQUIRED`, write
+`design/product/idea/IDEA_EXPLORATION.json` from the exploration schema/template
+and run `explore`, then `check-exploration`.
 
-Never hide AI completion as `USER_FIXED`, and never turn uncertainty into an
-unlabeled product promise. Conversely, do not block merely because the user did
-not possess producer expertise: recommend and explain the missing decisions.
+The exploration record deliberately has no required commercial, retention,
+emotion, differentiation, or scope answer. Those dimensions become useful only
+when they help discriminate a live direction. Valid frontier states:
 
-## Compile and handoff
+- `OPEN` → `IDEA_EXPLORATION_OPEN`;
+- `REFERENCE_NO_FIT` → `IDEA_REFERENCE_NO_FIT`;
+- `LIVE_DIRECTIONS` → `IDEA_DIRECTIONS_AVAILABLE`;
+- `DIRECTION_EMERGED` → `IDEA_DIRECTION_EMERGED`.
 
-Write the structured handoff using:
+All are successful exploration results; none is downstream product authority.
+A turn may legitimately establish only that two concepts conflict, that a
+reference is irrelevant, or that the original question is too narrow.
 
-- `schemas/product_thesis_input.schema.json`
-- `templates/PRODUCT_THESIS_INPUT.json`
+### Reference discipline
+
+A reference is an object of inquiry, not an extraction quota. First classify
+its relation as unresolved, compatible principle, contradiction,
+anti-reference, or no productive relation. If the strongest result is no-fit,
+record and present it. Do not continue by inventing analogues merely to satisfy
+the workflow.
+
+### Provenance without closure
+
+Exploration anchors distinguish `USER`, `REPO`, `REFERENCE`, and
+`AI_HYPOTHESIS`. Repo anchors require exact evidence; reference anchors retain
+source URLs; hypotheses remain non-binding. Hidden `ai_assumptions` are
+forbidden. Anchors and directions may both be empty when absence is truthful.
+
+`IDEA_EXPLORATION.md` is a mutable derived view of the current non-binding
+frontier. Updating it is allowed. Product authority remains fail-closed.
+
+### Evidence and token discipline
+
+- Read only candidate sources that can change the live frontier.
+- Current platform, price, competitor, or market claims require bounded
+  authoritative research; persist material source URLs in exploration.
+- Do not manufacture a competitor survey when the reference relationship is
+  already no-fit.
+- Do not spend tokens completing product dimensions that are not yet live.
+- One honest negative result is better than a long post-hoc synthesis.
+
+## Phase B — explicit commission
+
+Do not enter this phase merely because the user initially said “you decide.”
+That authorizes producer judgment, including the judgment that no answer is
+ready. Commission requires a post-frontier user instruction that explicitly
+adopts, freezes, or asks to turn one emerged direction into product authority.
+
+After commission, write `PRODUCT_THESIS_INPUT.json` v2 with:
+
+- exact path and SHA-256 of `IDEA_EXPLORATION.json`;
+- exactly one selected direction marked `EMERGED`;
+- the exact commission authorization quote;
+- explicit authority for every material product decision.
 
 Then run:
 
 ```bash
-python3 <FACTORY_ROOT>/idea/idea.py compile \
-  --game-repo <GAME_REPO> \
+python3 <FACTORY_ROOT>/idea/idea.py compile --game-repo <GAME_REPO> \
   --input design/product/idea/PRODUCT_THESIS_INPUT.json
-
-python3 <FACTORY_ROOT>/idea/idea.py check \
-  --game-repo <GAME_REPO> \
+python3 <FACTORY_ROOT>/idea/idea.py check --game-repo <GAME_REPO> \
   --input design/product/idea/PRODUCT_THESIS_INPUT.json
 ```
 
-Routes:
+Only this phase requires a coherent product promise, audience relationship,
+commercial shape, experience intent, retention/replay thesis, differentiation,
+scope, causal links, sacrifices, validation hypotheses, and downstream
+constraints.
 
-- `PRODUCT_DIRECTION_REVIEW_REQUIRED` — present the whole recommendation, then
-  ask only about listed material decisions. Do not discard the draft.
-- `BLOCKED_BY_IDEA_MATERIAL` — provenance, causal reasoning, evidence, or
-  structure is invalid; repair the exact gap.
-- `BLOCKED_BY_EXISTING_PRODUCT_STATE` — canonical product files differ;
-  preserve them and obtain an explicit revision path instead of overwriting.
-- `IDEA_FACTORY_READY` — the product thesis and constraints are exact and
-  ready for downstream factories.
+Product decision authorities remain:
 
-After ready, return to the original request in the same call. If the user asked
-to make Gameplay, invoke Gameplay Factory; do not stop merely to announce that
-Idea Factory produced documents.
+- `USER_FIXED` — exact user statement/adoption;
+- `REPO_COMMITMENT` — exact current repo evidence, not exploratory code;
+- `AI_RECOMMENDED` — non-binding and therefore review-required;
+- `AI_DELEGATED` — scoped AI judgment explicitly authorized by the user;
+- `VALIDATION_REQUIRED` — a testable uncertain belief, never a constraint.
 
-## Research and token discipline
+AI delegation and commission are independent: delegation says who may choose;
+commission says that exploration is mature enough to become authority.
 
-- Probe mechanically before semantic study.
-- Use one producer synthesis, not separate business/creative/reviewer agents.
-- Current price/platform/market claims require bounded authoritative research;
-  persist only the evidence that materially changes the recommendation.
-- Do not perform a broad competitor report by default.
-- Keep rejected alternatives concise but real enough to show the tradeoff.
-- A checker proves ownership, provenance, binding, and exact handoff—not
-  commercial success or artistic quality.
+## Compile/check guarantees
 
+The compiler validates ownership before writes, exact repo/exploration hashes,
+commission, source authority, causal structure, constraints, and absence of
+hidden assumptions. It preflights all canonical product outputs before writing.
+Exact outputs are idempotent; differing product authority is never overwritten.
+
+The checker proves the handoff, not that the idea is commercially successful,
+emotionally effective, fun, or the only possible answer.
+
+After `IDEA_FACTORY_READY`, return to the caller's original production request.
 Full workflow: [`docs/PRODUCT_DEFINITION_WORKFLOW.md`](docs/PRODUCT_DEFINITION_WORKFLOW.md).

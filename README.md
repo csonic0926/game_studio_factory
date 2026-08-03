@@ -3,11 +3,11 @@
 Umbrella for one product-definition factory plus four production factories,
 each callable by an AI agent through a skill/landing contract:
 
-- **`idea/`** — Idea Factory. An AI producer turns sparse user intent and/or an
-  early repo into a coherent commercial and experiential product thesis. It
-  recommends a complete direction before asking a few decisive questions,
-  supports explicitly delegated AI decisions, and compiles cross-factory
-  constraints without disguising hypotheses as facts.
+- **`idea/`** — Idea Factory. An AI producer openly explores sparse user intent,
+  references, and/or an early repo without forcing a product answer. No-fit,
+  unresolved, and multiple-direction states are valid; only a separately
+  commissioned emerged direction becomes a product thesis and cross-factory
+  constraints.
 - **`asset/`** — game asset factory. Blender-first isometric tile/wall reference
   pairs, prop/object sprites, tile re-skin, chroma-key cleanup. Python CLI
   (`itf.py` + spec JSON). *(retains this repo's original git history)*
@@ -38,7 +38,7 @@ python3 setup.py install
 `install` installs these user-facing skills:
 
 - `init-game-ai-factory` — connect the current game repo to the umbrella;
-- `idea-factory` — define the product with AI producer support;
+- `idea-factory` — explore, then optionally commission the product direction;
 - `gameplay-factory` — initialize and run Gameplay Factory;
 - `game-story-factory` — run Story Factory.
 
@@ -69,11 +69,11 @@ Use Gameplay Factory to continue the next objective.
 Use Gameplay Factory to repair this broken campfire step.
 ```
 
-The `idea-factory` skill works even when code already exists: its trigger is
-missing or contradictory **product authority**, not an empty repo. It produces
-`design/product/PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json`; the AI fills
-producer-level gaps, while provenance distinguishes user choices, repository
-commitments, AI recommendations, delegated AI decisions, and hypotheses.
+The `idea-factory` skill works even when code already exists: its trigger is an
+open product question or missing/contradictory **product authority**, not an
+empty repo. It first writes non-binding `IDEA_EXPLORATION` state and may validly
+stop at no-fit or multiple live directions. Only explicit post-exploration
+commission produces `PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json`.
 
 The `gameplay-factory` skill routes total-new repos to Idea Factory, initializes
 existing repos, recognizes already-ready repos, writes persistent plans, and

@@ -45,7 +45,9 @@ Continue the returned branch:
 
 - `NEW_PROJECT_DEFINITION_REQUIRED`: invoke `idea-factory`; after
   `IDEA_FACTORY_READY`, route to new-game Gameplay bootstrap when available.
-  Do not invent progression, actions, or rewards inside initialization.
+  Open/no-fit/multiple-direction Idea states remain in exploration and must not
+  be force-commissioned to unblock Gameplay. Do not invent progression,
+  actions, or rewards inside initialization.
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED`: follow
   `GAMEPLAY_FACTORY_INIT_WORKFLOW.md` with one bounded evidence investigator,
   then run `compile` and `check`. This is reconstruction, not design.

@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/idea/idea_exploration.schema.json",
+  "title": "Idea Factory Open Exploration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "repository",
+    "seed",
+    "anchors",
+    "reference_relations",
+    "directions",
+    "frontier_state",
+    "frontier_summary",
+    "open_questions",
+    "next_move",
+    "ai_assumptions"
+  ],
+  "properties": {
+    "schema_version": {"const": "idea_exploration.v1"},
+    "project_id": {"$ref": "#/$defs/portableId"},
+    "repository": {"$ref": "#/$defs/repository"},
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_request", "references"],
+      "properties": {
+        "user_request": {"type": "string", "minLength": 1},
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["reference_id", "user_instruction", "source_urls"],
+            "properties": {
+              "reference_id": {"$ref": "#/$defs/portableId"},
+              "user_instruction": {"type": "string", "minLength": 1},
+              "source_urls": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "anchor_id",
+          "statement",
+          "authority",
+          "source_quote",
+          "evidence_refs",
+          "source_urls"
+        ],
+        "properties": {
+          "anchor_id": {"$ref": "#/$defs/portableId"},
+          "statement": {"type": "string", "minLength": 1},
+          "authority": {
+            "enum": ["USER", "REPO", "REFERENCE", "AI_HYPOTHESIS"]
+          },
+          "source_quote": {"type": "string"},
+          "evidence_refs": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/evidenceRef"}
+          },
+          "source_urls": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "reference_relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reference_id", "relation", "explanation"],
+        "properties": {
+          "reference_id": {"$ref": "#/$defs/portableId"},
+          "relation": {
+            "enum": [
+              "UNRESOLVED",
+              "COMPATIBLE_PRINCIPLE",
+              "CONTRADICTION",
+              "ANTI_REFERENCE",
+              "NO_PRODUCTIVE_RELATION"
+            ]
+          },
+          "explanation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "directions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["direction_id", "disposition", "proposition", "why_live", "tensions"],
+        "properties": {
+          "direction_id": {"$ref": "#/$defs/portableId"},
+          "disposition": {"enum": ["LIVE", "REJECTED", "EMERGED"]},
+          "proposition": {"type": "string", "minLength": 1},
+          "why_live": {"type": "string", "minLength": 1},
+          "tensions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "frontier_state": {
+      "enum": ["OPEN", "REFERENCE_NO_FIT", "LIVE_DIRECTIONS", "DIRECTION_EMERGED"]
+    },
+    "frontier_summary": {"type": "string", "minLength": 1},
+    "open_questions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "next_move": {"type": "string", "minLength": 1},
+    "ai_assumptions": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {"type": "string"}
+    }
+  },
+  "$defs": {
+    "portableId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_revision", "declared_dirty_paths", "working_tree_sha256"],
+      "properties": {
+        "expected_revision": {"type": "string", "minLength": 7},
+        "declared_dirty_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string"}
+        },
+        "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "contains"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "contains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

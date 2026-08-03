@@ -8,6 +8,7 @@
     "schema_version",
     "project_id",
     "repository",
+    "commission",
     "seed",
     "delegation",
     "decisions",
@@ -20,7 +21,7 @@
     "ai_assumptions"
   ],
   "properties": {
-    "schema_version": {"const": "product_thesis_input.v1"},
+    "schema_version": {"const": "product_thesis_input.v2"},
     "project_id": {"$ref": "#/$defs/portableId"},
     "repository": {
       "type": "object",
@@ -30,6 +31,24 @@
         "expected_revision": {"type": "string", "minLength": 7},
         "declared_dirty_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorized",
+        "authorization_quote",
+        "exploration_path",
+        "exploration_sha256",
+        "selected_direction_id"
+      ],
+      "properties": {
+        "authorized": {"const": true},
+        "authorization_quote": {"type": "string", "minLength": 1},
+        "exploration_path": {"const": "design/product/idea/IDEA_EXPLORATION.json"},
+        "exploration_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "selected_direction_id": {"$ref": "#/$defs/portableId"}
       }
     },
     "seed": {

@@ -1,3 +1,4 @@
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -8,9 +9,15 @@ from idea.idea import (
     BLOCKED_BY_EXISTING_PRODUCT_STATE,
     BLOCKED_BY_IDEA_MATERIAL,
     CONSTRAINTS_RELATIVE,
+    EXPLORATION_MD_RELATIVE,
+    EXPLORATION_RELATIVE,
+    IDEA_DIRECTIONS_AVAILABLE,
+    IDEA_DIRECTION_EMERGED,
+    IDEA_EXPLORATION_OPEN,
+    IDEA_EXPLORATION_REQUIRED,
     IDEA_FACTORY_ALREADY_READY,
-    IDEA_FACTORY_DIALOGUE_REQUIRED,
     IDEA_FACTORY_READY,
+    IDEA_REFERENCE_NO_FIT,
     INPUT_RELATIVE,
     PROBE_RELATIVE,
     PRODUCT_DIRECTION_REVIEW_REQUIRED,
@@ -18,7 +25,9 @@ from idea.idea import (
     THESIS_RELATIVE,
     IdeaFactoryError,
     check_product_thesis,
+    check_exploration,
     compile_product_thesis,
+    record_exploration,
     start_idea_factory,
 )
 
@@ -42,7 +51,7 @@ class IdeaFactoryTests(unittest.TestCase):
         self._git("add", ".")
         self._git("commit", "-m", "early prototype")
         started = start_idea_factory(str(self.game_repo))
-        self.assertEqual(IDEA_FACTORY_DIALOGUE_REQUIRED, started.status)
+        self.assertEqual(IDEA_EXPLORATION_REQUIRED, started.status)
         self.probe = json.loads((self.game_repo / PROBE_RELATIVE).read_text())
 
     def tearDown(self) -> None:
@@ -59,15 +68,121 @@ class IdeaFactoryTests(unittest.TestCase):
         )
         return result.stdout
 
-    def _payload(self, authority: str = "AI_DELEGATED") -> dict:
-        delegated = authority == "AI_DELEGATED"
+    def _exploration(
+        self,
+        *,
+        frontier_state: str = "DIRECTION_EMERGED",
+        relation: str | None = None,
+    ) -> dict:
+        references = []
+        relations = []
+        if relation is not None:
+            references = [
+                {
+                    "reference_id": "balatro",
+                    "user_instruction": "See whether Balatro is a useful reference.",
+                    "source_urls": [
+                        "https://store.steampowered.com/app/2379780/Balatro/"
+                    ],
+                }
+            ]
+            relations = [
+                {
+                    "reference_id": "balatro",
+                    "relation": relation,
+                    "explanation": (
+                        "The reference may be incompatible; this finding does not "
+                        "create an obligation to extract mechanics from it."
+                    ),
+                }
+            ]
+        directions = []
+        if frontier_state == "LIVE_DIRECTIONS":
+            directions = [
+                {
+                    "direction_id": "small-mastery-game",
+                    "disposition": "LIVE",
+                    "proposition": "Explore a small mastery-focused strategy game.",
+                    "why_live": "It may fit the implemented loop without requiring content scale.",
+                    "tensions": ["The audience and commercial promise remain unresolved."],
+                }
+            ]
+        elif frontier_state == "DIRECTION_EMERGED":
+            directions = [
+                {
+                    "direction_id": "small-mastery-game",
+                    "disposition": "EMERGED",
+                    "proposition": "Commission a small mastery-focused premium strategy game.",
+                    "why_live": "Exploration resolved the core scope and player relationship.",
+                    "tensions": ["Player response remains a validation hypothesis."],
+                }
+            ]
         return {
-            "schema_version": "product_thesis_input.v1",
+            "schema_version": "idea_exploration.v1",
             "project_id": "early-auto-battler",
             "repository": {
                 "expected_revision": self.probe["repository"]["revision"],
                 "declared_dirty_paths": self.probe["repository"]["dirty_paths"],
                 "working_tree_sha256": self.probe["repository"]["working_tree_sha256"],
+            },
+            "seed": {
+                "user_request": "Help explore what this early auto battler could become.",
+                "references": references,
+            },
+            "anchors": [
+                {
+                    "anchor_id": "implemented-loop",
+                    "statement": "The current prototype drafts units and auto-battles.",
+                    "authority": "REPO",
+                    "source_quote": "",
+                    "evidence_refs": [
+                        {"path": "game.gd", "contains": ["draft_then_auto_battle"]}
+                    ],
+                    "source_urls": [],
+                }
+            ],
+            "reference_relations": relations,
+            "directions": directions,
+            "frontier_state": frontier_state,
+            "frontier_summary": (
+                "The current frontier records only what the evidence supports; "
+                "it does not force a product answer."
+            ),
+            "open_questions": [],
+            "next_move": "Show this frontier before deciding whether to explore or commission.",
+            "ai_assumptions": [],
+        }
+
+    def _write_exploration(self, payload: dict | None = None) -> Path:
+        value = payload or self._exploration()
+        path = self.game_repo / EXPLORATION_RELATIVE
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+        return path
+
+    def _record_emerged_exploration(self) -> Path:
+        path = self._write_exploration()
+        result = record_exploration(str(self.game_repo), EXPLORATION_RELATIVE.as_posix())
+        self.assertEqual(IDEA_DIRECTION_EMERGED, result.status)
+        return path
+
+    def _payload(self, authority: str = "AI_DELEGATED") -> dict:
+        delegated = authority == "AI_DELEGATED"
+        exploration_path = self._record_emerged_exploration()
+        return {
+            "schema_version": "product_thesis_input.v2",
+            "project_id": "early-auto-battler",
+            "repository": {
+                "expected_revision": self.probe["repository"]["revision"],
+                "declared_dirty_paths": self.probe["repository"]["dirty_paths"],
+                "working_tree_sha256": self.probe["repository"]["working_tree_sha256"],
+            },
+            "commission": {
+                "authorized": True,
+                "authorization_quote": "Adopt the emerged direction and compile it.",
+                "exploration_path": EXPLORATION_RELATIVE.as_posix(),
+                "exploration_sha256": hashlib.sha256(exploration_path.read_bytes()).hexdigest(),
+                "selected_direction_id": "small-mastery-game",
             },
             "seed": {
                 "user_seed": "Help decide the product direction for this early auto battler.",
@@ -189,7 +304,7 @@ class IdeaFactoryTests(unittest.TestCase):
         return path
 
     def test_start_writes_bounded_non_semantic_probe(self) -> None:
-        self.assertEqual("idea_factory_repo_probe.v1", self.probe["schema_version"])
+        self.assertEqual("idea_factory_repo_probe.v2", self.probe["schema_version"])
         self.assertLessEqual(
             len(self.probe["candidate_product_materials"]),
             self.probe["candidate_limit"],
@@ -207,9 +322,97 @@ class IdeaFactoryTests(unittest.TestCase):
             stderr=subprocess.PIPE,
         )
         result = start_idea_factory(str(blank))
-        self.assertEqual(IDEA_FACTORY_DIALOGUE_REQUIRED, result.status)
+        self.assertEqual(IDEA_EXPLORATION_REQUIRED, result.status)
         probe = json.loads((blank / PROBE_RELATIVE).read_text())
         self.assertEqual("UNBORN_HEAD", probe["repository"]["revision"])
+
+    def test_open_exploration_requires_no_direction_or_product_thesis(self) -> None:
+        self._write_exploration(self._exploration(frontier_state="OPEN"))
+        result = record_exploration(
+            str(self.game_repo), EXPLORATION_RELATIVE.as_posix()
+        )
+        self.assertEqual(IDEA_EXPLORATION_OPEN, result.status)
+        self.assertTrue((self.game_repo / EXPLORATION_MD_RELATIVE).is_file())
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
+        self.assertIn(
+            "No direction is required",
+            (self.game_repo / EXPLORATION_MD_RELATIVE).read_text(),
+        )
+
+    def test_reference_no_fit_is_a_valid_result_not_a_forced_synthesis(self) -> None:
+        self._write_exploration(
+            self._exploration(
+                frontier_state="REFERENCE_NO_FIT",
+                relation="NO_PRODUCTIVE_RELATION",
+            )
+        )
+        result = record_exploration(
+            str(self.game_repo), EXPLORATION_RELATIVE.as_posix()
+        )
+        self.assertEqual(IDEA_REFERENCE_NO_FIT, result.status)
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
+
+    def test_live_directions_remain_non_binding(self) -> None:
+        self._write_exploration(
+            self._exploration(frontier_state="LIVE_DIRECTIONS")
+        )
+        result = record_exploration(
+            str(self.game_repo), EXPLORATION_RELATIVE.as_posix()
+        )
+        self.assertEqual(IDEA_DIRECTIONS_AVAILABLE, result.status)
+        self.assertFalse((self.game_repo / CONSTRAINTS_RELATIVE).exists())
+
+    def test_no_fit_exploration_cannot_be_filled_into_a_product_thesis(self) -> None:
+        no_fit = self._exploration(
+            frontier_state="REFERENCE_NO_FIT",
+            relation="NO_PRODUCTIVE_RELATION",
+        )
+        exploration_path = self._write_exploration(no_fit)
+        payload = self._payload()
+        exploration_path.write_text(json.dumps(no_fit, ensure_ascii=False, indent=2) + "\n")
+        recorded = record_exploration(
+            str(self.game_repo), EXPLORATION_RELATIVE.as_posix()
+        )
+        self.assertEqual(IDEA_REFERENCE_NO_FIT, recorded.status)
+        payload["commission"]["exploration_sha256"] = hashlib.sha256(
+            exploration_path.read_bytes()
+        ).hexdigest()
+        self._write_input(payload)
+        result = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_IDEA_MATERIAL, result.status)
+        self.assertTrue(
+            any("frontier_state is DIRECTION_EMERGED" in error for error in result.errors)
+        )
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
+
+    def test_delegation_does_not_bypass_explicit_commission(self) -> None:
+        payload = self._payload()
+        payload["commission"]["authorized"] = False
+        payload["commission"]["authorization_quote"] = ""
+        self._write_input(payload)
+        result = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_IDEA_MATERIAL, result.status)
+        self.assertTrue(
+            any("do not by themselves authorize" in error for error in result.errors)
+        )
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
+
+    def test_exploration_check_detects_stale_derived_view(self) -> None:
+        self._record_emerged_exploration()
+        (self.game_repo / EXPLORATION_MD_RELATIVE).write_text("stale\n")
+        result = check_exploration(
+            str(self.game_repo), EXPLORATION_RELATIVE.as_posix()
+        )
+        self.assertEqual(BLOCKED_BY_IDEA_MATERIAL, result.status)
+
+    def test_product_compile_requires_the_checked_exploration_view(self) -> None:
+        payload = self._payload()
+        (self.game_repo / EXPLORATION_MD_RELATIVE).write_text("stale\n")
+        self._write_input(payload)
+        result = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_IDEA_MATERIAL, result.status)
+        self.assertTrue(any("exploration view is stale" in error for error in result.errors))
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
 
     def test_ai_recommendation_is_complete_but_requires_review(self) -> None:
         self._write_input(self._payload("AI_RECOMMENDED"))
@@ -231,6 +434,68 @@ class IdeaFactoryTests(unittest.TestCase):
         repeated = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(IDEA_FACTORY_READY, repeated.status)
         self.assertFalse(repeated.created_paths)
+
+    def test_reopen_keeps_existing_product_authority_and_returns_to_exploration(self) -> None:
+        self._write_input(self._payload())
+        compiled = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(IDEA_FACTORY_READY, compiled.status)
+        thesis_before = (self.game_repo / THESIS_RELATIVE).read_text()
+        reopened = start_idea_factory(str(self.game_repo), reopen=True)
+        self.assertEqual(IDEA_DIRECTION_EMERGED, reopened.status)
+        self.assertEqual(thesis_before, (self.game_repo / THESIS_RELATIVE).read_text())
+
+    def test_reopen_refreshes_old_probe_without_touching_old_product_files(self) -> None:
+        old_probe = dict(self.probe)
+        old_probe["schema_version"] = "idea_factory_repo_probe.v1"
+        old_probe["status"] = "IDEA_FACTORY_DIALOGUE_REQUIRED"
+        (self.game_repo / PROBE_RELATIVE).write_text(
+            json.dumps(old_probe, ensure_ascii=False, indent=2) + "\n"
+        )
+        old_files = {
+            INPUT_RELATIVE: "{\"schema_version\": \"product_thesis_input.v1\"}\n",
+            RESULT_RELATIVE: "old result\n",
+            THESIS_RELATIVE: "old thesis\n",
+            CONSTRAINTS_RELATIVE: "old constraints\n",
+        }
+        for relative, body in old_files.items():
+            path = self.game_repo / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(body)
+        reopened = start_idea_factory(str(self.game_repo), reopen=True)
+        self.assertEqual(IDEA_EXPLORATION_REQUIRED, reopened.status)
+        self.assertTrue(any("must not anchor" in warning for warning in reopened.warnings))
+        refreshed = json.loads((self.game_repo / PROBE_RELATIVE).read_text())
+        self.assertEqual("idea_factory_repo_probe.v2", refreshed["schema_version"])
+        for relative, body in old_files.items():
+            self.assertEqual(body, (self.game_repo / relative).read_text())
+
+    def test_cli_explore_accepts_no_fit_without_product_outputs(self) -> None:
+        self._write_exploration(
+            self._exploration(
+                frontier_state="REFERENCE_NO_FIT",
+                relation="CONTRADICTION",
+            )
+        )
+        script = Path(__file__).resolve().parents[1] / "idea.py"
+        result = subprocess.run(
+            [
+                "python3",
+                str(script),
+                "explore",
+                "--game-repo",
+                str(self.game_repo),
+                "--input",
+                EXPLORATION_RELATIVE.as_posix(),
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(IDEA_REFERENCE_NO_FIT, result.stdout.splitlines()[0])
+        self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
 
     def test_completed_product_authority_survives_later_repository_commits(self) -> None:
         self._write_input(self._payload())
@@ -380,6 +645,13 @@ class IdeaFactoryTests(unittest.TestCase):
         with self.assertRaises(IdeaFactoryError):
             compile_product_thesis(str(self.game_repo), str(outside))
         self.assertFalse((self.game_repo / THESIS_RELATIVE).exists())
+
+    def test_outside_exploration_is_rejected_before_derived_output_creation(self) -> None:
+        outside = Path(self.temporary_directory.name) / "outside-exploration.json"
+        outside.write_text(json.dumps(self._exploration()) + "\n")
+        with self.assertRaises(IdeaFactoryError):
+            record_exploration(str(self.game_repo), str(outside))
+        self.assertFalse((self.game_repo / EXPLORATION_MD_RELATIVE).exists())
 
     def test_schema_files_are_valid_json(self) -> None:
         schema_root = Path(__file__).resolve().parents[1] / "schemas"
