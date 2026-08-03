@@ -182,6 +182,64 @@ No prerequisite plan; runtime review closes the gap.
             encoding="utf-8",
         )
 
+    def _ui_binding(self) -> dict:
+        adapter_path = (
+            self.game_repo
+            / "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json"
+        )
+        adapter_path.parent.mkdir(parents=True, exist_ok=True)
+        evidence_sha = hashlib.sha256(
+            (self.game_repo / "game.gd").read_bytes()
+        ).hexdigest()
+        evidence_refs = [
+            {
+                "path": "game.gd",
+                "source_sha256": evidence_sha,
+            }
+        ]
+        adapter = {
+            "schema_version": "ui_production_adapter.v1",
+            "status": "UI_PRODUCTION_ADAPTER_READY",
+            "surfaces": [{"evidence_refs": evidence_refs}],
+            "rules": [
+                {"rule_id": "state.single-owner", "evidence_refs": evidence_refs}
+            ],
+            "canonical_exemplars": [
+                {"exemplar_id": "camp.panel", "evidence_refs": evidence_refs}
+            ],
+            "viewport_profiles": [{"viewport_id": "desktop"}],
+            "localization_profiles": [{"profile_id": "stress"}],
+            "validation_scenarios": [{"scenario_id": "camp.returning"}],
+        }
+        adapter_path.write_text(json.dumps(adapter) + "\n", encoding="utf-8")
+        adapter_sha = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
+        result_path = (
+            self.game_repo
+            / "design/gameplay/ui/UI_PRODUCTION_ADAPTER_RESULT.json"
+        )
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "ui_production_adapter_result.v1",
+                    "status": "UI_PRODUCTION_ADAPTER_READY",
+                    "outputs": {
+                        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json": adapter_sha
+                    },
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return {
+            "touches_ui": True,
+            "adapter_path": "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
+            "adapter_sha256": adapter_sha,
+            "rule_ids": ["state.single-owner"],
+            "exemplar_ids": ["camp.panel"],
+            "validation_scenario_ids": ["camp.returning"],
+        }
+
     def test_valid_repair_manifest_is_ready(self) -> None:
         result = validate_repair_plan(str(self.game_repo), self.manifest_relative)
         self.assertEqual(READY_FOR_EXECUTION, result.status)
@@ -300,6 +358,34 @@ No prerequisite plan; runtime review closes the gap.
         )
         with self.assertRaises(RepairPlanningError):
             validate_repair_plan(str(self.game_repo), str(outside_manifest))
+
+    def test_v2_ui_repair_plan_binds_repo_ui_grammar(self) -> None:
+        binding = self._ui_binding()
+        payload = self._manifest()
+        payload["schema_version"] = "repair_plan_manifest.v2"
+        payload["plans"][0]["work_types"] = ["CODE", "UI", "TEST"]
+        payload["plans"][0]["ui_impact"] = binding
+        self._write_manifest(payload)
+        plan = self._plan_text() + f"""
+## UI realization contract
+- UI adapter: `{binding['adapter_path']}`
+- UI adapter SHA-256: `{binding['adapter_sha256']}`
+- UI rules: `state.single-owner`
+- UI exemplars: `camp.panel`
+- UI validation scenarios: `camp.returning`
+"""
+        (self.plan_dir / "R01_fire.md").write_text(plan, encoding="utf-8")
+        result = validate_repair_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(READY_FOR_EXECUTION, result.status)
+        self.assertFalse(result.errors)
+
+    def test_legacy_ui_repair_plan_requires_regeneration(self) -> None:
+        payload = self._manifest()
+        payload["plans"][0]["work_types"] = ["UI", "TEST"]
+        self._write_manifest(payload)
+        result = validate_repair_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("legacy v1 UI plan" in error for error in result.errors))
 
 
 if __name__ == "__main__":

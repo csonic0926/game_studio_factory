@@ -1,8 +1,9 @@
 # Gameplay Factory
 
-Gameplay Factory has one initialization entry and two compact production
-paths. The installed `gameplay-factory` skill is the normal user/AI entry; it
-loads the canonical router in [`AGENTS.md`](AGENTS.md).
+Gameplay Factory has one initialization entry, two compact gameplay-production
+paths, and one just-in-time UI production preflight. The installed
+`gameplay-factory` skill is the normal user/AI entry; it loads the canonical
+router in [`AGENTS.md`](AGENTS.md).
 
 Normal usage from the game repo is simply:
 
@@ -63,6 +64,30 @@ exact existing OBJECTIVE_GAMEPLAY.md + one evidenced gap
 When both a concrete known gap and forward progression are active, repair the
 gap first unless the user explicitly defers it.
 
+**UI production preflight** runs only when an objective or repair will change
+UI. It reconstructs this repo's working UI construction grammar once and binds
+it into the production plan:
+
+```text
+ui.py start
+  -> bounded non-semantic UI file probe
+  -> one evidence-focused UI_PRODUCTION_ADAPTER_INPUT.json
+  -> ui.py compile + check
+  -> UI_PRODUCTION_ADAPTER.json/.md
+  -> v2 plan selects exact adapter SHA + rule/exemplar/scenario ids
+```
+
+The investigation is revision/dirty-byte bound. Reuse is narrower: exact
+fingerprints on cited UI convention sources mean unrelated commits do not
+force another study, while a changed exemplar/state/scene source fails closed
+and requires the explicit, integrity-checked `ui.py refresh` path.
+
+This separates feature intent from UI realization. It prevents the production
+model from guessing container/anchor structure, duplicating state/refresh
+logic, breaking node paths/lifecycle/input/layers, or validating only one
+viewport/locale/happy state. See
+[`docs/UI_PRODUCTION_WORKFLOW.md`](docs/UI_PRODUCTION_WORKFLOW.md).
+
 The previous quant-first chain remains present for existing pilot artifacts:
 
 ```text
@@ -116,6 +141,11 @@ change/file/state ownership. `plan.py validate` binds them to the exact
 checks dependencies and portable repo paths, and rejects shared planned-file
 ownership. The plans compile design into production requirements; they may
 return `BLOCKED_BY_PLAN_GAP` but may not redesign gameplay silently.
+
+Manifest v2 adds mandatory `ui_impact`. Non-UI plans explicitly declare false.
+UI plans require a checked game-owned UI adapter, exact hash, selected rule/
+exemplar/validation ids, and matching Markdown contract. Legacy v1 manifests
+remain readable only for non-UI historical plans.
 
 ## Objective production — Step 4
 
@@ -194,6 +224,8 @@ prepare.py                             Step 1 context validator/compiler
 plan.py                                Step 3 production-plan validator
 repair.py                              repair context validator/compiler
 repair_plan.py                         repair production-plan validator
+ui.py                                  UI repo probe/compiler/checker
+ui_binding.py                          shared plan-to-UI-adapter validator
 schemas/next_gameplay_unit_input.schema.json
 schemas/gameplay_design_model.schema.json
 schemas/gameplay_factory_repo_probe.schema.json
@@ -202,6 +234,10 @@ schemas/gameplay_factory_init_result.schema.json
 schemas/production_plan_manifest.schema.json
 schemas/gameplay_gap_input.schema.json
 schemas/repair_plan_manifest.schema.json
+schemas/ui_production_repo_probe.schema.json
+schemas/ui_production_adapter_input.schema.json
+schemas/ui_production_adapter.schema.json
+schemas/ui_production_adapter_result.schema.json
 templates/GAMEPLAY_DESIGN_MODEL.json
 templates/GAMEPLAY_FACTORY_INIT_INPUT.json
 templates/NEXT_GAMEPLAY_UNIT_INPUT.json
@@ -212,6 +248,7 @@ templates/GAMEPLAY_GAP_INPUT.json
 templates/GAMEPLAY_REPAIR.md
 templates/REPAIR_PLAN_MANIFEST.json
 templates/REPAIR_PRODUCTION_PLAN.md
+templates/UI_PRODUCTION_ADAPTER_INPUT.json
 reader.py                              runtime evidence reference tool
 tests/                                 preparation + planning + reader tests
 docs/*_CONTRACT.md                     current and previous-pilot contracts

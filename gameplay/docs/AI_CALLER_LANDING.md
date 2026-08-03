@@ -3,8 +3,8 @@
 The canonical entry and routing guide is [`../AGENTS.md`](../AGENTS.md). Read
 it first.
 
-Gameplay Factory has one initialization entry and two compact production
-entries:
+Gameplay Factory has one initialization entry, two compact production
+entries, and a just-in-time UI production preflight:
 
 - [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](GAMEPLAY_FACTORY_INIT_WORKFLOW.md)
   routes a total-new project to game definition, reconstructs an existing repo,
@@ -14,6 +14,8 @@ entries:
 - [`GAMEPLAY_REPAIR_WORKFLOW.md`](GAMEPLAY_REPAIR_WORKFLOW.md)
   closes one concrete gameplay gap inside an existing objective without
   rewriting that objective.
+- [`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md) reconstructs the
+  current repo's UI construction grammar before a UI-changing plan.
 
 If a concrete known gap and a request to advance progression coexist, repair
 the gap first unless the user explicitly defers it. The older quant/Beat
@@ -30,6 +32,7 @@ factory: <FACTORY_REPO>/gameplay
 operation: produce_objective | prepare_objective | author_objective | plan_production |
            init_gameplay_factory | probe_existing_project | compile_init | check_init |
            repair_gameplay_gap | prepare_repair | plan_repair |
+           prepare_ui_production | check_ui_production | refresh_ui_production |
            legacy_quantify_span | realize_walkthrough | compile_packets | landing_review |
            observe_runtime | runtime_acceptance
 game_repo: <explicit path, or CURRENT_GIT_ROOT>
@@ -164,6 +167,19 @@ required production knowledge only in chat/session state. Split plans by
 coherent code/data/state ownership and independent verification boundary, not
 one plan per objective row. Validate before execution:
 
+Before the planner writes a UI-changing plan, run:
+
+```bash
+python3 gameplay/ui.py start --game-repo <GAME_REPO>
+```
+
+If it returns `UI_PRODUCTION_ADAPTER_INPUT_REQUIRED`, follow
+`UI_PRODUCTION_WORKFLOW.md` with one bounded evidence investigator, then
+compile/check the game-owned adapter. Manifest v2 UI plans bind its exact SHA
+and relevant rule/exemplar/validation-scenario ids. Do not use feature intent
+as permission to guess the repo's layout, state/refresh, scene/lifecycle,
+input/layer, responsive, localization, or validation conventions.
+
 ```bash
 python3 gameplay/plan.py validate \
   --game-repo <GAME_REPO> \
@@ -216,6 +232,10 @@ design/gameplay/repairs/<gap_id>/
   REPAIR_PLAN_MANIFEST.json
   production_plans/<plan_id>_<change_unit>.md
 ```
+
+The same UI preflight and v2 adapter binding are mandatory when the repair
+touches UI, including apparently visual symptoms whose cause may be state
+ownership or scene integration.
 
 Validate:
 

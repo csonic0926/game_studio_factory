@@ -8,6 +8,17 @@
 - Source SHA-256: `<SHA256_OF_REPAIR_SOURCE_UTF8_BYTES>`
 - Repair rows: `<COMMA_SEPARATED_ROW_NUMBERS>`
 
+For a UI-changing plan, include this exact adapter selection; omit this section
+only when `ui_impact.touches_ui` is false:
+
+## UI realization contract
+
+- UI adapter: `design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json`
+- UI adapter SHA-256: `<SHA256_OF_UI_PRODUCTION_ADAPTER_UTF8_BYTES>`
+- UI rules: `<COMMA_SEPARATED_RULE_IDS>`
+- UI exemplars: `<COMMA_SEPARATED_EXEMPLAR_IDS>`
+- UI validation scenarios: `<COMMA_SEPARATED_SCENARIO_IDS>`
+
 ## Source authority
 
 State which repair rows this plan realizes, how they amend the anchored

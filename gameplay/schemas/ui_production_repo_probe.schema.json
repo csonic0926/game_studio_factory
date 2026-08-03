@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/ui_production_repo_probe.schema.json",
+  "title": "UI Production Repository Probe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repository_binding",
+    "project_markers",
+    "candidate_files",
+    "candidate_count",
+    "truncated",
+    "semantic_authority",
+    "next_input"
+  ],
+  "properties": {
+    "schema_version": {"const": "ui_production_repo_probe.v1"},
+    "repository_binding": {"$ref": "#/$defs/repository_binding"},
+    "project_markers": {"type": "array", "items": {"type": "string"}},
+    "candidate_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "score"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "score": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "candidate_count": {"type": "integer", "minimum": 0},
+    "truncated": {"type": "boolean"},
+    "semantic_authority": {"const": "NONE"},
+    "next_input": {"const": "design/gameplay/ui/UI_PRODUCTION_ADAPTER_INPUT.json"}
+  },
+  "$defs": {
+    "repository_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "dirty_paths", "working_tree_sha256"],
+      "properties": {
+        "revision": {"type": "string", "minLength": 1},
+        "dirty_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

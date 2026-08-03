@@ -132,6 +132,64 @@ No prerequisite plan.
             encoding="utf-8",
         )
 
+    def _ui_binding(self) -> dict:
+        adapter_path = (
+            self.game_repo
+            / "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json"
+        )
+        adapter_path.parent.mkdir(parents=True, exist_ok=True)
+        evidence_sha = hashlib.sha256(
+            (self.game_repo / "game.gd").read_bytes()
+        ).hexdigest()
+        evidence_refs = [
+            {
+                "path": "game.gd",
+                "source_sha256": evidence_sha,
+            }
+        ]
+        adapter = {
+            "schema_version": "ui_production_adapter.v1",
+            "status": "UI_PRODUCTION_ADAPTER_READY",
+            "surfaces": [{"evidence_refs": evidence_refs}],
+            "rules": [
+                {"rule_id": "layout.container", "evidence_refs": evidence_refs}
+            ],
+            "canonical_exemplars": [
+                {"exemplar_id": "main.panel", "evidence_refs": evidence_refs}
+            ],
+            "viewport_profiles": [{"viewport_id": "desktop"}],
+            "localization_profiles": [{"profile_id": "stress"}],
+            "validation_scenarios": [{"scenario_id": "desktop.populated"}],
+        }
+        adapter_path.write_text(json.dumps(adapter) + "\n", encoding="utf-8")
+        adapter_sha = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
+        result_path = (
+            self.game_repo
+            / "design/gameplay/ui/UI_PRODUCTION_ADAPTER_RESULT.json"
+        )
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "ui_production_adapter_result.v1",
+                    "status": "UI_PRODUCTION_ADAPTER_READY",
+                    "outputs": {
+                        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json": adapter_sha
+                    },
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return {
+            "touches_ui": True,
+            "adapter_path": "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
+            "adapter_sha256": adapter_sha,
+            "rule_ids": ["layout.container"],
+            "exemplar_ids": ["main.panel"],
+            "validation_scenario_ids": ["desktop.populated"],
+        }
+
     def test_valid_manifest_and_persisted_plan_are_ready(self) -> None:
         result = validate_production_plan(
             str(self.game_repo), self.manifest_relative
@@ -294,6 +352,63 @@ No prerequisite plan.
         self._write_manifest(payload)
         with self.assertRaises(PlanningError):
             validate_production_plan(str(self.game_repo), self.manifest_relative)
+
+    def test_legacy_ui_plan_requires_regeneration(self) -> None:
+        payload = self._manifest()
+        payload["plans"][0]["work_types"] = ["UI", "TEST"]
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("legacy v1 UI plan" in error for error in result.errors))
+
+    def test_v2_ui_plan_must_bind_exact_adapter_and_markdown_contract(self) -> None:
+        binding = self._ui_binding()
+        (self.game_repo / "ui").mkdir(exist_ok=True)
+        (self.game_repo / "ui/main.tscn").write_text("[node]\n", encoding="utf-8")
+        payload = self._manifest()
+        payload["schema_version"] = "production_plan_manifest.v2"
+        payload["plans"][0]["work_types"] = ["UI", "TEST"]
+        payload["plans"][0]["planned_paths"] = ["ui/main.tscn"]
+        payload["plans"][0]["ui_impact"] = binding
+        self._write_manifest(payload)
+        plan = self._plan_text() + f"""
+## UI realization contract
+- UI adapter: `{binding['adapter_path']}`
+- UI adapter SHA-256: `{binding['adapter_sha256']}`
+- UI rules: `layout.container`
+- UI exemplars: `main.panel`
+- UI validation scenarios: `desktop.populated`
+"""
+        (self.plan_dir / "P01_gate.md").write_text(plan, encoding="utf-8")
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(READY_FOR_EXECUTION, result.status)
+        self.assertFalse(result.errors)
+        (self.game_repo / "game.gd").write_text(
+            "func open_gate():\n\tpass\n# changed UI authority source\n",
+            encoding="utf-8",
+        )
+        stale = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, stale.status)
+        self.assertTrue(
+            any("UI adapter evidence changed" in error for error in stale.errors)
+        )
+
+    def test_obvious_ui_path_cannot_declare_no_ui_impact(self) -> None:
+        payload = self._manifest()
+        payload["schema_version"] = "production_plan_manifest.v2"
+        payload["plans"][0]["planned_paths"] = ["ui/main.tscn"]
+        payload["plans"][0]["ui_impact"] = {
+            "touches_ui": False,
+            "adapter_path": "",
+            "adapter_sha256": "",
+            "rule_ids": [],
+            "exemplar_ids": [],
+            "validation_scenario_ids": [],
+        }
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("touches_ui=false" in error for error in result.errors))
 
 
 if __name__ == "__main__":

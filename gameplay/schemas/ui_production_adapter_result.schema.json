@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/ui_production_adapter_result.schema.json",
+  "title": "UI Production Adapter Compile Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "project_id",
+    "source_input_path",
+    "source_input_sha256",
+    "outputs"
+  ],
+  "properties": {
+    "schema_version": {"const": "ui_production_adapter_result.v1"},
+    "status": {"const": "UI_PRODUCTION_ADAPTER_READY"},
+    "project_id": {"type": "string", "minLength": 1},
+    "source_input_path": {"const": "design/gameplay/ui/UI_PRODUCTION_ADAPTER_INPUT.json"},
+    "source_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
+        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.md"
+      ],
+      "properties": {
+        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.md": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

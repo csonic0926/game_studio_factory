@@ -207,6 +207,13 @@ must persist the same contract:
 - `templates/REPAIR_PLAN_MANIFEST.json`
 - `templates/REPAIR_PRODUCTION_PLAN.md`
 
+Before planning, classify UI impact. If the repair touches a visible scene,
+HUD, menu/modal/overlay, responsive composition, localization fit, or UI state
+refresh, complete
+[`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md). The symptom may be
+visual while the cause is state ownership or scene integration; the repair
+planner may not guess or patch around those repo conventions.
+
 The planning source is:
 
 - `GAMEPLAY_REPAIR_CONTEXT.md` for
@@ -221,6 +228,12 @@ The manifest binds both:
 Every numbered repair row has exactly one coverage entry. Plans split by
 coherent file/state ownership and verification boundary, not by table row.
 Shared planned paths are invalid.
+
+Manifest v2 requires `ui_impact` on every plan. UI repair plans bind the exact
+checked UI Production Adapter SHA and select relevant rule, exemplar, and
+validation-scenario ids; the Markdown plan repeats them under
+`## UI realization contract`. Historical v1 repair manifests remain valid
+only for non-UI work.
 
 Validate:
 
@@ -242,7 +255,8 @@ intermediate. The original caller immediately:
 
 1. executes dependency-ready repair plans;
 2. changes only paths owned by those plans;
-3. runs ordinary repo tests/build/data/asset validation;
+3. runs ordinary repo tests/build/data/asset validation and every selected UI
+   adapter state/viewport/localization/interaction scenario;
 4. captures the player-visible runtime evidence required by the repair source;
 5. updates `GAMEPLAY_GAP_INPUT.json` to
    `IMPLEMENTED_PENDING_ACCEPTANCE`;

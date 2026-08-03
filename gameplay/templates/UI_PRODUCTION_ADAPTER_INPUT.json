@@ -1,0 +1,84 @@
+{
+  "schema_version": "ui_production_adapter_input.v1",
+  "project_id": "<PROJECT_ID>",
+  "probe_path": "design/gameplay/ui/PROJECT_UI_REPO_PROBE.json",
+  "probe_sha256": "<SHA256_OF_PROJECT_UI_REPO_PROBE_UTF8_BYTES>",
+  "repository_binding": {
+    "revision": "<PROBE_REVISION>",
+    "dirty_paths": [],
+    "working_tree_sha256": "<PROBE_WORKING_TREE_SHA256>"
+  },
+  "surfaces": [
+    {
+      "surface_id": "<CANONICAL_SURFACE_ID>",
+      "responsibility": "<WHAT_THIS_SURFACE_OWNS>",
+      "layout_structure": "<CONTAINERS_ANCHORS_OFFSETS_SIZING_AND_COMPOSITION>",
+      "state_ownership": "<AUTHORITATIVE_STATE_AND_WHAT_MUST_NOT_DUPLICATE_IT>",
+      "refresh_and_signal_flow": "<STATE_TO_VIEW_REFRESH_AND_SIGNAL_ORDER>",
+      "scene_lifecycle": "<SCENE_NODE_PATH_INSTANTIATION_AND_TEARDOWN_RULES>",
+      "input_and_layering": "<INPUT_MODAL_FOCUS_LAYER_AND_Z_ORDER_RULES>",
+      "evidence_refs": [
+        {
+          "role": "canonical_scene",
+          "path": "<REPO_RELATIVE_PATH>",
+          "contains": ["<EXACT_TOKEN>"]
+        }
+      ]
+    }
+  ],
+  "canonical_exemplars": [
+    {
+      "exemplar_id": "<EXEMPLAR_ID>",
+      "why_canonical": "<WHY_NEW_UI_SHOULD_FOLLOW_THIS_EXISTING_SURFACE>",
+      "rules_illustrated": ["<RULE_ID>"],
+      "evidence_refs": [
+        {
+          "role": "working_exemplar",
+          "path": "<REPO_RELATIVE_PATH>",
+          "contains": ["<EXACT_TOKEN>"]
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "<RULE_ID>",
+      "category": "LAYOUT_STRUCTURE | STATE_OWNERSHIP | SCENE_INTEGRATION | INPUT_AND_LAYERING | RESPONSIVE_COMPOSITION | LOCALIZATION_FIT | VALIDATION",
+      "authority": "REPO_EVIDENCE | USER_RULING | FACTORY_INVARIANT",
+      "requirement": "<BINDING_IMPLEMENTATION_REQUIREMENT>",
+      "rationale": "<FAILURE_PREVENTED_OR_CONVENTION_PRESERVED>",
+      "evidence_refs": [],
+      "user_quote": ""
+    }
+  ],
+  "viewport_profiles": [
+    {
+      "viewport_id": "<VIEWPORT_ID>",
+      "width": 1920,
+      "height": 1080,
+      "input_modes": ["mouse"],
+      "composition_requirements": ["<VISIBLE_COMPOSITION_REQUIREMENT>"]
+    }
+  ],
+  "localization_profiles": [
+    {
+      "profile_id": "<LOCALIZATION_PROFILE_ID>",
+      "locale_ids": ["<LOCALE_ID>"],
+      "fit_requirements": ["<TEXT_EXPANSION_OR_GLYPH_FIT_REQUIREMENT>"]
+    }
+  ],
+  "validation_scenarios": [
+    {
+      "scenario_id": "<SCENARIO_ID>",
+      "viewport_id": "<VIEWPORT_ID>",
+      "localization_profile_id": "<LOCALIZATION_PROFILE_ID>",
+      "ui_states": ["<EMPTY_LOADING_POPULATED_DISABLED_MODAL_OR_ERROR_STATE>"],
+      "interaction_path": ["<PLAYER_INPUT_STEP>"],
+      "assertions": ["<LAYOUT_STATE_AND_SCENE_INTEGRATION_ASSERTION>"],
+      "capture_requirements": ["<SCREENSHOT_OR_RUNTIME_TRACE_REQUIREMENT>"]
+    }
+  ],
+  "anti_patterns": [],
+  "unresolved_material_gaps": [],
+  "ai_assumptions": []
+}

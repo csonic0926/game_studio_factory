@@ -6,7 +6,8 @@ Gameplay Factory core is project-agnostic. The factory owns contracts,
 schemas, reader tools, and blank answer sheets. Each game repo owns filled
 answers and versions them beside the code/data/evidence they describe.
 
-There are three independent answer surfaces:
+There are three initialization-time answer surfaces and one just-in-time UI
+production surface:
 
 1. **Project Gameplay Profile** — player frames, verbs, systems, spaces,
    engagement generators, presentation/control, grammar, budgets, and review.
@@ -15,6 +16,9 @@ There are three independent answer surfaces:
 3. **Observation Adapter** — how instrumentation captures actual play, maps it
    to canonical evidence, supports reproducible sessions/probes, and blinds
    the runtime reader.
+4. **UI Production Adapter** — how this repo owns layout, view state/refresh,
+   scene lifecycle, input/layers, responsive/localized composition, canonical
+   exemplars, and stateful UI validation. It is required only before UI work.
 
 Production tests cannot substitute for observation. The Observation Adapter
 may physically be a mandatory independent section of the Production Adapter,
@@ -35,6 +39,8 @@ the full profile/codebase.
   PRODUCTION_ADAPTER.md
   OBSERVATION_ADAPTER.md
   GAMEPLAY_DESIGN_MODEL.json
+  UI_PRODUCTION_ADAPTER.json       # just-in-time when UI production is needed
+  UI_PRODUCTION_ADAPTER.md         # derived readable projection
 ```
 
 Factory blanks remain under `gameplay/adapters/_template/`.
@@ -57,10 +63,15 @@ preparation additionally reads `GAMEPLAY_DESIGN_MODEL.json`. Reject
 a game root inside this factory. Never scan siblings, borrow another factory's
 registry, infer a game from engine code, or commit developer paths.
 
-A missing file, `TBD`, inconsistent version, missing referenced file, or
+A missing initialization-time file, `TBD`, inconsistent version, missing referenced file, or
 undeclared capability produces `BLOCKED_BY_ADAPTER`. A required acceptance
 kernel that the Observation Adapter cannot support produces
 `BLOCKED_BY_OBSERVABILITY` before packet production.
+
+The optional UI adapter is not required to author gameplay. It is a hard gate
+before a UI-changing production plan. Run `UI_PRODUCTION_WORKFLOW.md` to create
+or refresh it; do not inflate existing-project initialization by reconstructing
+UI when the next production change does not touch UI.
 
 ## Project Gameplay Profile answers
 
@@ -97,6 +108,24 @@ The production adapter declares:
 
 Implementation must land gameplay and required instrumentation together.
 Mechanical tests can prove state/reference behavior but not player reception.
+
+## UI Production Adapter answers
+
+The UI adapter is narrower and more structural than the general Production
+Adapter. It records:
+
+- owned surfaces and exact successful repo exemplars;
+- container/anchor/offset/sizing and responsive-composition grammar;
+- authoritative state, state-to-view refresh, signal order, and forbidden
+  duplicate view state/logic;
+- scene/node ownership, lifecycle, input/focus, modal/canvas/layer/z-order;
+- viewport/input profiles and localization fit/stress profiles;
+- stateful interaction/capture scenarios that cover those profiles;
+- evidenced anti-patterns and exact repo/user/factory authority for each rule.
+
+Objective/repair design owns **what** the player should see and do. This
+adapter owns **how this repository safely realizes that UI**. Production plans
+bind its exact SHA and select relevant ids; the plan may not rewrite it.
 
 ## Observation Adapter answers
 
@@ -148,6 +177,12 @@ design/gameplay/
     PRODUCTION_ADAPTER.md
     OBSERVATION_ADAPTER.md
     GAMEPLAY_DESIGN_MODEL.json
+    UI_PRODUCTION_ADAPTER.json
+    UI_PRODUCTION_ADAPTER.md
+  ui/
+    PROJECT_UI_REPO_PROBE.json
+    UI_PRODUCTION_ADAPTER_INPUT.json
+    UI_PRODUCTION_ADAPTER_RESULT.json
   span_quants/<span_id>.md
   experience_beat_sheets/<sheet_id>.md
   experience_beat_sheets/<sheet_id>_QUANTITATIVE_EXPERIENCE_BUDGET.json

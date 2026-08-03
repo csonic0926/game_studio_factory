@@ -18,8 +18,25 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+try:  # Package import in tests; script import for direct CLI use.
+    from gameplay.ui_binding import (
+        UiImpactBinding,
+        markdown_ui_contract,
+        validate_ui_impact,
+    )
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    from ui_binding import (  # type: ignore[no-redef]
+        UiImpactBinding,
+        markdown_ui_contract,
+        validate_ui_impact,
+    )
 
-SCHEMA_VERSION = "repair_plan_manifest.v1"
+
+SCHEMA_VERSION = "repair_plan_manifest.v2"
+SUPPORTED_SCHEMA_VERSIONS = {
+    "repair_plan_manifest.v1",
+    SCHEMA_VERSION,
+}
 READY_FOR_EXECUTION = "READY_FOR_EXECUTION"
 BLOCKED_BY_PLAN_GAP = "BLOCKED_BY_PLAN_GAP"
 
@@ -102,6 +119,8 @@ class _ResolvedPlan:
     depends_on: tuple[str, ...]
     existing_repo_refs: tuple[Path, ...]
     planned_paths: tuple[Path, ...]
+    work_types: tuple[str, ...]
+    ui_impact: UiImpactBinding
 
 
 def _is_within(path: Path, root: Path) -> bool:
@@ -322,6 +341,9 @@ def _validate_plan_markdown(
         errors.append(f"{label} Repair rows do not match the manifest")
     if plan.status == READY_FOR_EXECUTION and re.search(r"\bTBD\b", plan_text):
         errors.append(f"{label} is READY_FOR_EXECUTION but still contains TBD")
+    for required_line in markdown_ui_contract(plan.ui_impact):
+        if required_line not in plan_text:
+            errors.append(f"{label} lacks UI realization binding: {required_line}")
 
 
 def validate_repair_plan(
@@ -344,8 +366,12 @@ def validate_repair_plan(
 
     errors: list[str] = []
     warnings: list[str] = []
-    if payload.get("schema_version") != SCHEMA_VERSION:
-        errors.append(f"schema_version must be {SCHEMA_VERSION}")
+    manifest_schema_version = payload.get("schema_version")
+    if manifest_schema_version not in SUPPORTED_SCHEMA_VERSIONS:
+        errors.append(
+            "schema_version must be a supported repair plan manifest version"
+        )
+        manifest_schema_version = SCHEMA_VERSION
     _require_text(payload.get("project_id"), "project_id", errors)
     gap_id = _require_text(payload.get("gap_id"), "gap_id", errors)
     if gap_id and not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", gap_id):
@@ -477,6 +503,15 @@ def validate_repair_plan(
             errors,
             allow_empty=False,
         )
+        ui_impact = validate_ui_impact(
+            game_repo=game_repo,
+            raw_impact=raw_plan.get("ui_impact"),
+            manifest_schema_version=str(manifest_schema_version),
+            work_types=work_types,
+            planned_path_texts=planned_path_texts,
+            label=label,
+            errors=errors,
+        )
 
         if plan_id in seen_plan_ids:
             errors.append(f"duplicate plan_id: {plan_id}")
@@ -545,6 +580,8 @@ def validate_repair_plan(
                 depends_on=tuple(depends_on),
                 existing_repo_refs=existing_refs,
                 planned_paths=planned_paths,
+                work_types=tuple(work_types),
+                ui_impact=ui_impact,
             )
         )
 

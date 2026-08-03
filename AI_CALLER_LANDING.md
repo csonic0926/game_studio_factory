@@ -37,7 +37,8 @@ game_ai_factory/
 - **story** is a Claude **skill** (`/game-story-factory <project_id> ...`) backed
   by adapter + step machines; artifacts land in the *game repo's* `<STORY_ROOT>`.
 - **gameplay** initializes a new or existing repo, then supports two compact
-  production pipelines. Existing-project initialization uses a bounded
+  production pipelines plus a just-in-time UI realization preflight.
+  Existing-project initialization uses a bounded
   mechanical repo probe, one evidence-focused
   investigation, and a fail-closed compiler/checker to create only missing
   adapters/model/state plus the initial objective frontier; it reconstructs
@@ -52,7 +53,11 @@ game_ai_factory/
   automatically returns control to the original caller for normal
   code/data/asset/sound production unless the user explicitly requested
   plan-only output. A known gap is repaired before forward expansion unless the
-  user defers it. The prior quant/Beat Sheet/walkthrough chain remains for
+  user defers it. Before any UI-changing plan, one bounded repo-evidence pass
+  compiles a game-owned UI Production Adapter covering layout, state/refresh,
+  scene/lifecycle, input/layers, responsive/localized composition, exemplars,
+  and stateful validation; manifest v2 binds its exact SHA and selected ids.
+  The prior quant/Beat Sheet/walkthrough chain remains for
   existing pilot artifacts but is not the default compact entry.
   `gameplay/reader.py` remains a separately invoked runtime-evidence reader,
   not a creative CLI/skill or acceptance oracle.

@@ -18,7 +18,8 @@ each callable by an AI agent through a skill/landing contract:
   continues its primary progression one
   objective at a time, or repairs a concrete gameplay gap inside an existing
   objective. Uses bounded script-first context, persistent model-independent
-  production plans, and automatic caller handoff to normal
+  production plans, a just-in-time repo-specific UI realization adapter, and
+  automatic caller handoff to normal
   code/data/asset/sound production.
 - **`sound/`** — game sound factory. Text→SFX via ElevenLabs, then de-silence +
   peak-normalize so clips are drop-in. Python CLI (`sfx.py` + spec JSON).
@@ -123,6 +124,7 @@ After initialization, the same entry routes ongoing work:
 | Initialize Gameplay Factory for a new or existing repo | `init_gameplay_factory` | [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](gameplay/docs/GAMEPLAY_FACTORY_INIT_WORKFLOW.md) |
 | Complete or advance the primary progression's next unit | `produce_objective` | [`OBJECTIVE_GAMEPLAY_WORKFLOW.md`](gameplay/docs/OBJECTIVE_GAMEPLAY_WORKFLOW.md) |
 | Repair one evidenced player-visible gap inside an existing objective | `repair_gameplay_gap` | [`GAMEPLAY_REPAIR_WORKFLOW.md`](gameplay/docs/GAMEPLAY_REPAIR_WORKFLOW.md) |
+| Prepare/check/refresh repo-specific UI construction before a UI-changing plan | `prepare_ui_production` | [`UI_PRODUCTION_WORKFLOW.md`](gameplay/docs/UI_PRODUCTION_WORKFLOW.md) |
 
 If both are active, a concrete known gap is repaired before forward expansion
 unless the user explicitly defers it.
@@ -204,6 +206,23 @@ Gap state persists as `OPEN`, `IMPLEMENTED_PENDING_ACCEPTANCE`, `CLOSED`, or
 user-authorized `DEFERRED`. Passing implementation tests may advance a gap to
 pending acceptance, but cannot self-award experiential closure.
 
+### UI production preflight
+
+When objective or repair production will touch UI, the caller first runs a
+bounded, one-investigator preflight:
+
+```text
+ui.py start -> non-semantic repo probe -> UI adapter input
+            -> ui.py compile/check -> UI_PRODUCTION_ADAPTER.json/.md
+            -> manifest v2 binds adapter SHA + rule/exemplar/scenario ids
+```
+
+This records the game's actual layout hierarchy, state/refresh ownership,
+scene lifecycle, input/modal/layers, responsive/localized composition, working
+exemplars, and stateful validation matrix. It is not run for non-UI work, and
+it does not redesign the feature. See
+[`UI_PRODUCTION_WORKFLOW.md`](gameplay/docs/UI_PRODUCTION_WORKFLOW.md).
+
 ### Runtime evidence remains separate
 
 [`gameplay/reader.py`](gameplay/reader.py) validates and transforms runtime
@@ -229,7 +248,7 @@ skills/  init-game-ai-factory
 idea/    idea.py, skill idea-factory, product-definition workflow, schemas/tests
 asset/   itf.py, pipeline/, docs/, examples/ …   (original git history)
 story/   skills/, core/steps|craft|schemas/, adapters/
-gameplay/ skills/gameplay-factory, AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py,
+gameplay/ skills/gameplay-factory, AGENTS.md, init.py, prepare.py, plan.py, repair.py, repair_plan.py, ui.py,
           reader.py, docs/, schemas/, adapters/, templates/, tests/
 sound/   sfx.py, pipeline/, docs/, examples/
 ```

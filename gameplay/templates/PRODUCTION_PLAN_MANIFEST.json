@@ -1,5 +1,5 @@
 {
-  "schema_version": "production_plan_manifest.v1",
+  "schema_version": "production_plan_manifest.v2",
   "project_id": "<PROJECT_ID>",
   "objective_id": "<OBJECTIVE_ID>",
   "objective_gameplay_path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/OBJECTIVE_GAMEPLAY.md",
@@ -11,18 +11,38 @@
       "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/production_plans/P01_<CHANGE_UNIT>.md",
       "title": "<INDEPENDENT_CHANGE_UNIT>",
       "status": "READY_FOR_EXECUTION",
-      "objective_rows": [1],
+      "objective_rows": [
+        1
+      ],
       "depends_on": [],
-      "work_types": ["CONTENT_DATA", "CODE", "TEST"],
-      "existing_repo_refs": ["<EXISTING_REPO_RELATIVE_PATH>"],
-      "planned_paths": ["<OWNED_REPO_RELATIVE_PATH_TO_CREATE_OR_CHANGE>"]
+      "work_types": [
+        "CONTENT_DATA",
+        "CODE",
+        "TEST"
+      ],
+      "existing_repo_refs": [
+        "<EXISTING_REPO_RELATIVE_PATH>"
+      ],
+      "planned_paths": [
+        "<OWNED_REPO_RELATIVE_PATH_TO_CREATE_OR_CHANGE>"
+      ],
+      "ui_impact": {
+        "touches_ui": false,
+        "adapter_path": "",
+        "adapter_sha256": "",
+        "rule_ids": [],
+        "exemplar_ids": [],
+        "validation_scenario_ids": []
+      }
     }
   ],
   "row_coverage": [
     {
       "objective_row": 1,
       "disposition": "IMPLEMENT",
-      "plan_ids": ["P01"],
+      "plan_ids": [
+        "P01"
+      ],
       "rationale": "<WHY_THIS_ROW_REQUIRES_THIS_CHANGE_UNIT>"
     }
   ],

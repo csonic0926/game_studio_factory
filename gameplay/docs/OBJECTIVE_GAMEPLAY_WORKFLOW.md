@@ -151,6 +151,13 @@ the planning model and protocol:
 - a Plan Mode model may investigate and author the files;
 - a model without Plan Mode may author the same files directly.
 
+First classify the intended work types. If any change touches UI, scene UI,
+HUD, menu/modal/overlay, responsive composition, or localization fit, complete
+[`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md) before authoring the
+plans. This is a bounded reusable repo-convention preflight, not a new creative
+review. It prevents the planner/coding model from inventing a generic scene,
+layout, state-refresh, or input/layer architecture from the gameplay table.
+
 The choice never changes the artifact contract. Before production, both write:
 
 ```text
@@ -170,6 +177,13 @@ every numbered row to `IMPLEMENT`, `VERIFY_EXISTING`, or
 ownership, and records any blocking gap. Each Markdown plan preserves the
 player-visible result, exact repo reuse/evidence, owned production changes,
 locked non-goals, deterministic verification, and handoff.
+
+Manifest v2 requires `ui_impact` on every plan. Non-UI plans declare false
+with empty binding fields. UI plans bind the exact checked
+`UI_PRODUCTION_ADAPTER.json` SHA and select relevant rule, exemplar, and
+validation-scenario ids; their Markdown repeats that selection under
+`## UI realization contract`. Legacy v1 manifests remain valid only for
+genuinely non-UI historical work.
 
 `N` is determined by coherent execution and verification boundaries. Do not
 make one plan per table row, split two plans that both mutate the same file, or
@@ -201,7 +215,10 @@ immediately:
    types require them;
 4. run the standard project tests/build/asset validation belonging to that
    production work;
-5. continue until every plan is implemented or an exact external blocker is
+5. for UI plans, execute every selected adapter scenario across its states,
+   viewport, input, and localization profile rather than accepting one
+   happy-state screenshot;
+6. continue until every plan is implemented or an exact external blocker is
    reached.
 
 This step adds no Gameplay Factory author, packet, reviewer, or acceptance

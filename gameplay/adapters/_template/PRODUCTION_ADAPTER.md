@@ -80,6 +80,21 @@ Missing required hooks mean production is not complete.
 - Screenshot/video/audio capture checks: TBD
 - Human playtest procedure/evidence: TBD
 
+## UI production handoff
+
+This general adapter does not authorize a production model to invent the
+project's UI construction grammar. Before a UI-changing objective or repair
+plan, run `docs/UI_PRODUCTION_WORKFLOW.md` and bind the checked game-owned:
+
+```text
+design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json
+```
+
+The UI adapter owns exact layout structure, state/refresh ownership, scene
+integration, input/layers, responsive/localization profiles, canonical
+exemplars, and stateful validation scenarios. If the plan is non-UI, do not
+create it merely to fill a workflow slot.
+
 ## Unsupported capabilities and escalation
 
 | Capability | Status/reason | Required capability/design revision | Owner |

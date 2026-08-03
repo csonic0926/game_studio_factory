@@ -1,7 +1,8 @@
 # Gameplay Factory Guide and AI Entry
 
 This file is the canonical entry for an AI caller. Gameplay Factory exposes
-one initialization entry and two ongoing production workflows:
+one initialization entry, two ongoing production workflows, and one
+just-in-time UI realization preflight:
 
 1. **Factory initialization** — route a total-new project to game definition,
    reconstruct an existing repo joining in the middle, or recognize an already
@@ -10,6 +11,8 @@ one initialization entry and two ongoing production workflows:
    unit and its gameplay.
 3. **Gap repair** — close one concrete missing or broken gameplay contract
    inside an already-authored progression unit.
+4. **UI production adapter** — before any UI-changing production plan,
+   reconstruct and bind this repo's layout/state/scene construction grammar.
 
 Runtime evidence reading remains independently invoked. Product/game direction
 is owned by the umbrella Idea Factory; Gameplay initialization must not invent
@@ -73,6 +76,7 @@ production never creates or overwrites it implicitly.
 | Explicit plan-only request for forward production | `plan_production` | Objective workflow Step 3 |
 | Only compile a known repair context | `prepare_repair` | Repair workflow Step 1 |
 | Explicit plan-only request for a repair | `plan_repair` | Repair workflow Step 3 |
+| Prepare/check/refresh repo-specific UI construction before a UI-changing plan | `prepare_ui_production` / `check_ui_production` / `refresh_ui_production` | [`docs/UI_PRODUCTION_WORKFLOW.md`](docs/UI_PRODUCTION_WORKFLOW.md) |
 | Validate/read runtime evidence | `observe_runtime` / `runtime_acceptance` | Reader/acceptance docs; never a creative entry |
 
 ### Routing priority
@@ -210,6 +214,13 @@ Step 2 author. Only `READY_FOR_EXECUTION` starts production. For an ordinary
 make/continue request, the caller executes the plans automatically rather than
 asking the user to say “write the code”.
 
+After design and before Step 3 planning, determine whether intended production
+touches UI. If so, run the UI Production Adapter workflow first. Do not ask the
+production planner to rediscover scene hierarchy, state ownership, responsive
+composition, or validation conventions inside every plan. The adapter is
+reusable game-owned production authority, and each UI plan selects the exact
+relevant rule/exemplar/scenario ids plus adapter hash.
+
 ## 5. Gap repair — current/previous unit closure
 
 Read the full repair workflow. It mirrors the compact four-step shape without
@@ -246,6 +257,10 @@ fresh acceptance reviewer named by the repair. Production changes the
 game-owned gap status from `OPEN` to `IMPLEMENTED_PENDING_ACCEPTANCE`; it may
 not self-mark `CLOSED`.
 
+The same UI preflight applies to repair plans. A UI symptom does not authorize
+the planner to patch only visible layout: it must preserve the adapter's state
+ownership and scene-integration rules as well.
+
 ## Shared hard rules
 
 - **Existing-project initialization reconstructs; it does not design.**
@@ -272,6 +287,13 @@ not self-mark `CLOSED`.
   author/authority owner rather than being silently invented by the planner.
 - **Planning files are mandatory; Plan Mode is optional.** Downstream
   execution reads persisted files, never private chat state.
+- **UI intent and UI construction stay separate.** Objective/repair design
+  owns the required player-visible result; the checked game-owned UI
+  Production Adapter owns layout, state refresh, scene/lifecycle, input/layer,
+  responsive/localization, exemplar, and validation conventions.
+- **No UI writes before UI authority.** A UI-changing plan must use manifest
+  v2, exact adapter SHA, relevant rule/exemplar/scenario ids, and the matching
+  Markdown contract. `touches_ui: false` may not hide explicit UI work.
 - **Plan ownership is exclusive.** Shared planned paths across plans are
   invalid.
 - **Bind production to exact design authority.** A changed objective or repair

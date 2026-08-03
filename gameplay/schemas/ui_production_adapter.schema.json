@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/ui_production_adapter.schema.json",
+  "title": "Compiled UI Production Adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "project_id",
+    "repository_binding",
+    "source_probe_path",
+    "source_probe_sha256",
+    "surfaces",
+    "canonical_exemplars",
+    "rules",
+    "viewport_profiles",
+    "localization_profiles",
+    "validation_scenarios",
+    "anti_patterns"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ui_production_adapter.v1"
+    },
+    "status": {
+      "const": "UI_PRODUCTION_ADAPTER_READY"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "repository_binding": {
+      "$ref": "ui_production_repo_probe.schema.json#/$defs/repository_binding"
+    },
+    "source_probe_path": {
+      "const": "design/gameplay/ui/PROJECT_UI_REPO_PROBE.json"
+    },
+    "source_probe_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/surface"
+      }
+    },
+    "canonical_exemplars": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/exemplar"
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    },
+    "viewport_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/viewport"
+      }
+    },
+    "localization_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/localization"
+      }
+    },
+    "validation_scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scenario"
+      }
+    },
+    "anti_patterns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/anti_pattern"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "evidence_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "path",
+        "contains",
+        "source_sha256"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface_id",
+        "responsibility",
+        "layout_structure",
+        "state_ownership",
+        "refresh_and_signal_flow",
+        "scene_lifecycle",
+        "input_and_layering",
+        "evidence_refs"
+      ],
+      "properties": {
+        "surface_id": {
+          "$ref": "#/$defs/id"
+        },
+        "responsibility": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layout_structure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_ownership": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refresh_and_signal_flow": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scene_lifecycle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_and_layering": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence_ref"
+          }
+        }
+      }
+    },
+    "exemplar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exemplar_id",
+        "why_canonical",
+        "rules_illustrated",
+        "evidence_refs"
+      ],
+      "properties": {
+        "exemplar_id": {
+          "$ref": "#/$defs/id"
+        },
+        "why_canonical": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rules_illustrated": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence_ref"
+          }
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "category",
+        "authority",
+        "requirement",
+        "rationale",
+        "evidence_refs",
+        "user_quote"
+      ],
+      "properties": {
+        "rule_id": {
+          "$ref": "#/$defs/id"
+        },
+        "category": {
+          "enum": [
+            "LAYOUT_STRUCTURE",
+            "STATE_OWNERSHIP",
+            "SCENE_INTEGRATION",
+            "INPUT_AND_LAYERING",
+            "RESPONSIVE_COMPOSITION",
+            "LOCALIZATION_FIT",
+            "VALIDATION"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "REPO_EVIDENCE",
+            "USER_RULING",
+            "FACTORY_INVARIANT"
+          ]
+        },
+        "requirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence_ref"
+          }
+        },
+        "user_quote": {
+          "type": "string"
+        }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "viewport_id",
+        "width",
+        "height",
+        "input_modes",
+        "composition_requirements"
+      ],
+      "properties": {
+        "viewport_id": {
+          "$ref": "#/$defs/id"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "input_modes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "composition_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "localization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "locale_ids",
+        "fit_requirements"
+      ],
+      "properties": {
+        "profile_id": {
+          "$ref": "#/$defs/id"
+        },
+        "locale_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fit_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "viewport_id",
+        "localization_profile_id",
+        "ui_states",
+        "interaction_path",
+        "assertions",
+        "capture_requirements"
+      ],
+      "properties": {
+        "scenario_id": {
+          "$ref": "#/$defs/id"
+        },
+        "viewport_id": {
+          "$ref": "#/$defs/id"
+        },
+        "localization_profile_id": {
+          "$ref": "#/$defs/id"
+        },
+        "ui_states": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "interaction_path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assertions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "capture_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "anti_pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anti_pattern_id",
+        "description",
+        "evidence_refs"
+      ],
+      "properties": {
+        "anti_pattern_id": {
+          "$ref": "#/$defs/id"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence_ref"
+          }
+        }
+      }
+    }
+  }
+}

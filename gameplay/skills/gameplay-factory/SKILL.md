@@ -71,6 +71,15 @@ An ordinary “make/fix/continue gameplay” call proceeds from design authority
 through validated persisted production plans into normal code/data/asset/sound
 execution. Stop at plans only when the user explicitly asked for plan-only.
 
+Before planning any change that touches gameplay UI, read
+`docs/UI_PRODUCTION_WORKFLOW.md` and run `gameplay/ui.py start`. Reuse a checked
+game-owned UI Production Adapter when ready; otherwise complete its one bounded
+repo-evidence investigation, compile, and check it in the same call. Then bind
+each UI-changing v2 plan to the exact adapter SHA and relevant rule, exemplar,
+and validation-scenario ids. Do not let the coding model infer the project's
+scene hierarchy, state ownership, refresh timing, responsive composition,
+localization fit, or modal/layer behavior from feature intent alone.
+
 ## Boundaries
 
 - Write game outputs only inside `<GAME_REPO>`; the factory checkout owns only
@@ -80,4 +89,6 @@ execution. Stop at plans only when the user explicitly asked for plan-only.
 - Known player-visible gaps precede forward progression.
 - Planning does not redesign; a missing design decision returns to its owning
   workflow.
+- UI design intent does not authorize a generic UI architecture. No UI-changing
+  plan or write proceeds without the repo-specific checked UI adapter binding.
 - Passing implementation tests is not a final gameplay-experience verdict.
