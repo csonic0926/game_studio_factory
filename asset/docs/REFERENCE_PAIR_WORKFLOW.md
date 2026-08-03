@@ -4,8 +4,8 @@ This file is the **router**.
 
 Use:
 
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/FLOOR_REFERENCE_PAIR_WORKFLOW.md` for `full` / `half` floor runs
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/WALL_REFERENCE_PAIR_WORKFLOW.md` for `left` / `right` wall runs
+- `$STUDIO_ROOT/asset/docs/FLOOR_REFERENCE_PAIR_WORKFLOW.md` for `full` / `half` floor runs
+- `$STUDIO_ROOT/asset/docs/WALL_REFERENCE_PAIR_WORKFLOW.md` for `left` / `right` wall runs
 
 ## Shared commands
 

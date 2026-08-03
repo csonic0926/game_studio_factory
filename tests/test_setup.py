@@ -3,6 +3,7 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 SETUP_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "setup.py")
 spec = importlib.util.spec_from_file_location("factory_setup", SETUP_PATH)
@@ -308,6 +309,42 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "init-game-studio-factory",
             ],
         )
+
+    def test_public_surfaces_do_not_pin_one_developer_checkout(self):
+        root = Path(os.path.dirname(SETUP_PATH))
+        public_files = [
+            root / "README.md",
+            root / "STUDIO_CALLER_LANDING.md",
+            root / "asset/README.md",
+            root / "asset/docs/AI_CALLER_LANDING.md",
+            root / "asset/docs/FLOOR_REFERENCE_PAIR_WORKFLOW.md",
+            root / "asset/docs/REFERENCE_PAIR_WORKFLOW.md",
+            root / "asset/docs/WALL_REFERENCE_PAIR_WORKFLOW.md",
+            root / "sound/README.md",
+            root / "sound/docs/AI_CALLER_LANDING.md",
+            root / "sound/examples/door_open.spec.json",
+            root / "story/README.md",
+        ]
+        public_files.extend(
+            Path(path) / "SKILL.md"
+            for _, path in factory_setup.discover_skills(root)
+        )
+        forbidden = "/Users/hunglingki/git_projects/tools/game_ai_factory"
+        for path in public_files:
+            with self.subTest(path=str(path)):
+                self.assertNotIn(forbidden, Path(path).read_text(encoding="utf-8"))
+
+    def test_story_history_is_owned_by_story_not_the_studio_root(self):
+        root = Path(os.path.dirname(SETUP_PATH))
+        historical_names = [
+            "STORY_FACTORY_BUGS_2026-07-07.md",
+            "STORY_FACTORY_STAGING_STEP_DESIGN.md",
+            "STORY_REBUILD_PLAN.md",
+        ]
+        for name in historical_names:
+            with self.subTest(name=name):
+                self.assertFalse((root / name).exists())
+                self.assertTrue((root / "story/docs/history" / name).is_file())
 
 
 if __name__ == "__main__":

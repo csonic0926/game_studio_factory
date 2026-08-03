@@ -1,7 +1,7 @@
 {
   "schema_version": "sound_factory_v1",
   "run_id": "door_open",
-  "output_root": "/Users/hunglingki/git_projects/tools/game_ai_factory/sound/output/sound_runs",
+  "output_root": "output/sound_runs",
   "provider": { "name": "elevenlabs", "model": null },
   "prompt": "a heavy wooden door creaking open then a soft thud, close-mic, dry, no music",
   "duration_seconds": 2.0,

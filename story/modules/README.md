@@ -1,7 +1,7 @@
 # Story department — modules
 
 The story department is a set of independently callable modules (rebuild of
-2026-07-07, plan: umbrella repo `STORY_REBUILD_PLAN.md`). The old step
+2026-07-07, plan: `story/docs/history/STORY_REBUILD_PLAN.md`). The old step
 pipeline is one module among five, no longer the whole department.
 
 | module | mode | what it does |

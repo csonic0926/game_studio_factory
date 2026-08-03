@@ -1,4 +1,4 @@
-# AI caller landing — game_sound_factory
+# AI caller landing — Sound Game AI Factory
 
 First stop for an AI agent that needs a game SFX asset. Mirrors the calling
 model of `game_asset_factory` (spec JSON + CLI + run artifacts) so the same
@@ -14,8 +14,12 @@ inspection habits apply.
 
 ## Calling contract
 
+Resolve `$STUDIO_ROOT` from the linked game repo's
+`design/STUDIO_FACTORY.local.md` (legacy `design/AI_FACTORY.local.md` remains a
+fallback), then run:
+
 ```bash
-cd /Users/hunglingki/git_projects/tools/game_ai_factory/sound
+cd "$STUDIO_ROOT/sound"
 python3 sfx.py run --spec examples/door_open.spec.json
 ```
 

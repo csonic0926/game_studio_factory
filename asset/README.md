@@ -1,4 +1,4 @@
-# game_asset_factory
+# Asset Game AI Factory
 
 Blender-first game asset factory for **reference-pair generation, validation, and final selection** of floor/wall tiles, plus engineering-spec validation for prop/object assets.
 
@@ -12,7 +12,8 @@ Treat this repo as a **game asset factory** for isometric art workflows:
 - factory validates geometry
 - factory emits final handoff PNGs for tiles and prop/object assets
 
-The public order contract is the **reference-pair spec JSON** plus the CLI commands in `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/itf.py`.
+The public order contract is the **reference-pair spec JSON** plus the CLI
+commands in `$STUDIO_ROOT/asset/itf.py`.
 
 If you are an AI agent coming from another repo, start with
 [`docs/AI_CALLER_LANDING.md`](docs/AI_CALLER_LANDING.md). It separates direct
@@ -206,11 +207,11 @@ For new integrations, prefer the canonical provider/model fields instead of lega
 
 Use these docs as the real workflow entry points:
 
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/TILE_RESKIN_WORKFLOW.md`
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/REFERENCE_PAIR_WORKFLOW.md`
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/FLOOR_REFERENCE_PAIR_WORKFLOW.md`
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/WALL_REFERENCE_PAIR_WORKFLOW.md`
-- `/Users/hunglingki/git_projects/tools/game_ai_factory/asset/docs/PROP_ASSET_WORKFLOW.md`
+- `$STUDIO_ROOT/asset/docs/TILE_RESKIN_WORKFLOW.md`
+- `$STUDIO_ROOT/asset/docs/REFERENCE_PAIR_WORKFLOW.md`
+- `$STUDIO_ROOT/asset/docs/FLOOR_REFERENCE_PAIR_WORKFLOW.md`
+- `$STUDIO_ROOT/asset/docs/WALL_REFERENCE_PAIR_WORKFLOW.md`
+- `$STUDIO_ROOT/asset/docs/PROP_ASSET_WORKFLOW.md`
 
 ## What to inspect first in a run
 

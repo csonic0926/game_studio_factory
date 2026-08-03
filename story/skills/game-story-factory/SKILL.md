@@ -3,10 +3,14 @@ name: game-story-factory
 description: Project-agnostic story creation orchestrator. Use when any game project needs world/character/cast/chapter story production. Resolves a project adapter (canonical home is the game repo's <STORY_ROOT>/adapter/, via the factory's adapters/registry.md phonebook, with factory-local adapters/<project_id>/ as legacy fallback), then routes one fresh worker per step through the factory's step files with .5 review gates; also supports craft mode to invoke a single writing-technique doc independently, without a full step machine.
 ---
 
-# Game Story Factory Orchestrator
+# Story Game AI Factory Orchestrator
 
-Factory repo: `/Users/hunglingki/git_projects/tools/game_ai_factory/story`
-(referred to below as `<FACTORY>`).
+Resolve `<GAME_REPO>` from an explicit path or the current Git root. Resolve
+`<STUDIO_ROOT>` from `design/STUDIO_FACTORY.local.md`, legacy
+`design/AI_FACTORY.local.md`, the installed-skills manifest, or this skill's
+real source path. Set `<FACTORY>` to `<STUDIO_ROOT>/story`. Never pin the
+checkout to a developer-specific absolute path. If the game repo is unlinked,
+use `init-game-studio-factory` and continue in the same call.
 
 One skill orchestrates all four workflows: WORLD, CHARACTER, CAST, CHAPTER.
 Everything project-specific comes from an adapter — never hardcode game paths.

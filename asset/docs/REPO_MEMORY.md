@@ -549,7 +549,8 @@
 ## Repo name
 
 - Canonical repo/folder name is now `game_asset_factory`.
-- Use `/Users/hunglingki/git_projects/tools/game_ai_factory/asset` in new docs, specs, command examples, and local handoff notes.
+- Resolve the checkout as `$STUDIO_ROOT`; use `$STUDIO_ROOT/asset` in new
+  docs and commands instead of developer-specific absolute paths.
 - Prior public names were `isometric_tile_factory` and then `isometric_asset_factory`; treat old generated run metadata, historical notes, and OS backup filenames with those names as snapshot provenance unless the run/file must be reused after the rename.
 
 ## CLIProxyAPI GPT Image edit route note

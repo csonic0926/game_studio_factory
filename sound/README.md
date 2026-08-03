@@ -1,4 +1,4 @@
-# game_sound_factory
+# Sound Game AI Factory
 
 Game **SFX factory**: text prompt -> generated sound -> **de-silenced + peak-fit**
 deliverable. It is the Sound specialist in the Game AI Factories capability

@@ -1,4 +1,4 @@
-# game_story_factory
+# Story Game AI Factory
 
 Project-agnostic **story creation factory** for game projects: world baseline,
 character baselines, cast management, and chapter production — with hard
@@ -56,11 +56,11 @@ scripts/twin_db.py                      # the twin-db CRUD/query CLI
 
 ## Use
 
-Install the orchestrator skill once (symlink):
+Install all Studio and specialist skills once from the checkout root:
 
 ```bash
-ln -sfn /Users/hunglingki/git_projects/tools/game_ai_factory/story/skills/game-story-factory \
-  ~/.claude/skills/game-story-factory
+cd "$STUDIO_ROOT"
+python3 setup.py install
 ```
 
 Then from any session:

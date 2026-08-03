@@ -2,7 +2,7 @@
 
 Three universal foundations of story production in this factory. They were
 cut out line by line during the vinci_world world-entry rework (2026-07-06 —
-2026-07-07, recorded in the umbrella repo's `STORY_REBUILD_PLAN.md` §二) and
+2026-07-07, recorded in `story/docs/history/STORY_REBUILD_PLAN.md` §二) and
 apply to EVERY project — the per-game rulings that came out of the same
 session live in that game's sovereignty files, not here.
 

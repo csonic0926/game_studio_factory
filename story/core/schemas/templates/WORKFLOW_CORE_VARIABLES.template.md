@@ -2,7 +2,7 @@
 
 This template is retired. The single user-authored control file mixed three
 kinds of sovereignty, so it was split (see the umbrella repo's
-`STORY_REBUILD_PLAN.md`, section 三):
+`story/docs/history/STORY_REBUILD_PLAN.md`, section 三):
 
 | was in this file | now lives at | sovereignty |
 |---|---|---|

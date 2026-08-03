@@ -1,7 +1,7 @@
-# AI caller landing
+# AI caller landing — Asset Game AI Factory
 
 This is the first stop for an AI agent working in another repo that wants to
-use `game_asset_factory`.
+use the Asset specialist under Game Studio Factory.
 
 ## Decide the path
 
@@ -18,10 +18,12 @@ job. File a request only when the factory itself must change.
 
 ## Basic calling contract
 
-Run commands from the factory repo:
+Resolve `$STUDIO_ROOT` from the linked game repo's
+`design/STUDIO_FACTORY.local.md` (legacy `design/AI_FACTORY.local.md` remains a
+fallback), then run commands from the specialist folder:
 
 ```bash
-cd /Users/hunglingki/git_projects/tools/game_ai_factory/asset
+cd "$STUDIO_ROOT/asset"
 python3 -m pip install -r requirements.txt
 python3 itf.py --help
 ```
