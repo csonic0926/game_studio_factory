@@ -11,7 +11,7 @@ or an AI's urge to be helpful fabricate convergence.
 ## Entry, outputs, and causal boundary
 
 Resolve one explicit/current game Git root; never scan siblings. If unlinked,
-invoke `init-game-ai-factory` first. Run:
+invoke `init-game-studio-factory` (or the legacy `init-game-ai-factory`) first. Run:
 
 ```bash
 python3 <FACTORY_ROOT>/idea/idea.py start --game-repo <GAME_REPO>

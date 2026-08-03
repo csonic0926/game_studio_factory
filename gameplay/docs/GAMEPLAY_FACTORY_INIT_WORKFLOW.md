@@ -87,7 +87,8 @@ templates.
 
 ## Routing link before initialization
 
-The installed `gameplay-factory` skill invokes `init-game-ai-factory`
+The installed `gameplay-factory` skill invokes `init-game-studio-factory`
+(or the legacy `init-game-ai-factory`)
 automatically. For a manual/CI caller, if the game repo has not been linked to
 the umbrella, run this once before initialization:
 
@@ -97,7 +98,8 @@ python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
 
 This managed routing link may update the game repo's `AGENTS.md`, `.gitignore`,
 and an absent `CLAUDE.md`, while keeping the absolute factory checkout only in
-git-ignored `design/AI_FACTORY.local.md`. It does not create gameplay
+git-ignored `design/STUDIO_FACTORY.local.md` (with
+`design/AI_FACTORY.local.md` as a legacy fallback). It does not create gameplay
 authority. Run `start` after linkage so any intentional repo changes are
 included in the study binding.
 

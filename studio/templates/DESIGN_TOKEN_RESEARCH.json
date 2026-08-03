@@ -1,0 +1,13 @@
+{
+  "schema_version": "design_token_research.v1",
+  "project_id": "<PROJECT_ID>",
+  "pressure_id": "<PRESSURE_ID>",
+  "baseline_path": "design/studio/baselines/<BASELINE_ID>/ACCEPTED_PLAYABLE_BASELINE.json",
+  "baseline_sha256": "<SHA256>",
+  "research_question": "<ABSTRACT_GAMEPLAY_PRESSURE_QUESTION>",
+  "searched_rings": ["SAME_TYPE", "CROSS_GENRE", "NON_GAME"],
+  "sources": [],
+  "design_tokens": [],
+  "no_fit_reason": "",
+  "research_status": "OPEN_FRONTIER"
+}

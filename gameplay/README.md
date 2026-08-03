@@ -14,7 +14,7 @@ Normal usage from the game repo is simply:
 The skill links the repo if necessary and runs the internal initialization
 entry. It distinguishes a total-new project, an existing project joining in
 the middle, and an already initialized repo. Users do not select numbered
-cases or type the internal commands. A new project routes to the umbrella Idea
+cases or type the internal commands. A new project routes to the specialist Idea
 Factory for product definition; an existing project reconstructs existing
 runtime meaning without designing gameplay:
 

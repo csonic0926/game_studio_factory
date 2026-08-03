@@ -41,6 +41,18 @@ class DiscoverSkillsTest(unittest.TestCase):
             names = [name for name, _ in factory_setup.discover_skills(root)]
             self.assertEqual(names, ["game-story-factory", "init-game-ai-factory"])
 
+    def test_finds_studio_operator_and_canonical_initializer(self):
+        with tempfile.TemporaryDirectory() as root:
+            studio_skill = os.path.join(root, "studio", "skills", "game-studio-factory")
+            os.makedirs(studio_skill)
+            with open(os.path.join(studio_skill, "SKILL.md"), "w", encoding="utf-8") as handle:
+                handle.write("# game-studio-factory\n")
+            make_root_skill(root, "init-game-studio-factory")
+            names = [name for name, _ in factory_setup.discover_skills(root)]
+            self.assertEqual(
+                names, ["game-studio-factory", "init-game-studio-factory"]
+            )
+
     def test_rejects_duplicate_skill_names_across_roots(self):
         with tempfile.TemporaryDirectory() as root:
             make_factory(root, ("duplicate",))
@@ -55,6 +67,20 @@ class DiscoverSkillsTest(unittest.TestCase):
 
 
 class SyncSkillsTest(unittest.TestCase):
+    def test_loads_legacy_manifest_when_canonical_manifest_is_absent(self):
+        with tempfile.TemporaryDirectory() as target:
+            legacy = {
+                "factory_root": "/legacy/checkout",
+                "skills": {"idea-factory": {"mode": "link", "version": "old"}},
+            }
+            with open(
+                os.path.join(target, factory_setup.LEGACY_MANIFEST_NAME),
+                "w",
+                encoding="utf-8",
+            ) as handle:
+                json.dump(legacy, handle)
+            self.assertEqual(legacy, factory_setup.load_manifest(target))
+
     def test_creates_symlink_and_is_idempotent(self):
         with tempfile.TemporaryDirectory() as root:
             factory = make_factory(os.path.join(root, "factory"))
@@ -164,12 +190,15 @@ class LinkGameRepoTest(unittest.TestCase):
             with open(os.path.join(game, "AGENTS.md"), "w", encoding="utf-8") as handle:
                 handle.write("# Game rules\n")
             factory_setup.link_game_repo(factory, game)
-            pointer = os.path.join(game, "design", "AI_FACTORY.local.md")
+            pointer = os.path.join(game, "design", "STUDIO_FACTORY.local.md")
             self.assertTrue(os.path.isfile(pointer))
             with open(pointer, encoding="utf-8") as handle:
-                self.assertIn(factory, handle.read())
+                body = handle.read()
+                self.assertIn(factory, body)
+                self.assertIn("STUDIO_ROOT:", body)
+                self.assertIn("FACTORY_ROOT:", body)
             with open(os.path.join(game, ".gitignore"), encoding="utf-8") as handle:
-                self.assertIn("design/AI_FACTORY.local.md", handle.read())
+                self.assertIn("design/STUDIO_FACTORY.local.md", handle.read())
             self.assertTrue(os.path.isfile(os.path.join(game, "CLAUDE.md")))
             factory_setup.link_game_repo(factory, game)
             with open(os.path.join(game, "AGENTS.md"), encoding="utf-8") as handle:
@@ -178,6 +207,7 @@ class LinkGameRepoTest(unittest.TestCase):
             self.assertIn("# Game rules", body)
             self.assertIn("`idea-factory` skill", body)
             self.assertIn("`gameplay-factory` skill", body)
+            self.assertIn("`game-studio-factory` skill", body)
 
     def test_existing_claude_md_is_untouched(self):
         with tempfile.TemporaryDirectory() as root:
@@ -203,8 +233,28 @@ class LinkGameRepoTest(unittest.TestCase):
             os.makedirs(game)
             factory_setup.link_game_repo(factory, game)
             self.assertTrue(
-                os.path.isfile(os.path.join(game, "design", "AI_FACTORY.local.md"))
+                os.path.isfile(os.path.join(game, "design", "STUDIO_FACTORY.local.md"))
             )
+
+    def test_relink_replaces_legacy_marked_block_without_duplication(self):
+        with tempfile.TemporaryDirectory() as root:
+            factory = make_factory(os.path.join(root, "factory"))
+            game = os.path.join(root, "game")
+            os.makedirs(game)
+            legacy = (
+                factory_setup.BLOCK_BEGIN
+                + "\nold Game AI Factory body\n"
+                + factory_setup.BLOCK_END
+                + "\n"
+            )
+            with open(os.path.join(game, "AGENTS.md"), "w", encoding="utf-8") as handle:
+                handle.write(legacy)
+            factory_setup.link_game_repo(factory, game)
+            with open(os.path.join(game, "AGENTS.md"), encoding="utf-8") as handle:
+                body = handle.read()
+            self.assertEqual(1, body.count(factory_setup.BLOCK_BEGIN))
+            self.assertIn("Game Studio Factory routing", body)
+            self.assertNotIn("old Game AI Factory body", body)
 
     def test_dry_run_writes_nothing(self):
         with tempfile.TemporaryDirectory() as root:
@@ -226,8 +276,14 @@ class ShippedSkillContractTest(unittest.TestCase):
             "init-game-ai-factory": os.path.join(
                 root, "skills", "init-game-ai-factory", "SKILL.md"
             ),
+            "init-game-studio-factory": os.path.join(
+                root, "skills", "init-game-studio-factory", "SKILL.md"
+            ),
             "gameplay-factory": os.path.join(
                 root, "gameplay", "skills", "gameplay-factory", "SKILL.md"
+            ),
+            "game-studio-factory": os.path.join(
+                root, "studio", "skills", "game-studio-factory", "SKILL.md"
             ),
         }
         for name, path in expected.items():
@@ -245,9 +301,11 @@ class ShippedSkillContractTest(unittest.TestCase):
             names,
             [
                 "game-story-factory",
+                "game-studio-factory",
                 "gameplay-factory",
                 "idea-factory",
                 "init-game-ai-factory",
+                "init-game-studio-factory",
             ],
         )
 

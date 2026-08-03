@@ -12,9 +12,11 @@ answer already exists.
 ## Start or reopen
 
 1. Resolve the explicit/current game Git root. Never scan sibling repos.
-2. Resolve `<FACTORY_ROOT>` from `design/AI_FACTORY.local.md`, the installed
-   skills manifest, or this skill's real source path. If unlinked, follow
-   `init-game-ai-factory` and continue in the same call.
+2. Resolve `<FACTORY_ROOT>` from `design/STUDIO_FACTORY.local.md`, legacy
+   `design/AI_FACTORY.local.md`, the installed skills manifest, or this skill's
+   real source path. If unlinked, follow
+   `init-game-studio-factory` (or legacy `init-game-ai-factory`) and continue
+   in the same call.
 3. Read `<FACTORY_ROOT>/idea/AGENTS.md`.
 4. Run:
 

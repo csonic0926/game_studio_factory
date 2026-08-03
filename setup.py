@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""game_ai_factory setup — skill installation and game-repo routing link.
+"""Game Studio Factory setup — skill installation and game-repo routing link.
 
 Dependency-free. Two public subcommands:
 
@@ -11,7 +11,7 @@ Dependency-free. Two public subcommands:
            `install` refreshes them. Only entries owned by this factory are
            ever touched. `sync` remains a compatibility alias.
 
-  link   Write the harness-agnostic Game AI Factory routing block into a
+  link   Write the harness-agnostic Game Studio Factory routing block into a
          game repo: a git-ignored local pointer file with this machine's
          factory path, a managed section in the repo's AGENTS.md, and a
          CLAUDE.md pointer if the repo has none. Safe to re-run; the
@@ -25,15 +25,22 @@ import shutil
 import subprocess
 import sys
 
-FACTORY_ROOT = os.path.dirname(os.path.abspath(__file__))
+STUDIO_ROOT = os.path.dirname(os.path.abspath(__file__))
+# Compatibility alias for existing code and manifests that still use
+# `factory_root`. Specialist paths remain rooted at the Studio checkout.
+FACTORY_ROOT = STUDIO_ROOT
 
 DEFAULT_SKILL_TARGETS = [
     os.path.expanduser("~/.claude/skills"),
     os.path.expanduser("~/.codex/skills"),
 ]
 
-MANIFEST_NAME = ".game_ai_factory_manifest.json"
-POINTER_REL_PATH = os.path.join("design", "AI_FACTORY.local.md")
+# New installs use Studio names. The legacy names remain readable so existing
+# installed skills and linked game repos keep working through the migration.
+MANIFEST_NAME = ".game_studio_factory_manifest.json"
+LEGACY_MANIFEST_NAME = ".game_ai_factory_manifest.json"
+POINTER_REL_PATH = os.path.join("design", "STUDIO_FACTORY.local.md")
+LEGACY_POINTER_REL_PATH = os.path.join("design", "AI_FACTORY.local.md")
 BLOCK_BEGIN = "<!-- game_ai_factory:routing:begin -->"
 BLOCK_END = "<!-- game_ai_factory:routing:end -->"
 
@@ -89,13 +96,15 @@ def is_factory_owned_link(path, factory_root):
 
 
 def load_manifest(target_dir):
-    manifest_path = os.path.join(target_dir, MANIFEST_NAME)
-    if os.path.isfile(manifest_path):
+    for manifest_name in (MANIFEST_NAME, LEGACY_MANIFEST_NAME):
+        manifest_path = os.path.join(target_dir, manifest_name)
+        if not os.path.isfile(manifest_path):
+            continue
         try:
             with open(manifest_path, "r", encoding="utf-8") as handle:
                 return json.load(handle)
         except (OSError, ValueError):
-            pass
+            continue
     return {"factory_root": FACTORY_ROOT, "skills": {}}
 
 
@@ -211,31 +220,41 @@ def sync_skills(factory_root, targets, copy=False, dry_run=False):
 
 def render_pointer_file(factory_root):
     return (
-        "# Game AI Factory — local checkout pointer\n"
+        "# Game Studio Factory — local checkout pointer\n"
         "\n"
         "Machine-specific and git-ignored. Committed files must never contain\n"
-        "absolute developer paths; agents resolve the factory through this file.\n"
+        "absolute developer paths; agents resolve the Studio and its specialist\n"
+        "Game AI Factories through this file.\n"
         "\n"
+        "STUDIO_ROOT: %s\n"
         "FACTORY_ROOT: %s\n"
         "\n"
         "Regenerate: python3 <FACTORY_ROOT>/setup.py link --game-repo <this repo>\n"
-        % factory_root
+        % (factory_root, factory_root)
     )
 
 
 def render_routing_block():
     return (
         BLOCK_BEGIN + "\n"
-        "## Game AI Factory routing (managed block — edit via setup.py, not by hand)\n"
+        "## Game Studio Factory routing (managed block — edit via setup.py, not by hand)\n"
         "\n"
-        "This game repo is production-managed by the **game_ai_factory** umbrella\n"
-        "(product definition: idea; production: story / gameplay / asset / sound).\n"
-        "Resolve `$FACTORY_ROOT`\n"
-        "from `design/AI_FACTORY.local.md` (git-ignored, machine-specific). If that\n"
-        "file is missing, ask the user for the factory path, then re-run\n"
-        "`python3 $FACTORY_ROOT/setup.py link --game-repo <this repo>`.\n"
+        "This game repo is connected to **Game Studio Factory**, the\n"
+        "autonomous whole-game operator. Idea / gameplay / story / asset / sound\n"
+        "are specialist **Game AI Factories** used as its capability layer.\n"
+        "Resolve `$STUDIO_ROOT` from `design/STUDIO_FACTORY.local.md`\n"
+        "(git-ignored, machine-specific), falling back to legacy\n"
+        "`design/AI_FACTORY.local.md`. Set `$FACTORY_ROOT=$STUDIO_ROOT` for\n"
+        "specialist commands. If neither file exists, ask for the checkout and\n"
+        "run `python3 $STUDIO_ROOT/setup.py link --game-repo <this repo>`.\n"
         "\n"
-        "Consult the owning department **before** changing what it owns — do not\n"
+        "For an open-ended request to make, continue, or autonomously scale the\n"
+        "whole game, use the `game-studio-factory` skill first. It may narrow\n"
+        "scope or fidelity but may not present an interactive software demo as\n"
+        "delivered gameplay. Direct specialist calls are for deliberately\n"
+        "bounded work.\n"
+        "\n"
+        "Consult the owning specialist **before** changing what it owns — do not\n"
         "wait for the user to name the factory:\n"
         "\n"
         "- **idea** — product promise, audience relationship, commercial shape,\n"
@@ -297,7 +316,7 @@ def ensure_gitignore_line(repo, line):
     body = existing
     if body and not body.endswith("\n"):
         body += "\n"
-    body += "\n# Game AI Factory local pointer (machine-specific)\n" + line + "\n"
+    body += "\n# Game Studio Factory local pointer (machine-specific)\n" + line + "\n"
     with open(gitignore, "w", encoding="utf-8") as handle:
         handle.write(body)
     return True
@@ -309,7 +328,7 @@ CLAUDE_POINTER = (
     "@AGENTS.md\n"
     "\n"
     "If the import above is not supported by your harness, read `AGENTS.md` in\n"
-    "this repo root — it contains all agent rules, including the Game AI Factory\n"
+    "this repo root — it contains all agent rules, including the Game Studio Factory\n"
     "routing section.\n"
 )
 

@@ -13,9 +13,11 @@ cases, paste internal schemas, or issue a second “write the code” prompt.
 1. Resolve `<GAME_REPO>` from an explicit path, otherwise the current Git root.
    Never scan siblings; reject the factory checkout itself.
 2. Resolve `<FACTORY_ROOT>` from the game repo's
+   `design/STUDIO_FACTORY.local.md`, legacy
    `design/AI_FACTORY.local.md`, the installed-skills manifest, or this skill's
    real source path. If the game repo is unlinked, follow
-   `init-game-ai-factory` first and continue in the same call.
+   `init-game-studio-factory` (or legacy `init-game-ai-factory`) first and
+   continue in the same call.
 3. Read `<FACTORY_ROOT>/gameplay/AGENTS.md`. It is the routing authority. Read
    only the selected workflow contract it names; do not duplicate its whole
    workflow from memory.

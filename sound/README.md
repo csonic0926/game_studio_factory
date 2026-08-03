@@ -1,9 +1,9 @@
 # game_sound_factory
 
 Game **SFX factory**: text prompt -> generated sound -> **de-silenced + peak-fit**
-deliverable. One of the three factories under the `game_ai_factory` umbrella
-(alongside `game_asset_factory` and `game_story_factory`), and callable the same
-way: a spec JSON + a CLI + run artifacts.
+deliverable. It is the Sound specialist in the Game AI Factories capability
+layer under **Game Studio Factory**, and remains directly callable through a
+spec JSON + CLI + run artifacts.
 
 ## Why the trim stage exists
 

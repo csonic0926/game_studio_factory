@@ -1,48 +1,31 @@
 ---
 name: init-game-ai-factory
-description: Initialize, connect, or relink the current game repository to a cloned Game AI Factory checkout. Use when the user says to init/setup/install the factory for a game repo, when design/AI_FACTORY.local.md is missing, or before the first factory-backed production call. This is the per-game-repo initializer; machine-level skill installation is handled by setup.py install.
+description: Compatibility alias for initializing a game repo with the renamed Game Studio Factory. Use for existing prompts or repos that still say Game AI Factory or design/AI_FACTORY.local.md; new calls should prefer init-game-studio-factory.
 ---
 
-# Initialize a game repo for Game AI Factory
+# Initialize Game Studio Factory — legacy entry name
 
-Connect one explicit/current game repo to the factory umbrella. The human does
-not need to know `setup.py link` or provide internal department commands.
+`init-game-ai-factory` is retained so existing game repos and user prompts do
+not break. The product is now **Game Studio Factory**; the specialist Idea,
+Gameplay, Story, Asset, and Sound components are its **Game AI Factories**.
 
-## Resolve
+Resolve `<STUDIO_ROOT>` from an explicit path, either local pointer, either
+installed-skills manifest, or this skill's real source path. Then read and
+follow `<STUDIO_ROOT>/skills/init-game-studio-factory/SKILL.md` (also installed
+under the canonical `init-game-studio-factory` name).
 
-1. Resolve `<GAME_REPO>` from an explicit path, otherwise the current Git root.
-   Never scan sibling repos. Reject the factory checkout itself or its child.
-2. Resolve `<FACTORY_ROOT>` in this order:
-   - an explicit factory path;
-   - `<GAME_REPO>/design/AI_FACTORY.local.md` when already linked;
-   - `.game_ai_factory_manifest.json` beside the installed skills directory;
-   - the real path of this skill, walking upward to the directory containing
-     both `setup.py` and `AI_CALLER_LANDING.md`.
-3. If no valid checkout resolves, ask only for its path. Do not guess among
-   neighboring repositories.
+Accept both pointer surfaces:
 
-## Initialize
+1. `design/STUDIO_FACTORY.local.md` (canonical), then
+2. `design/AI_FACTORY.local.md` (legacy fallback).
 
 Run:
 
 ```bash
-python3 <FACTORY_ROOT>/setup.py link --game-repo <GAME_REPO>
+python3 <STUDIO_ROOT>/setup.py link --game-repo <GAME_REPO>
 ```
 
-Then verify all four surfaces, not only command exit status:
-
-- `design/AI_FACTORY.local.md` points to the resolved checkout;
-- `.gitignore` contains `design/AI_FACTORY.local.md`;
-- `AGENTS.md` contains exactly one managed Game AI Factory routing block;
-- an existing `CLAUDE.md` was preserved, or an absent one received the
-  `AGENTS.md` pointer.
-
-The operation is idempotent. It installs routing, not design claims, gameplay
-state, story state, code, or assets.
-
-## Same-call handoff
-
-If the user also requested product definition or a factory production task,
-immediately invoke the owning `idea-factory`, `gameplay-factory`,
-`game-story-factory`, Asset, or Sound workflow after the link. Do not make the
-user issue a second prompt. Otherwise finish after verified umbrella linkage.
+Verify the new Studio pointer, one managed Studio routing block, preserved
+existing instructions, idempotence, and no backup artifacts. Continue the
+user's original request; linking is routing only, not product/gameplay
+acceptance authority.

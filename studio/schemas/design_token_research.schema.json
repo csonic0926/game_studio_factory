@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/design_token_research.schema.json",
+  "title": "Design Token Research",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "pressure_id", "baseline_path", "baseline_sha256", "research_question", "searched_rings", "sources", "design_tokens", "no_fit_reason", "research_status"],
+  "properties": {
+    "schema_version": {"const": "design_token_research.v1"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "pressure_id": {"$ref": "#/$defs/id"},
+    "baseline_path": {"type": "string", "minLength": 1},
+    "baseline_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "research_question": {"type": "string", "minLength": 1},
+    "searched_rings": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["SAME_TYPE", "CROSS_GENRE", "NON_GAME"]}},
+    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+    "design_tokens": {"type": "array", "items": {"$ref": "#/$defs/token"}},
+    "no_fit_reason": {"type": "string"},
+    "research_status": {"enum": ["OPEN_FRONTIER", "TOKENS_READY", "NO_FIT"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"research_status": {"const": "TOKENS_READY"}}}, "then": {"properties": {"sources": {"minItems": 1}, "design_tokens": {"minItems": 1}, "no_fit_reason": {"maxLength": 0}}}},
+    {"if": {"properties": {"research_status": {"const": "NO_FIT"}}}, "then": {"properties": {"sources": {"minItems": 1}, "design_tokens": {"maxItems": 0}, "no_fit_reason": {"minLength": 1}}}}
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "url", "title", "accessed_at", "distance_ring", "observed_structure"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/id"},
+        "url": {"type": "string", "format": "uri"},
+        "title": {"type": "string", "minLength": 1},
+        "accessed_at": {"type": "string", "minLength": 1},
+        "distance_ring": {"enum": ["SAME_TYPE", "CROSS_GENRE", "NON_GAME"]},
+        "observed_structure": {"type": "string", "minLength": 1}
+      }
+    },
+    "token": {
+      "type": "object", "additionalProperties": false,
+      "required": ["token_id", "source_ids", "transferable_mechanism", "player_decision_changed", "intended_emotional_effect", "translation_candidate", "conflicts", "non_copy_boundary", "prototype_test", "disposition"],
+      "properties": {
+        "token_id": {"$ref": "#/$defs/id"},
+        "source_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "transferable_mechanism": {"type": "string", "minLength": 1},
+        "player_decision_changed": {"type": "string", "minLength": 1},
+        "intended_emotional_effect": {"type": "string", "minLength": 1},
+        "translation_candidate": {"type": "string", "minLength": 1},
+        "conflicts": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "non_copy_boundary": {"type": "string", "minLength": 1},
+        "prototype_test": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["CANDIDATE", "CONSUMED", "REJECTED"]}
+      }
+    }
+  }
+}

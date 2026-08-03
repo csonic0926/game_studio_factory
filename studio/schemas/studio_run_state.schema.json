@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/studio_run_state.schema.json",
+  "title": "Game Studio Run State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "studio_goal", "status", "current_baseline", "active_pressure", "research", "candidate_unit", "workstreams", "acceptance", "delivery", "blockers"],
+  "properties": {
+    "schema_version": {"const": "studio_run_state.v1"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "studio_goal": {"type": "string", "minLength": 1},
+    "status": {"enum": ["STUDIO_NEEDS_PRODUCT_AUTHORITY", "STUDIO_NEEDS_ACCEPTED_BASELINE", "STUDIO_READY_TO_SCALE", "STUDIO_RESEARCHING", "STUDIO_UNIT_DESIGN", "STUDIO_PRODUCTION", "STUDIO_INTEGRATION", "STUDIO_ACCEPTANCE", "STUDIO_BLOCKED", "STUDIO_GOAL_DELIVERED"]},
+    "current_baseline": {"$ref": "#/$defs/optional_path_hash"},
+    "active_pressure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pressure_id", "diagnosis", "player_effect"],
+      "properties": {"pressure_id": {"type": "string"}, "diagnosis": {"type": "string"}, "player_effect": {"type": "string"}}
+    },
+    "research": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "path", "sha256"],
+      "properties": {"required": {"type": "boolean"}, "path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"}}
+    },
+    "candidate_unit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit_id", "authority_path", "status"],
+      "properties": {"unit_id": {"type": "string"}, "authority_path": {"type": "string"}, "status": {"enum": ["NONE", "CANDIDATE", "DESIGNED", "PLANNED", "IMPLEMENTED_PENDING_ACCEPTANCE", "ACCEPTED", "REJECTED"]}}
+    },
+    "workstreams": {"type": "array", "items": {"$ref": "#/$defs/workstream"}},
+    "acceptance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["new_gameplay_status", "predecessor_regression_status", "candidate_baseline_path"],
+      "properties": {
+        "new_gameplay_status": {"enum": ["NOT_RUN", "INCONCLUSIVE", "REJECTED", "ACCEPTED"]},
+        "predecessor_regression_status": {"enum": ["NOT_RUN", "FAIL", "PASS"]},
+        "candidate_baseline_path": {"type": "string"}
+      }
+    },
+    "delivery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requested_horizon", "eligible", "baseline_path", "build_paths"],
+      "properties": {"requested_horizon": {"type": "string", "minLength": 1}, "eligible": {"type": "boolean"}, "baseline_path": {"type": "string"}, "build_paths": {"type": "array", "items": {"type": "string", "minLength": 1}}}
+    },
+    "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "STUDIO_GOAL_DELIVERED"}}},
+      "then": {
+        "properties": {
+          "delivery": {
+            "properties": {
+              "eligible": {"const": true},
+              "baseline_path": {"minLength": 1},
+              "build_paths": {"minItems": 1}
+            }
+          },
+          "blockers": {"maxItems": 0}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "optional_path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"}}},
+    "workstream": {
+      "type": "object", "additionalProperties": false,
+      "required": ["workstream_id", "specialist", "depends_on", "read_state", "write_state", "attention_surfaces", "reward_decision_systems", "planned_paths", "status"],
+      "properties": {
+        "workstream_id": {"$ref": "#/$defs/id"},
+        "specialist": {"enum": ["idea", "gameplay", "story", "asset", "sound", "repo_production"]},
+        "depends_on": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "read_state": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "write_state": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "attention_surfaces": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "reward_decision_systems": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "planned_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "status": {"enum": ["PENDING", "READY", "IN_PROGRESS", "COMPLETE", "BLOCKED"]}
+      }
+    }
+  }
+}

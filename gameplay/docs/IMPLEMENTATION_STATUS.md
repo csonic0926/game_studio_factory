@@ -8,7 +8,8 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 - installed `gameplay-factory` user entry that auto-links the current game
   repo, runs initialization before routing, and continues ordinary requests
   through production; machine install and per-repo linking are exposed by the
-  umbrella's `setup.py install` and `init-game-ai-factory` skill;
+  Studio root's `setup.py install` and canonical
+  `init-game-studio-factory` skill (legacy `init-game-ai-factory` retained);
 - single `init.py start` entry that routes total-new, existing-project, and
   already-initialized repos without exposing numbered lifecycle cases;
 - Gameplay Factory existing-project initialization: explicit non-blank

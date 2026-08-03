@@ -1,0 +1,23 @@
+{
+  "schema_version": "studio_run_state.v1",
+  "project_id": "<PROJECT_ID>",
+  "studio_goal": "<WHOLE_GAME_PRODUCTION_GOAL>",
+  "status": "STUDIO_NEEDS_ACCEPTED_BASELINE",
+  "current_baseline": {"path": "", "sha256": ""},
+  "active_pressure": {"pressure_id": "", "diagnosis": "", "player_effect": ""},
+  "research": {"required": false, "path": "", "sha256": ""},
+  "candidate_unit": {"unit_id": "", "authority_path": "", "status": "NONE"},
+  "workstreams": [],
+  "acceptance": {
+    "new_gameplay_status": "NOT_RUN",
+    "predecessor_regression_status": "NOT_RUN",
+    "candidate_baseline_path": ""
+  },
+  "delivery": {
+    "requested_horizon": "<USER_REQUESTED_HORIZON>",
+    "eligible": false,
+    "baseline_path": "",
+    "build_paths": []
+  },
+  "blockers": []
+}
