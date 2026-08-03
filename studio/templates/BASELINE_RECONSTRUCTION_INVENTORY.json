@@ -1,0 +1,20 @@
+{
+  "schema_version": "baseline_reconstruction_inventory.v1",
+  "inventory_id": "<INVENTORY_ID>",
+  "status": "COMPLETE_CURRENT_PLAYABLE_SCOPE",
+  "project_id": "<PROJECT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "author_context_id": "<RECONSTRUCTION_CONTEXT_ID>",
+  "source_paths": [
+    {"path": "<GAMEPLAY_INVENTORY_EVIDENCE_PATH>", "sha256": "<SHA256>"}
+  ],
+  "discovered_unit_ids": ["<EVERY_CURRENTLY_PLAYABLE_UNIT_ID>"],
+  "excluded_candidates": [
+    {
+      "candidate_id": "<NON_PLAYABLE_OR_INCOMPLETE_CANDIDATE_ID>",
+      "reason": "<WHY_THIS_IS_NOT_AN_ACCEPTED_PLAYABLE_UNIT>",
+      "evidence": {"path": "<EXCLUSION_EVIDENCE_PATH>", "sha256": "<SHA256>"}
+    }
+  ],
+  "completed_at": "<ISO_8601_DATETIME>"
+}

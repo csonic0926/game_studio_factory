@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/baseline_reconstruction_inventory.schema.json",
+  "title": "Complete Baseline Reconstruction Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "inventory_id", "status", "project_id", "game_revision", "author_context_id", "source_paths", "discovered_unit_ids", "excluded_candidates", "completed_at"],
+  "properties": {
+    "schema_version": {"const": "baseline_reconstruction_inventory.v1"},
+    "inventory_id": {"$ref": "#/$defs/id"},
+    "status": {"const": "COMPLETE_CURRENT_PLAYABLE_SCOPE"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "author_context_id": {"$ref": "#/$defs/id"},
+    "source_paths": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+    "discovered_unit_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "excluded_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["candidate_id", "reason", "evidence"],
+        "properties": {
+          "candidate_id": {"$ref": "#/$defs/id"},
+          "reason": {"type": "string", "minLength": 1},
+          "evidence": {"$ref": "#/$defs/path_hash"}
+        }
+      }
+    },
+    "completed_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "path_hash": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    }
+  }
+}

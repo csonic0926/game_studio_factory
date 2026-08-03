@@ -1,0 +1,18 @@
+{
+  "schema_version": "baseline_regression_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "project_id": "<PROJECT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "build_id": "<BUILD_ID>",
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "predecessor_baseline": {"path": "<CURRENT_BASELINE_PATH>", "sha256": "<SHA256>"},
+  "covered_unit_ids": ["<EVERY_PREDECESSOR_UNIT_ID>"],
+  "commands": ["<REGRESSION_COMMAND>"],
+  "result_paths": [
+    {"path": "<REGRESSION_RESULT_PATH>", "sha256": "<SHA256>"}
+  ],
+  "status": "PASS",
+  "blocking_findings": [],
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

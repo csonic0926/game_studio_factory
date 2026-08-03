@@ -29,6 +29,11 @@ these invariants:
 7. **Delivery is a promotion decision.** Only a checked accepted baseline with
    a runnable build, accepted gameplay units, regression evidence, and no
    blocking gap can be presented as Studio delivery.
+8. **Admission has two cases only.** `RECONSTRUCT` inventories and freshly
+   accepts the complete current game. `PROMOTE` consumes one exact predecessor,
+   a completed workflow handoff, fresh acceptance for changed gameplay, and
+   regression of every predecessor unit. Never use reconstruction to erase a
+   valid ratchet history or promotion to inherit unreviewed gameplay.
 
 ## Formal production transition
 
@@ -53,8 +58,8 @@ Forbidden transitions:
 
 ## Current foundation boundary
 
-The repository currently defines the Studio authority, state objects, routing,
-and user-facing skill. A persistent autonomous scheduler and automatic baseline
-compiler/checker are not implemented yet. Never describe the v0 foundation as
-proof that unattended multi-day production or gameplay acceptance is already
-operational.
+The baseline admission compiler/checker is operational and owns only evidence
+binding plus state promotion; it does not issue gameplay verdicts. A persistent
+autonomous multi-cycle scheduler is not implemented yet. Never describe this
+bounded admission workflow as proof that unattended multi-day production is
+already operational.

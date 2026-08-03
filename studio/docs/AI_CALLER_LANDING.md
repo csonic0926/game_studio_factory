@@ -69,11 +69,28 @@ results into mandatory features.
 
 ## Baseline and ratchet
 
+Run the single admission entry before scaling and after each completed
+gameplay-production workflow:
+
+```bash
+python3 <STUDIO_ROOT>/studio/baseline.py start --game-repo <GAME_REPO>
+```
+
+It routes mechanically to:
+
+- complete `RECONSTRUCT` when there is no accepted baseline;
+- incremental `PROMOTE` when an exact current baseline exists.
+
+Read [`BASELINE_ADMISSION_WORKFLOW.md`](BASELINE_ADMISSION_WORKFLOW.md). The
+compiler cannot convert tests, implementation completion, or Reader output
+into a gameplay verdict; it only binds fresh reviewer decisions.
+
 The game repo owns Studio state under:
 
 ```text
 design/studio/
   STUDIO_RUN_STATE.json
+  admissions/<admission_id>/BASELINE_ADMISSION_INPUT.json
   baselines/<baseline_id>/ACCEPTED_PLAYABLE_BASELINE.json
   research/<pressure_id>/DESIGN_TOKEN_RESEARCH.json
 ```
@@ -85,7 +102,7 @@ evidence.
 
 ## v0 limitation
 
-This landing defines the intended autonomous operator and durable state model.
-Until the scheduler/compiler/checker is implemented and real-project pilots
-pass, the caller may use the specialist factories manually but must not claim
-that Game Studio Factory already guarantees unattended multi-cycle delivery.
+The durable state model and two-case baseline admission compiler/checker are
+implemented. Until the persistent scheduler and real multi-cycle pilots pass,
+the caller must not claim that Game Studio Factory already guarantees
+unattended multi-cycle delivery.

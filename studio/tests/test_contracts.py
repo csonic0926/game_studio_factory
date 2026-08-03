@@ -10,8 +10,14 @@ class StudioFoundationContractTests(unittest.TestCase):
     def test_all_studio_schemas_are_json_objects(self) -> None:
         expected_versions = {
             "accepted_playable_baseline.schema.json": "accepted_playable_baseline.v1",
+            "baseline_admission_input.schema.json": "baseline_admission_input.v1",
+            "baseline_admission_result.schema.json": "baseline_admission_result.v1",
+            "baseline_reconstruction_inventory.schema.json": "baseline_reconstruction_inventory.v1",
+            "baseline_regression_review.schema.json": "baseline_regression_review.v1",
             "design_token_research.schema.json": "design_token_research.v1",
+            "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v1",
             "studio_run_state.schema.json": "studio_run_state.v1",
+            "studio_workflow_completion.schema.json": "studio_workflow_completion.v1",
         }
         for name, version in expected_versions.items():
             payload = json.loads((STUDIO_ROOT / "schemas" / name).read_text())
@@ -45,6 +51,19 @@ class StudioFoundationContractTests(unittest.TestCase):
         promotion = payload["properties"]["promotion"]
         self.assertIn("promoted_unit_ids", promotion["required"])
         self.assertEqual(1, promotion["properties"]["promoted_unit_ids"]["minItems"])
+        self.assertIn("source_workflow_handoffs", promotion["required"])
+
+    def test_admission_templates_expose_both_cases(self) -> None:
+        reconstruction = json.loads(
+            (STUDIO_ROOT / "templates/BASELINE_RECONSTRUCTION_INPUT.json").read_text()
+        )
+        promotion = json.loads(
+            (STUDIO_ROOT / "templates/BASELINE_PROMOTION_INPUT.json").read_text()
+        )
+        self.assertEqual("RECONSTRUCT", reconstruction["admission_mode"])
+        self.assertEqual("PROMOTE", promotion["admission_mode"])
+        self.assertEqual({"path": "", "sha256": ""}, reconstruction["workflow_completion"])
+        self.assertNotEqual("", promotion["workflow_completion"]["path"])
 
     def test_research_requires_all_three_distance_rings(self) -> None:
         payload = json.loads(

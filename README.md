@@ -96,6 +96,19 @@ complete accepted gameplay loop(s), fresh acceptance evidence, prior-gameplay
 regression, and no blocking gap. It is not a branch, plan, screenshot, build
 success, combat sandbox, character controller, or interactive demo.
 
+Baseline admission has two cases behind one entry:
+
+- **RECONSTRUCT** — rebuild the complete accepted game state when no baseline
+  exists (or an explicit rebuild supersedes one without editing it);
+- **PROMOTE** — after a Game AI Factory workflow, merge only freshly accepted
+  new/repaired units and require regression of every predecessor unit.
+
+```bash
+python3 studio/baseline.py start --game-repo <GAME_REPO>
+```
+
+See [`studio/docs/BASELINE_ADMISSION_WORKFLOW.md`](studio/docs/BASELINE_ADMISSION_WORKFLOW.md).
+
 ### Gameplay Ratchet
 
 A locally complete system does not automatically enter the game. Promotion
@@ -170,6 +183,7 @@ skills/
   init-game-studio-factory     canonical linker
   init-game-ai-factory         compatibility alias
 studio/
+  baseline.py
   skills/game-studio-factory
   AGENTS.md
   docs/
@@ -190,11 +204,10 @@ only reusable contracts, tools, templates, schemas, and tests.
 ## Current boundary
 
 The specialist factories are operational at their documented maturity. The
-Studio layer is currently a **v0 foundation**: naming, routing, operator
-invariants, skill, and durable state schemas/templates exist. The persistent
-autonomous scheduler and automatic baseline compiler/checker are not yet
-implemented or real-project proven. The repository name does not waive that
-boundary.
+Studio layer now includes naming, routing, operator invariants, durable state,
+and the deterministic two-case baseline admission compiler/checker. The
+persistent autonomous scheduler is not yet implemented or real-project proven.
+The repository name does not waive that boundary.
 
 ## History and compatibility
 

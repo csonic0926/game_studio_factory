@@ -1,0 +1,23 @@
+{
+  "schema_version": "gameplay_acceptance_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "project_id": "<PROJECT_ID>",
+  "unit_id": "<UNIT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "build_id": "<BUILD_ID>",
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "verdict": "ACCEPTED",
+  "acceptance_input": {"path": "<ACCEPTANCE_INPUT_PATH>", "sha256": "<SHA256>"},
+  "evidence_paths": [
+    {"path": "<RUNTIME_EVIDENCE_OR_REVIEW_PATH>", "sha256": "<SHA256>"}
+  ],
+  "observed_complete_loop": {
+    "goal": "<OBSERVED_PLAYER_GOAL>",
+    "actions": ["<OBSERVED_MEANINGFUL_ACTION>"],
+    "consequences": "<OBSERVED_CONSEQUENCE_OR_REWARD>",
+    "completion": "<OBSERVED_COMPLETION_AND_NEXT_HANDOFF>"
+  },
+  "blocking_findings": [],
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

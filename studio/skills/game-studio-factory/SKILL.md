@@ -31,8 +31,14 @@ minimum gameplay floor may not.
 ## Route the current state
 
 - Missing/open product direction: invoke `idea-factory`.
-- No accepted playable baseline: establish the smallest complete gameplay loop
-  through `gameplay-factory`; do not call an interactive demo a baseline.
+- Run `python3 <STUDIO_ROOT>/studio/baseline.py start --game-repo <GAME_REPO>`.
+  `BASELINE_RECONSTRUCTION_INPUT_REQUIRED` means freshly reconstruct the whole
+  currently playable baseline; `BASELINE_PROMOTION_INPUT_REQUIRED` means bind
+  the just-completed workflow, fresh acceptance, and full predecessor
+  regression. Follow `studio/docs/BASELINE_ADMISSION_WORKFLOW.md`.
+- No accepted playable baseline and no complete loop: establish the smallest
+  complete gameplay loop through `gameplay-factory`, then return to
+  reconstruction; do not call an interactive demo a baseline.
 - Accepted baseline exists: diagnose the next gameplay pressure, research new
   design tokens across same-type/cross-genre/non-game references, select one
   bounded unit, and use the specialist factories for production.
@@ -43,8 +49,7 @@ minimum gameplay floor may not.
 
 ## Foundation limitation
 
-The current repository contains the v0 Studio contract and state schemas but
-not the persistent autonomous scheduler/compiler/checker. Follow the contracts
-for bounded manual orchestration, but do not claim unattended multi-day or
-quality-guaranteed Studio execution until those mechanisms and real pilots
-exist.
+The two-case baseline compiler/checker is operational, but the persistent
+autonomous multi-cycle scheduler is not. Follow the contract for bounded
+orchestration, but do not claim unattended multi-day Studio execution until
+that scheduler and real pilots exist.

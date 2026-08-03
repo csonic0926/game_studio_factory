@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/studio_workflow_completion.schema.json",
+  "title": "Studio Workflow Completion Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "completion_id", "status", "project_id", "game_revision", "specialists", "workflow_kind", "unit_ids", "production_context_ids", "source_authorities", "implementation_results", "test_results", "completed_at"],
+  "properties": {
+    "schema_version": {"const": "studio_workflow_completion.v1"},
+    "completion_id": {"$ref": "#/$defs/id"},
+    "status": {"const": "IMPLEMENTED_PENDING_ACCEPTANCE"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "specialists": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["idea", "gameplay", "story", "asset", "sound", "repo_production"]}},
+    "workflow_kind": {"type": "string", "minLength": 1},
+    "unit_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "production_context_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "source_authorities": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+    "implementation_results": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+    "test_results": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+    "completed_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "path_hash": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    }
+  }
+}

@@ -73,6 +73,14 @@ An ordinary “make/fix/continue gameplay” call proceeds from design authority
 through validated persisted production plans into normal code/data/asset/sound
 execution. Stop at plans only when the user explicitly asked for plan-only.
 
+When Gameplay Factory was invoked by Game Studio Factory, implementation ends
+at a committed runtime revision plus a checked
+`design/studio/admissions/<admission_id>/STUDIO_WORKFLOW_COMPLETION.json` using
+`studio/templates/STUDIO_WORKFLOW_COMPLETION.json`. Its status remains
+`IMPLEMENTED_PENDING_ACCEPTANCE`. Return control to Studio for fresh gameplay
+acceptance, predecessor regression, and baseline promotion; Gameplay Factory
+must not promote or self-accept the baseline.
+
 Before planning any change that touches gameplay UI, read
 `docs/UI_PRODUCTION_WORKFLOW.md` and run `gameplay/ui.py start`. Reuse a checked
 game-owned UI Production Adapter when ready; otherwise complete its one bounded

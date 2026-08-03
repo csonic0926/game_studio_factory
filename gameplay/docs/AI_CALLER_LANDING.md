@@ -76,6 +76,13 @@ For continuing work, `OPEN` game-owned
 `IMPLEMENTED_PENDING_ACCEPTANCE` routes to external/user closure;
 `CLOSED`/user-authorized `DEFERRED` do not block forward progression.
 
+When Gameplay is running as a Game Studio Factory workstream, its production
+handoff additionally writes the Studio
+`STUDIO_WORKFLOW_COMPLETION.json` contract at the active admission path after
+the runtime revision is committed. This proves implementation provenance only;
+Studio still requires a fresh acceptance review and predecessor regression
+before baseline promotion.
+
 ## Resolve ownership before reading/writing
 
 Resolve `<GAME_REPO>` from explicit path -> current Git root -> ignored local

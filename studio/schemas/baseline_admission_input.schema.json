@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/baseline_admission_input.schema.json",
+  "title": "Baseline Admission Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "admission_id", "admission_mode", "project_id", "baseline_id", "game_revision", "studio_goal", "requested_horizon", "product_authority", "runnable_build", "playable_scope", "admitted_units", "verification", "known_gaps", "resolved_gap_ids", "workflow_completion", "predecessor_baseline", "reconstruction", "acceptance_owner", "accepted_at"],
+  "properties": {
+    "schema_version": {"const": "baseline_admission_input.v1"},
+    "admission_id": {"$ref": "#/$defs/id"},
+    "admission_mode": {"enum": ["RECONSTRUCT", "PROMOTE"]},
+    "project_id": {"$ref": "#/$defs/id"},
+    "baseline_id": {"$ref": "#/$defs/id"},
+    "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "studio_goal": {"type": "string", "minLength": 1},
+    "requested_horizon": {"type": "string", "minLength": 1},
+    "product_authority": {"$ref": "#/$defs/path_hash"},
+    "runnable_build": {"$ref": "#/$defs/runnable_build"},
+    "playable_scope": {"$ref": "#/$defs/playable_scope"},
+    "admitted_units": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/unit"}},
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commands", "result_paths", "regression_review"],
+      "properties": {
+        "commands": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "result_paths": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+        "regression_review": {"$ref": "#/$defs/optional_path_hash"}
+      }
+    },
+    "known_gaps": {"type": "array", "items": {"$ref": "#/$defs/gap"}},
+    "resolved_gap_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "workflow_completion": {"$ref": "#/$defs/optional_path_hash"},
+    "predecessor_baseline": {"$ref": "#/$defs/optional_path_hash"},
+    "reconstruction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trigger", "reason", "author_context_ids", "inventory", "superseded_baseline"],
+      "properties": {
+        "trigger": {"type": "string"},
+        "reason": {"type": "string"},
+        "author_context_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "inventory": {"$ref": "#/$defs/optional_path_hash"},
+        "superseded_baseline": {"$ref": "#/$defs/optional_path_hash"}
+      }
+    },
+    "acceptance_owner": {"type": "string", "minLength": 1},
+    "accepted_at": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"admission_mode": {"const": "RECONSTRUCT"}}},
+      "then": {
+        "properties": {
+          "workflow_completion": {"properties": {"path": {"maxLength": 0}, "sha256": {"maxLength": 0}}},
+          "predecessor_baseline": {"properties": {"path": {"maxLength": 0}, "sha256": {"maxLength": 0}}},
+          "resolved_gap_ids": {"maxItems": 0},
+          "verification": {"properties": {"regression_review": {"properties": {"path": {"maxLength": 0}, "sha256": {"maxLength": 0}}}}},
+          "reconstruction": {"properties": {
+            "trigger": {"enum": ["NO_ACCEPTED_BASELINE", "EXPLICIT_REBUILD"]},
+            "reason": {"minLength": 1},
+            "author_context_ids": {"minItems": 1},
+            "inventory": {"$ref": "#/$defs/path_hash"}
+          }}
+        }
+      },
+      "else": {
+        "properties": {
+          "workflow_completion": {"$ref": "#/$defs/path_hash"},
+          "predecessor_baseline": {"$ref": "#/$defs/path_hash"},
+          "verification": {"properties": {"regression_review": {"$ref": "#/$defs/path_hash"}}},
+          "reconstruction": {"properties": {
+            "trigger": {"maxLength": 0},
+            "reason": {"maxLength": 0},
+            "author_context_ids": {"maxItems": 0},
+            "inventory": {"properties": {"path": {"maxLength": 0}, "sha256": {"maxLength": 0}}},
+            "superseded_baseline": {"properties": {"path": {"maxLength": 0}, "sha256": {"maxLength": 0}}}
+          }}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "path_hash": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "optional_path_hash": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"}}
+    },
+    "runnable_build": {
+      "type": "object", "additionalProperties": false,
+      "required": ["build_id", "launch_command", "artifact_paths", "supported_platforms"],
+      "properties": {
+        "build_id": {"$ref": "#/$defs/id"},
+        "launch_command": {"type": "string", "minLength": 1},
+        "artifact_paths": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
+        "supported_platforms": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "playable_scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entry_condition", "completion_condition", "expected_minutes", "gameplay_loop"],
+      "properties": {
+        "entry_condition": {"type": "string", "minLength": 1},
+        "completion_condition": {"type": "string", "minLength": 1},
+        "expected_minutes": {"type": "number", "exclusiveMinimum": 0},
+        "gameplay_loop": {"type": "string", "minLength": 1}
+      }
+    },
+    "unit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit_id", "authority", "player_goal", "meaningful_actions", "consequence_or_reward", "acceptance_review"],
+      "properties": {
+        "unit_id": {"$ref": "#/$defs/id"},
+        "authority": {"$ref": "#/$defs/path_hash"},
+        "player_goal": {"type": "string", "minLength": 1},
+        "meaningful_actions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "consequence_or_reward": {"type": "string", "minLength": 1},
+        "acceptance_review": {"$ref": "#/$defs/path_hash"}
+      }
+    },
+    "gap": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gap_id", "severity", "description"],
+      "properties": {
+        "gap_id": {"$ref": "#/$defs/id"},
+        "severity": {"const": "NON_BLOCKING"},
+        "description": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

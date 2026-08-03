@@ -261,6 +261,16 @@ The same UI preflight applies to repair plans. A UI symptom does not authorize
 the planner to patch only visible layout: it must preserve the adapter's state
 ownership and scene-integration rules as well.
 
+## Studio workflow-completion handoff
+
+When either progression production or gap repair is owned by Game Studio
+Factory, commit the runtime-affecting implementation before handoff and write
+the small Studio-owned `STUDIO_WORKFLOW_COMPLETION.json` from
+`studio/templates/STUDIO_WORKFLOW_COMPLETION.json`. It binds the exact revision,
+design authorities, results, tests, unit ids, and production-context ids, while
+remaining `IMPLEMENTED_PENDING_ACCEPTANCE`. Studio—not Gameplay—then obtains
+fresh acceptance and promotes the baseline.
+
 ## Shared hard rules
 
 - **Existing-project initialization reconstructs; it does not design.**
@@ -302,6 +312,9 @@ ownership and scene-integration rules as well.
   production unless the user explicitly requested plan-only output.
 - **Factory completion is not fun/acceptance.** Normal tests and structure do
   not self-award an experience verdict.
+- **Studio handoff is not promotion.** A workflow-completion record proves
+  what was produced at which revision; only Studio admission can combine it
+  with fresh acceptance and predecessor regression.
 - **Artifacts land in the game repo.** Factory owns blank templates, schemas,
   tools, contracts, and tests only.
 - **Ownership precedes writes.** Resolve all paths before any mkdir/write.

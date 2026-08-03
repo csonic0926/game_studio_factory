@@ -21,6 +21,16 @@ build-success claim. It binds:
 
 The first baseline may be small. It may not be an interactive software demo.
 
+Admission has two typed transitions:
+
+```text
+RECONSTRUCT: committed game + complete fresh acceptance -> B0
+PROMOTE: Bt + completed workflow + fresh acceptance + regression(Bt) -> Bt+1
+```
+
+Both are implemented by `baseline.py`; neither transition authors its own
+acceptance verdict.
+
 ## 2. Gameplay Ratchet
 
 A candidate system is locally complete when its owned production tasks pass.

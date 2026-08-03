@@ -77,7 +77,7 @@ and the old installed-skills manifest remain readable compatibility surfaces.
 ## Current implementation boundary
 
 The specialist factories are operational at their documented maturity. The
-Studio folder currently establishes the v0 operator contract and durable state
-schemas/templates. A persistent autonomous scheduler and automatic baseline
-compiler/checker remain to be implemented and proven on real game repos; the
-v0 name/structure must not be mistaken for that proof.
+Studio folder establishes the operator contract, durable state, and two-case
+baseline admission compiler/checker. A persistent autonomous scheduler remains
+to be implemented and proven on real game repos; the name/structure must not be
+mistaken for that proof.

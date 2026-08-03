@@ -1,0 +1,58 @@
+{
+  "schema_version": "baseline_admission_input.v1",
+  "admission_id": "<ADMISSION_ID>",
+  "admission_mode": "PROMOTE",
+  "project_id": "<PROJECT_ID>",
+  "baseline_id": "<NEXT_BASELINE_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "studio_goal": "<WHOLE_GAME_PRODUCTION_GOAL>",
+  "requested_horizon": "<USER_REQUESTED_HORIZON>",
+  "product_authority": {
+    "path": "design/product/PRODUCT_THESIS.md",
+    "sha256": "<SHA256>"
+  },
+  "runnable_build": {
+    "build_id": "<BUILD_ID>",
+    "launch_command": "<REPRODUCIBLE_LAUNCH_COMMAND>",
+    "artifact_paths": [
+      {"path": "<GAME_REPO_RELATIVE_BUILD_FILE>", "sha256": "<SHA256>"}
+    ],
+    "supported_platforms": ["<PLATFORM>"]
+  },
+  "playable_scope": {
+    "entry_condition": "<PLAYER_VISIBLE_START>",
+    "completion_condition": "<PLAYER_VISIBLE_COMPLETION>",
+    "expected_minutes": 15,
+    "gameplay_loop": "<UPDATED_COMPLETE_GAMEPLAY_LOOP>"
+  },
+  "admitted_units": [
+    {
+      "unit_id": "<NEW_OR_REPAIRED_UNIT_ID>",
+      "authority": {"path": "<GAMEPLAY_AUTHORITY_PATH>", "sha256": "<SHA256>"},
+      "player_goal": "<PLAYER_GOAL>",
+      "meaningful_actions": ["<MEANINGFUL_PLAYER_ACTION>"],
+      "consequence_or_reward": "<VISIBLE_CONSEQUENCE_OR_REWARD>",
+      "acceptance_review": {"path": "<FRESH_REVIEW_PATH>", "sha256": "<SHA256>"}
+    }
+  ],
+  "verification": {
+    "commands": ["<NEW_GAMEPLAY_AND_REGRESSION_COMMAND>"],
+    "result_paths": [
+      {"path": "<VERIFICATION_RESULT_PATH>", "sha256": "<SHA256>"}
+    ],
+    "regression_review": {"path": "<REGRESSION_REVIEW_PATH>", "sha256": "<SHA256>"}
+  },
+  "known_gaps": [],
+  "resolved_gap_ids": [],
+  "workflow_completion": {"path": "<WORKFLOW_COMPLETION_PATH>", "sha256": "<SHA256>"},
+  "predecessor_baseline": {"path": "<CURRENT_BASELINE_PATH>", "sha256": "<SHA256>"},
+  "reconstruction": {
+    "trigger": "",
+    "reason": "",
+    "author_context_ids": [],
+    "inventory": {"path": "", "sha256": ""},
+    "superseded_baseline": {"path": "", "sha256": ""}
+  },
+  "acceptance_owner": "<FRESH_ACCEPTANCE_OWNER>",
+  "accepted_at": "<ISO_8601_DATETIME>"
+}
