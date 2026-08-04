@@ -131,21 +131,28 @@ One author uses the compact Step 1 result to produce one complete
 action/reward, and meaningful-choice deductions occur inside that pass rather
 than becoming separate workers and review artifacts.
 
+The draft then passes an explicit authority gate: expected player experience
+is filled in, a fresh reviewer evaluates the exact SHA, and the user's ruling
+is recorded in objective-local `GAMEPLAY_DESIGN_VERDICT.json`. From-scratch
+new gameplay cannot substitute prior delegation for post-draft approval.
+
 ## Objective production — Step 3
 
 The factory user may choose a Plan Mode model or an ordinary model. Both must
 write the same persistent game-owned contract: one
 `PRODUCTION_PLAN_MANIFEST.json` plus `N` Markdown plans split by coherent
 change/file/state ownership. `plan.py validate` binds them to the exact
-`OBJECTIVE_GAMEPLAY.md` SHA-256, requires coverage for every numbered row,
+Factory revision, `OBJECTIVE_GAMEPLAY.md` SHA-256, and design verdict; it
+requires coverage for every numbered row,
 checks dependencies and portable repo paths, and rejects shared planned-file
 ownership. The plans compile design into production requirements; they may
 return `BLOCKED_BY_PLAN_GAP` but may not redesign gameplay silently.
 
-Manifest v2 adds mandatory `ui_impact`. Non-UI plans explicitly declare false.
+Manifest v3 retains mandatory `ui_impact` and adds the design-verdict gate.
+Non-UI plans explicitly declare false.
 UI plans require a checked game-owned UI adapter, exact hash, selected rule/
-exemplar/validation ids, and matching Markdown contract. Legacy v1 manifests
-remain readable only for non-UI historical plans.
+exemplar/validation ids, and matching Markdown contract. Legacy v1/v2 manifests
+are readable only through `check-historical` and cannot authorize execution.
 
 ## Objective production — Step 4
 
@@ -222,6 +229,7 @@ docs/GAMEPLAY_REPAIR_WORKFLOW.md
 init.py                             initialization router/probe/compiler/checker
 prepare.py                             Step 1 context validator/compiler
 plan.py                                Step 3 production-plan validator
+design_gate.py                         exact design review/human verdict gate
 repair.py                              repair context validator/compiler
 repair_plan.py                         repair production-plan validator
 ui.py                                  UI repo probe/compiler/checker
@@ -232,6 +240,7 @@ schemas/gameplay_factory_repo_probe.schema.json
 schemas/gameplay_factory_init_input.schema.json
 schemas/gameplay_factory_init_result.schema.json
 schemas/production_plan_manifest.schema.json
+schemas/gameplay_design_verdict.schema.json
 schemas/gameplay_gap_input.schema.json
 schemas/repair_plan_manifest.schema.json
 schemas/ui_production_repo_probe.schema.json
@@ -242,6 +251,7 @@ templates/GAMEPLAY_DESIGN_MODEL.json
 templates/GAMEPLAY_FACTORY_INIT_INPUT.json
 templates/NEXT_GAMEPLAY_UNIT_INPUT.json
 templates/OBJECTIVE_GAMEPLAY.md
+templates/GAMEPLAY_DESIGN_VERDICT.json
 templates/PRODUCTION_PLAN_MANIFEST.json
 templates/PRODUCTION_PLAN.md
 templates/GAMEPLAY_GAP_INPUT.json

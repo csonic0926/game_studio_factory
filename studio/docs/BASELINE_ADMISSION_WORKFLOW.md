@@ -33,7 +33,9 @@ It requires:
 - a complete reconstruction inventory whose discovered unit ids exactly equal
   the admitted unit ids, with evidence for excluded candidates;
 - every gameplay unit admitted into the baseline, each with an independent
-  fresh `ACCEPTED` review and exact runtime evidence;
+  fresh `ACCEPTED` review, exact runtime evidence, canonical expected-experience
+  authority, and a `USER`-owned `HUMAN_PLAYTEST_ACCEPTED` verdict on the exact
+  build;
 - deterministic verification commands and hashed results;
 - only non-blocking known gaps.
 
@@ -45,6 +47,7 @@ Use:
 ```text
 studio/templates/BASELINE_RECONSTRUCTION_INPUT.json
 studio/templates/BASELINE_RECONSTRUCTION_INVENTORY.json
+studio/templates/GAMEPLAY_ACCEPTANCE_INPUT.json
 studio/templates/GAMEPLAY_ACCEPTANCE_REVIEW.json
 ```
 
@@ -64,10 +67,13 @@ It requires:
 
 - the exact current baseline path and SHA;
 - a `STUDIO_WORKFLOW_COMPLETION.json` bound to the committed implementation
-  revision, source authorities, implementation results, tests, unit ids, and
-  production-context ids;
+  revision, exact Factory revision, source authorities, implementation results,
+  tests, unit ids, and production-context ids;
 - fresh acceptance reviews whose reviewer context is not any production
-  context;
+  context, whose admission-local `GAMEPLAY_ACCEPTANCE_INPUT_<unit_id>.json`
+  binds the exact admitted unit authority and states the expected player
+  experience, and whose human playtest verdict is explicitly accepted by the
+  user;
 - a fresh regression review covering **exactly every predecessor gameplay
   unit**;
 - explicit gap resolution ids so old gaps cannot disappear by omission.
@@ -80,6 +86,7 @@ Use:
 
 ```text
 studio/templates/STUDIO_WORKFLOW_COMPLETION.json
+studio/templates/GAMEPLAY_ACCEPTANCE_INPUT.json
 studio/templates/GAMEPLAY_ACCEPTANCE_REVIEW.json
 studio/templates/BASELINE_REGRESSION_REVIEW.json
 studio/templates/BASELINE_PROMOTION_INPUT.json
@@ -95,7 +102,8 @@ design/studio/admissions/<admission_id>/
   ...review and completion records...
 ```
 
-After the required fresh reviewers have written their own verdict records:
+After fresh reviewers have written their evidence verdicts and the user has
+recorded a playtest verdict on each exact build/authority pair:
 
 ```bash
 python3 <STUDIO_ROOT>/studio/baseline.py compile \
@@ -128,6 +136,9 @@ that the user's requested production horizon is complete or set
 
 `gameplay/reader.py` may prepare structurally valid runtime evidence, but it
 does not issue the gameplay verdict. Production tests and
-`IMPLEMENTED_PENDING_ACCEPTANCE` also do not issue it. Only a fresh acceptance
-reviewer can write `ACCEPTED`; the compiler merely verifies and binds that
-decision.
+`IMPLEMENTED_PENDING_ACCEPTANCE` also do not issue it. A fresh reviewer may
+write the evidence comparison `ACCEPTED`, but baseline promotion additionally
+requires a `USER`-owned `HUMAN_PLAYTEST_ACCEPTED` verdict. The compiler merely
+verifies and binds both decisions. Legacy v1 reviews and workflow completions
+remain readable for historical `check` or exact idempotent re-runs; they cannot
+authorize a new admission.

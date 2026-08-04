@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/gameplay_acceptance_input.schema.json",
+  "title": "Canonical Gameplay Acceptance Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "acceptance_input_id", "project_id", "unit_id",
+    "game_revision", "build_id", "factory_revision", "experience_authority",
+    "expected_player_experience", "playtest_questions", "non_claims", "prepared_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "gameplay_acceptance_input.v1"},
+    "acceptance_input_id": {"$ref": "#/$defs/id"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "unit_id": {"$ref": "#/$defs/id"},
+    "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "build_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "experience_authority": {"$ref": "#/$defs/path_hash"},
+    "expected_player_experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_player", "intended_experience", "required_player_work",
+        "earned_satisfaction", "failure_recovery", "must_not_become"
+      ],
+      "properties": {
+        "target_player": {"$ref": "#/$defs/non_tbd_text"},
+        "intended_experience": {"$ref": "#/$defs/non_tbd_text"},
+        "required_player_work": {"$ref": "#/$defs/non_tbd_text"},
+        "earned_satisfaction": {"$ref": "#/$defs/non_tbd_text"},
+        "failure_recovery": {"$ref": "#/$defs/non_tbd_text"},
+        "must_not_become": {"$ref": "#/$defs/non_tbd_text"}
+      }
+    },
+    "playtest_questions": {
+      "type": "array", "minItems": 1,
+      "items": {"$ref": "#/$defs/non_tbd_text"}
+    },
+    "non_claims": {
+      "type": "array", "minItems": 1,
+      "items": {"$ref": "#/$defs/non_tbd_text"}
+    },
+    "prepared_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "non_tbd_text": {"type": "string", "minLength": 1, "not": {"pattern": "TBD"}},
+    "path_hash": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

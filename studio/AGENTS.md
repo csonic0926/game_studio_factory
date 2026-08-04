@@ -16,6 +16,9 @@ these invariants:
    regression.
 3. **Gameplay Ratchet.** Completed code/assets/plans do not earn promotion. A
    candidate that weakens the existing game is repaired, rejected, or narrowed.
+   Every acceptance review binds the unit's exact experience authority and
+   Factory revision; AI review evidence cannot substitute for a recorded human
+   playtest verdict on the exact build.
 4. **Research before repetition.** After diagnosing the active gameplay
    pressure, use web research to acquire external design tokens from same-type,
    cross-genre, and non-game references. Extract transferable mechanisms; never
@@ -31,8 +34,9 @@ these invariants:
    blocking gap can be presented as Studio delivery.
 8. **Admission has two cases only.** `RECONSTRUCT` inventories and freshly
    accepts the complete current game. `PROMOTE` consumes one exact predecessor,
-   a completed workflow handoff, fresh acceptance for changed gameplay, and
-   regression of every predecessor unit. Never use reconstruction to erase a
+   a revision-pinned completed workflow handoff, authority-bound fresh
+   acceptance plus human playtest verdict for changed gameplay, and regression
+   of every predecessor unit. Never use reconstruction to erase a
    valid ratchet history or promotion to inherit unreviewed gameplay.
 
 ## Formal production transition

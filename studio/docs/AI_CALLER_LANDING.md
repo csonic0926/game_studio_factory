@@ -82,8 +82,10 @@ It routes mechanically to:
 - incremental `PROMOTE` when an exact current baseline exists.
 
 Read [`BASELINE_ADMISSION_WORKFLOW.md`](BASELINE_ADMISSION_WORKFLOW.md). The
-compiler cannot convert tests, implementation completion, or Reader output
-into a gameplay verdict; it only binds fresh reviewer decisions.
+compiler cannot convert tests, implementation completion, Reader output, or an
+AI review into a human gameplay verdict. It binds the exact unit experience
+authority, Factory revision, fresh reviewer decision, and explicit user
+playtest verdict.
 
 The game repo owns Studio state under:
 

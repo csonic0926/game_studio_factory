@@ -4,18 +4,30 @@
   "title": "Fresh Gameplay Acceptance Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "project_id", "unit_id", "game_revision", "build_id", "reviewer_context_id", "reviewer_freshness", "verdict", "acceptance_input", "evidence_paths", "observed_complete_loop", "blocking_findings", "reviewed_at"],
+  "required": ["schema_version", "review_id", "project_id", "unit_id", "game_revision", "build_id", "factory_revision", "experience_authority", "reviewer_context_id", "reviewer_freshness", "verdict", "acceptance_input", "human_playtest", "evidence_paths", "observed_complete_loop", "blocking_findings", "reviewed_at"],
   "properties": {
-    "schema_version": {"const": "gameplay_acceptance_review.v1"},
+    "schema_version": {"const": "gameplay_acceptance_review.v2"},
     "review_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "unit_id": {"$ref": "#/$defs/id"},
     "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
     "build_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "experience_authority": {"$ref": "#/$defs/path_hash"},
     "reviewer_context_id": {"$ref": "#/$defs/id"},
     "reviewer_freshness": {"const": "FRESH"},
     "verdict": {"enum": ["ACCEPTED", "REJECTED", "INCONCLUSIVE"]},
     "acceptance_input": {"$ref": "#/$defs/path_hash"},
+    "human_playtest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "verdict_owner", "verdict_source", "accepted_at"],
+      "properties": {
+        "status": {"const": "HUMAN_PLAYTEST_ACCEPTED"},
+        "verdict_owner": {"const": "USER"},
+        "verdict_source": {"type": "string", "minLength": 1},
+        "accepted_at": {"type": "string", "minLength": 1}
+      }
+    },
     "evidence_paths": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_hash"}},
     "observed_complete_loop": {
       "type": "object", "additionalProperties": false,

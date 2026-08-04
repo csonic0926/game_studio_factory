@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/gameplay_design_verdict.schema.json",
+  "title": "Gameplay Objective Design Verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "verdict_id",
+    "project_id",
+    "objective_id",
+    "factory_revision",
+    "objective_gameplay",
+    "context_status",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "factory_verdict",
+    "human_verdict",
+    "human_verdict_source",
+    "blocking_findings",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "gameplay_design_verdict.v1"},
+    "verdict_id": {"$ref": "#/$defs/id"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "objective_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "objective_gameplay": {"$ref": "#/$defs/path_hash"},
+    "context_status": {
+      "enum": ["READY_FOR_HOW_DESIGN", "READY_FOR_NEW_GAMEPLAY_DESIGN"]
+    },
+    "reviewer_context_id": {"$ref": "#/$defs/id"},
+    "reviewer_freshness": {"const": "FRESH"},
+    "factory_verdict": {"enum": ["PASS_DESIGN_REVIEW", "FAIL_DESIGN_REVIEW"]},
+    "human_verdict": {"enum": ["USER_APPROVED", "USER_DELEGATED", "USER_REJECTED"]},
+    "human_verdict_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "text", "recorded_at"],
+      "properties": {
+        "kind": {"enum": ["POST_DRAFT_APPROVAL", "EXPLICIT_DELEGATION", "POST_DRAFT_REJECTION"]},
+        "text": {"type": "string", "minLength": 1},
+        "recorded_at": {"type": "string", "minLength": 1}
+      }
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "reviewed_at": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"factory_verdict": {"const": "PASS_DESIGN_REVIEW"}}},
+      "then": {"properties": {"blocking_findings": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"context_status": {"const": "READY_FOR_NEW_GAMEPLAY_DESIGN"}}},
+      "then": {"properties": {"human_verdict": {"const": "USER_APPROVED"}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

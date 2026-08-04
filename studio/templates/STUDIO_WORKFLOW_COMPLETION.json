@@ -1,9 +1,10 @@
 {
-  "schema_version": "studio_workflow_completion.v1",
+  "schema_version": "studio_workflow_completion.v2",
   "completion_id": "<COMPLETION_ID>",
   "status": "IMPLEMENTED_PENDING_ACCEPTANCE",
   "project_id": "<PROJECT_ID>",
   "game_revision": "<COMMITTED_GAME_REVISION>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
   "specialists": ["gameplay"],
   "workflow_kind": "<OBJECTIVE_PRODUCTION_OR_REPAIR>",
   "unit_ids": ["<UNIT_ID>"],

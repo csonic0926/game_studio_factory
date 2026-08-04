@@ -19,12 +19,14 @@ from pathlib import Path
 from typing import Any
 
 try:  # Package import in tests; script import for direct CLI use.
+    from gameplay.design_gate import validate_objective_design_gate
     from gameplay.ui_binding import (
         UiImpactBinding,
         markdown_ui_contract,
         validate_ui_impact,
     )
 except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    from design_gate import validate_objective_design_gate  # type: ignore[no-redef]
     from ui_binding import (  # type: ignore[no-redef]
         UiImpactBinding,
         markdown_ui_contract,
@@ -32,9 +34,10 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     )
 
 
-SCHEMA_VERSION = "production_plan_manifest.v2"
+SCHEMA_VERSION = "production_plan_manifest.v3"
 SUPPORTED_SCHEMA_VERSIONS = {
     "production_plan_manifest.v1",
+    "production_plan_manifest.v2",
     SCHEMA_VERSION,
 }
 READY_FOR_EXECUTION = "READY_FOR_EXECUTION"
@@ -323,6 +326,8 @@ def _validate_plan_markdown(
 def validate_production_plan(
     game_repo_text: str,
     manifest_text: str,
+    *,
+    allow_legacy_historical: bool = False,
 ) -> PlanValidationResult:
     """Validate one game-owned manifest and every plan it owns."""
 
@@ -346,7 +351,12 @@ def validate_production_plan(
             "schema_version must be a supported production plan manifest version"
         )
         manifest_schema_version = SCHEMA_VERSION
-    _require_text(payload.get("project_id"), "project_id", errors)
+    if manifest_schema_version != SCHEMA_VERSION and not allow_legacy_historical:
+        errors.append(
+            "legacy production plan manifests are historical-only; regenerate as "
+            f"{SCHEMA_VERSION} before execution"
+        )
+    project_id = _require_text(payload.get("project_id"), "project_id", errors)
     objective_id = _require_text(payload.get("objective_id"), "objective_id", errors)
     objective_path_text = _require_text(
         payload.get("objective_gameplay_path"), "objective_gameplay_path", errors
@@ -500,6 +510,20 @@ def validate_production_plan(
         errors.append("objective_gameplay_sha256 does not match OBJECTIVE_GAMEPLAY.md")
     if objective_id and objective_id not in objective_text:
         errors.append("objective_id is not present in OBJECTIVE_GAMEPLAY.md")
+    if manifest_schema_version == SCHEMA_VERSION:
+        validate_objective_design_gate(
+            factory_root=FACTORY_ROOT,
+            game_repo=game_repo,
+            project_id=project_id,
+            objective_id=objective_id,
+            objective_path_text=objective_path_text,
+            objective_path=objective_path,
+            objective_sha256=objective_sha256,
+            objective_text=objective_text,
+            manifest_factory_revision=payload.get("factory_revision"),
+            raw_verdict_ref=payload.get("design_verdict"),
+            errors=errors,
+        )
     objective_rows = _extract_objective_rows(objective_text, errors)
 
     plan_ids = {plan.plan_id for plan in resolved_plans}
@@ -611,7 +635,7 @@ def validate_production_plan(
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["validate"])
+    parser.add_argument("command", choices=["validate", "check-historical"])
     parser.add_argument("--game-repo", required=True)
     parser.add_argument("--manifest", required=True)
     return parser
@@ -620,7 +644,11 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
-        result = validate_production_plan(args.game_repo, args.manifest)
+        result = validate_production_plan(
+            args.game_repo,
+            args.manifest,
+            allow_legacy_historical=args.command == "check-historical",
+        )
     except PlanningError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2

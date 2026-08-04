@@ -1,9 +1,14 @@
 {
-  "schema_version": "production_plan_manifest.v2",
+  "schema_version": "production_plan_manifest.v3",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
   "project_id": "<PROJECT_ID>",
   "objective_id": "<OBJECTIVE_ID>",
   "objective_gameplay_path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/OBJECTIVE_GAMEPLAY.md",
   "objective_gameplay_sha256": "<SHA256_OF_OBJECTIVE_GAMEPLAY_UTF8_BYTES>",
+  "design_verdict": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DESIGN_VERDICT.json",
+    "sha256": "<SHA256>"
+  },
   "planning_status": "READY_FOR_EXECUTION",
   "plans": [
     {

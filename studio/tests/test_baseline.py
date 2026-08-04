@@ -72,6 +72,7 @@ class BaselineAdmissionTests(unittest.TestCase):
         _write_json(self.repo, "evidence/runtime-one.json", {"loop": "complete"})
         _write(self.repo, "evidence/verification-one.txt", "PASS\n")
         self.revision_one = _commit(self.repo, "initial playable game")
+        self.factory_revision = _run(Path(__file__).resolve().parents[2], "rev-parse", "HEAD")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -84,24 +85,66 @@ class BaselineAdmissionTests(unittest.TestCase):
         revision: str,
         build_id: str,
         reviewer: str,
-        acceptance_input: str,
+        authority: str,
         evidence: str,
     ) -> dict[str, str]:
+        input_relative = (
+            f"design/studio/admissions/{admission_id}/"
+            f"GAMEPLAY_ACCEPTANCE_INPUT_{unit_id}.json"
+        )
+        _write_json(
+            self.repo,
+            input_relative,
+            {
+                "schema_version": "gameplay_acceptance_input.v1",
+                "acceptance_input_id": f"input-{admission_id}-{unit_id}",
+                "project_id": "sample-game",
+                "unit_id": unit_id,
+                "game_revision": revision,
+                "build_id": build_id,
+                "factory_revision": self.factory_revision,
+                "experience_authority": _ref(self.repo, authority),
+                "expected_player_experience": {
+                    "target_player": "A player encountering this objective for the first time",
+                    "intended_experience": "Understand the goal and make a deliberate choice",
+                    "required_player_work": "Read state, choose, act, and observe the consequence",
+                    "earned_satisfaction": "The visible result follows from the player's choice",
+                    "failure_recovery": "A failed choice teaches a recoverable next action",
+                    "must_not_become": "An automatic sequence with no meaningful player decision",
+                },
+                "playtest_questions": [
+                    "Did the player understand the goal without reviewer prompting?",
+                    "Did the consequence feel caused by the player's action?",
+                ],
+                "non_claims": [
+                    "Passing technical tests alone does not establish this experience."
+                ],
+                "prepared_at": "2026-08-03T11:58:00Z",
+            },
+        )
         relative = f"design/studio/admissions/{admission_id}/acceptance-{unit_id}.json"
         _write_json(
             self.repo,
             relative,
             {
-                "schema_version": "gameplay_acceptance_review.v1",
+                "schema_version": "gameplay_acceptance_review.v2",
                 "review_id": f"review-{admission_id}-{unit_id}",
                 "project_id": "sample-game",
                 "unit_id": unit_id,
                 "game_revision": revision,
                 "build_id": build_id,
+                "factory_revision": self.factory_revision,
+                "experience_authority": _ref(self.repo, authority),
                 "reviewer_context_id": reviewer,
                 "reviewer_freshness": "FRESH",
                 "verdict": "ACCEPTED",
-                "acceptance_input": _ref(self.repo, acceptance_input),
+                "acceptance_input": _ref(self.repo, input_relative),
+                "human_playtest": {
+                    "status": "HUMAN_PLAYTEST_ACCEPTED",
+                    "verdict_owner": "USER",
+                    "verdict_source": "User played this exact build and accepted the experience.",
+                    "accepted_at": "2026-08-03T12:02:00Z",
+                },
                 "evidence_paths": [_ref(self.repo, evidence)],
                 "observed_complete_loop": {
                     "goal": "Reach the visible objective",
@@ -122,7 +165,7 @@ class BaselineAdmissionTests(unittest.TestCase):
             revision=self.revision_one,
             build_id="build-one",
             reviewer="fresh-reviewer-one",
-            acceptance_input="evidence/acceptance-input-one.json",
+            authority="design/gameplay/unit-one.md",
             evidence="evidence/runtime-one.json",
         )
         inventory_relative = (
@@ -192,7 +235,7 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "inventory": _ref(self.repo, inventory_relative),
                 "superseded_baseline": {"path": "", "sha256": ""},
             },
-            "acceptance_owner": "fresh-reviewer-one",
+            "acceptance_owner": "USER",
             "accepted_at": "2026-08-03T12:05:00Z",
         }
         relative = f"design/studio/admissions/{admission_id}/BASELINE_ADMISSION_INPUT.json"
@@ -227,11 +270,12 @@ class BaselineAdmissionTests(unittest.TestCase):
             self.repo,
             completion_relative,
             {
-                "schema_version": "studio_workflow_completion.v1",
+                "schema_version": "studio_workflow_completion.v2",
                 "completion_id": "completion-two",
                 "status": "IMPLEMENTED_PENDING_ACCEPTANCE",
                 "project_id": "sample-game",
                 "game_revision": self.revision_two,
+                "factory_revision": self.factory_revision,
                 "specialists": ["gameplay", "repo_production"],
                 "workflow_kind": "objective_production",
                 "unit_ids": ["unit-two"],
@@ -248,7 +292,7 @@ class BaselineAdmissionTests(unittest.TestCase):
             revision=self.revision_two,
             build_id="build-two",
             reviewer="fresh-reviewer-two",
-            acceptance_input="evidence/acceptance-input-two.json",
+            authority="design/gameplay/unit-two.md",
             evidence="evidence/runtime-two.json",
         )
         regression_relative = (
@@ -325,7 +369,7 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "inventory": {"path": "", "sha256": ""},
                 "superseded_baseline": {"path": "", "sha256": ""},
             },
-            "acceptance_owner": "fresh-reviewer-two",
+            "acceptance_owner": "USER",
             "accepted_at": "2026-08-03T13:15:00Z",
         }
         relative = "design/studio/admissions/admission-two/BASELINE_ADMISSION_INPUT.json"
@@ -353,6 +397,14 @@ class BaselineAdmissionTests(unittest.TestCase):
         )
         self.assertEqual("RECONSTRUCT", baseline["promotion"]["admission_mode"])
         self.assertEqual(["unit-one"], baseline["promotion"]["promoted_unit_ids"])
+        self.assertEqual("accepted_playable_baseline.v2", baseline["schema_version"])
+        self.assertEqual(self.factory_revision, baseline["factory_revision"])
+        self.assertEqual(
+            "HUMAN_PLAYTEST_ACCEPTED",
+            baseline["accepted_gameplay_units"][0]["acceptance_review"][
+                "human_playtest_status"
+            ],
+        )
 
     def test_check_tolerates_later_mutable_run_state_progress(self) -> None:
         relative, _, _ = self._compile_first_baseline()
@@ -447,6 +499,83 @@ class BaselineAdmissionTests(unittest.TestCase):
         result = compile_baseline_admission(str(self.repo), relative)
         self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
         self.assertTrue(any("reuses a production context" in error for error in result.errors))
+
+    def test_acceptance_requires_human_playtest_verdict(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        review["human_playtest"]["status"] = "NOT_RUN"
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("HUMAN_PLAYTEST_ACCEPTED" in error for error in result.errors))
+
+    def test_admission_acceptance_owner_must_be_user(self) -> None:
+        relative, payload = self._reconstruction_input()
+        payload["acceptance_owner"] = "fresh-reviewer-one"
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("acceptance_owner must be USER" in error for error in result.errors))
+
+    def test_acceptance_input_must_bind_exact_unit_authority(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        input_relative = review["acceptance_input"]["path"]
+        acceptance_input = json.loads((self.repo / input_relative).read_text())
+        acceptance_input["experience_authority"] = _ref(
+            self.repo, "design/product/PRODUCT_THESIS.md"
+        )
+        _write_json(self.repo, input_relative, acceptance_input)
+        review["acceptance_input"] = _ref(self.repo, input_relative)
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("exact admitted unit authority" in error for error in result.errors))
+
+    def test_factory_revision_must_match_active_contracts(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        review["factory_revision"] = "0" * 40
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("active Factory" in error for error in result.errors))
+
+    def test_legacy_acceptance_review_cannot_create_new_baseline(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        review["schema_version"] = "gameplay_acceptance_review.v1"
+        for field in (
+            "factory_revision", "experience_authority", "human_playtest"
+        ):
+            review.pop(field)
+        review["acceptance_input"] = _ref(
+            self.repo, "evidence/acceptance-input-one.json"
+        )
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("legacy historical evidence" in error for error in result.errors))
 
     def test_regression_must_cover_every_predecessor_unit(self) -> None:
         _, _, predecessor_ref = self._compile_first_baseline()

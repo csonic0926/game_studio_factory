@@ -36,14 +36,16 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   completion proof, action/reward validation, compact context rendering, and
   the distinct `READY_FOR_HOW_DESIGN`, `READY_FOR_NEW_GAMEPLAY_DESIGN`, and
   `BLOCKED_BY_MATERIAL` states;
-- blank `GAMEPLAY_DESIGN_MODEL.json`, `NEXT_GAMEPLAY_UNIT_INPUT.json`, and
-  `OBJECTIVE_GAMEPLAY.md` templates plus machine-readable schemas and
+- blank `GAMEPLAY_DESIGN_MODEL.json`, `NEXT_GAMEPLAY_UNIT_INPUT.json`,
+  `OBJECTIVE_GAMEPLAY.md`, and exact `GAMEPLAY_DESIGN_VERDICT.json` templates
+  plus machine-readable schemas and
   adversarial preparation tests;
 - model-independent objective production planning: the factory user may choose a
   Plan Mode or ordinary model, while both persist the same SHA-bound
   `PRODUCTION_PLAN_MANIFEST.json` plus `N` Markdown change-unit plans;
-- dependency-free `plan.py validate` checks exact objective-row coverage,
-  source hash freshness, required plan sections/metadata, portable ownership,
+- dependency-free `plan.py validate` checks exact Factory revision, fresh
+  objective design review, human ruling, objective-row coverage, source hash
+  freshness, required plan sections/metadata, portable ownership,
   existing repo evidence, plan dependency cycles, ready/blocked consistency,
   and exclusive planned-path ownership;
 - production-plan schemas/templates and adversarial tests, plus one real IMT
@@ -87,7 +89,7 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   refresh flow, scene/lifecycle integration, input/modal/layers, responsive
   composition, localization fit, successful repo exemplars, and stateful
   validation scenarios across every declared viewport/localization profile;
-- production/repair manifest v2 UI binding: UI-changing plans require the
+- production manifest v3 / repair manifest v2 UI binding: UI-changing plans require the
   exact UI adapter SHA plus selected rule/exemplar/scenario ids and matching
   Markdown contract; explicit/obvious UI work cannot declare no impact,
   stale/unknown bindings fail closed, and legacy v1 remains compatible only

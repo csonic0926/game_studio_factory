@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from gameplay.design_gate import current_factory_revision
 from gameplay.plan import (
     BLOCKED_BY_PLAN_GAP,
     READY_FOR_EXECUTION,
@@ -34,6 +35,18 @@ class ProductionPlanValidationTests(unittest.TestCase):
         )
         self.objective_text = """# Objective Gameplay — `mission.next`
 
+- Context status: `READY_FOR_HOW_DESIGN`
+- Design status: `USER_APPROVED`
+
+## Expected player experience
+
+- Target player: A player choosing a route through the mission.
+- Intended experience: Read the fork, make a deliberate choice, and understand the consequence.
+- Required player work: Compare two visible routes and commit to one.
+- Earned satisfaction: The selected route opens because of the player's decision.
+- Failure / recovery: A wrong route can be reconsidered before the gate is opened.
+- Must not become: An automatic gate with no meaningful route choice.
+
 | # | Situation | Result |
 | --- | --- | --- |
 | 1 | Reach a fork. | Pick a route. |
@@ -45,6 +58,12 @@ class ProductionPlanValidationTests(unittest.TestCase):
         self.objective_sha256 = hashlib.sha256(
             self.objective_text.encode("utf-8")
         ).hexdigest()
+        self.factory_revision = current_factory_revision(Path(__file__).resolve().parents[2])
+        self.verdict_relative = (
+            "design/gameplay/objective_gameplay/mission.next/"
+            "GAMEPLAY_DESIGN_VERDICT.json"
+        )
+        self._write_design_verdict()
         (self.game_repo / "game.gd").write_text("func open_gate():\n\tpass\n", encoding="utf-8")
         self._write_plan()
         self._write_manifest()
@@ -88,13 +107,68 @@ No prerequisite plan.
             self._plan_text(status=status), encoding="utf-8"
         )
 
+    def _write_design_verdict(
+        self,
+        *,
+        context_status: str = "READY_FOR_HOW_DESIGN",
+        human_verdict: str = "USER_APPROVED",
+        objective_sha256: str | None = None,
+        factory_revision: str | None = None,
+    ) -> None:
+        verdict = {
+            "schema_version": "gameplay_design_verdict.v1",
+            "verdict_id": "mission.next.design.1",
+            "project_id": "sample",
+            "objective_id": "mission.next",
+            "factory_revision": factory_revision or self.factory_revision,
+            "objective_gameplay": {
+                "path": self.objective_relative,
+                "sha256": objective_sha256 or self.objective_sha256,
+            },
+            "context_status": context_status,
+            "reviewer_context_id": "fresh.design.reviewer.1",
+            "reviewer_freshness": "FRESH",
+            "factory_verdict": "PASS_DESIGN_REVIEW",
+            "human_verdict": human_verdict,
+            "human_verdict_source": {
+                "kind": (
+                    "POST_DRAFT_APPROVAL"
+                    if human_verdict == "USER_APPROVED"
+                    else "EXPLICIT_DELEGATION"
+                ),
+                "text": "User approved this exact objective draft.",
+                "recorded_at": "2026-08-04T12:00:00+08:00",
+            },
+            "blocking_findings": [],
+            "reviewed_at": "2026-08-04T12:01:00+08:00",
+        }
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+        self.verdict_sha256 = hashlib.sha256(verdict_path.read_bytes()).hexdigest()
+
+    @staticmethod
+    def _no_ui_impact() -> dict:
+        return {
+            "touches_ui": False,
+            "adapter_path": "",
+            "adapter_sha256": "",
+            "rule_ids": [],
+            "exemplar_ids": [],
+            "validation_scenario_ids": [],
+        }
+
     def _manifest(self) -> dict:
         return {
-            "schema_version": "production_plan_manifest.v1",
+            "schema_version": "production_plan_manifest.v3",
+            "factory_revision": self.factory_revision,
             "project_id": "sample",
             "objective_id": "mission.next",
             "objective_gameplay_path": self.objective_relative,
             "objective_gameplay_sha256": self.objective_sha256,
+            "design_verdict": {
+                "path": self.verdict_relative,
+                "sha256": self.verdict_sha256,
+            },
             "planning_status": READY_FOR_EXECUTION,
             "plans": [
                 {
@@ -107,6 +181,7 @@ No prerequisite plan.
                     "work_types": ["CONTENT_DATA", "TEST"],
                     "existing_repo_refs": ["game.gd"],
                     "planned_paths": ["game.gd"],
+                    "ui_impact": self._no_ui_impact(),
                 }
             ],
             "row_coverage": [
@@ -283,6 +358,7 @@ No prerequisite plan.
                 "work_types": ["TEST"],
                 "existing_repo_refs": ["game.gd"],
                 "planned_paths": ["game.gd"],
+                "ui_impact": self._no_ui_impact(),
             }
         )
         payload["row_coverage"][1] = {
@@ -320,6 +396,7 @@ No prerequisite plan.
                 "work_types": ["TEST"],
                 "existing_repo_refs": ["game.gd"],
                 "planned_paths": ["tests/test_gate.gd"],
+                "ui_impact": self._no_ui_impact(),
             }
         )
         payload["row_coverage"][1] = {
@@ -355,6 +432,10 @@ No prerequisite plan.
 
     def test_legacy_ui_plan_requires_regeneration(self) -> None:
         payload = self._manifest()
+        payload["schema_version"] = "production_plan_manifest.v1"
+        payload.pop("factory_revision")
+        payload.pop("design_verdict")
+        payload["plans"][0].pop("ui_impact")
         payload["plans"][0]["work_types"] = ["UI", "TEST"]
         self._write_manifest(payload)
         result = validate_production_plan(str(self.game_repo), self.manifest_relative)
@@ -366,7 +447,6 @@ No prerequisite plan.
         (self.game_repo / "ui").mkdir(exist_ok=True)
         (self.game_repo / "ui/main.tscn").write_text("[node]\n", encoding="utf-8")
         payload = self._manifest()
-        payload["schema_version"] = "production_plan_manifest.v2"
         payload["plans"][0]["work_types"] = ["UI", "TEST"]
         payload["plans"][0]["planned_paths"] = ["ui/main.tscn"]
         payload["plans"][0]["ui_impact"] = binding
@@ -395,7 +475,6 @@ No prerequisite plan.
 
     def test_obvious_ui_path_cannot_declare_no_ui_impact(self) -> None:
         payload = self._manifest()
-        payload["schema_version"] = "production_plan_manifest.v2"
         payload["plans"][0]["planned_paths"] = ["ui/main.tscn"]
         payload["plans"][0]["ui_impact"] = {
             "touches_ui": False,
@@ -409,6 +488,75 @@ No prerequisite plan.
         result = validate_production_plan(str(self.game_repo), self.manifest_relative)
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("touches_ui=false" in error for error in result.errors))
+
+    def test_ai_draft_cannot_enter_production(self) -> None:
+        objective = self.objective_text.replace(
+            "- Design status: `USER_APPROVED`",
+            "- Design status: `AI_DRAFT_FOR_REVIEW`",
+        )
+        objective_path = self.objective_dir / "OBJECTIVE_GAMEPLAY.md"
+        objective_path.write_text(objective, encoding="utf-8")
+        payload = self._manifest()
+        payload["objective_gameplay_sha256"] = hashlib.sha256(
+            objective.encode("utf-8")
+        ).hexdigest()
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("Design status" in error for error in result.errors))
+
+    def test_new_gameplay_design_requires_post_draft_user_approval(self) -> None:
+        objective = self.objective_text.replace(
+            "READY_FOR_HOW_DESIGN", "READY_FOR_NEW_GAMEPLAY_DESIGN"
+        ).replace("USER_APPROVED", "USER_DELEGATED")
+        objective_path = self.objective_dir / "OBJECTIVE_GAMEPLAY.md"
+        objective_path.write_text(objective, encoding="utf-8")
+        objective_sha = hashlib.sha256(objective.encode("utf-8")).hexdigest()
+        self._write_design_verdict(
+            context_status="READY_FOR_NEW_GAMEPLAY_DESIGN",
+            human_verdict="USER_DELEGATED",
+            objective_sha256=objective_sha,
+        )
+        payload = self._manifest()
+        payload["objective_gameplay_sha256"] = objective_sha
+        payload["design_verdict"]["sha256"] = self.verdict_sha256
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("delegation is insufficient" in error for error in result.errors))
+
+    def test_stale_design_verdict_hash_fails_closed(self) -> None:
+        payload = self._manifest()
+        payload["design_verdict"]["sha256"] = "0" * 64
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("design_verdict hash" in error for error in result.errors))
+
+    def test_factory_revision_mismatch_fails_closed(self) -> None:
+        payload = self._manifest()
+        payload["factory_revision"] = "0" * 40
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("Factory HEAD" in error for error in result.errors))
+
+    def test_legacy_manifest_is_historical_check_only(self) -> None:
+        payload = self._manifest()
+        payload["schema_version"] = "production_plan_manifest.v2"
+        payload.pop("factory_revision")
+        payload.pop("design_verdict")
+        self._write_manifest(payload)
+        active = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, active.status)
+        self.assertTrue(any("historical-only" in error for error in active.errors))
+        historical = validate_production_plan(
+            str(self.game_repo),
+            self.manifest_relative,
+            allow_legacy_historical=True,
+        )
+        self.assertEqual(READY_FOR_EXECUTION, historical.status)
+        self.assertFalse(historical.errors)
 
 
 if __name__ == "__main__":

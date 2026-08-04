@@ -53,6 +53,6 @@
     "inventory": {"path": "", "sha256": ""},
     "superseded_baseline": {"path": "", "sha256": ""}
   },
-  "acceptance_owner": "<FRESH_ACCEPTANCE_OWNER>",
+  "acceptance_owner": "USER",
   "accepted_at": "<ISO_8601_DATETIME>"
 }

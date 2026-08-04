@@ -160,6 +160,11 @@ One creative worker then writes the whole
 Do not split its internal necessary-action/problem/pressure/desire/choice
 deductions into separate workers.
 
+Do not plan from `AI_DRAFT_FOR_REVIEW`. Fill the expected-player-experience
+section, run a fresh design review, obtain a human ruling on the exact SHA, and
+write objective-local `GAMEPLAY_DESIGN_VERDICT.json`. From-scratch new gameplay
+requires post-draft `USER_APPROVED`; broad prior delegation is not enough.
+
 Then use either Plan Mode or an ordinary model chosen by the factory user to
 inspect the repo and persist:
 
@@ -182,7 +187,7 @@ python3 gameplay/ui.py start --game-repo <GAME_REPO>
 
 If it returns `UI_PRODUCTION_ADAPTER_INPUT_REQUIRED`, follow
 `UI_PRODUCTION_WORKFLOW.md` with one bounded evidence investigator, then
-compile/check the game-owned adapter. Manifest v2 UI plans bind its exact SHA
+compile/check the game-owned adapter. Manifest v3 UI plans bind its exact SHA
 and relevant rule/exemplar/validation-scenario ids. Do not use feature intent
 as permission to guess the repo's layout, state/refresh, scene/lifecycle,
 input/layer, responsive, localization, or validation conventions.

@@ -1,9 +1,10 @@
 {
-  "schema_version": "accepted_playable_baseline.v1",
+  "schema_version": "accepted_playable_baseline.v2",
   "status": "ACCEPTED_PLAYABLE_BASELINE",
   "project_id": "<PROJECT_ID>",
   "baseline_id": "<BASELINE_ID>",
   "game_revision": "<COMMITTED_GAME_REVISION>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
   "product_authority": {
     "path": "design/product/PRODUCT_THESIS.md",
     "sha256": "<SHA256>"
@@ -36,7 +37,12 @@
         "path": "<FRESH_ACCEPTANCE_REVIEW_PATH>",
         "sha256": "<SHA256>",
         "reviewer_freshness": "FRESH",
-        "verdict": "ACCEPTED"
+        "verdict": "ACCEPTED",
+        "experience_authority": {
+          "path": "<GAME_REPO_RELATIVE_GAMEPLAY_AUTHORITY_PATH>",
+          "sha256": "<SHA256>"
+        },
+        "human_playtest_status": "HUMAN_PLAYTEST_ACCEPTED"
       }
     }
   ],
@@ -59,7 +65,7 @@
     "superseded_baseline": {"path": "", "sha256": ""},
     "source_workflow_handoffs": [],
     "promoted_unit_ids": ["<UNIT_ID>"],
-    "acceptance_owner": "<FRESH_ACCEPTANCE_OWNER>",
+    "acceptance_owner": "USER",
     "accepted_at": "<ISO_8601_DATETIME>"
   },
   "delivery_eligibility": {

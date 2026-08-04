@@ -30,10 +30,11 @@ interactive software demo. Studio delivery requires a runnable **Accepted
 Playable Baseline** with:
 
 - at least one complete, accepted gameplay loop;
-- fresh acceptance for newly introduced gameplay;
+- fresh acceptance for newly introduced gameplay, bound to its canonical
+  expected-experience authority and an explicit human playtest verdict;
 - regression evidence for previously accepted gameplay;
 - no blocking known gap;
-- exact build and game-revision provenance.
+- exact build, game-revision, and Factory-revision provenance.
 
 Read [`studio/docs/AI_CALLER_LANDING.md`](studio/docs/AI_CALLER_LANDING.md) for
 the baseline/ratchet/research/production loop.

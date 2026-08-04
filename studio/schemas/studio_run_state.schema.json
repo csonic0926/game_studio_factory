@@ -4,9 +4,10 @@
   "title": "Game Studio Run State",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "project_id", "studio_goal", "status", "current_baseline", "active_pressure", "research", "candidate_unit", "workstreams", "acceptance", "delivery", "blockers"],
+  "required": ["schema_version", "factory_revision", "project_id", "studio_goal", "status", "current_baseline", "active_pressure", "research", "candidate_unit", "workstreams", "acceptance", "delivery", "blockers"],
   "properties": {
-    "schema_version": {"const": "studio_run_state.v1"},
+    "schema_version": {"const": "studio_run_state.v2"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
     "project_id": {"$ref": "#/$defs/id"},
     "studio_goal": {"type": "string", "minLength": 1},
     "status": {"enum": ["STUDIO_NEEDS_PRODUCT_AUTHORITY", "STUDIO_NEEDS_ACCEPTED_BASELINE", "STUDIO_READY_TO_SCALE", "STUDIO_RESEARCHING", "STUDIO_UNIT_DESIGN", "STUDIO_PRODUCTION", "STUDIO_INTEGRATION", "STUDIO_ACCEPTANCE", "STUDIO_BLOCKED", "STUDIO_GOAL_DELIVERED"]},
@@ -29,10 +30,11 @@
     "workstreams": {"type": "array", "items": {"$ref": "#/$defs/workstream"}},
     "acceptance": {
       "type": "object", "additionalProperties": false,
-      "required": ["new_gameplay_status", "predecessor_regression_status", "candidate_baseline_path"],
+      "required": ["new_gameplay_status", "predecessor_regression_status", "human_playtest_status", "candidate_baseline_path"],
       "properties": {
         "new_gameplay_status": {"enum": ["NOT_RUN", "INCONCLUSIVE", "REJECTED", "ACCEPTED"]},
         "predecessor_regression_status": {"enum": ["NOT_RUN", "FAIL", "PASS"]},
+        "human_playtest_status": {"enum": ["NOT_RUN", "REJECTED", "ACCEPTED"]},
         "candidate_baseline_path": {"type": "string"}
       }
     },

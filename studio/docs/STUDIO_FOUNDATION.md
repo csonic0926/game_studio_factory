@@ -15,7 +15,8 @@ build-success claim. It binds:
 - exact game revision and product authority;
 - runnable build/launch evidence;
 - the playable scope and its complete loop;
-- every accepted gameplay unit and its fresh acceptance decision;
+- every accepted gameplay unit, its canonical experience authority, fresh
+  acceptance decision, and human playtest verdict;
 - regression evidence for previously accepted gameplay;
 - known gaps and delivery blockers.
 
@@ -38,6 +39,7 @@ It is globally promotable only when:
 
 ```text
 new unit acceptance == ACCEPTED
+and human playtest == HUMAN_PLAYTEST_ACCEPTED
 and predecessor regression == PASS
 and integration blockers == []
 and interactive_demo_only == false

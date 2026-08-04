@@ -1,0 +1,23 @@
+{
+  "schema_version": "gameplay_design_verdict.v1",
+  "verdict_id": "<VERDICT_ID>",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "objective_gameplay": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/OBJECTIVE_GAMEPLAY.md",
+    "sha256": "<SHA256>"
+  },
+  "context_status": "READY_FOR_HOW_DESIGN | READY_FOR_NEW_GAMEPLAY_DESIGN",
+  "reviewer_context_id": "<FRESH_DESIGN_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "factory_verdict": "PASS_DESIGN_REVIEW",
+  "human_verdict": "USER_APPROVED",
+  "human_verdict_source": {
+    "kind": "POST_DRAFT_APPROVAL",
+    "text": "<EXACT_USER_RULING_ON_THIS_OBJECTIVE_DRAFT>",
+    "recorded_at": "<ISO_8601_DATETIME>"
+  },
+  "blocking_findings": [],
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

@@ -1,5 +1,6 @@
 {
-  "schema_version": "studio_run_state.v1",
+  "schema_version": "studio_run_state.v2",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
   "project_id": "<PROJECT_ID>",
   "studio_goal": "<WHOLE_GAME_PRODUCTION_GOAL>",
   "status": "STUDIO_NEEDS_ACCEPTED_BASELINE",
@@ -11,6 +12,7 @@
   "acceptance": {
     "new_gameplay_status": "NOT_RUN",
     "predecessor_regression_status": "NOT_RUN",
+    "human_playtest_status": "NOT_RUN",
     "candidate_baseline_path": ""
   },
   "delivery": {

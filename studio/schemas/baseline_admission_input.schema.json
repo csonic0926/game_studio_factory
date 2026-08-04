@@ -42,7 +42,7 @@
         "superseded_baseline": {"$ref": "#/$defs/optional_path_hash"}
       }
     },
-    "acceptance_owner": {"type": "string", "minLength": 1},
+    "acceptance_owner": {"const": "USER"},
     "accepted_at": {"type": "string", "minLength": 1}
   },
   "allOf": [

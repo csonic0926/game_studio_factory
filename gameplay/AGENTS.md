@@ -200,6 +200,8 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
   -> one creative author
   -> OBJECTIVE_GAMEPLAY.md
+  -> fresh design review + exact human verdict
+  -> GAMEPLAY_DESIGN_VERDICT.json
   -> user-selected production planner
   -> PRODUCTION_PLAN_MANIFEST.json + production_plans/*.md
   -> plan.py validate
@@ -210,7 +212,10 @@ The primary progression driver answers **what is next**. Gameplay is **how**
 the player reaches it through actions and their consequences/rewards.
 
 Only `READY_FOR_HOW_DESIGN` or `READY_FOR_NEW_GAMEPLAY_DESIGN` starts the one
-Step 2 author. Only `READY_FOR_EXECUTION` starts production. For an ordinary
+Step 2 author. An `AI_DRAFT_FOR_REVIEW` never enters planning: a fresh reviewer
+must pass the exact objective SHA and the user must rule on that draft. New
+gameplay design always requires post-draft `USER_APPROVED`; prior delegation is
+not a substitute. Only `READY_FOR_EXECUTION` starts production. For an ordinary
 make/continue request, the caller executes the plans automatically rather than
 asking the user to say “write the code”.
 
@@ -360,6 +365,9 @@ creative context, invent gameplay, or issue a final experience verdict.
 - `templates/GAMEPLAY_DESIGN_MODEL.json`
 - `templates/NEXT_GAMEPLAY_UNIT_INPUT.json`
 - `templates/OBJECTIVE_GAMEPLAY.md`
+- `design_gate.py`
+- `schemas/gameplay_design_verdict.schema.json`
+- `templates/GAMEPLAY_DESIGN_VERDICT.json`
 - `plan.py`
 - `schemas/production_plan_manifest.schema.json`
 - `templates/PRODUCTION_PLAN_MANIFEST.json`

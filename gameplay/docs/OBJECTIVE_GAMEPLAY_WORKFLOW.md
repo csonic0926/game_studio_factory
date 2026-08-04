@@ -142,6 +142,25 @@ Do not use a fixed novelty quota, create a main-progression branch merely to
 prove choice, or require punishment where positive rewards provide legible
 different consequences.
 
+## Step 2.5 — bind design review and human verdict
+
+`OBJECTIVE_GAMEPLAY.md` is initially `AI_DRAFT_FOR_REVIEW`; planning may not
+silently treat that status as authority. Fill its `Expected player experience`
+section, run one fresh design review, obtain the user's ruling on the exact
+draft, and persist beside it:
+
+```text
+<objective_dir>/GAMEPLAY_DESIGN_VERDICT.json
+```
+
+Use `schemas/gameplay_design_verdict.schema.json` and
+`templates/GAMEPLAY_DESIGN_VERDICT.json`. The verdict binds the exact objective
+path/SHA and Factory Git revision. `READY_FOR_NEW_GAMEPLAY_DESIGN` requires a
+post-draft `USER_APPROVED` ruling; an earlier broad go-ahead or delegated AI
+taste decision is insufficient. `READY_FOR_HOW_DESIGN` may use explicit
+`USER_DELEGATED` only when that delegation is recorded against the exact draft.
+Any edit to the objective invalidates the verdict and requires review again.
+
 ## Step 3 — compile persistent production plans
 
 Step 3 leaves creative design and inspects the real repo to translate
@@ -171,19 +190,25 @@ Use:
 - `templates/PRODUCTION_PLAN_MANIFEST.json`
 - `templates/PRODUCTION_PLAN.md`
 
-The manifest binds to the exact UTF-8 SHA-256 of `OBJECTIVE_GAMEPLAY.md`, maps
+Manifest v3 binds the Factory Git revision, exact UTF-8 SHA-256 of
+`OBJECTIVE_GAMEPLAY.md`, and objective-local `GAMEPLAY_DESIGN_VERDICT.json`. It maps
 every numbered row to `IMPLEMENT`, `VERIFY_EXISTING`, or
 `NO_CHANGE_REQUIRED`, declares dependencies and exclusive planned-path
 ownership, and records any blocking gap. Each Markdown plan preserves the
 player-visible result, exact repo reuse/evidence, owned production changes,
 locked non-goals, deterministic verification, and handoff.
 
-Manifest v2 requires `ui_impact` on every plan. Non-UI plans declare false
+Manifest v3 requires `ui_impact` on every plan. Non-UI plans declare false
 with empty binding fields. UI plans bind the exact checked
 `UI_PRODUCTION_ADAPTER.json` SHA and select relevant rule, exemplar, and
 validation-scenario ids; their Markdown repeats that selection under
-`## UI realization contract`. Legacy v1 manifests remain valid only for
-genuinely non-UI historical work.
+`## UI realization contract`. Legacy v1/v2 manifests are historical-check
+inputs only and cannot authorize new execution:
+
+```bash
+python3 gameplay/plan.py check-historical \
+  --game-repo <GAME_REPO> --manifest <LEGACY_MANIFEST>
+```
 
 `N` is determined by coherent execution and verification boundaries. Do not
 make one plan per table row, split two plans that both mutate the same file, or
@@ -221,8 +246,9 @@ immediately:
 6. continue until every plan is implemented or an exact external blocker is
    reached.
 
-This step adds no Gameplay Factory author, packet, reviewer, or acceptance
-gate. It is the control-flow instruction that prevents a user who simply asks
+This step adds no new Gameplay Factory author, packet, reviewer, or runtime
+acceptance gate; the exact design verdict was already required before planning.
+It is the control-flow instruction that prevents a user who simply asks
 the AI Factory to make gameplay from receiving plans and then having to ask a
 second time for implementation. Stop after Step 3 only for an explicit
 plan-only request or an environment that has no execution-capable caller; in
@@ -234,6 +260,7 @@ paths rather than implying the gameplay was produced.
 Do not regenerate Span Quant, Beat Sheet, walkthroughs, packets, or reviews
 merely to preserve the previous workflow shape. The first real
 `OBJECTIVE_GAMEPLAY.md` proved compact enough to proceed to production
-planning; Step 3 now tests whether it can replace those prior intermediate
-design artifacts. Runtime observation and fresh experience acceptance remain
-separate, explicitly invoked concerns rather than automatic Step 4 gates.
+planning only after its expected-experience section, fresh design review, and
+human verdict are bound. Step 3 tests whether it can replace the prior
+intermediate design artifacts. Runtime observation and post-build human
+playtest acceptance remain separate from this pre-production design gate.

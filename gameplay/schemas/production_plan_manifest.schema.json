@@ -6,10 +6,12 @@
   "additionalProperties": false,
   "required": [
     "schema_version",
+    "factory_revision",
     "project_id",
     "objective_id",
     "objective_gameplay_path",
     "objective_gameplay_sha256",
+    "design_verdict",
     "planning_status",
     "plans",
     "row_coverage",
@@ -17,7 +19,11 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "production_plan_manifest.v2"
+      "const": "production_plan_manifest.v3"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
     },
     "project_id": {
       "type": "string",
@@ -34,6 +40,9 @@
     "objective_gameplay_sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "design_verdict": {
+      "$ref": "#/$defs/path_hash"
     },
     "planning_status": {
       "enum": [
@@ -64,6 +73,15 @@
     }
   },
   "$defs": {
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "plan": {
       "type": "object",
       "additionalProperties": false,
