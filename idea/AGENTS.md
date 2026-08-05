@@ -153,3 +153,10 @@ emotionally effective, fun, or the only possible answer.
 
 After `IDEA_FACTORY_READY`, return to the caller's original production request.
 Full workflow: [`docs/PRODUCT_DEFINITION_WORKFLOW.md`](docs/PRODUCT_DEFINITION_WORKFLOW.md).
+
+If Studio owns the call or `design/product/PRODUCT_AUTHORITY_REGISTER.json`
+exists, commission is not operationally active until Studio records it with
+`studio/product.py activate`. Conversely, `NO_ACTIVE_PRODUCT_AUTHORITY`
+overrides historical Product Thesis, code, and baseline presence. Whole-product
+archive is owned by Studio's Product Authority lifecycle, not by ad hoc moves
+inside Idea Factory.

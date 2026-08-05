@@ -19,7 +19,7 @@
           "objective_id": {"$ref": "#/$defs/id"},
           "decision_payload_sha256": {"$ref": "#/$defs/sha256"},
           "decision_card": {"$ref": "#/$defs/path_hash"},
-          "state": {"enum": ["PENDING", "USER_APPROVED", "USER_REJECTED", "SUPERSEDED"]},
+          "state": {"enum": ["PENDING", "USER_APPROVED", "USER_REJECTED", "SUPERSEDED", "PRODUCT_ARCHIVED"]},
           "alignment_input": {"$ref": "#/$defs/path_hash"},
           "alignment_review": {"$ref": "#/$defs/path_hash"},
           "supersedes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},

@@ -63,6 +63,13 @@ these invariants:
     amnesia, semantic proxies, avoidable questions, and silent pending-card
     drift. This reviewer advises the transition; it never owns product taste or
     the human verdict.
+13. **Product authority has an explicit lifecycle.** Read
+    `design/product/PRODUCT_AUTHORITY_REGISTER.json` when present. Whole-direction
+    revocation uses [`docs/PRODUCT_AUTHORITY_LIFECYCLE.md`](docs/PRODUCT_AUTHORITY_LIFECYCLE.md):
+    snapshot the bounded authority package, align the exact user revocation
+    before mutation, withdraw pending cards as `PRODUCT_ARCHIVED` without
+    inventing human verdict tokens, and return to Idea exploration. A new
+    commissioned thesis must be activated before downstream work.
 
 ## Formal production transition
 
@@ -99,6 +106,10 @@ Forbidden transitions:
   causal edge;
 - human approval of a short card -> assumed correctness of an unreviewed full
   spec.
+- natural-language direction revocation -> fabricated per-card verdict token;
+- external reference feature -> claimed proof of demand;
+- one reusable scene-root fact -> claimed absence of system engineering risk;
+- author-selected claim subset -> supposedly complete semantic review.
 
 ## Current foundation boundary
 

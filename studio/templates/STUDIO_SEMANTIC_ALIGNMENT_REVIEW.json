@@ -1,5 +1,5 @@
 {
-  "schema_version": "studio_semantic_alignment_review.v1",
+  "schema_version": "studio_semantic_alignment_review.v2",
   "review_id": "<REVIEW_ID>",
   "project_id": "<PROJECT_ID>",
   "factory_revision": "<FACTORY_GIT_REVISION>",
@@ -10,6 +10,7 @@
     "input_delta_complete": "PASS",
     "authority_continuity": "PASS",
     "claim_provenance": "PASS",
+    "material_claim_coverage": "PASS",
     "question_necessity": "PASS",
     "semantic_non_substitution": "PASS",
     "routing_and_scope": "PASS",
@@ -17,6 +18,9 @@
     "surface_proportionality": "PASS",
     "pending_decision_disposition": "PASS"
   },
+  "independent_claim_inventory": [
+    {"review_claim_id": "review-claim.1", "candidate_output_quote": "<ONE_COMPLETE_MATERIAL_OUTPUT_LINE>", "author_claim_id": "output.1", "assessed_provenance": "PRESERVED_AUTHORITY | NEW_USER_INPUT | REPO_EVIDENCE | REFERENCE_EVIDENCE | AI_SYNTHESIS | AI_HYPOTHESIS | MIXED_OR_UNCLEAR", "status": "PASS | BLOCK", "rationale": "<INDEPENDENT_PROVENANCE_ASSESSMENT>"}
+  ],
   "findings": [
     {"finding_id": "finding.1", "status": "PASS", "user_input_quote": "<EXACT_USER_QUOTE>", "authority_ids": ["product.current"], "candidate_output_quote": "<EXACT_OUTPUT_QUOTE>", "rationale": "<WHY_THE_TRANSITION_IS_ALIGNED>"}
   ],

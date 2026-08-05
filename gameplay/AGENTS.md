@@ -49,6 +49,10 @@ commercial/experiential direction is explicitly unresolved or Gameplay would
 need to invent it, invoke the `idea-factory` skill first. Existing code alone
 does not prove a product commitment.
 
+When `design/product/PRODUCT_AUTHORITY_REGISTER.json` exists, read it before
+those files. `NO_ACTIVE_PRODUCT_AUTHORITY` blocks new gameplay production
+regardless of historical Product Thesis, baseline, code, or objective presence.
+
 For ordinary production, read the game-owned adapters/model:
 
 ```text

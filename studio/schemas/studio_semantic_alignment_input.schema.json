@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "interaction_id", "project_id", "factory_revision", "trigger", "author_context_id", "user_input", "active_authorities", "pending_decisions", "input_deltas", "proposed_transition", "candidate_output", "output_claims", "human_questions", "authored_at"],
   "properties": {
-    "schema_version": {"const": "studio_semantic_alignment_input.v1"},
+    "schema_version": {"const": "studio_semantic_alignment_input.v2"},
     "interaction_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
@@ -30,7 +30,7 @@
         "required": ["authority_id", "authority_kind", "artifact"],
         "properties": {
           "authority_id": {"$ref": "#/$defs/id"},
-          "authority_kind": {"enum": ["PRODUCT", "STUDIO_GAMEPLAY_SYSTEM", "GAMEPLAY_DECISION_CARD", "ACCEPTED_BASELINE", "REPO_EVIDENCE"]},
+          "authority_kind": {"enum": ["PRODUCT", "STUDIO_GAMEPLAY_SYSTEM", "GAMEPLAY_DECISION_CARD", "ACCEPTED_BASELINE", "REPO_EVIDENCE", "REFERENCE_EVIDENCE"]},
           "artifact": {"$ref": "#/$defs/path_hash"}
         }
       }
@@ -45,7 +45,7 @@
         "properties": {
           "decision_payload_sha256": {"$ref": "#/$defs/sha256"},
           "decision_card": {"$ref": "#/$defs/path_hash"},
-          "disposition": {"enum": ["PRESERVE_PENDING", "SUPERSEDE_PENDING"]}
+          "disposition": {"enum": ["PRESERVE_PENDING", "SUPERSEDE_PENDING", "WITHDRAW_BY_PRODUCT_ARCHIVE"]}
         }
       }
     },
@@ -66,7 +66,7 @@
         }
       }
     },
-    "proposed_transition": {"enum": ["CONTINUE_EXISTING_AUTHORITY", "REOPEN_PRODUCT_EXPLORATION", "REVISE_STUDIO_GAMEPLAY_SYSTEM", "REVISE_DECISION_CARD", "REQUEST_HUMAN_RULING", "NO_MATERIAL_CHANGE"]},
+    "proposed_transition": {"enum": ["CONTINUE_EXISTING_AUTHORITY", "REOPEN_PRODUCT_EXPLORATION", "REVISE_STUDIO_GAMEPLAY_SYSTEM", "REVISE_DECISION_CARD", "REQUEST_HUMAN_RULING", "NO_MATERIAL_CHANGE", "ARCHIVE_PRODUCT_DIRECTION"]},
     "candidate_output": {
       "type": "object",
       "additionalProperties": false,
@@ -88,7 +88,7 @@
         "properties": {
           "claim_id": {"$ref": "#/$defs/id"},
           "output_quote": {"type": "string", "minLength": 1},
-          "provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "REPO_EVIDENCE", "AI_HYPOTHESIS"]},
+          "provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS"]},
           "source_authority_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "source_quotes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
         }

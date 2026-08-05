@@ -30,6 +30,13 @@ human product intent
   -> repeat until the requested production horizon is satisfied
 ```
 
+Before baseline routing, run `studio/product.py status`. An explicit
+whole-direction revocation follows
+[`PRODUCT_AUTHORITY_LIFECYCLE.md`](PRODUCT_AUTHORITY_LIFECYCLE.md); do not
+manually relocate an entire design tree or manufacture card verdict tokens.
+`NO_ACTIVE_PRODUCT_AUTHORITY` routes to Idea exploration and makes old
+baselines historical rather than trusted predecessors.
+
 The specialist capability layer is:
 
 | Need | Specialist |
@@ -56,7 +63,8 @@ workflow routing, and proof that a blocking question is not already answered.
 A Studio call classifies the game repo before scaling:
 
 - `STUDIO_NEEDS_PRODUCT_AUTHORITY` — Idea Factory must openly explore and then
-  receive an explicit commission; Studio may not invent a hidden thesis.
+  receive an explicit commission and `product.py activate`; Studio may not
+  invent a hidden thesis or reuse an archived one.
 - `BLOCKED_BY_LINEAR_GAMEPLAY` — the proposed system ends at a result/replay
   sequence, cuts a product-level coupling, or cannot show how lap-one state
   materially changes lap two.

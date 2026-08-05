@@ -25,9 +25,14 @@ cases, paste internal schemas, or issue a second “write the code” prompt.
 Before Gameplay initialization, inspect product authority when present:
 
 ```text
+design/product/PRODUCT_AUTHORITY_REGISTER.json   # when present; must be ACTIVE
 design/product/PRODUCT_THESIS.md
 design/product/FACTORY_CONSTRAINTS.json
 ```
+
+If the register says `NO_ACTIVE_PRODUCT_AUTHORITY`, stop and return to Studio /
+Idea exploration. Historical code, baselines, or objectives do not restore
+production authority.
 
 If the user says the product's commercial/experiential direction is unresolved,
 or Gameplay would have to invent audience, monetization, retention/replay,

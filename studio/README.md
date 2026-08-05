@@ -13,6 +13,8 @@ Start with:
 - [`docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](docs/SEMANTIC_ALIGNMENT_WORKFLOW.md)
   — fresh-subagent review of material user-input -> candidate-output
   transitions and deterministic pending-card supersession.
+- [`docs/PRODUCT_AUTHORITY_LIFECYCLE.md`](docs/PRODUCT_AUTHORITY_LIFECYCLE.md)
+  — explicit commission activation and whole-direction archive semantics.
 - [`docs/BASELINE_ADMISSION_WORKFLOW.md`](docs/BASELINE_ADMISSION_WORKFLOW.md)
   — complete reconstruction and post-workflow promotion.
 

@@ -17,7 +17,8 @@ called by the Studio, not substitutes for whole-game delivery.
    real source path.
 3. Read `<STUDIO_ROOT>/studio/AGENTS.md` and
    `<STUDIO_ROOT>/studio/docs/AI_CALLER_LANDING.md`, including
-   `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
+   `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md` and
+   `studio/docs/PRODUCT_AUTHORITY_LIFECYCLE.md`.
 4. If the game repo is unlinked, use `init-game-studio-factory` and continue in
    the same call.
 
@@ -44,6 +45,15 @@ claim provenance, and any question. Spawn one fresh subagent/context using the
 `PASS_ALIGNMENT` or `HUMAN_RULING_GENUINELY_REQUIRED` may reach the user. Do
 not ask the user to name this workflow or rewrite ordinary language as a
 Factory brief.
+
+Run `studio/product.py status` before trusting a canonical Product Thesis or an
+old accepted baseline. `NO_ACTIVE_PRODUCT_AUTHORITY` routes to Idea exploration
+even when historical code or artifacts remain. A whole-direction revocation
+uses the native two-phase Product Authority archive workflow: snapshot first,
+semantic review before mutation, then `product.py archive`. Never move a whole
+design tree ad hoc or synthesize `USER_REJECTED` card tokens from natural
+language. After a new Idea commission compiles and checks, run
+`product.py activate` before downstream design.
 
 - Missing/open product direction: invoke `idea-factory`. After the Product
   Thesis is commissioned, follow `studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`;

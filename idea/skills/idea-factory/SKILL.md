@@ -82,3 +82,15 @@ delegation without a separate commission gate.
 
 After `IDEA_FACTORY_READY`, return to the original requested production work.
 Idea Factory itself does not author objectives, chapters, assets, SFX, or code.
+When `design/product/PRODUCT_AUTHORITY_REGISTER.json` exists—or when Studio is
+the caller—record the newly compiled authority before returning:
+
+```bash
+python3 <STUDIO_ROOT>/studio/product.py activate \
+  --game-repo <GAME_REPO> \
+  --authority-id <SELECTED_DIRECTION_ID> \
+  --recorded-at <ISO_8601>
+```
+
+Never treat canonical Product Thesis file presence as active when the register
+says `NO_ACTIVE_PRODUCT_AUTHORITY`.

@@ -37,6 +37,12 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
         validate_gameplay_system,
     )
 
+try:
+    from studio.product import require_active_product_authority
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.product import require_active_product_authority  # type: ignore[no-redef]
+
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
 ADMISSIONS_ROOT = Path("design/studio/admissions")
@@ -55,6 +61,7 @@ BASELINE_ADMISSION_VALID = "BASELINE_ADMISSION_VALID"
 BLOCKED_BY_BASELINE_STATE = "BLOCKED_BY_BASELINE_STATE"
 BLOCKED_BY_ADMISSION_MATERIAL = "BLOCKED_BY_ADMISSION_MATERIAL"
 BLOCKED_BY_EXISTING_BASELINE = "BLOCKED_BY_EXISTING_BASELINE"
+PRODUCT_DIRECTION_REQUIRED = "PRODUCT_DIRECTION_REQUIRED"
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -509,8 +516,14 @@ def start_baseline_admission(
     reconstruct: bool = False,
 ) -> BaselineAdmissionResult:
     game_repo = _resolve_game_repo(game_repo_text)
+    product_state, product_errors = require_active_product_authority(game_repo)
+    if product_errors:
+        return BaselineAdmissionResult(
+            PRODUCT_DIRECTION_REQUIRED,
+            errors=product_errors,
+        )
     try:
-        current_ref, _ = _load_current_baseline(game_repo)
+        current_ref, current_baseline = _load_current_baseline(game_repo)
     except BaselineAdmissionError as error:
         if not reconstruct:
             return BaselineAdmissionResult(BLOCKED_BY_BASELINE_STATE, errors=[str(error)])
@@ -527,6 +540,17 @@ def start_baseline_admission(
             BASELINE_RECONSTRUCTION_INPUT_REQUIRED,
             mode=RECONSTRUCT,
             warnings=[warning] if warning else [],
+        )
+    active_product = product_state.get("active_authority", {}).get("product_thesis")
+    baseline_product = current_baseline.get("product_authority") if current_baseline else None
+    if active_product and baseline_product != active_product:
+        return BaselineAdmissionResult(
+            BASELINE_RECONSTRUCTION_INPUT_REQUIRED,
+            mode=RECONSTRUCT,
+            warnings=[
+                "the current accepted baseline belongs to a different or archived Product "
+                "Thesis; it is historical evidence, not the predecessor for this direction"
+            ],
         )
     return BaselineAdmissionResult(BASELINE_PROMOTION_INPUT_REQUIRED, mode=PROMOTE)
 

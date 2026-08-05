@@ -4,9 +4,9 @@
   "title": "Studio Semantic Alignment Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "project_id", "factory_revision", "alignment_input", "reviewer_context_id", "reviewer_freshness", "checks", "findings", "blocking_findings", "verdict", "reviewed_at"],
+  "required": ["schema_version", "review_id", "project_id", "factory_revision", "alignment_input", "reviewer_context_id", "reviewer_freshness", "checks", "independent_claim_inventory", "findings", "blocking_findings", "verdict", "reviewed_at"],
   "properties": {
-    "schema_version": {"const": "studio_semantic_alignment_review.v1"},
+    "schema_version": {"const": "studio_semantic_alignment_review.v2"},
     "review_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
@@ -16,17 +16,36 @@
     "checks": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["input_delta_complete", "authority_continuity", "claim_provenance", "question_necessity", "semantic_non_substitution", "routing_and_scope", "human_boundary", "surface_proportionality", "pending_decision_disposition"],
+      "required": ["input_delta_complete", "authority_continuity", "claim_provenance", "material_claim_coverage", "question_necessity", "semantic_non_substitution", "routing_and_scope", "human_boundary", "surface_proportionality", "pending_decision_disposition"],
       "properties": {
         "input_delta_complete": {"enum": ["PASS", "BLOCK"]},
         "authority_continuity": {"enum": ["PASS", "BLOCK"]},
         "claim_provenance": {"enum": ["PASS", "BLOCK"]},
+        "material_claim_coverage": {"enum": ["PASS", "BLOCK"]},
         "question_necessity": {"enum": ["PASS", "BLOCK"]},
         "semantic_non_substitution": {"enum": ["PASS", "BLOCK"]},
         "routing_and_scope": {"enum": ["PASS", "BLOCK"]},
         "human_boundary": {"enum": ["PASS", "BLOCK"]},
         "surface_proportionality": {"enum": ["PASS", "BLOCK"]},
         "pending_decision_disposition": {"enum": ["PASS", "BLOCK"]}
+      }
+    },
+    "independent_claim_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["review_claim_id", "candidate_output_quote", "author_claim_id", "assessed_provenance", "status", "rationale"],
+        "properties": {
+          "review_claim_id": {"$ref": "#/$defs/id"},
+          "candidate_output_quote": {"type": "string", "minLength": 1},
+          "author_claim_id": {"$ref": "#/$defs/id"},
+          "assessed_provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS", "MIXED_OR_UNCLEAR"]},
+          "status": {"enum": ["PASS", "BLOCK"]},
+          "rationale": {"type": "string", "minLength": 1}
+        }
       }
     },
     "findings": {

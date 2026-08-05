@@ -18,6 +18,7 @@ from studio.alignment import (
     HUMAN_RULING_GENUINELY_REQUIRED,
     current_factory_revision,
     load_decision_register,
+    material_output_lines,
     record_card_verdict,
     register_pending_card,
     require_registered_card,
@@ -107,8 +108,29 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
         rendered = render_decision_card(card)
         root = self.repo / f"design/studio/interaction_alignment/{interaction_id}"
         input_path = root / "STUDIO_SEMANTIC_ALIGNMENT_INPUT.json"
+        question_quote = f"Reply: `USER_APPROVED {card['decision_payload_sha256']}`"
+        claims = []
+        for index, line in enumerate(material_output_lines(rendered, [question_quote]), 1):
+            provenance = "AI_SYNTHESIS"
+            source_authority_ids = ["product.current"]
+            source_quotes = []
+            if "The loser counterpicks." in line:
+                provenance = "NEW_USER_INPUT"
+                source_authority_ids = []
+                source_quotes = ["make the loser counterpick the winner's card"]
+            elif "result changes the next legal card-price decision" in line:
+                provenance = "PRESERVED_AUTHORITY"
+            claims.append(
+                {
+                    "claim_id": f"output.line.{index}",
+                    "output_quote": line,
+                    "provenance": provenance,
+                    "source_authority_ids": source_authority_ids,
+                    "source_quotes": source_quotes,
+                }
+            )
         alignment_input = {
-            "schema_version": "studio_semantic_alignment_input.v1",
+            "schema_version": "studio_semantic_alignment_input.v2",
             "interaction_id": interaction_id,
             "project_id": "sample",
             "factory_revision": self.revision,
@@ -141,26 +163,11 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                 "text": rendered,
                 "sha256": text_sha256(rendered),
             },
-            "output_claims": [
-                {
-                    "claim_id": "output.promise",
-                    "output_quote": card["player_promise"]["text"],
-                    "provenance": "PRESERVED_AUTHORITY",
-                    "source_authority_ids": ["product.current"],
-                    "source_quotes": [],
-                },
-                {
-                    "claim_id": "output.counterpick",
-                    "output_quote": "The loser counterpicks.",
-                    "provenance": "NEW_USER_INPUT",
-                    "source_authority_ids": [],
-                    "source_quotes": ["make the loser counterpick the winner's card"],
-                },
-            ],
+            "output_claims": claims,
             "human_questions": [
                 {
                     "question_id": "question.approve",
-                    "question_quote": f"Reply: `USER_APPROVED {card['decision_payload_sha256']}`",
+                    "question_quote": question_quote,
                     "material_consequence": "Approval authorizes full-spec refinement.",
                     "searched_authority_ids": ["product.current"],
                     "why_unresolved": "Only the user may approve a Studio decision surface.",
@@ -174,6 +181,7 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
             "input_delta_complete": "PASS",
             "authority_continuity": "PASS",
             "claim_provenance": "PASS",
+            "material_claim_coverage": "PASS",
             "question_necessity": "PASS",
             "semantic_non_substitution": "PASS",
             "routing_and_scope": "PASS",
@@ -182,7 +190,7 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
             "pending_decision_disposition": "PASS",
         }
         review = {
-            "schema_version": "studio_semantic_alignment_review.v1",
+            "schema_version": "studio_semantic_alignment_review.v2",
             "review_id": f"review.{interaction_id}",
             "project_id": "sample",
             "factory_revision": self.revision,
@@ -190,6 +198,17 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
             "reviewer_context_id": reviewer,
             "reviewer_freshness": "FRESH",
             "checks": checks,
+            "independent_claim_inventory": [
+                {
+                    "review_claim_id": f"review.line.{index}",
+                    "candidate_output_quote": claim["output_quote"],
+                    "author_claim_id": claim["claim_id"],
+                    "assessed_provenance": claim["provenance"],
+                    "status": "PASS",
+                    "rationale": "Fresh reviewer independently matched this complete material line.",
+                }
+                for index, claim in enumerate(claims, 1)
+            ],
             "findings": [
                 {
                     "finding_id": "finding.aligned",
@@ -238,6 +257,97 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
         )
         result = validate_alignment_review(self.repo, input_path, review_path)
         self.assertTrue(any("must be fresh" in error for error in result.errors))
+
+    def test_uninventoried_material_output_line_is_rejected(self) -> None:
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.uninventoried"
+        )
+        alignment_input = json.loads(input_path.read_text())
+        candidate = alignment_input["candidate_output"]["text"] + "\nAI made this the whole product axis."
+        alignment_input["candidate_output"] = {
+            "kind": "DECISION_SURFACE",
+            "text": candidate,
+            "sha256": text_sha256(candidate),
+        }
+        write_json(input_path, alignment_input)
+        review = json.loads(review_path.read_text())
+        review["alignment_input"] = ref(self.repo, input_path)
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertTrue(
+            any("uninventoried material line" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_fresh_reviewer_must_inventory_every_material_line(self) -> None:
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.review-coverage"
+        )
+        review = json.loads(review_path.read_text())
+        omitted = review["independent_claim_inventory"].pop()["candidate_output_quote"]
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertIn("reviewer omitted material candidate line: " + omitted, result.errors)
+
+    def test_reference_evidence_cannot_be_labeled_repo_evidence(self) -> None:
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.reference"
+        )
+        reference_path = self.repo / "design/studio/research/reference.json"
+        write_json(reference_path, {"source": "Official reference supports digital sharing."})
+        alignment_input = json.loads(input_path.read_text())
+        alignment_input["active_authorities"].append(
+            {
+                "authority_id": "reference.official",
+                "authority_kind": "REFERENCE_EVIDENCE",
+                "artifact": ref(self.repo, reference_path),
+            }
+        )
+        claim = alignment_input["output_claims"][0]
+        claim["provenance"] = "REPO_EVIDENCE"
+        claim["source_authority_ids"] = ["reference.official"]
+        claim["source_quotes"] = ["Official reference supports digital sharing."]
+        write_json(input_path, alignment_input)
+        review = json.loads(review_path.read_text())
+        review["alignment_input"] = ref(self.repo, input_path)
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertTrue(
+            any("REPO_EVIDENCE must cite only REPO_EVIDENCE" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_question_substring_cannot_exempt_material_claims(self) -> None:
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.question-substring"
+        )
+        alignment_input = json.loads(input_path.read_text())
+        alignment_input["human_questions"][0]["question_quote"] = "Reply"
+        write_json(input_path, alignment_input)
+        review = json.loads(review_path.read_text())
+        review["alignment_input"] = ref(self.repo, input_path)
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertTrue(
+            any("must cover a complete candidate line" in error for error in result.errors),
+            result.errors,
+        )
 
     def test_new_registered_card_supersedes_old_pending_payload(self) -> None:
         old_path = write_json(

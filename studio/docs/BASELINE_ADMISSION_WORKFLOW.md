@@ -10,6 +10,8 @@ python3 <STUDIO_ROOT>/studio/baseline.py start --game-repo <GAME_REPO>
 
 Possible ready states:
 
+- `PRODUCT_DIRECTION_REQUIRED` — the Product Authority Register has no active
+  thesis; old baselines are historical and Studio must return to Idea;
 - `BASELINE_RECONSTRUCTION_INPUT_REQUIRED` — no trusted baseline exists, or
   the user explicitly requested `--reconstruct`;
 - `BASELINE_PROMOTION_INPUT_REQUIRED` — an exact current baseline exists and

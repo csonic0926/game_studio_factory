@@ -15,6 +15,7 @@ from studio.baseline import (
     BLOCKED_BY_ADMISSION_MATERIAL,
     BLOCKED_BY_BASELINE_STATE,
     BLOCKED_BY_EXISTING_BASELINE,
+    PRODUCT_DIRECTION_REQUIRED,
     BaselineAdmissionError,
     compile_baseline_admission,
     compute_playtest_token,
@@ -443,6 +444,23 @@ class BaselineAdmissionTests(unittest.TestCase):
         result = start_baseline_admission(str(self.repo))
         self.assertEqual(BASELINE_RECONSTRUCTION_INPUT_REQUIRED, result.status)
         self.assertEqual("RECONSTRUCT", result.mode)
+
+    def test_start_requires_active_product_authority(self) -> None:
+        _write_json(
+            self.repo,
+            "design/product/PRODUCT_AUTHORITY_REGISTER.json",
+            {
+                "schema_version": "product_authority_register.v1",
+                "project_id": "sample-game",
+                "status": "NO_ACTIVE_PRODUCT_AUTHORITY",
+                "active_authority": None,
+                "transitions": [],
+                "updated_at": "2026-08-05T00:00:00Z",
+            },
+        )
+        result = start_baseline_admission(str(self.repo))
+        self.assertEqual(PRODUCT_DIRECTION_REQUIRED, result.status)
+        self.assertTrue(any("no active Product Thesis" in error for error in result.errors))
 
     def test_changed_cycle_authority_invalidates_current_baseline_state(self) -> None:
         self._compile_first_baseline()

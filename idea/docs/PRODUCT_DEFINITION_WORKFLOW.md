@@ -107,12 +107,21 @@ appropriate: promise, audience relationship, commercial shape, experience,
 retention/replay, differentiation, scope, causal links, sacrifices, validation
 hypotheses, and factory constraints.
 
+For Studio-managed repositories, successful compile/check is followed by
+`studio/product.py activate`. Canonical file presence alone cannot override a
+`NO_ACTIVE_PRODUCT_AUTHORITY` register left by an earlier direction archive.
+
 ## Downstream ownership
 
 `PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json` remain canonical downstream
 authority. `IDEA_EXPLORATION.md` never constrains Story, Gameplay, Asset, Sound,
 or production. Downstream factories must ignore uncommissioned exploration and
 return product-level contradictions to Idea Factory.
+
+When `PRODUCT_AUTHORITY_REGISTER.json` exists, it owns whether those canonical
+files are active. Whole-direction archiving is a Studio transition; it must not
+be simulated by manually moving arbitrary design trees or rewriting decision
+cards inside Idea Factory.
 
 Compile/check proves ownership, provenance, commission, and exact handoff. It
 does not prove that exploration was profound or the commissioned product will

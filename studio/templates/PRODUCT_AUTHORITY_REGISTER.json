@@ -1,0 +1,8 @@
+{
+  "schema_version": "product_authority_register.v1",
+  "project_id": "<PROJECT_ID>",
+  "status": "ACTIVE | NO_ACTIVE_PRODUCT_AUTHORITY",
+  "active_authority": null,
+  "transitions": [],
+  "updated_at": "<ISO_8601_DATETIME>"
+}

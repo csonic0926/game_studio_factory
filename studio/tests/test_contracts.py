@@ -17,11 +17,13 @@ class StudioFoundationContractTests(unittest.TestCase):
             "design_token_research.schema.json": "design_token_research.v1",
             "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v2",
             "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
+            "product_authority_archive_snapshot.schema.json": "product_authority_archive_snapshot.v1",
+            "product_authority_register.schema.json": "product_authority_register.v1",
             "studio_gameplay_system.schema.json": "studio_gameplay_system.v1",
             "studio_gameplay_system_manifest.schema.json": "studio_gameplay_system_manifest.v1",
             "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v1",
-            "studio_semantic_alignment_input.schema.json": "studio_semantic_alignment_input.v1",
-            "studio_semantic_alignment_review.schema.json": "studio_semantic_alignment_review.v1",
+            "studio_semantic_alignment_input.schema.json": "studio_semantic_alignment_input.v2",
+            "studio_semantic_alignment_review.schema.json": "studio_semantic_alignment_review.v2",
             "studio_decision_card_register.schema.json": "studio_decision_card_register.v1",
             "studio_run_state.schema.json": "studio_run_state.v3",
             "studio_workflow_completion.schema.json": "studio_workflow_completion.v2",
@@ -140,9 +142,11 @@ class StudioFoundationContractTests(unittest.TestCase):
         )
         required_checks = set(payload["properties"]["checks"]["required"])
         self.assertIn("authority_continuity", required_checks)
+        self.assertIn("material_claim_coverage", required_checks)
         self.assertIn("question_necessity", required_checks)
         self.assertIn("semantic_non_substitution", required_checks)
         self.assertIn("pending_decision_disposition", required_checks)
+        self.assertIn("independent_claim_inventory", payload["required"])
 
     def test_decision_register_has_explicit_superseded_state(self) -> None:
         payload = json.loads(
@@ -150,6 +154,7 @@ class StudioFoundationContractTests(unittest.TestCase):
         )
         states = payload["properties"]["entries"]["items"]["properties"]["state"]["enum"]
         self.assertIn("SUPERSEDED", states)
+        self.assertIn("PRODUCT_ARCHIVED", states)
 
 
 if __name__ == "__main__":

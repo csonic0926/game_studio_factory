@@ -30,8 +30,8 @@ from typing import Any
 
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
-ALIGNMENT_INPUT_VERSION = "studio_semantic_alignment_input.v1"
-ALIGNMENT_REVIEW_VERSION = "studio_semantic_alignment_review.v1"
+ALIGNMENT_INPUT_VERSION = "studio_semantic_alignment_input.v2"
+ALIGNMENT_REVIEW_VERSION = "studio_semantic_alignment_review.v2"
 DECISION_REGISTER_VERSION = "studio_decision_card_register.v1"
 DECISION_REGISTER_PATH = "design/studio/STUDIO_DECISION_CARD_REGISTER.json"
 
@@ -44,6 +44,7 @@ ALIGNMENT_CHECKS = {
     "input_delta_complete",
     "authority_continuity",
     "claim_provenance",
+    "material_claim_coverage",
     "question_necessity",
     "semantic_non_substitution",
     "routing_and_scope",
@@ -63,6 +64,7 @@ AUTHORITY_KINDS = {
     "GAMEPLAY_DECISION_CARD",
     "ACCEPTED_BASELINE",
     "REPO_EVIDENCE",
+    "REFERENCE_EVIDENCE",
 }
 DELTA_CLASSES = {"ADD", "MODIFY", "REVOKE", "AMBIGUOUS"}
 PROPOSED_TRANSITIONS = {
@@ -72,16 +74,29 @@ PROPOSED_TRANSITIONS = {
     "REVISE_DECISION_CARD",
     "REQUEST_HUMAN_RULING",
     "NO_MATERIAL_CHANGE",
+    "ARCHIVE_PRODUCT_DIRECTION",
 }
 OUTPUT_KINDS = {"DECISION_SURFACE", "HUMAN_QUESTION", "MATERIAL_RESPONSE"}
 CLAIM_PROVENANCE = {
     "PRESERVED_AUTHORITY",
     "NEW_USER_INPUT",
     "REPO_EVIDENCE",
+    "REFERENCE_EVIDENCE",
+    "AI_SYNTHESIS",
     "AI_HYPOTHESIS",
 }
-PENDING_DISPOSITIONS = {"PRESERVE_PENDING", "SUPERSEDE_PENDING"}
-REGISTER_STATES = {"PENDING", "USER_APPROVED", "USER_REJECTED", "SUPERSEDED"}
+PENDING_DISPOSITIONS = {
+    "PRESERVE_PENDING",
+    "SUPERSEDE_PENDING",
+    "WITHDRAW_BY_PRODUCT_ARCHIVE",
+}
+REGISTER_STATES = {
+    "PENDING",
+    "USER_APPROVED",
+    "USER_REJECTED",
+    "SUPERSEDED",
+    "PRODUCT_ARCHIVED",
+}
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -105,6 +120,44 @@ class AlignmentValidationResult:
 
 def text_sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def material_output_lines(text: str, question_quotes: list[str] | None = None) -> list[str]:
+    """Return candidate lines whose semantic claims require provenance.
+
+    The author controls line wrapping, so the contract deliberately uses exact
+    non-empty lines as the smallest machine-checkable coverage unit.  Only
+    mechanical wrapper lines (mode headers, fence markers, source lists,
+    payload/reply tokens, and separately inventoried whole-line questions) are
+    excluded.  Headings remain covered because a title can itself smuggle a
+    product conclusion.  Everything else must appear verbatim as one
+    output-claim quote; a reviewer cannot silently omit an inconvenient line.
+    """
+
+    questions = {quote.strip() for quote in (question_quotes or []) if quote.strip()}
+    material: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if line.startswith("```"):
+            continue
+        if not line:
+            continue
+        if re.match(r"^(HSFRM|HDPRM|COLLAB):\s", line):
+            continue
+        if line in {"---", "***", "___"}:
+            continue
+        if line.startswith("Sources:") or line.startswith("Source:"):
+            continue
+        if line.startswith("Decision payload:") or line.startswith("Reply:"):
+            continue
+        if line in questions:
+            continue
+        # Markdown-only section labels such as **Why this direction:** carry no
+        # proposition by themselves.  A bold prefix plus following prose does.
+        if re.fullmatch(r"\*\*[^*]+\*\*:?", line):
+            continue
+        material.append(line)
+    return material
 
 
 def file_sha256(path: Path) -> str:
@@ -299,6 +352,8 @@ def _validate_alignment_input(
         errors.append("alignment input.active_authorities must be an array")
         active = []
     authority_ids: set[str] = set()
+    authority_kinds: dict[str, str] = {}
+    authority_paths: dict[str, Path] = {}
     for index, raw in enumerate(active):
         item = _keys(
             raw,
@@ -312,11 +367,16 @@ def _validate_alignment_input(
         if authority_id in authority_ids:
             errors.append(f"duplicate authority_id: {authority_id}")
         authority_ids.add(authority_id)
-        if item.get("authority_kind") not in AUTHORITY_KINDS:
+        authority_kind = item.get("authority_kind")
+        if authority_kind not in AUTHORITY_KINDS:
             errors.append(f"active_authorities[{index}].authority_kind is unsupported")
-        _resolve_ref(
+        elif authority_id:
+            authority_kinds[authority_id] = str(authority_kind)
+        _, authority_path = _resolve_ref(
             game_repo, item.get("artifact"), f"active_authorities[{index}].artifact", errors
         )
+        if authority_id and authority_path is not None:
+            authority_paths[authority_id] = authority_path
 
     pending = payload.get("pending_decisions")
     if not isinstance(pending, list):
@@ -406,6 +466,8 @@ def _validate_alignment_input(
         errors.append("alignment input.output_claims must be a non-empty array")
         claims = []
     claim_ids: set[str] = set()
+    claim_quotes: list[str] = []
+    claims_by_id: dict[str, dict[str, Any]] = {}
     for index, raw in enumerate(claims):
         item = _keys(
             raw,
@@ -420,6 +482,14 @@ def _validate_alignment_input(
         quote = _text(item.get("output_quote"), f"output_claims[{index}].output_quote", errors)
         if quote and quote not in output_text:
             errors.append(f"output_claims[{index}].output_quote is not exact candidate output text")
+        if quote:
+            if "\n" in quote or "\r" in quote:
+                errors.append(
+                    f"output_claims[{index}].output_quote must be one exact candidate line"
+                )
+            claim_quotes.append(quote.strip())
+        if claim_id:
+            claims_by_id[claim_id] = item
         provenance = item.get("provenance")
         if provenance not in CLAIM_PROVENANCE:
             errors.append(f"output_claims[{index}].provenance is unsupported")
@@ -434,8 +504,46 @@ def _validate_alignment_input(
         source_quotes = _string_list(
             item.get("source_quotes"), f"output_claims[{index}].source_quotes", errors
         )
-        if provenance in {"PRESERVED_AUTHORITY", "REPO_EVIDENCE"} and not source_ids:
+        authority_provenance = {
+            "PRESERVED_AUTHORITY", "REPO_EVIDENCE", "REFERENCE_EVIDENCE"
+        }
+        if provenance in authority_provenance and not source_ids:
             errors.append(f"output_claims[{index}] requires a source authority")
+        preserved_kinds = {
+            "PRODUCT", "STUDIO_GAMEPLAY_SYSTEM", "GAMEPLAY_DECISION_CARD",
+            "ACCEPTED_BASELINE",
+        }
+        if provenance == "PRESERVED_AUTHORITY" and source_ids and any(
+            authority_kinds.get(source_id) not in preserved_kinds for source_id in source_ids
+        ):
+            errors.append(
+                f"output_claims[{index}] PRESERVED_AUTHORITY must cite only active "
+                "authority artifacts"
+            )
+        if provenance == "REPO_EVIDENCE" and source_ids and any(
+            authority_kinds.get(source_id) != "REPO_EVIDENCE" for source_id in source_ids
+        ):
+            errors.append(
+                f"output_claims[{index}] REPO_EVIDENCE must cite only REPO_EVIDENCE "
+                "authorities"
+            )
+        if provenance == "REFERENCE_EVIDENCE":
+            if source_ids and any(
+                authority_kinds.get(source_id) != "REFERENCE_EVIDENCE"
+                for source_id in source_ids
+            ):
+                errors.append(
+                    f"output_claims[{index}] REFERENCE_EVIDENCE must cite only "
+                    "REFERENCE_EVIDENCE authorities"
+                )
+            if not source_quotes:
+                errors.append(
+                    f"output_claims[{index}] REFERENCE_EVIDENCE requires exact source_quotes"
+                )
+        if provenance == "AI_SYNTHESIS" and not source_ids and not source_quotes:
+            errors.append(
+                f"output_claims[{index}] AI_SYNTHESIS requires the inputs it synthesizes"
+            )
         if provenance == "NEW_USER_INPUT":
             if not source_quotes:
                 errors.append(f"output_claims[{index}] requires exact user source_quotes")
@@ -443,6 +551,28 @@ def _validate_alignment_input(
                 if source_quote not in user_text:
                     errors.append(
                         f"output_claims[{index}].source_quotes contains text absent from user input"
+                    )
+        if provenance in authority_provenance:
+            readable_sources: list[str] = []
+            for source_id in source_ids:
+                path = authority_paths.get(source_id)
+                if path is not None:
+                    try:
+                        readable_sources.append(path.read_text(encoding="utf-8"))
+                    except UnicodeDecodeError:
+                        pass
+            if source_quotes and not readable_sources:
+                errors.append(
+                    f"output_claims[{index}] source_quotes cannot be verified from its "
+                    "cited authority artifacts"
+                )
+            for source_quote in source_quotes:
+                if not any(
+                    source_quote in source_text for source_text in readable_sources
+                ):
+                    errors.append(
+                        f"output_claims[{index}].source_quotes contains text absent from "
+                        "its cited authority artifacts"
                     )
 
     questions = payload.get("human_questions")
@@ -464,6 +594,11 @@ def _validate_alignment_input(
         quote = _text(item.get("question_quote"), f"human_questions[{index}].question_quote", errors)
         if quote and quote not in output_text:
             errors.append(f"human_questions[{index}].question_quote is not exact candidate output text")
+        if quote and ("\n" in quote or "\r" in quote):
+            errors.append(f"human_questions[{index}].question_quote must be one exact candidate line")
+        output_lines = {line.strip() for line in output_text.splitlines() if line.strip()}
+        if quote and quote.strip() not in output_lines:
+            errors.append(f"human_questions[{index}].question_quote must cover a complete candidate line")
         _text(item.get("material_consequence"), f"human_questions[{index}].material_consequence", errors)
         searched = _string_list(
             item.get("searched_authority_ids"),
@@ -485,11 +620,34 @@ def _validate_alignment_input(
     }:
         errors.append("REQUEST_HUMAN_RULING requires a human-facing question or decision surface")
 
+    question_quotes = [
+        str(item.get("question_quote", ""))
+        for item in questions
+        if isinstance(item, dict)
+    ]
+    uncovered_lines = [
+        line
+        for line in material_output_lines(output_text, question_quotes)
+        if line not in claim_quotes
+    ]
+    for line in uncovered_lines:
+        errors.append(
+            "candidate output contains an uninventoried material line: " + line
+        )
+    duplicate_claim_quotes = {
+        quote for quote in claim_quotes if claim_quotes.count(quote) > 1
+    }
+    for quote in sorted(duplicate_claim_quotes):
+        errors.append("candidate material line has multiple provenance claims: " + quote)
+
     return {
         "interaction_id": interaction_id,
         "project_id": project_id,
         "author_context_id": author_context_id,
         "authority_ids": authority_ids,
+        "claim_ids": claim_ids,
+        "claim_quotes": claim_quotes,
+        "claims_by_id": claims_by_id,
         "candidate_output_kind": output_kind,
         "candidate_output_text": output_text,
         "candidate_output_sha256": output_sha,
@@ -530,7 +688,8 @@ def validate_alignment_review(
     required = {
         "schema_version", "review_id", "project_id", "factory_revision",
         "alignment_input", "reviewer_context_id", "reviewer_freshness",
-        "checks", "findings", "blocking_findings", "verdict", "reviewed_at",
+        "checks", "independent_claim_inventory", "findings",
+        "blocking_findings", "verdict", "reviewed_at",
     }
     _keys(review, "semantic alignment review", required, errors)
     if review.get("schema_version") != ALIGNMENT_REVIEW_VERSION:
@@ -562,6 +721,109 @@ def validate_alignment_review(
     for check_id in ALIGNMENT_CHECKS:
         if checks.get(check_id) not in {"PASS", "BLOCK"}:
             errors.append(f"alignment review.checks.{check_id} must be PASS or BLOCK")
+
+    inventory = review.get("independent_claim_inventory")
+    if not isinstance(inventory, list) or not inventory:
+        errors.append("alignment review.independent_claim_inventory must be a non-empty array")
+        inventory = []
+    candidate_material_lines = material_output_lines(
+        parsed.get("candidate_output_text", ""),
+        [
+            str(item.get("question_quote", ""))
+            for item in parsed.get("human_questions", [])
+            if isinstance(item, dict)
+        ],
+    )
+    claims_by_id = parsed.get("claims_by_id", {})
+    inventory_ids: set[str] = set()
+    inventory_quotes: list[str] = []
+    blocked_inventory_ids: set[str] = set()
+    for index, raw in enumerate(inventory):
+        item = _keys(
+            raw,
+            f"alignment review.independent_claim_inventory[{index}]",
+            {
+                "review_claim_id", "candidate_output_quote", "author_claim_id",
+                "assessed_provenance", "status", "rationale",
+            },
+            errors,
+        )
+        review_claim_id = _identifier(
+            item.get("review_claim_id"),
+            f"alignment review.independent_claim_inventory[{index}].review_claim_id",
+            errors,
+        )
+        if review_claim_id in inventory_ids:
+            errors.append(f"duplicate reviewer claim inventory id: {review_claim_id}")
+        inventory_ids.add(review_claim_id)
+        quote = _text(
+            item.get("candidate_output_quote"),
+            f"alignment review.independent_claim_inventory[{index}].candidate_output_quote",
+            errors,
+        )
+        if quote and quote not in candidate_material_lines:
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}] must quote one "
+                "complete material candidate line"
+            )
+        inventory_quotes.append(quote)
+        author_claim_id = _identifier(
+            item.get("author_claim_id"),
+            f"alignment review.independent_claim_inventory[{index}].author_claim_id",
+            errors,
+        )
+        author_claim = claims_by_id.get(author_claim_id)
+        if author_claim is None:
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}] cites unknown "
+                f"author claim {author_claim_id}"
+            )
+        elif author_claim.get("output_quote", "").strip() != quote:
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}] author claim "
+                "does not cover the same complete candidate line"
+            )
+        assessed = item.get("assessed_provenance")
+        if assessed not in CLAIM_PROVENANCE | {"MIXED_OR_UNCLEAR"}:
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}]."
+                "assessed_provenance is unsupported"
+            )
+        status = item.get("status")
+        if status not in {"PASS", "BLOCK"}:
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}].status is unsupported"
+            )
+        if status == "BLOCK":
+            blocked_inventory_ids.add(review_claim_id)
+        if (
+            author_claim is not None
+            and assessed in CLAIM_PROVENANCE
+            and assessed != author_claim.get("provenance")
+            and status != "BLOCK"
+        ):
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}] disagrees with "
+                "author provenance but is not BLOCK"
+            )
+        if assessed == "MIXED_OR_UNCLEAR" and status != "BLOCK":
+            errors.append(
+                f"alignment review.independent_claim_inventory[{index}] mixed provenance "
+                "must BLOCK for candidate rewriting"
+            )
+        _text(
+            item.get("rationale"),
+            f"alignment review.independent_claim_inventory[{index}].rationale",
+            errors,
+        )
+    if len(inventory_quotes) != len(set(inventory_quotes)):
+        errors.append("alignment review independent claim inventory contains duplicate lines")
+    missing_inventory_lines = set(candidate_material_lines) - set(inventory_quotes)
+    extra_inventory_lines = set(inventory_quotes) - set(candidate_material_lines)
+    for line in sorted(missing_inventory_lines):
+        errors.append("reviewer omitted material candidate line: " + line)
+    for line in sorted(extra_inventory_lines):
+        errors.append("reviewer inventoried non-material candidate line: " + line)
 
     findings = review.get("findings")
     if not isinstance(findings, list) or not findings:
@@ -636,6 +898,17 @@ def validate_alignment_review(
     }:
         errors.append("semantic alignment review verdict is unsupported")
     blocked_checks = {key for key, value in checks.items() if value == "BLOCK"}
+    if blocked_inventory_ids and not blocked_checks.intersection(
+        {"claim_provenance", "material_claim_coverage"}
+    ):
+        errors.append(
+            "blocked independent claims require claim_provenance or "
+            "material_claim_coverage BLOCK"
+        )
+    if not blocked_inventory_ids and checks.get("material_claim_coverage") == "BLOCK":
+        errors.append(
+            "material_claim_coverage BLOCK requires a blocked independent claim"
+        )
     if verdict == REVISE_BEFORE_USER:
         if not blocked_checks or not blocked_finding_ids:
             errors.append("REVISE_BEFORE_USER requires BLOCK checks and findings")

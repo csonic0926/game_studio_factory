@@ -19,6 +19,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+try:
+    from studio.product import require_active_product_authority
+except ModuleNotFoundError:  # pragma: no cover - direct script invocation.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.product import require_active_product_authority  # type: ignore[no-redef]
+
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
 SYSTEM_VERSION = "studio_gameplay_system.v1"
@@ -198,6 +204,8 @@ def _product_authority(
         errors.append(
             "factory_constraints.path must be design/product/FACTORY_CONSTRAINTS.json"
         )
+    _, lifecycle_errors = require_active_product_authority(game_repo, product)
+    errors.extend(lifecycle_errors)
 
     causal_ids: set[str] = set()
     if input_path is not None:

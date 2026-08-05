@@ -231,6 +231,23 @@ The same commitment must be presented and resolved as battle.
         self.assertEqual(READY, result.status, result.errors)
         self.assertEqual(["judgment-rank", "stake-wallet"], result.feedback_state_ids)
 
+    def test_cycle_requires_active_product_authority(self) -> None:
+        write_json(
+            self.repo,
+            "design/product/PRODUCT_AUTHORITY_REGISTER.json",
+            {
+                "schema_version": "product_authority_register.v1",
+                "project_id": "sample",
+                "status": "NO_ACTIVE_PRODUCT_AUTHORITY",
+                "active_authority": None,
+                "transitions": [],
+                "updated_at": "2026-08-05T00:00:00Z",
+            },
+        )
+        result = self.validate()
+        self.assertEqual(BLOCKED, result.status)
+        self.assertTrue(any("no active Product Thesis" in error for error in result.errors))
+
     def test_replay_button_without_reward_feedback_is_linear(self) -> None:
         payload = self.system()
         payload["feedback_state_ids"] = ["judgment-rank"]

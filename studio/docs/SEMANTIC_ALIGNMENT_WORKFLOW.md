@@ -59,8 +59,26 @@ Use `schemas/studio_semantic_alignment_input.schema.json`. It binds:
 
 Authority is delta-updated. New input does not erase prior `USER_FIXED` or
 repository authority merely because exploration is reopened. Untouched
-authority remains active. AI interpretation is an `AI_HYPOTHESIS`, not an
-implicit human decision.
+authority remains active. AI framing is `AI_SYNTHESIS` and uncertain belief is
+`AI_HYPOTHESIS`; neither is an implicit human decision.
+
+Every visible line in the candidate surface is one mandatory material claim
+unit except mechanical wrappers: mode headers, fence markers, source lists,
+payload/reply tokens, and separately inventoried whole-line questions. Headings
+remain covered because a title can itself smuggle a product conclusion.
+`output_claims` must quote each unit in full; a selected list of convenient
+claims is invalid. Distinguish:
+
+- `NEW_USER_INPUT` — exact meaning supplied by the current user message;
+- `PRESERVED_AUTHORITY` — already-active authority;
+- `REPO_EVIDENCE` — an exact repository fact;
+- `REFERENCE_EVIDENCE` — what an external source actually establishes;
+- `AI_SYNTHESIS` — a proposed framing or relation constructed from inputs;
+- `AI_HYPOTHESIS` — an uncertain belief requiring validation.
+
+Reference product existence does not prove player demand. A reusable scene
+container does not prove a new landmark has no engineering risk. Conservative
+provenance is required when one line combines user facts and AI synthesis.
 
 ## Step 2 — use one fresh subagent/context
 
@@ -84,6 +102,11 @@ Use `schemas/studio_semantic_alignment_review.schema.json`. The reviewer checks:
 7. a genuine human boundary rather than avoidable clarification;
 8. a proportional user-facing surface;
 9. explicit disposition of every pending card.
+
+The reviewer must independently inventory every complete material candidate
+line and match it to exactly one author claim. The validator compares this
+inventory to the candidate itself. An omitted line, mixed/unclear provenance,
+or disagreement with the author is blocking and requires a private rewrite.
 
 The candidate author may not self-review. If the runtime cannot provide a fresh
 subagent/context, the Studio stops before presenting a material answer rather

@@ -45,6 +45,11 @@ Check all nine schema findings. In particular:
 - no new user statement, repository fact, preserved authority, or AI
   hypothesis is mislabeled as another category;
 - every material candidate claim has exact provenance;
+- independently enumerate every complete material candidate line; do not trust
+  the author's selected `output_claims` as a complete inventory;
+- classify external-source support as `REFERENCE_EVIDENCE`, proposed framing as
+  `AI_SYNTHESIS`, and uncertain product belief as `AI_HYPOTHESIS`; neither a
+  reference feature nor repo adjacency proves demand, fit, or zero risk;
 - no question asks the human to repeat an answer already present in active
   authority or discoverable repository evidence;
 - no ledger, timer, observation, animation, replay prompt, completed code, or
@@ -60,6 +65,12 @@ names the authority ids consulted. Do not pass on general impressions.
 
 Write only the delegated
 `STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json` using the factory schema.
+
+Fill `independent_claim_inventory` before the aggregate checks. It must cover
+every material candidate line exactly once and bind the matching author claim.
+Any omitted line, provenance disagreement, or mixed/unclear line is `BLOCK` and
+forces `REVISE_BEFORE_USER`; require the author to split or rewrite the line
+rather than waving through a conservative-sounding paragraph.
 
 - `PASS_ALIGNMENT`: all checks pass and no human ruling is requested.
 - `REVISE_BEFORE_USER`: at least one exact blocking finding exists; the draft

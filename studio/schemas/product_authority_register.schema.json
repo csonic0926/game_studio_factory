@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/product_authority_register.schema.json",
+  "title": "Product Authority Register",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "status", "active_authority", "transitions", "updated_at"],
+  "properties": {
+    "schema_version": {"const": "product_authority_register.v1"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "status": {"enum": ["ACTIVE", "NO_ACTIVE_PRODUCT_AUTHORITY"]},
+    "active_authority": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/active_authority"}
+      ]
+    },
+    "transitions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/transition"}
+    },
+    "updated_at": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "ACTIVE"}}},
+      "then": {"properties": {"active_authority": {"$ref": "#/$defs/active_authority"}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "NO_ACTIVE_PRODUCT_AUTHORITY"}}},
+      "then": {"properties": {"active_authority": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "active_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_id", "product_thesis", "factory_constraints", "product_input", "idea_result", "activated_at"],
+      "properties": {
+        "authority_id": {"$ref": "#/$defs/id"},
+        "product_thesis": {"$ref": "#/$defs/path_hash"},
+        "factory_constraints": {"$ref": "#/$defs/path_hash"},
+        "product_input": {"$ref": "#/$defs/path_hash"},
+        "idea_result": {"$ref": "#/$defs/path_hash"},
+        "activated_at": {"type": "string", "minLength": 1}
+      }
+    },
+    "user_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "sha256"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transition_id", "action", "factory_revision", "user_input", "authority_snapshot", "alignment_input", "alignment_review", "withdrawn_pending_payloads", "recorded_at"],
+      "properties": {
+        "transition_id": {"$ref": "#/$defs/id"},
+        "action": {"enum": ["COMMISSIONED_BY_USER", "ARCHIVED_BY_USER"]},
+        "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+        "user_input": {"$ref": "#/$defs/user_input"},
+        "authority_snapshot": {"$ref": "#/$defs/path_hash"},
+        "alignment_input": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/path_hash"}]},
+        "alignment_review": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/path_hash"}]},
+        "withdrawn_pending_payloads": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+        "recorded_at": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

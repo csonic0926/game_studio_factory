@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/product_authority_archive_snapshot.schema.json",
+  "title": "Product Authority Archive Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "transition_id", "project_id", "factory_revision", "prepared_at", "authority_artifacts"],
+  "properties": {
+    "schema_version": {"const": "product_authority_archive_snapshot.v1"},
+    "transition_id": {"$ref": "#/$defs/id"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "prepared_at": {"type": "string", "minLength": 1},
+    "authority_artifacts": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["canonical_path", "archived_artifact"],
+        "properties": {
+          "canonical_path": {"type": "string", "minLength": 1},
+          "archived_artifact": {"$ref": "#/$defs/path_hash"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

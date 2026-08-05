@@ -22,6 +22,11 @@ Game AI Factories     = specialist capabilities
 The Studio is the default for open-ended intent. Direct specialist invocation
 is correct for deliberately bounded expert work.
 
+Studio-managed product authority is additionally governed by
+`design/product/PRODUCT_AUTHORITY_REGISTER.json`. A whole-direction archive
+uses `studio/product.py` plus fresh semantic alignment; old canonical files,
+code, or baselines cannot silently reactivate an archived direction.
+
 ## Whole-game delivery invariant
 
 Game Studio Factory may narrow content, asset fidelity, spatial scale, or the
