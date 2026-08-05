@@ -1,0 +1,19 @@
+{
+  "schema_version": "studio_gameplay_system_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "PRODUCT_FIDELITY | CYCLE_CLOSURE",
+  "project_id": "<PROJECT_ID>",
+  "system_id": "<SYSTEM_ID>",
+  "cycle_id": "<CYCLE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "gameplay_system": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM.json", "sha256": "<SHA256>"},
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "causal_link_ids_reviewed": ["<EVERY_PRODUCT_CAUSAL_LINK_FOR_PRODUCT_FIDELITY>"],
+  "constraint_ids_reviewed": ["<EVERY_APPLICABLE_CONSTRAINT_FOR_PRODUCT_FIDELITY>"],
+  "transition_ids_reviewed": ["<EVERY_TRANSITION_ID>"],
+  "cycle_findings": {"closed_graph": "PASS", "reward_changes_next_decision": "PASS", "second_lap_materially_differs": "PASS", "coupled_systems_preserved": "PASS", "no_proxy_loop": "PASS"},
+  "blocking_findings": [],
+  "verdict": "PASS_SYSTEM_REVIEW",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

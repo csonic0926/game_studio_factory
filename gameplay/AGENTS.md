@@ -149,9 +149,12 @@ asking the user to paste internal instructions.
 
 `NEW_PROJECT_DEFINITION_REQUIRED` routes to the installed `idea-factory` skill.
 Do not create fake progression, actions, rewards, or adapters from only a genre
-request. `IDEA_FACTORY_READY` establishes product direction; a separate
-new-game Gameplay bootstrap remains responsible for initial progression and
-action/reward design.
+request. `IDEA_FACTORY_READY` establishes product direction. For a whole-game
+call, Studio must next synthesize and validate the initial closed gameplay
+system; Gameplay bootstrap realizes a bounded objective from that authority.
+A deliberately bounded direct-specialist request may instead derive its card
+from the user's explicit local ruling. Gameplay must not infer a whole-game
+retention system from a genre brief.
 
 Open/no-fit/live-direction Idea Factory states are not failures and are not
 product authority. Remain in product exploration; Gameplay must not force them
@@ -198,9 +201,11 @@ Read the full objective workflow. Its compact path is:
 stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> prepare.py context
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
-  -> one creative author
+  -> Studio cycle authority or explicit bounded specialist authority
+  -> compact GAMEPLAY_DECISION_CARD.json -> human verdict
+  -> separate full-spec author
   -> OBJECTIVE_GAMEPLAY.md
-  -> fresh design review + exact human verdict
+  -> fresh CARD_TO_SPEC + SPEC_TO_CARD conformance reviews
   -> GAMEPLAY_DESIGN_VERDICT.json
   -> user-selected production planner
   -> PRODUCTION_PLAN_MANIFEST.json + production_plans/*.md
@@ -211,13 +216,30 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
 The primary progression driver answers **what is next**. Gameplay is **how**
 the player reaches it through actions and their consequences/rewards.
 
-Only `READY_FOR_HOW_DESIGN` or `READY_FOR_NEW_GAMEPLAY_DESIGN` starts the one
-Step 2 author. An `AI_DRAFT_FOR_REVIEW` never enters planning: a fresh reviewer
-must pass the exact objective SHA and the user must rule on that draft. New
-gameplay design always requires post-draft `USER_APPROVED`; prior delegation is
-not a substitute. Only `READY_FOR_EXECUTION` starts production. For an ordinary
+Only `READY_FOR_HOW_DESIGN` or `READY_FOR_NEW_GAMEPLAY_DESIGN` starts Step 2.
+For Studio-routed work, the decision card must bind a
+`STUDIO_GAMEPLAY_SYSTEM_READY` manifest and its closed two-lap cycle; Gameplay
+may not replace it with a smaller linear feature. The human rules only on the
+compact decision card. A different author then refines the card into
+`OBJECTIVE_GAMEPLAY.md`, and two different fresh reviewers prove:
+
+```text
+every card claim -> one or more exact spec refs
+every material spec ref -> one or more exact card claims
+```
+
+The two mappings must be exact inverses. Thus the full spec may add operational
+detail and falsifiable hypotheses, but no unapproved material decision. An
+`AI_DRAFT_FOR_REVIEW` never enters planning. New gameplay always requires
+`USER_APPROVED` on the card; prior delegation is not a substitute. Only
+`READY_FOR_EXECUTION` starts production. For an ordinary
 make/continue request, the caller executes the plans automatically rather than
 asking the user to say “write the code”.
+
+At the human gate, show only the rendered compact card and request
+`USER_APPROVED <decision_payload_sha256>`. Do not dump reconstruction notes,
+research, full spec, or conformance reports unless the user asks. The payload
+hash excludes the later verdict field, so the exact ruling is non-circular.
 
 After design and before Step 3 planning, determine whether intended production
 touches UI. If so, run the UI Production Adapter workflow first. Do not ask the

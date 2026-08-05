@@ -10,7 +10,8 @@ explicitly defers it.
 This is the current token-efficiency pilot for a game repo that Gameplay
 Factory can already continue. It replaces repeated repo study and the previous
 multi-author design front end with one mechanical context compilation, one
-complete creative artifact, and one persistent production-planning contract.
+compact human decision surface, one full spec, two exact conformance checks,
+and one persistent production-planning contract.
 
 It does not initialize a blank or foreign repo and does not change the independent
 runtime evidence reader. It also does not rewrite an already-authored objective
@@ -46,6 +47,16 @@ next objective
   -> concrete problems, activities, pressure, desires, and decisions
   -> objective completion
 ```
+
+For Studio-routed work, both sit inside a prior gameplay-system cycle:
+
+```text
+decision -> commitment -> resolution -> reward -> reinvestment
+  -> changed next decision
+```
+
+Studio owns that system. The objective may be a bounded vertical slice of it,
+but may not cut a load-bearing edge and turn it into a linear episode.
 
 ## Step 1 — prepare the next gameplay unit
 
@@ -98,68 +109,103 @@ completion proof, validates actions/rewards, and emits one compact context.
 The script checks structural/evidential readiness. It does not decide whether
 the actions make good gameplay.
 
-## Step 2 — author the whole objective gameplay
+## Step 2 — freeze the compact human decision surface
 
-One creative worker reads only `NEXT_GAMEPLAY_UNIT_CONTEXT.md` plus an explicit
-small source excerpt if the context names an unresolved design fact. It creates
-one `OBJECTIVE_GAMEPLAY.md` from objective issue/current frontier through
-objective completion.
+Do not ask a human to validate a generated full spec. First author the bounded
+`GAMEPLAY_DECISION_CARD.json` using
+`schemas/gameplay_decision_card.schema.json` and its template. It contains only:
 
-Inside that single pass the author may recursively infer:
+- one player promise;
+- three to six core-cycle steps;
+- one to five load-bearing commitments;
+- one to four red lines;
+- at most three explicitly falsifiable hypotheses.
 
-```text
-objective
-  -> necessary physical/game action
-  -> thinness or repetition
-  -> problem
-  -> player activity
-  -> pressure
-  -> player desire
-  -> existing action/reward response
-  -> meaningful decision where rote play remains
-```
+For `STUDIO_WHOLE_GAME`, the card binds the exact validated
+`STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json`; `studio/cycle.py` must return
+`STUDIO_GAMEPLAY_SYSTEM_READY`. Its player promise and ordered core cycle are a
+deterministic projection of the system promise and cycle transitions
+(`player_action -> visible_consequence -> motivation_effect`); every coupled
+system and forbidden linearization must appear verbatim. Objective-specific
+commitments may be added only as visible `scope.*` claims. Thus the card cannot
+silently rewrite the validated system before the human sees it. For
+`DIRECT_SPECIALIST`, the card must derive
+from an explicit bounded user request rather than an inferred whole-game
+system.
 
-These are internal micro-operations, not separate workflow steps or artifacts.
-The output table directly records concrete situations, visible information,
-available actions, rewards/consequences, meaningful decisions/execution, and
-the resulting next situation.
+The human rules on this card. `READY_FOR_NEW_GAMEPLAY_DESIGN` requires
+`USER_APPROVED`; delegation is insufficient. The card is not a summary
+generated after the full spec—it is the material authority the full spec must
+refine.
 
-### New-gameplay trigger
-
-New gameplay is allowed. Use the smallest sufficient escalation:
-
-```text
-new situation
-  -> new combination of existing actions
-  -> new target or consequence for an existing action
-  -> new player action
-  -> new gameplay system
-```
-
-Escalate when a required activity is trivial, cannot causally express the
-objective, or becomes deterministic/repetitive before objective completion.
-Do not use a fixed novelty quota, create a main-progression branch merely to
-prove choice, or require punishment where positive rewards provide legible
-different consequences.
-
-## Step 2.5 — bind design review and human verdict
-
-`OBJECTIVE_GAMEPLAY.md` is initially `AI_DRAFT_FOR_REVIEW`; planning may not
-silently treat that status as authority. Fill its `Expected player experience`
-section, run one fresh design review, obtain the user's ruling on the exact
-draft, and persist beside it:
+`decision_payload_sha256` hashes only the compact material fields, not the
+later recorded verdict. When requesting the ruling, show only the rendered
+promise/cycle/commitments/red-lines/hypotheses card—do not dump reconstruction,
+research, or the future full spec—and request exactly:
 
 ```text
-<objective_dir>/GAMEPLAY_DESIGN_VERDICT.json
+USER_APPROVED <decision_payload_sha256>
 ```
 
-Use `schemas/gameplay_design_verdict.schema.json` and
-`templates/GAMEPLAY_DESIGN_VERDICT.json`. The verdict binds the exact objective
-path/SHA and Factory Git revision. `READY_FOR_NEW_GAMEPLAY_DESIGN` requires a
-post-draft `USER_APPROVED` ruling; an earlier broad go-ahead or delegated AI
-taste decision is insufficient. `READY_FOR_HOW_DESIGN` may use explicit
-`USER_DELEGATED` only when that delegation is recorded against the exact draft.
-Any edit to the objective invalidates the verdict and requires review again.
+Render the short card and token deterministically:
+
+```bash
+python3 gameplay/design_gate.py render-card \
+  --card design/gameplay/objective_gameplay/<objective_id>/GAMEPLAY_DECISION_CARD.json
+```
+
+Persist that exact token as `human_verdict.source_text`. The validator
+recomputes the payload hash, avoiding the circular error where recording the
+verdict changes the artifact SHA that the user supposedly approved.
+
+## Step 2.5 — author the full spec and prove exact refinement
+
+A different creative context reads the approved card plus
+`NEXT_GAMEPLAY_UNIT_CONTEXT.md` and writes `OBJECTIVE_GAMEPLAY.md`. It may infer
+operational detail needed to realize the commitments, but it may not introduce
+a new material design decision. The full spec records an `Author context id`
+and contains only the canonical material sections:
+
+```text
+Objective
+Expected player experience
+numbered gameplay rows
+New gameplay additions
+Completion handoff
+```
+
+Free prose and extra headings are forbidden in this compact authority. This is
+not stylistic: the validator inventories every allowed material line so a
+generated paragraph cannot hide an unapproved mechanic outside the
+spec-to-card mapping.
+
+Two different fresh reviewer contexts—neither author nor either prior Studio
+system reviewer—then write:
+
+```text
+GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json
+GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json
+```
+
+The first maps **every card claim id** to exact finite spec refs. The second
+inventories **every material spec ref** and maps it back to card claim ids. The
+validator requires the two pair sets to be exact inverses, with no
+contradiction, ambiguity, unsupported material decision, or blocker.
+Validation hypotheses may map only to `expected.*` acceptance claims; they
+cannot by themselves authorize a gameplay row, addition, or completion rule.
+
+This relation is refinement, not identity:
+
+```text
+FullSpec refines DecisionCard
+  = card->spec completeness
+  + spec->card non-expansion
+```
+
+Only then write `GAMEPLAY_DESIGN_VERDICT.json` v2 with
+`PASS_DESIGN_CONFORMANCE`. It binds the exact card, objective, both reviews,
+and Factory revision. Any material edit changes a SHA and invalidates planning.
+Legacy v1 verdicts are historical-only; they cannot authorize new production.
 
 ## Step 3 — compile persistent production plans
 
@@ -257,10 +303,9 @@ paths rather than implying the gameplay was produced.
 
 ## Calibration boundary
 
-Do not regenerate Span Quant, Beat Sheet, walkthroughs, packets, or reviews
-merely to preserve the previous workflow shape. The first real
-`OBJECTIVE_GAMEPLAY.md` proved compact enough to proceed to production
-planning only after its expected-experience section, fresh design review, and
-human verdict are bound. Step 3 tests whether it can replace the prior
-intermediate design artifacts. Runtime observation and post-build human
-playtest acceptance remain separate from this pre-production design gate.
+Do not regenerate Span Quant, Beat Sheet, walkthroughs, or packets merely to
+preserve the previous workflow shape. The human-facing surface is the compact
+decision card; the full spec remains AI-operational detail and becomes
+authority only after exact dual conformance. Runtime observation and post-build
+human playtest acceptance remain separate from this pre-production gate and,
+for Studio work, must demonstrate the same two-lap cycle on the exact build.

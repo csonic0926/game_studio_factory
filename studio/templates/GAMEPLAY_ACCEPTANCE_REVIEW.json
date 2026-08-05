@@ -1,5 +1,5 @@
 {
-  "schema_version": "gameplay_acceptance_review.v2",
+  "schema_version": "gameplay_acceptance_review.v3",
   "review_id": "<REVIEW_ID>",
   "project_id": "<PROJECT_ID>",
   "unit_id": "<UNIT_ID>",
@@ -17,7 +17,8 @@
   "human_playtest": {
     "status": "HUMAN_PLAYTEST_ACCEPTED",
     "verdict_owner": "USER",
-    "verdict_source": "<USER_VERDICT_ON_THIS_EXACT_BUILD_AND_EXPERIENCE_AUTHORITY>",
+    "verdict_payload_sha256": "<SHA256_OF_EXACT_BUILD_AUTHORITY_ACCEPTANCE_INPUT_AND_CYCLE_TUPLE>",
+    "verdict_source": "HUMAN_PLAYTEST_ACCEPTED <VERDICT_PAYLOAD_SHA256>",
     "accepted_at": "<ISO_8601_DATETIME>"
   },
   "evidence_paths": [
@@ -28,6 +29,27 @@
     "actions": ["<OBSERVED_MEANINGFUL_ACTION>"],
     "consequences": "<OBSERVED_CONSEQUENCE_OR_REWARD>",
     "completion": "<OBSERVED_COMPLETION_AND_NEXT_HANDOFF>"
+  },
+  "observed_two_lap_cycle": {
+    "first_lap": {
+      "decision": "<WHAT_THE_PLAYER_ACTUALLY_DECIDED>",
+      "resolution": "<WHAT_ACTUALLY_RESOLVED_ON_THE_EXACT_BUILD>",
+      "reward": "<WHAT_REWARD_OR_STATE_CHANGE_THE_PLAYER_ACTUALLY_SAW>"
+    },
+    "feedback_state_changes": [
+      {
+        "state_id": "<SYSTEM_FEEDBACK_STATE_ID>",
+        "before": "<OBSERVED_BEFORE>",
+        "after": "<OBSERVED_AFTER>",
+        "effect_on_next_decision": "<OBSERVED_EFFECT_ON_LAP_TWO>"
+      }
+    ],
+    "second_lap": {
+      "changed_goal": "<OBSERVED_CHANGED_GOAL>",
+      "changed_decision": "<OBSERVED_MATERIALLY_CHANGED_DECISION>",
+      "reentry_action": "<OBSERVED_NATURAL_REENTRY_ACTION>"
+    },
+    "why_player_has_new_motive": "<OBSERVED_REASON_TO_CONTINUE_BEYOND_REPLAY>"
   },
   "blocking_findings": [],
   "reviewed_at": "<ISO_8601_DATETIME>"

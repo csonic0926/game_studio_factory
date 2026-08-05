@@ -38,8 +38,9 @@ material gaps and AI assumptions, and reuses the production material gate.
 stable game-owned progression/action model + objective frontier
   -> prepare.py context                         # Step 1, mechanical
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
-  -> one creative author                       # Step 2
-  -> OBJECTIVE_GAMEPLAY.md
+  -> compact decision card + human verdict     # Step 2
+  -> separate author -> OBJECTIVE_GAMEPLAY.md  # Step 2.5
+  -> dual exact conformance reviews
   -> user-selected planner                     # Step 3
   -> PRODUCTION_PLAN_MANIFEST.json + production_plans/*.md
   -> plan.py validate
@@ -124,17 +125,17 @@ and player actions with rewards. It emits:
 It never treats locale-only text as implemented gameplay and never creates an
 output directory before ownership validation.
 
-## Objective production — Step 2
+## Objective production — Steps 2 and 2.5
 
-One author uses the compact Step 1 result to produce one complete
-`OBJECTIVE_GAMEPLAY.md`. Necessary-action, problem, pressure, player-desire,
-action/reward, and meaningful-choice deductions occur inside that pass rather
-than becoming separate workers and review artifacts.
-
-The draft then passes an explicit authority gate: expected player experience
-is filled in, a fresh reviewer evaluates the exact SHA, and the user's ruling
-is recorded in objective-local `GAMEPLAY_DESIGN_VERDICT.json`. From-scratch
-new gameplay cannot substitute prior delegation for post-draft approval.
+The human first approves a compact `GAMEPLAY_DECISION_CARD.json`. Studio-routed
+cards bind a validated cycle-complete Studio gameplay-system manifest; direct
+specialist cards bind the user's explicit bounded request. A separate author
+then writes `OBJECTIVE_GAMEPLAY.md`. Two different fresh reviewers map every
+card claim into the spec and every material spec item back to card claims. The
+pair mappings must be exact inverses before
+`GAMEPLAY_DESIGN_VERDICT.json` v2 can pass. From-scratch new gameplay cannot
+substitute prior delegation for approval on the card, and the human is not
+asked to review the generated full spec.
 
 ## Objective production — Step 3
 
@@ -240,6 +241,8 @@ schemas/gameplay_factory_repo_probe.schema.json
 schemas/gameplay_factory_init_input.schema.json
 schemas/gameplay_factory_init_result.schema.json
 schemas/production_plan_manifest.schema.json
+schemas/gameplay_decision_card.schema.json
+schemas/gameplay_design_conformance_review.schema.json
 schemas/gameplay_design_verdict.schema.json
 schemas/gameplay_gap_input.schema.json
 schemas/repair_plan_manifest.schema.json
@@ -251,6 +254,8 @@ templates/GAMEPLAY_DESIGN_MODEL.json
 templates/GAMEPLAY_FACTORY_INIT_INPUT.json
 templates/NEXT_GAMEPLAY_UNIT_INPUT.json
 templates/OBJECTIVE_GAMEPLAY.md
+templates/GAMEPLAY_DECISION_CARD.json
+templates/GAMEPLAY_DESIGN_CONFORMANCE_REVIEW.json
 templates/GAMEPLAY_DESIGN_VERDICT.json
 templates/PRODUCTION_PLAN_MANIFEST.json
 templates/PRODUCTION_PLAN.md

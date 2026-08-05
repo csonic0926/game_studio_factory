@@ -2,10 +2,22 @@
 
 ## Why this layer exists
 
-The Game AI Factories can now produce a bounded new gameplay system that is
-playable and has some genuine interest. Scale becomes healthy only after that
-unit quality exists. The Studio layer therefore scales **accepted gameplay**,
+The Game AI Factories can produce bounded gameplay realizations. Scale becomes
+healthy only after Studio has defined the system they realize and that unit is
+genuinely playable. The Studio layer therefore scales **accepted gameplay**,
 not token count, agent count, feature count, or runnable software.
+
+The missing ownership boundary is now explicit:
+
+```text
+Idea Factory: Product Thesis and causal product promises
+Studio:       exact closed gameplay system and motivational cycle
+Gameplay:     bounded cycle-complete objective/spec and implementation
+```
+
+See [`GAMEPLAY_SYSTEM_WORKFLOW.md`](GAMEPLAY_SYSTEM_WORKFLOW.md). A Product
+Thesis cannot route directly to an isolated feature merely because that
+feature is easy to build or verify.
 
 ## 1. Accepted Playable Baseline
 
@@ -16,7 +28,8 @@ build-success claim. It binds:
 - runnable build/launch evidence;
 - the playable scope and its complete loop;
 - every accepted gameplay unit, its canonical experience authority, fresh
-  acceptance decision, and human playtest verdict;
+  acceptance decision, validated Studio cycle, observed two-lap feedback, and
+  human playtest verdict;
 - regression evidence for previously accepted gameplay;
 - known gaps and delivery blockers.
 
@@ -40,6 +53,7 @@ It is globally promotable only when:
 ```text
 new unit acceptance == ACCEPTED
 and human playtest == HUMAN_PLAYTEST_ACCEPTED
+and two-lap cycle == ACCEPTED_TWO_LAP_CYCLE
 and predecessor regression == PASS
 and integration blockers == []
 and interactive_demo_only == false
@@ -72,9 +86,15 @@ systems. Search is not a requirement to fuse references; `NO_FIT` is healthy.
 ## 4. Autonomous Production Loop
 
 The Studio diagnoses the current game's pressure rather than blindly consuming
-a feature backlog. It selects the smallest unit that can materially improve the
-whole game, freezes its authority/interfaces, then parallelizes safe specialist
-production.
+a feature backlog. It first synthesizes or revalidates the causal gameplay
+system, then selects the **minimum cycle-complete vertical slice** that can
+materially improve the whole game, freezes its authority/interfaces, and only
+then parallelizes safe specialist production.
+
+The vertical slice may reduce content, opponents, scenarios, and fidelity. It
+may not cut `decision -> commitment -> resolution -> reward -> reinvestment ->
+return`, omit a product causal link, or defer one side of a product-level
+coupling. A replay button with unchanged next-decision state is not a cycle.
 
 Safe parallelism requires non-overlap in:
 

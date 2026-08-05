@@ -160,10 +160,13 @@ One creative worker then writes the whole
 Do not split its internal necessary-action/problem/pressure/desire/choice
 deductions into separate workers.
 
-Do not plan from `AI_DRAFT_FOR_REVIEW`. Fill the expected-player-experience
-section, run a fresh design review, obtain a human ruling on the exact SHA, and
-write objective-local `GAMEPLAY_DESIGN_VERDICT.json`. From-scratch new gameplay
-requires post-draft `USER_APPROVED`; broad prior delegation is not enough.
+Do not plan from `AI_DRAFT_FOR_REVIEW`. First obtain the human ruling on the
+compact objective-local `GAMEPLAY_DECISION_CARD.json`. For Studio work it must
+bind a validated closed gameplay-system manifest. A separate author writes the
+full `OBJECTIVE_GAMEPLAY.md`; two separate fresh reviewers must then prove
+card-to-spec completeness and spec-to-card non-expansion before writing
+`GAMEPLAY_DESIGN_VERDICT.json` v2. From-scratch new gameplay requires
+`USER_APPROVED` on the card; broad prior delegation is not enough.
 
 Then use either Plan Mode or an ordinary model chosen by the factory user to
 inspect the repo and persist:

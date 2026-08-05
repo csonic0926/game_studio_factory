@@ -13,12 +13,16 @@ from studio.baseline import (
     BASELINE_PROMOTION_INPUT_REQUIRED,
     BASELINE_RECONSTRUCTION_INPUT_REQUIRED,
     BLOCKED_BY_ADMISSION_MATERIAL,
+    BLOCKED_BY_BASELINE_STATE,
     BLOCKED_BY_EXISTING_BASELINE,
     BaselineAdmissionError,
     compile_baseline_admission,
+    compute_playtest_token,
     check_baseline_admission,
+    human_playtest_payload_sha256,
     start_baseline_admission,
 )
+from studio.tests.cycle_fixture import write_valid_cycle
 
 
 def _run(repo: Path, *args: str) -> str:
@@ -65,14 +69,18 @@ class BaselineAdmissionTests(unittest.TestCase):
         _run(self.repo, "init", "-b", "main")
         _run(self.repo, "config", "user.email", "factory-test@example.invalid")
         _run(self.repo, "config", "user.name", "Factory Test")
-        _write(self.repo, "design/product/PRODUCT_THESIS.md", "# Product\nReal game.\n")
+        self.factory_revision = _run(
+            Path(__file__).resolve().parents[2], "rev-parse", "HEAD"
+        )
+        self.cycle_relative = write_valid_cycle(
+            self.repo, self.factory_revision, project_id="sample-game"
+        )
         _write(self.repo, "design/gameplay/unit-one.md", "# Unit one\n")
         _write(self.repo, "build/game.bin", "build-one\n")
         _write_json(self.repo, "evidence/acceptance-input-one.json", {"run": "one"})
         _write_json(self.repo, "evidence/runtime-one.json", {"loop": "complete"})
         _write(self.repo, "evidence/verification-one.txt", "PASS\n")
         self.revision_one = _commit(self.repo, "initial playable game")
-        self.factory_revision = _run(Path(__file__).resolve().parents[2], "rev-parse", "HEAD")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -96,7 +104,7 @@ class BaselineAdmissionTests(unittest.TestCase):
             self.repo,
             input_relative,
             {
-                "schema_version": "gameplay_acceptance_input.v1",
+                "schema_version": "gameplay_acceptance_input.v2",
                 "acceptance_input_id": f"input-{admission_id}-{unit_id}",
                 "project_id": "sample-game",
                 "unit_id": unit_id,
@@ -104,6 +112,8 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "build_id": build_id,
                 "factory_revision": self.factory_revision,
                 "experience_authority": _ref(self.repo, authority),
+                "studio_gameplay_system": _ref(self.repo, self.cycle_relative),
+                "cycle_id": "choice-reward-cycle",
                 "expected_player_experience": {
                     "target_player": "A player encountering this objective for the first time",
                     "intended_experience": "Understand the goal and make a deliberate choice",
@@ -119,30 +129,64 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "non_claims": [
                     "Passing technical tests alone does not establish this experience."
                 ],
+                "cycle_acceptance": {
+                    "first_lap": {
+                        "decision": "Choose the starter risk.",
+                        "resolution": "The position resolves from play.",
+                        "reward": "The visible opportunity tier increases.",
+                    },
+                    "feedback_state_changes": [{
+                        "state_id": "opportunity-tier",
+                        "before": "Starter risk set.",
+                        "after": "Advanced risk set.",
+                        "effect_on_next_decision": "The next decision offers an advanced risk.",
+                    }],
+                    "second_lap": {
+                        "changed_goal": "Use the advanced opportunity.",
+                        "changed_decision": "Choose an advanced risk unavailable before.",
+                        "reentry_action": "Enter the next choice from the reward state.",
+                    },
+                    "why_player_has_new_motive": "The earned tier exposes a new risk and reward decision.",
+                },
                 "prepared_at": "2026-08-03T11:58:00Z",
             },
         )
         relative = f"design/studio/admissions/{admission_id}/acceptance-{unit_id}.json"
+        authority_ref = _ref(self.repo, authority)
+        acceptance_input_ref = _ref(self.repo, input_relative)
+        system_ref = _ref(self.repo, self.cycle_relative)
+        verdict_payload_sha = human_playtest_payload_sha256(
+            project_id="sample-game",
+            unit_id=unit_id,
+            game_revision=revision,
+            build_id=build_id,
+            factory_revision=self.factory_revision,
+            experience_authority=authority_ref,
+            acceptance_input=acceptance_input_ref,
+            studio_gameplay_system=system_ref,
+            cycle_id="choice-reward-cycle",
+        )
         _write_json(
             self.repo,
             relative,
             {
-                "schema_version": "gameplay_acceptance_review.v2",
+                "schema_version": "gameplay_acceptance_review.v3",
                 "review_id": f"review-{admission_id}-{unit_id}",
                 "project_id": "sample-game",
                 "unit_id": unit_id,
                 "game_revision": revision,
                 "build_id": build_id,
                 "factory_revision": self.factory_revision,
-                "experience_authority": _ref(self.repo, authority),
+                "experience_authority": authority_ref,
                 "reviewer_context_id": reviewer,
                 "reviewer_freshness": "FRESH",
                 "verdict": "ACCEPTED",
-                "acceptance_input": _ref(self.repo, input_relative),
+                "acceptance_input": acceptance_input_ref,
                 "human_playtest": {
                     "status": "HUMAN_PLAYTEST_ACCEPTED",
                     "verdict_owner": "USER",
-                    "verdict_source": "User played this exact build and accepted the experience.",
+                    "verdict_payload_sha256": verdict_payload_sha,
+                    "verdict_source": f"HUMAN_PLAYTEST_ACCEPTED {verdict_payload_sha}",
                     "accepted_at": "2026-08-03T12:02:00Z",
                 },
                 "evidence_paths": [_ref(self.repo, evidence)],
@@ -151,6 +195,25 @@ class BaselineAdmissionTests(unittest.TestCase):
                     "actions": ["Choose and execute a meaningful action"],
                     "consequences": "The game changes visibly",
                     "completion": "The objective completes and hands off",
+                },
+                "observed_two_lap_cycle": {
+                    "first_lap": {
+                        "decision": "The player chose the starter risk.",
+                        "resolution": "The exact build resolved the position.",
+                        "reward": "The opportunity tier visibly increased.",
+                    },
+                    "feedback_state_changes": [{
+                        "state_id": "opportunity-tier",
+                        "before": "Starter risk set.",
+                        "after": "Advanced risk set.",
+                        "effect_on_next_decision": "The player selected an advanced risk next.",
+                    }],
+                    "second_lap": {
+                        "changed_goal": "Use the advanced opportunity.",
+                        "changed_decision": "Choose an advanced risk unavailable before.",
+                        "reentry_action": "The player entered the next choice from the reward.",
+                    },
+                    "why_player_has_new_motive": "The earned tier gave the player a materially new choice.",
                 },
                 "blocking_findings": [],
                 "reviewed_at": "2026-08-03T12:00:00Z",
@@ -381,6 +444,14 @@ class BaselineAdmissionTests(unittest.TestCase):
         self.assertEqual(BASELINE_RECONSTRUCTION_INPUT_REQUIRED, result.status)
         self.assertEqual("RECONSTRUCT", result.mode)
 
+    def test_changed_cycle_authority_invalidates_current_baseline_state(self) -> None:
+        self._compile_first_baseline()
+        manifest_path = self.repo / self.cycle_relative
+        manifest_path.write_text(manifest_path.read_text() + "\n", encoding="utf-8")
+        result = start_baseline_admission(str(self.repo))
+        self.assertEqual(BLOCKED_BY_BASELINE_STATE, result.status)
+        self.assertTrue(any("hash does not match" in error for error in result.errors))
+
     def test_reconstruction_compiles_checks_and_then_routes_to_promotion(self) -> None:
         relative, _, _ = self._compile_first_baseline()
         repeated = compile_baseline_admission(str(self.repo), relative)
@@ -397,12 +468,18 @@ class BaselineAdmissionTests(unittest.TestCase):
         )
         self.assertEqual("RECONSTRUCT", baseline["promotion"]["admission_mode"])
         self.assertEqual(["unit-one"], baseline["promotion"]["promoted_unit_ids"])
-        self.assertEqual("accepted_playable_baseline.v2", baseline["schema_version"])
+        self.assertEqual("accepted_playable_baseline.v3", baseline["schema_version"])
         self.assertEqual(self.factory_revision, baseline["factory_revision"])
         self.assertEqual(
             "HUMAN_PLAYTEST_ACCEPTED",
             baseline["accepted_gameplay_units"][0]["acceptance_review"][
                 "human_playtest_status"
+            ],
+        )
+        self.assertEqual(
+            "ACCEPTED_TWO_LAP_CYCLE",
+            baseline["accepted_gameplay_units"][0]["acceptance_review"][
+                "cycle_status"
             ],
         )
 
@@ -513,6 +590,43 @@ class BaselineAdmissionTests(unittest.TestCase):
         result = compile_baseline_admission(str(self.repo), relative)
         self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
         self.assertTrue(any("HUMAN_PLAYTEST_ACCEPTED" in error for error in result.errors))
+
+    def test_playtest_token_binds_exact_build_authority_and_cycle(self) -> None:
+        _, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        token = compute_playtest_token(str(self.repo), review_relative)
+        review = json.loads((self.repo / review_relative).read_text())
+        self.assertEqual(review["human_playtest"]["verdict_source"], token)
+
+    def test_acceptance_requires_observed_feedback_change_and_second_lap(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        change = review["observed_two_lap_cycle"]["feedback_state_changes"][0]
+        change["after"] = change["before"]
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("did not change" in error for error in result.errors))
+
+    def test_previous_single_loop_acceptance_is_historical_only(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        review["schema_version"] = "gameplay_acceptance_review.v2"
+        review.pop("observed_two_lap_cycle")
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(any("historical-only" in error for error in result.errors))
 
     def test_admission_acceptance_owner_must_be_user(self) -> None:
         relative, payload = self._reconstruction_input()
@@ -666,7 +780,8 @@ class BaselineAdmissionTests(unittest.TestCase):
         outside.write_text("{}\n")
         with self.assertRaises(BaselineAdmissionError):
             compile_baseline_admission(str(self.repo), str(outside))
-        self.assertFalse((self.repo / "design/studio").exists())
+        self.assertFalse((self.repo / "design/studio/admissions").exists())
+        self.assertFalse((self.repo / "design/studio/baselines").exists())
 
 
 if __name__ == "__main__":

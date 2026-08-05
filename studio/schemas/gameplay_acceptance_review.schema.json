@@ -4,9 +4,9 @@
   "title": "Fresh Gameplay Acceptance Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "project_id", "unit_id", "game_revision", "build_id", "factory_revision", "experience_authority", "reviewer_context_id", "reviewer_freshness", "verdict", "acceptance_input", "human_playtest", "evidence_paths", "observed_complete_loop", "blocking_findings", "reviewed_at"],
+  "required": ["schema_version", "review_id", "project_id", "unit_id", "game_revision", "build_id", "factory_revision", "experience_authority", "reviewer_context_id", "reviewer_freshness", "verdict", "acceptance_input", "human_playtest", "evidence_paths", "observed_complete_loop", "observed_two_lap_cycle", "blocking_findings", "reviewed_at"],
   "properties": {
-    "schema_version": {"const": "gameplay_acceptance_review.v2"},
+    "schema_version": {"const": "gameplay_acceptance_review.v3"},
     "review_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "unit_id": {"$ref": "#/$defs/id"},
@@ -20,10 +20,11 @@
     "acceptance_input": {"$ref": "#/$defs/path_hash"},
     "human_playtest": {
       "type": "object", "additionalProperties": false,
-      "required": ["status", "verdict_owner", "verdict_source", "accepted_at"],
+      "required": ["status", "verdict_owner", "verdict_payload_sha256", "verdict_source", "accepted_at"],
       "properties": {
         "status": {"const": "HUMAN_PLAYTEST_ACCEPTED"},
         "verdict_owner": {"const": "USER"},
+        "verdict_payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "verdict_source": {"type": "string", "minLength": 1},
         "accepted_at": {"type": "string", "minLength": 1}
       }
@@ -39,15 +40,55 @@
         "completion": {"type": "string", "minLength": 1}
       }
     },
+    "observed_two_lap_cycle": {"$ref": "#/$defs/two_lap_cycle"},
     "blocking_findings": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "reviewed_at": {"type": "string", "minLength": 1}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "non_tbd_text": {"type": "string", "minLength": 1, "not": {"pattern": "TBD"}},
     "path_hash": {
       "type": "object", "additionalProperties": false,
       "required": ["path", "sha256"],
       "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "two_lap_cycle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["first_lap", "feedback_state_changes", "second_lap", "why_player_has_new_motive"],
+      "properties": {
+        "first_lap": {
+          "type": "object", "additionalProperties": false,
+          "required": ["decision", "resolution", "reward"],
+          "properties": {
+            "decision": {"$ref": "#/$defs/non_tbd_text"},
+            "resolution": {"$ref": "#/$defs/non_tbd_text"},
+            "reward": {"$ref": "#/$defs/non_tbd_text"}
+          }
+        },
+        "feedback_state_changes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["state_id", "before", "after", "effect_on_next_decision"],
+            "properties": {
+              "state_id": {"$ref": "#/$defs/id"},
+              "before": {"$ref": "#/$defs/non_tbd_text"},
+              "after": {"$ref": "#/$defs/non_tbd_text"},
+              "effect_on_next_decision": {"$ref": "#/$defs/non_tbd_text"}
+            }
+          }
+        },
+        "second_lap": {
+          "type": "object", "additionalProperties": false,
+          "required": ["changed_goal", "changed_decision", "reentry_action"],
+          "properties": {
+            "changed_goal": {"$ref": "#/$defs/non_tbd_text"},
+            "changed_decision": {"$ref": "#/$defs/non_tbd_text"},
+            "reentry_action": {"$ref": "#/$defs/non_tbd_text"}
+          }
+        },
+        "why_player_has_new_motive": {"$ref": "#/$defs/non_tbd_text"}
+      }
     }
   },
   "allOf": [

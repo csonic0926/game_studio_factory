@@ -1,0 +1,20 @@
+{
+  "schema_version": "gameplay_design_conformance_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "CARD_TO_SPEC | SPEC_TO_CARD",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "decision_card": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD.json", "sha256": "<SHA256>"},
+  "objective_gameplay": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/OBJECTIVE_GAMEPLAY.md", "sha256": "<SHA256>"},
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "claim_coverage": [],
+  "spec_material_inventory": [],
+  "contradictions": [],
+  "ambiguities": [],
+  "unsupported_material_decisions": [],
+  "blocking_findings": [],
+  "verdict": "PASS_CONFORMANCE",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

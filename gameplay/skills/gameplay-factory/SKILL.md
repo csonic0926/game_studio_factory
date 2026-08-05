@@ -73,8 +73,11 @@ An ordinary “make/fix/continue gameplay” call proceeds from design authority
 through validated persisted production plans into normal code/data/asset/sound
 execution. Stop at plans only when the user explicitly asked for plan-only.
 An objective authored by AI is not design authority until an objective-local
-`GAMEPLAY_DESIGN_VERDICT.json` binds its exact SHA, a fresh design review, and
-the user's ruling. New gameplay design requires post-draft user approval.
+`GAMEPLAY_DESIGN_VERDICT.json` v2 binds its exact SHA, the compact human-approved
+decision card, and two fresh inverse conformance reviews. For Studio-routed
+work, the card must also bind a validated cycle-complete Studio gameplay-system
+manifest. New gameplay design requires user approval on the card; the user is
+not asked to review the generated full spec.
 
 When Gameplay Factory was invoked by Game Studio Factory, implementation ends
 at a committed runtime revision plus a checked

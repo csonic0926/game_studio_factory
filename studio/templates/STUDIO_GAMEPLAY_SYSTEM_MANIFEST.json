@@ -1,0 +1,13 @@
+{
+  "schema_version": "studio_gameplay_system_manifest.v1",
+  "status": "STUDIO_GAMEPLAY_SYSTEM_READY",
+  "project_id": "<PROJECT_ID>",
+  "system_id": "<SYSTEM_ID>",
+  "cycle_id": "<CYCLE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "gameplay_system": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM.json", "sha256": "<SHA256>"},
+  "reviews": {
+    "product_fidelity": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_REVIEW_PRODUCT.json", "sha256": "<SHA256>"},
+    "cycle_closure": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_REVIEW_CYCLE.json", "sha256": "<SHA256>"}
+  }
+}

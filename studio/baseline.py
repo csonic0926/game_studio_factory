@@ -23,6 +23,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+try:  # Package import in tests; direct script path below.
+    from studio.cycle import (
+        READY as STUDIO_GAMEPLAY_SYSTEM_READY,
+        CycleValidationError,
+        validate_gameplay_system,
+    )
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.cycle import (  # type: ignore[no-redef]
+        READY as STUDIO_GAMEPLAY_SYSTEM_READY,
+        CycleValidationError,
+        validate_gameplay_system,
+    )
+
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
 ADMISSIONS_ROOT = Path("design/studio/admissions")
@@ -47,12 +61,16 @@ SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 REVISION_PATTERN = re.compile(r"^[0-9a-f]{7,64}$")
 SPECIALISTS = {"idea", "gameplay", "story", "asset", "sound", "repo_production"}
 
-ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v2"
-ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v1"
+ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v3"
+ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v2"
 WORKFLOW_COMPLETION_VERSION = "studio_workflow_completion.v2"
-BASELINE_VERSION = "accepted_playable_baseline.v2"
-RUN_STATE_VERSION = "studio_run_state.v2"
+BASELINE_VERSION = "accepted_playable_baseline.v3"
+RUN_STATE_VERSION = "studio_run_state.v3"
 LEGACY_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v1"
+PREVIOUS_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v2"
+PREVIOUS_ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v1"
+PREVIOUS_BASELINE_VERSION = "accepted_playable_baseline.v2"
+PREVIOUS_RUN_STATE_VERSION = "studio_run_state.v2"
 LEGACY_WORKFLOW_COMPLETION_VERSION = "studio_workflow_completion.v1"
 
 
@@ -153,6 +171,33 @@ def _sha256_file(path: Path) -> str:
 
 def _sha256_text(value: str) -> str:
     return _sha256_bytes(value.encode("utf-8"))
+
+
+def human_playtest_payload_sha256(
+    *,
+    project_id: str,
+    unit_id: str,
+    game_revision: str,
+    build_id: str,
+    factory_revision: str,
+    experience_authority: dict[str, str],
+    acceptance_input: dict[str, str],
+    studio_gameplay_system: dict[str, str],
+    cycle_id: str,
+) -> str:
+    """Hash the exact build/authority/cycle tuple on which the user rules."""
+
+    return _sha256_text(_json_text({
+        "acceptance_input": acceptance_input,
+        "build_id": build_id,
+        "cycle_id": cycle_id,
+        "experience_authority": experience_authority,
+        "factory_revision": factory_revision,
+        "game_revision": game_revision,
+        "project_id": project_id,
+        "studio_gameplay_system": studio_gameplay_system,
+        "unit_id": unit_id,
+    }))
 
 
 def _relative(game_repo: Path, path: Path) -> str:
@@ -323,9 +368,17 @@ def _is_tracked_path(game_repo: Path, relative: Path) -> bool:
     ).returncode == 0
 
 
-def _validate_current_baseline_payload(payload: dict[str, Any], label: str, errors: list[str]) -> None:
+def _validate_current_baseline_payload(
+    payload: dict[str, Any],
+    label: str,
+    errors: list[str],
+    *,
+    game_repo: Path | None = None,
+) -> None:
     schema_version = payload.get("schema_version")
-    if schema_version not in {"accepted_playable_baseline.v1", BASELINE_VERSION}:
+    if schema_version not in {
+        "accepted_playable_baseline.v1", PREVIOUS_BASELINE_VERSION, BASELINE_VERSION
+    }:
         errors.append(f"{label}.schema_version is unsupported")
     if payload.get("status") != "ACCEPTED_PLAYABLE_BASELINE":
         errors.append(f"{label}.status is not ACCEPTED_PLAYABLE_BASELINE")
@@ -335,7 +388,7 @@ def _validate_current_baseline_payload(payload: dict[str, Any], label: str, erro
     if not isinstance(units, list) or not units:
         errors.append(f"{label}.accepted_gameplay_units must be a non-empty array")
         units = []
-    if schema_version == BASELINE_VERSION:
+    if schema_version in {PREVIOUS_BASELINE_VERSION, BASELINE_VERSION}:
         factory_revision = payload.get("factory_revision")
         if not isinstance(factory_revision, str) or REVISION_PATTERN.fullmatch(factory_revision) is None:
             errors.append(f"{label}.factory_revision must be a Git revision")
@@ -349,6 +402,19 @@ def _validate_current_baseline_payload(payload: dict[str, Any], label: str, erro
                     f"{label}.accepted_gameplay_units[{index}].acceptance_review must be an object"
                 )
                 continue
+            if game_repo is not None:
+                _validate_ref(
+                    game_repo,
+                    unit.get("authority"),
+                    f"{label}.accepted_gameplay_units[{index}].authority",
+                    errors,
+                )
+                _validate_ref(
+                    game_repo,
+                    {"path": review.get("path"), "sha256": review.get("sha256")},
+                    f"{label}.accepted_gameplay_units[{index}].acceptance_review",
+                    errors,
+                )
             if review.get("experience_authority") != unit.get("authority"):
                 errors.append(
                     f"{label}.accepted_gameplay_units[{index}] acceptance authority does not match"
@@ -359,6 +425,31 @@ def _validate_current_baseline_payload(payload: dict[str, Any], label: str, erro
                 errors.append(
                     f"{label}.accepted_gameplay_units[{index}] has no trusted human playtest status"
                 )
+            if schema_version == BASELINE_VERSION:
+                cycle_status = review.get("cycle_status")
+                if cycle_status not in {
+                    "ACCEPTED_TWO_LAP_CYCLE", "PREDECESSOR_CYCLE_UNPROVEN"
+                }:
+                    errors.append(
+                        f"{label}.accepted_gameplay_units[{index}] has no cycle status"
+                    )
+                if cycle_status == "ACCEPTED_TWO_LAP_CYCLE":
+                    cycle_ref = review.get("studio_gameplay_system")
+                    if not isinstance(cycle_ref, dict) or not cycle_ref.get("path"):
+                        errors.append(
+                            f"{label}.accepted_gameplay_units[{index}] lacks its Studio gameplay system"
+                        )
+                    elif game_repo is not None:
+                        _validate_ref(
+                            game_repo,
+                            cycle_ref,
+                            f"{label}.accepted_gameplay_units[{index}].studio_gameplay_system",
+                            errors,
+                        )
+                    if not isinstance(review.get("cycle_id"), str) or not review.get("cycle_id"):
+                        errors.append(
+                            f"{label}.accepted_gameplay_units[{index}] lacks its cycle_id"
+                        )
     eligibility = payload.get("delivery_eligibility")
     if not isinstance(eligibility, dict):
         errors.append(f"{label}.delivery_eligibility must be an object")
@@ -387,15 +478,24 @@ def _load_current_baseline(
     if errors:
         raise BaselineAdmissionError("; ".join(errors))
     baseline = _load_json(game_repo / ref["path"], "current accepted baseline")
-    _validate_current_baseline_payload(baseline, "current_baseline", errors)
-    if state.get("schema_version") not in {"studio_run_state.v1", RUN_STATE_VERSION}:
+    _validate_current_baseline_payload(
+        baseline, "current_baseline", errors, game_repo=game_repo
+    )
+    if state.get("schema_version") not in {
+        "studio_run_state.v1", PREVIOUS_RUN_STATE_VERSION, RUN_STATE_VERSION
+    }:
         errors.append("Studio run state has unsupported schema_version")
-    if state.get("schema_version") == RUN_STATE_VERSION:
+    if state.get("schema_version") in {PREVIOUS_RUN_STATE_VERSION, RUN_STATE_VERSION}:
         if state.get("factory_revision") != baseline.get("factory_revision"):
             errors.append("Studio run state factory_revision does not match current baseline")
         acceptance = state.get("acceptance")
         if not isinstance(acceptance, dict) or acceptance.get("human_playtest_status") != "ACCEPTED":
             errors.append("Studio run state has no accepted human playtest status")
+        if (
+            state.get("schema_version") == RUN_STATE_VERSION
+            and acceptance.get("cycle_status") != "ACCEPTED_TWO_LAP_CYCLE"
+        ):
+            errors.append("Studio run state has no accepted two-lap cycle status")
     if state.get("project_id") != baseline.get("project_id"):
         errors.append("Studio run state project_id does not match current baseline")
     if errors:
@@ -490,6 +590,7 @@ def _validate_acceptance_review(
     game_revision: str,
     build_id: str,
     authority_ref: dict[str, str],
+    product_authority_ref: dict[str, str],
     factory_revision: str,
     production_context_ids: set[str],
     allow_legacy_historical: bool,
@@ -515,7 +616,12 @@ def _validate_acceptance_review(
             "acceptance_input", "evidence_paths", "observed_complete_loop",
             "blocking_findings", "reviewed_at",
         }
-    else:
+    elif schema_version == PREVIOUS_ACCEPTANCE_REVIEW_VERSION:
+        if not allow_legacy_historical:
+            errors.append(
+                f"acceptance review {unit_id} is historical-only; new admission requires "
+                f"{ACCEPTANCE_REVIEW_VERSION} with an observed two-lap cycle"
+            )
         required = {
             "schema_version", "review_id", "project_id", "unit_id", "game_revision",
             "build_id", "factory_revision", "experience_authority",
@@ -523,8 +629,21 @@ def _validate_acceptance_review(
             "acceptance_input", "human_playtest", "evidence_paths",
             "observed_complete_loop", "blocking_findings", "reviewed_at",
         }
+    else:
+        required = {
+            "schema_version", "review_id", "project_id", "unit_id", "game_revision",
+            "build_id", "factory_revision", "experience_authority",
+            "reviewer_context_id", "reviewer_freshness", "verdict",
+            "acceptance_input", "human_playtest", "evidence_paths",
+            "observed_complete_loop", "observed_two_lap_cycle",
+            "blocking_findings", "reviewed_at",
+        }
     _require_keys(review, f"acceptance review {unit_id}", required, errors)
-    if schema_version not in {LEGACY_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
+    if schema_version not in {
+        LEGACY_ACCEPTANCE_REVIEW_VERSION,
+        PREVIOUS_ACCEPTANCE_REVIEW_VERSION,
+        ACCEPTANCE_REVIEW_VERSION,
+    }:
         errors.append(f"acceptance review {unit_id} has unsupported schema_version")
     _require_id(review.get("review_id"), f"acceptance review {unit_id}.review_id", errors)
     if review.get("project_id") != project_id:
@@ -549,7 +668,13 @@ def _validate_acceptance_review(
         errors,
     )
     human_playtest_status = "LEGACY_ACCEPTANCE_GRANDFATHERED"
-    if schema_version == ACCEPTANCE_REVIEW_VERSION:
+    input_binding: dict[str, Any] = {
+        "schema_version": "",
+        "studio_gameplay_system": _empty_ref(),
+        "cycle_id": "",
+        "feedback_state_ids": [],
+    }
+    if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
         if review.get("factory_revision") != factory_revision:
             errors.append(
                 f"acceptance review {unit_id} factory_revision does not match the active Factory"
@@ -564,7 +689,7 @@ def _validate_acceptance_review(
             errors.append(
                 f"acceptance review {unit_id} must bind the exact admitted unit authority"
             )
-        _validate_gameplay_acceptance_input(
+        input_binding = _validate_gameplay_acceptance_input(
             game_repo,
             review_path=review_path,
             ref=acceptance_input_ref,
@@ -574,12 +699,24 @@ def _validate_acceptance_review(
             build_id=build_id,
             factory_revision=factory_revision,
             authority_ref=authority_ref,
+            product_authority_ref=product_authority_ref,
+            allow_legacy_historical=allow_legacy_historical,
             errors=errors,
         )
+        if (
+            schema_version == ACCEPTANCE_REVIEW_VERSION
+            and input_binding.get("schema_version") != ACCEPTANCE_INPUT_VERSION
+        ):
+            errors.append(
+                f"acceptance review {unit_id} requires {ACCEPTANCE_INPUT_VERSION}"
+            )
+        human_required = {"status", "verdict_owner", "verdict_source", "accepted_at"}
+        if schema_version == ACCEPTANCE_REVIEW_VERSION:
+            human_required.add("verdict_payload_sha256")
         human = _require_keys(
             review.get("human_playtest"),
             f"acceptance review {unit_id}.human_playtest",
-            {"status", "verdict_owner", "verdict_source", "accepted_at"},
+            human_required,
             errors,
         )
         if human.get("status") != "HUMAN_PLAYTEST_ACCEPTED":
@@ -590,11 +727,38 @@ def _validate_acceptance_review(
             errors.append(
                 f"acceptance review {unit_id}.human_playtest.verdict_owner must be USER"
             )
-        _require_text(
+        verdict_source = _require_text(
             human.get("verdict_source"),
             f"acceptance review {unit_id}.human_playtest.verdict_source",
             errors,
         )
+        if schema_version == ACCEPTANCE_REVIEW_VERSION:
+            expected_payload_sha = human_playtest_payload_sha256(
+                project_id=project_id,
+                unit_id=unit_id,
+                game_revision=game_revision,
+                build_id=build_id,
+                factory_revision=factory_revision,
+                experience_authority=authority_ref,
+                acceptance_input=acceptance_input_ref,
+                studio_gameplay_system=input_binding.get(
+                    "studio_gameplay_system", _empty_ref()
+                ),
+                cycle_id=str(input_binding.get("cycle_id", "")),
+            )
+            declared_payload_sha = _require_text(
+                human.get("verdict_payload_sha256"),
+                f"acceptance review {unit_id}.human_playtest.verdict_payload_sha256",
+                errors,
+            )
+            if declared_payload_sha != expected_payload_sha:
+                errors.append(
+                    f"acceptance review {unit_id} human verdict payload SHA does not match exact build/authority/cycle"
+                )
+            if verdict_source != f"HUMAN_PLAYTEST_ACCEPTED {expected_payload_sha}":
+                errors.append(
+                    f"acceptance review {unit_id} human verdict source must be the exact accepted payload token"
+                )
         _require_text(
             human.get("accepted_at"),
             f"acceptance review {unit_id}.human_playtest.accepted_at",
@@ -617,6 +781,13 @@ def _validate_acceptance_review(
     _require_string_list(loop.get("actions"), f"acceptance review {unit_id}.observed_complete_loop.actions", errors)
     _require_text(loop.get("consequences"), f"acceptance review {unit_id}.observed_complete_loop.consequences", errors)
     _require_text(loop.get("completion"), f"acceptance review {unit_id}.observed_complete_loop.completion", errors)
+    if schema_version == ACCEPTANCE_REVIEW_VERSION:
+        _validate_two_lap_cycle_observation(
+            review.get("observed_two_lap_cycle"),
+            f"acceptance review {unit_id}.observed_two_lap_cycle",
+            set(input_binding.get("feedback_state_ids", [])),
+            errors,
+        )
     if review.get("blocking_findings") != []:
         errors.append(f"acceptance review {unit_id}.blocking_findings must be empty for ACCEPTED")
     _require_text(review.get("reviewed_at"), f"acceptance review {unit_id}.reviewed_at", errors)
@@ -626,7 +797,153 @@ def _validate_acceptance_review(
         "verdict": "ACCEPTED",
         "experience_authority": authority_ref,
         "human_playtest_status": human_playtest_status,
+        "studio_gameplay_system": input_binding.get(
+            "studio_gameplay_system", _empty_ref()
+        ),
+        "cycle_id": input_binding.get("cycle_id", ""),
+        "cycle_status": (
+            "ACCEPTED_TWO_LAP_CYCLE"
+            if schema_version == ACCEPTANCE_REVIEW_VERSION
+            else "PREDECESSOR_CYCLE_UNPROVEN"
+        ),
+        "_review_schema_version": schema_version,
     }
+
+
+def _validate_two_lap_cycle_observation(
+    value: Any,
+    label: str,
+    expected_feedback_state_ids: set[str],
+    errors: list[str],
+) -> None:
+    payload = _require_keys(
+        value,
+        label,
+        {
+            "first_lap", "feedback_state_changes", "second_lap",
+            "why_player_has_new_motive",
+        },
+        errors,
+    )
+    first = _require_keys(
+        payload.get("first_lap"),
+        f"{label}.first_lap",
+        {"decision", "resolution", "reward"},
+        errors,
+    )
+    for field in ("decision", "resolution", "reward"):
+        _require_text(first.get(field), f"{label}.first_lap.{field}", errors)
+
+    raw_changes = payload.get("feedback_state_changes")
+    if not isinstance(raw_changes, list) or not raw_changes:
+        errors.append(f"{label}.feedback_state_changes must not be empty")
+        raw_changes = []
+    seen: set[str] = set()
+    for index, value in enumerate(raw_changes):
+        change = _require_keys(
+            value,
+            f"{label}.feedback_state_changes[{index}]",
+            {"state_id", "before", "after", "effect_on_next_decision"},
+            errors,
+        )
+        state_id = _require_id(
+            change.get("state_id"),
+            f"{label}.feedback_state_changes[{index}].state_id",
+            errors,
+        )
+        if state_id in seen:
+            errors.append(f"{label} repeats feedback state {state_id}")
+        seen.add(state_id)
+        before = _require_text(
+            change.get("before"),
+            f"{label}.feedback_state_changes[{index}].before",
+            errors,
+        )
+        after = _require_text(
+            change.get("after"),
+            f"{label}.feedback_state_changes[{index}].after",
+            errors,
+        )
+        if before and after and before == after:
+            errors.append(f"{label} feedback state {state_id} did not change")
+        _require_text(
+            change.get("effect_on_next_decision"),
+            f"{label}.feedback_state_changes[{index}].effect_on_next_decision",
+            errors,
+        )
+    if seen != expected_feedback_state_ids:
+        missing = sorted(expected_feedback_state_ids - seen)
+        extra = sorted(seen - expected_feedback_state_ids)
+        if missing:
+            errors.append(f"{label} misses feedback states: " + ", ".join(missing))
+        if extra:
+            errors.append(f"{label} invents feedback states: " + ", ".join(extra))
+
+    second = _require_keys(
+        payload.get("second_lap"),
+        f"{label}.second_lap",
+        {"changed_goal", "changed_decision", "reentry_action"},
+        errors,
+    )
+    for field in ("changed_goal", "changed_decision", "reentry_action"):
+        _require_text(second.get(field), f"{label}.second_lap.{field}", errors)
+    _require_text(
+        payload.get("why_player_has_new_motive"),
+        f"{label}.why_player_has_new_motive",
+        errors,
+    )
+
+
+def _validate_acceptance_cycle_manifest(
+    game_repo: Path,
+    value: Any,
+    *,
+    project_id: str,
+    factory_revision: str,
+    product_authority_ref: dict[str, str],
+    errors: list[str],
+) -> tuple[dict[str, str], str, list[str]]:
+    manifest_ref = _validate_ref(
+        game_repo, value, "gameplay acceptance Studio gameplay system", errors
+    )
+    if not manifest_ref["path"]:
+        return manifest_ref, "", []
+    try:
+        result = validate_gameplay_system(
+            str(game_repo),
+            manifest_ref["path"],
+            expected_factory_revision=factory_revision,
+        )
+    except CycleValidationError as error:
+        errors.append(f"cannot validate acceptance Studio gameplay system: {error}")
+        return manifest_ref, "", []
+    if result.status != STUDIO_GAMEPLAY_SYSTEM_READY:
+        errors.extend(f"acceptance Studio gameplay system: {item}" for item in result.errors)
+    if (
+        result.manifest_path != manifest_ref["path"]
+        or result.manifest_sha256 != manifest_ref["sha256"]
+    ):
+        errors.append("acceptance does not bind the exact validated Studio gameplay system")
+
+    manifest_path = game_repo / manifest_ref["path"]
+    manifest = _load_json(manifest_path, "acceptance Studio gameplay system manifest")
+    if manifest.get("project_id") != project_id:
+        errors.append("acceptance Studio gameplay system project_id does not match")
+    system_ref = _validate_ref(
+        game_repo,
+        manifest.get("gameplay_system"),
+        "acceptance Studio manifest.gameplay_system",
+        errors,
+    )
+    if system_ref["path"]:
+        system = _load_json(
+            game_repo / system_ref["path"], "acceptance Studio gameplay system"
+        )
+        if system.get("product_authority") != product_authority_ref:
+            errors.append(
+                "acceptance Studio gameplay system product authority differs from admission"
+            )
+    return manifest_ref, result.cycle_id, result.feedback_state_ids
 
 
 def _validate_gameplay_acceptance_input(
@@ -640,26 +957,43 @@ def _validate_gameplay_acceptance_input(
     build_id: str,
     factory_revision: str,
     authority_ref: dict[str, str],
+    product_authority_ref: dict[str, str],
+    allow_legacy_historical: bool,
     errors: list[str],
-) -> None:
+) -> dict[str, Any]:
+    empty = {
+        "schema_version": "",
+        "studio_gameplay_system": _empty_ref(),
+        "cycle_id": "",
+        "feedback_state_ids": [],
+    }
     if not ref["path"]:
-        return
+        return empty
     path = game_repo / ref["path"]
     if not path.is_file():
-        return
+        return empty
     expected_name = f"GAMEPLAY_ACCEPTANCE_INPUT_{unit_id}.json"
     if path.parent != review_path.parent or path.name != expected_name:
         errors.append(
             f"acceptance input for {unit_id} must be admission-local {expected_name}"
         )
     payload = _load_json(path, f"gameplay acceptance input for {unit_id}")
+    schema_version = payload.get("schema_version")
     required = {
         "schema_version", "acceptance_input_id", "project_id", "unit_id",
         "game_revision", "build_id", "factory_revision", "experience_authority",
         "expected_player_experience", "playtest_questions", "non_claims", "prepared_at",
     }
+    if schema_version == ACCEPTANCE_INPUT_VERSION:
+        required |= {"studio_gameplay_system", "cycle_id", "cycle_acceptance"}
     _require_keys(payload, f"gameplay acceptance input {unit_id}", required, errors)
-    if payload.get("schema_version") != ACCEPTANCE_INPUT_VERSION:
+    if schema_version == PREVIOUS_ACCEPTANCE_INPUT_VERSION:
+        if not allow_legacy_historical:
+            errors.append(
+                f"gameplay acceptance input {unit_id} is historical-only; new admission "
+                f"requires {ACCEPTANCE_INPUT_VERSION} with cycle authority"
+            )
+    elif schema_version != ACCEPTANCE_INPUT_VERSION:
         errors.append(
             f"gameplay acceptance input {unit_id}.schema_version must be {ACCEPTANCE_INPUT_VERSION}"
         )
@@ -720,6 +1054,40 @@ def _validate_gameplay_acceptance_input(
         f"gameplay acceptance input {unit_id}.prepared_at",
         errors,
     )
+    if schema_version != ACCEPTANCE_INPUT_VERSION:
+        return {**empty, "schema_version": str(schema_version or "")}
+
+    manifest_ref, actual_cycle_id, feedback_state_ids = (
+        _validate_acceptance_cycle_manifest(
+            game_repo,
+            payload.get("studio_gameplay_system"),
+            project_id=project_id,
+            factory_revision=factory_revision,
+            product_authority_ref=product_authority_ref,
+            errors=errors,
+        )
+    )
+    cycle_id = _require_id(
+        payload.get("cycle_id"),
+        f"gameplay acceptance input {unit_id}.cycle_id",
+        errors,
+    )
+    if actual_cycle_id and cycle_id != actual_cycle_id:
+        errors.append(
+            f"gameplay acceptance input {unit_id}.cycle_id does not match Studio system"
+        )
+    _validate_two_lap_cycle_observation(
+        payload.get("cycle_acceptance"),
+        f"gameplay acceptance input {unit_id}.cycle_acceptance",
+        set(feedback_state_ids),
+        errors,
+    )
+    return {
+        "schema_version": schema_version,
+        "studio_gameplay_system": manifest_ref,
+        "cycle_id": cycle_id,
+        "feedback_state_ids": feedback_state_ids,
+    }
 
 
 def _validate_unit(
@@ -730,6 +1098,7 @@ def _validate_unit(
     project_id: str,
     game_revision: str,
     build_id: str,
+    product_authority_ref: dict[str, str],
     factory_revision: str,
     production_context_ids: set[str],
     allow_legacy_historical: bool,
@@ -753,6 +1122,7 @@ def _validate_unit(
         game_revision=game_revision,
         build_id=build_id,
         authority_ref=authority,
+        product_authority_ref=product_authority_ref,
         factory_revision=factory_revision,
         production_context_ids=production_context_ids,
         allow_legacy_historical=allow_legacy_historical,
@@ -994,10 +1364,45 @@ def _legacy_unit_shape(unit: dict[str, Any]) -> dict[str, Any]:
 
 
 def _v2_unit_shape(unit: dict[str, Any]) -> dict[str, Any]:
-    review = dict(unit.get("acceptance_review", {}))
-    review.setdefault("experience_authority", unit.get("authority", _empty_ref()))
-    review.setdefault("human_playtest_status", "LEGACY_ACCEPTANCE_GRANDFATHERED")
-    return {**unit, "acceptance_review": review}
+    review = unit.get("acceptance_review", {})
+    clean_review = {
+        key: review.get(key, "")
+        for key in (
+            "path", "sha256", "reviewer_freshness", "verdict",
+            "experience_authority", "human_playtest_status",
+        )
+    }
+    clean_review["experience_authority"] = review.get(
+        "experience_authority", unit.get("authority", _empty_ref())
+    )
+    clean_review["human_playtest_status"] = review.get(
+        "human_playtest_status", "LEGACY_ACCEPTANCE_GRANDFATHERED"
+    )
+    return {**unit, "acceptance_review": clean_review}
+
+
+def _v3_unit_shape(unit: dict[str, Any]) -> dict[str, Any]:
+    review = unit.get("acceptance_review", {})
+    cycle_status = review.get("cycle_status", "PREDECESSOR_CYCLE_UNPROVEN")
+    clean_review = {
+        key: review.get(key, "")
+        for key in (
+            "path", "sha256", "reviewer_freshness", "verdict",
+            "experience_authority", "human_playtest_status",
+        )
+    }
+    clean_review["experience_authority"] = review.get(
+        "experience_authority", unit.get("authority", _empty_ref())
+    )
+    clean_review["human_playtest_status"] = review.get(
+        "human_playtest_status", "LEGACY_ACCEPTANCE_GRANDFATHERED"
+    )
+    clean_review["studio_gameplay_system"] = review.get(
+        "studio_gameplay_system", _empty_ref()
+    )
+    clean_review["cycle_id"] = review.get("cycle_id", "")
+    clean_review["cycle_status"] = cycle_status
+    return {**unit, "acceptance_review": clean_review}
 
 
 def _merge_gaps(
@@ -1097,7 +1502,9 @@ def _validate_admission(
         predecessor_path = game_repo / predecessor_ref["path"]
         if predecessor_path.is_file():
             predecessor = _load_json(predecessor_path, "predecessor baseline")
-            _validate_current_baseline_payload(predecessor, "predecessor_baseline", errors)
+            _validate_current_baseline_payload(
+                predecessor, "predecessor_baseline", errors, game_repo=game_repo
+            )
 
     reconstruction = _require_keys(
         payload.get("reconstruction"),
@@ -1215,6 +1622,7 @@ def _validate_admission(
             project_id=project_id,
             game_revision=game_revision,
             build_id=runnable_build["build_id"],
+            product_authority_ref=product_authority,
             factory_revision=factory_revision,
             production_context_ids=production_context_ids,
             allow_legacy_historical=allow_legacy_historical,
@@ -1223,10 +1631,13 @@ def _validate_admission(
         for index, item in enumerate(raw_units)
     ]
     admitted_ids = [unit["unit_id"] for unit in admitted]
-    legacy_admission_material = any(
-        unit.get("acceptance_review", {}).get("human_playtest_status")
-        == "LEGACY_ACCEPTANCE_GRANDFATHERED"
+    admitted_review_versions = {
+        unit.get("acceptance_review", {}).get("_review_schema_version", "")
         for unit in admitted
+    }
+    legacy_admission_material = LEGACY_ACCEPTANCE_REVIEW_VERSION in admitted_review_versions
+    previous_admission_material = (
+        PREVIOUS_ACCEPTANCE_REVIEW_VERSION in admitted_review_versions
     )
     if len(admitted_ids) != len(set(admitted_ids)):
         errors.append("admitted_units must not contain duplicate unit_id values")
@@ -1316,18 +1727,33 @@ def _validate_admission(
 
     input_ref = _ref_for_file(game_repo, input_path)
     legacy_output = allow_legacy_historical and legacy_admission_material
+    previous_output = (
+        allow_legacy_historical
+        and not legacy_output
+        and previous_admission_material
+    )
     if legacy_output:
         accepted_units = [
             _legacy_unit_shape(unit) for unit in _merge_units(predecessor, admitted)
         ]
-    else:
+        output_baseline_version = "accepted_playable_baseline.v1"
+        output_state_version = "studio_run_state.v1"
+    elif previous_output:
         accepted_units = [
             _v2_unit_shape(unit) for unit in _merge_units(predecessor, admitted)
         ]
+        output_baseline_version = PREVIOUS_BASELINE_VERSION
+        output_state_version = PREVIOUS_RUN_STATE_VERSION
+    else:
+        accepted_units = [
+            _v3_unit_shape(unit) for unit in _merge_units(predecessor, admitted)
+        ]
+        output_baseline_version = BASELINE_VERSION
+        output_state_version = RUN_STATE_VERSION
     known_gaps = _merge_gaps(predecessor, gaps, resolved_gap_ids)
     baseline_relative = BASELINES_ROOT / baseline_id / "ACCEPTED_PLAYABLE_BASELINE.json"
     baseline_payload = {
-        "schema_version": "accepted_playable_baseline.v1" if legacy_output else BASELINE_VERSION,
+        "schema_version": output_baseline_version,
         "status": "ACCEPTED_PLAYABLE_BASELINE",
         "project_id": project_id,
         "baseline_id": baseline_id,
@@ -1359,7 +1785,7 @@ def _validate_admission(
             "blocking_gap_ids": [],
         },
     }
-    if not legacy_output:
+    if output_baseline_version != "accepted_playable_baseline.v1":
         baseline_payload["factory_revision"] = factory_revision
     baseline_text = _json_text(baseline_payload)
     baseline_ref = {"path": baseline_relative.as_posix(), "sha256": _sha256_text(baseline_text)}
@@ -1379,7 +1805,7 @@ def _validate_admission(
     }
     result_text = _json_text(result_payload)
     state_payload = {
-        "schema_version": "studio_run_state.v1" if legacy_output else RUN_STATE_VERSION,
+        "schema_version": output_state_version,
         "project_id": project_id,
         "studio_goal": studio_goal,
         "status": "STUDIO_READY_TO_SCALE",
@@ -1401,9 +1827,11 @@ def _validate_admission(
         },
         "blockers": [],
     }
-    if not legacy_output:
+    if output_state_version != "studio_run_state.v1":
         state_payload["factory_revision"] = factory_revision
         state_payload["acceptance"]["human_playtest_status"] = "ACCEPTED"
+    if output_state_version == RUN_STATE_VERSION:
+        state_payload["acceptance"]["cycle_status"] = "ACCEPTED_TWO_LAP_CYCLE"
     artifacts = {
         baseline_relative: baseline_text,
         result_relative: result_text,
@@ -1531,6 +1959,55 @@ def check_baseline_admission(game_repo_text: str, input_text: str) -> BaselineAd
     )
 
 
+def compute_playtest_token(game_repo_text: str, review_text: str) -> str:
+    """Compute the exact non-circular human playtest verdict token."""
+
+    game_repo = _resolve_game_repo(game_repo_text)
+    review_path = _resolve_cli_path(game_repo, review_text, must_exist=True)
+    if not review_path.is_file():
+        raise BaselineAdmissionError(f"acceptance review is not a file: {review_text}")
+    review = _load_json(review_path, "gameplay acceptance review")
+    errors: list[str] = []
+    authority = _validate_ref(
+        game_repo, review.get("experience_authority"), "experience_authority", errors
+    )
+    acceptance_input_ref = _validate_ref(
+        game_repo, review.get("acceptance_input"), "acceptance_input", errors
+    )
+    acceptance_input: dict[str, Any] = {}
+    if acceptance_input_ref["path"]:
+        acceptance_input = _load_json(
+            game_repo / acceptance_input_ref["path"], "gameplay acceptance input"
+        )
+    system_ref = _validate_ref(
+        game_repo,
+        acceptance_input.get("studio_gameplay_system"),
+        "studio_gameplay_system",
+        errors,
+    )
+    values = {
+        field: _require_text(review.get(field), field, errors)
+        for field in (
+            "project_id", "unit_id", "game_revision", "build_id", "factory_revision"
+        )
+    }
+    cycle_id = _require_text(acceptance_input.get("cycle_id"), "cycle_id", errors)
+    if errors:
+        raise BaselineAdmissionError("; ".join(errors))
+    digest = human_playtest_payload_sha256(
+        project_id=values["project_id"],
+        unit_id=values["unit_id"],
+        game_revision=values["game_revision"],
+        build_id=values["build_id"],
+        factory_revision=values["factory_revision"],
+        experience_authority=authority,
+        acceptance_input=acceptance_input_ref,
+        studio_gameplay_system=system_ref,
+        cycle_id=cycle_id,
+    )
+    return f"HUMAN_PLAYTEST_ACCEPTED {digest}"
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1541,6 +2018,9 @@ def _build_parser() -> argparse.ArgumentParser:
         item = subparsers.add_parser(command)
         item.add_argument("--game-repo", required=True)
         item.add_argument("--input", required=True)
+    token = subparsers.add_parser("playtest-token")
+    token.add_argument("--game-repo", required=True)
+    token.add_argument("--review", required=True)
     return parser
 
 
@@ -1565,6 +2045,9 @@ def main(argv: list[str] | None = None) -> int:
             result = start_baseline_admission(args.game_repo, reconstruct=args.reconstruct)
         elif args.command == "compile":
             result = compile_baseline_admission(args.game_repo, args.input)
+        elif args.command == "playtest-token":
+            print(compute_playtest_token(args.game_repo, args.review))
+            return 0
         else:
             result = check_baseline_admission(args.game_repo, args.input)
     except BaselineAdmissionError as error:

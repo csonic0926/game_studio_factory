@@ -26,6 +26,7 @@ A build, scene, character controller, combat sandbox, or collection of working
 features is not Studio delivery unless it belongs to an Accepted Playable
 Baseline with genuine gameplay acceptance and prior-baseline regression.
 Acceptance must bind the exact expected-experience authority and include a
+validated Studio gameplay-system cycle, observed two-lap feedback, and a
 recorded human playtest verdict; AI reviewers and implementation tests do not
 own taste.
 Content, fidelity, map size, and production horizon may be narrowed; the
@@ -33,21 +34,30 @@ minimum gameplay floor may not.
 
 ## Route the current state
 
-- Missing/open product direction: invoke `idea-factory`.
+- Missing/open product direction: invoke `idea-factory`. After the Product
+  Thesis is commissioned, follow `studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`;
+  Studio—not Gameplay Factory—must synthesize the exact closed gameplay system.
 - Run `python3 <STUDIO_ROOT>/studio/baseline.py start --game-repo <GAME_REPO>`.
   `BASELINE_RECONSTRUCTION_INPUT_REQUIRED` means freshly reconstruct the whole
   currently playable baseline; `BASELINE_PROMOTION_INPUT_REQUIRED` means bind
   the just-completed workflow, fresh acceptance, and full predecessor
   regression. Follow `studio/docs/BASELINE_ADMISSION_WORKFLOW.md`.
-- No accepted playable baseline and no complete loop: establish the smallest
-  complete gameplay loop through `gameplay-factory`, then return to
-  reconstruction; do not call an interactive demo a baseline.
-- Accepted baseline exists: diagnose the next gameplay pressure, research new
-  design tokens across same-type/cross-genre/non-game references, select one
-  bounded unit, and use the specialist factories for production.
+- No accepted playable baseline: validate a gameplay system with
+  `studio/cycle.py`, obtain human approval on its compact decision card, then
+  use `gameplay-factory` for the minimum cycle-complete vertical slice. It must
+  demonstrate two laps in which lap-one reward/state materially changes the
+  lap-two decision. Do not call a result/replay sequence a loop or baseline.
+- At the approval boundary, use `gameplay/design_gate.py render-card` and show
+  only that decision surface. Persist reconstruction, research, full specs, and
+  review reports without dumping them into the user's verdict request.
+- Accepted baseline exists: diagnose the next gameplay pressure or broken
+  cycle edge, research new design tokens across same-type/cross-genre/non-game
+  references, select one minimum cycle-complete unit, and use the specialist
+  factories for production.
 - Candidate implementation complete: require revision-pinned, authority-bound
-  fresh new-gameplay acceptance, an explicit user playtest verdict, and
-  regression of predecessor gameplay before promotion.
+  fresh new-gameplay acceptance with an observed two-lap cycle, an explicit
+  user playtest verdict, and regression of predecessor gameplay before
+  promotion.
 - Requested horizon reached: deliver only the runnable build represented by the
   promoted baseline.
 

@@ -29,15 +29,18 @@ requested production horizon. It may not narrow “game” into a runnable
 interactive software demo. Studio delivery requires a runnable **Accepted
 Playable Baseline** with:
 
-- at least one complete, accepted gameplay loop;
+- a validated Studio gameplay system whose reward/state changes the next
+  decision, plus an accepted two-lap vertical slice of that cycle;
 - fresh acceptance for newly introduced gameplay, bound to its canonical
-  expected-experience authority and an explicit human playtest verdict;
+  expected-experience/cycle authority and an explicit human playtest verdict;
 - regression evidence for previously accepted gameplay;
 - no blocking known gap;
 - exact build, game-revision, and Factory-revision provenance.
 
 Read [`studio/docs/AI_CALLER_LANDING.md`](studio/docs/AI_CALLER_LANDING.md) for
-the baseline/ratchet/research/production loop.
+the baseline/ratchet/research/production loop and
+[`studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`](studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md)
+for the Studio-owned Idea-to-gameplay-system boundary.
 
 ## Specialist capability model
 

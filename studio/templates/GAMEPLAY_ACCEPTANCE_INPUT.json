@@ -1,5 +1,5 @@
 {
-  "schema_version": "gameplay_acceptance_input.v1",
+  "schema_version": "gameplay_acceptance_input.v2",
   "acceptance_input_id": "<ACCEPTANCE_INPUT_ID>",
   "project_id": "<PROJECT_ID>",
   "unit_id": "<UNIT_ID>",
@@ -10,6 +10,11 @@
     "path": "<CANONICAL_UNIT_AUTHORITY_PATH>",
     "sha256": "<SHA256>"
   },
+  "studio_gameplay_system": {
+    "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+    "sha256": "<SHA256>"
+  },
+  "cycle_id": "<CYCLE_ID>",
   "expected_player_experience": {
     "target_player": "<WHO_IS_PLAYING_AND_WITH_WHAT_PRIOR_KNOWLEDGE>",
     "intended_experience": "<WHAT_THE_UNIT_SHOULD_FEEL_LIKE_TO_PLAY>",
@@ -24,5 +29,26 @@
   "non_claims": [
     "Passing schemas, tests, screenshots, or an AI review alone does not establish the expected player experience."
   ],
+  "cycle_acceptance": {
+    "first_lap": {
+      "decision": "<OBSERVABLE_FIRST_LAP_DECISION>",
+      "resolution": "<OBSERVABLE_FIRST_LAP_RESOLUTION>",
+      "reward": "<PLAYER_VISIBLE_REWARD_OR_STATE_CHANGE>"
+    },
+    "feedback_state_changes": [
+      {
+        "state_id": "<SYSTEM_FEEDBACK_STATE_ID>",
+        "before": "<STATE_BEFORE_LAP_ONE>",
+        "after": "<STATE_AFTER_LAP_ONE>",
+        "effect_on_next_decision": "<HOW_THIS_CHANGES_LAP_TWO>"
+      }
+    ],
+    "second_lap": {
+      "changed_goal": "<GOAL_CREATED_OR_CHANGED_BY_LAP_ONE>",
+      "changed_decision": "<DECISION_MATERIALLY_UNAVAILABLE_IN_LAP_ONE>",
+      "reentry_action": "<NATURAL_ACTION_THAT_STARTS_LAP_TWO>"
+    },
+    "why_player_has_new_motive": "<WHY_THIS_IS_NOT_ONLY_A_PLAY_AGAIN_PROMPT>"
+  },
   "prepared_at": "<ISO_8601_DATETIME>"
 }

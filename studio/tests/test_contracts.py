@@ -9,15 +9,18 @@ STUDIO_ROOT = Path(__file__).resolve().parents[1]
 class StudioFoundationContractTests(unittest.TestCase):
     def test_all_studio_schemas_are_json_objects(self) -> None:
         expected_versions = {
-            "accepted_playable_baseline.schema.json": "accepted_playable_baseline.v2",
+            "accepted_playable_baseline.schema.json": "accepted_playable_baseline.v3",
             "baseline_admission_input.schema.json": "baseline_admission_input.v1",
             "baseline_admission_result.schema.json": "baseline_admission_result.v1",
             "baseline_reconstruction_inventory.schema.json": "baseline_reconstruction_inventory.v1",
             "baseline_regression_review.schema.json": "baseline_regression_review.v1",
             "design_token_research.schema.json": "design_token_research.v1",
-            "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v1",
-            "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v2",
-            "studio_run_state.schema.json": "studio_run_state.v2",
+            "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v2",
+            "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
+            "studio_gameplay_system.schema.json": "studio_gameplay_system.v1",
+            "studio_gameplay_system_manifest.schema.json": "studio_gameplay_system_manifest.v1",
+            "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v1",
+            "studio_run_state.schema.json": "studio_run_state.v3",
             "studio_workflow_completion.schema.json": "studio_workflow_completion.v2",
         }
         for name, version in expected_versions.items():
@@ -44,6 +47,7 @@ class StudioFoundationContractTests(unittest.TestCase):
             {
                 "path", "sha256", "reviewer_freshness", "verdict",
                 "experience_authority", "human_playtest_status",
+                "studio_gameplay_system", "cycle_id", "cycle_status",
             },
             set(review["required"]),
         )
@@ -54,12 +58,16 @@ class StudioFoundationContractTests(unittest.TestCase):
         )
         self.assertIn("experience_authority", acceptance_input["required"])
         self.assertIn("expected_player_experience", acceptance_input["required"])
+        self.assertIn("studio_gameplay_system", acceptance_input["required"])
+        self.assertIn("cycle_acceptance", acceptance_input["required"])
         review = json.loads(
             (STUDIO_ROOT / "schemas/gameplay_acceptance_review.schema.json").read_text()
         )
         human = review["properties"]["human_playtest"]
         self.assertEqual("HUMAN_PLAYTEST_ACCEPTED", human["properties"]["status"]["const"])
         self.assertEqual("USER", human["properties"]["verdict_owner"]["const"])
+        self.assertIn("verdict_payload_sha256", human["required"])
+        self.assertIn("observed_two_lap_cycle", review["required"])
 
     def test_baseline_promotion_names_repaired_or_new_units(self) -> None:
         payload = json.loads(

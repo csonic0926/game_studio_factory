@@ -523,6 +523,7 @@ def validate_production_plan(
             manifest_factory_revision=payload.get("factory_revision"),
             raw_verdict_ref=payload.get("design_verdict"),
             errors=errors,
+            allow_legacy_historical=allow_legacy_historical,
         )
     objective_rows = _extract_objective_rows(objective_text, errors)
 

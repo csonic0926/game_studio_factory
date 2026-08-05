@@ -16,10 +16,12 @@ Game Studio Factory owns the long-horizon control loop:
 ```text
 human product intent
   -> product authority when missing
+  -> synthesize and validate the exact gameplay system/cycle
+  -> compact human-approved gameplay decision card
   -> Accepted Playable Baseline
   -> diagnose the next gameplay pressure
   -> web research for external design tokens
-  -> select one bounded gameplay unit
+  -> select one minimum cycle-complete gameplay unit
   -> specialist planning and production
   -> integration
   -> new gameplay acceptance + old-baseline regression
@@ -37,14 +39,24 @@ The specialist capability layer is:
 | Tiles, props, sprites, visual assets | `asset/` landing |
 | SFX production | `sound/` landing |
 
+The boundary between the first two rows is strict: Idea owns the Product
+Thesis; **Studio** owns Product Thesis -> exact gameplay system; Gameplay owns
+the bounded objective/spec and implementation. Read
+[`GAMEPLAY_SYSTEM_WORKFLOW.md`](GAMEPLAY_SYSTEM_WORKFLOW.md). Do not route a
+whole-game thesis directly into a convenient Gameplay objective.
+
 ## Entry states
 
 A Studio call classifies the game repo before scaling:
 
 - `STUDIO_NEEDS_PRODUCT_AUTHORITY` — Idea Factory must openly explore and then
   receive an explicit commission; Studio may not invent a hidden thesis.
-- `STUDIO_NEEDS_ACCEPTED_BASELINE` — establish the smallest genuine playable
-  baseline. A software demo does not satisfy this state.
+- `BLOCKED_BY_LINEAR_GAMEPLAY` — the proposed system ends at a result/replay
+  sequence, cuts a product-level coupling, or cannot show how lap-one state
+  materially changes lap two.
+- `STUDIO_NEEDS_ACCEPTED_BASELINE` — establish the minimum cycle-complete
+  genuine playable baseline. A software demo or linear result/replay sequence
+  does not satisfy this state.
 - `STUDIO_READY_TO_SCALE` — a checked baseline exists; diagnose the next
   pressure and start the production loop.
 - `STUDIO_BLOCKED` — exact external authority, capability, evidence, or
@@ -54,8 +66,9 @@ A Studio call classifies the game repo before scaling:
 
 ## Research placement
 
-Research occurs **after** a concrete gameplay pressure is diagnosed and
-**before** the next unit is selected. Search all three rings:
+Research occurs **after** a concrete gameplay pressure or missing cycle edge is
+diagnosed and **before** the gameplay system/unit is frozen. Search all three
+rings:
 
 1. same-type references for conventions, expectations, and sameness risks;
 2. cross-genre games for transferable decision/reward/progression mechanisms;
@@ -84,14 +97,16 @@ It routes mechanically to:
 Read [`BASELINE_ADMISSION_WORKFLOW.md`](BASELINE_ADMISSION_WORKFLOW.md). The
 compiler cannot convert tests, implementation completion, Reader output, or an
 AI review into a human gameplay verdict. It binds the exact unit experience
-authority, Factory revision, fresh reviewer decision, and explicit user
-playtest verdict.
+authority, validated Studio gameplay-system manifest, Factory revision, fresh
+reviewer decision, observed two-lap feedback cycle, and explicit user playtest
+verdict.
 
 The game repo owns Studio state under:
 
 ```text
 design/studio/
   STUDIO_RUN_STATE.json
+  gameplay_system/<system_id>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json
   admissions/<admission_id>/BASELINE_ADMISSION_INPUT.json
   baselines/<baseline_id>/ACCEPTED_PLAYABLE_BASELINE.json
   research/<pressure_id>/DESIGN_TOKEN_RESEARCH.json

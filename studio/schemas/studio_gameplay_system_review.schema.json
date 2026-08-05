@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/studio_gameplay_system_review.schema.json",
+  "title": "Studio Gameplay System Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "review_id", "review_role", "project_id", "system_id", "cycle_id", "factory_revision", "gameplay_system", "reviewer_context_id", "reviewer_freshness", "causal_link_ids_reviewed", "constraint_ids_reviewed", "transition_ids_reviewed", "cycle_findings", "blocking_findings", "verdict", "reviewed_at"],
+  "properties": {
+    "schema_version": {"const": "studio_gameplay_system_review.v1"},
+    "review_id": {"$ref": "#/$defs/id"},
+    "review_role": {"enum": ["PRODUCT_FIDELITY", "CYCLE_CLOSURE"]},
+    "project_id": {"$ref": "#/$defs/id"},
+    "system_id": {"$ref": "#/$defs/id"},
+    "cycle_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "gameplay_system": {"$ref": "#/$defs/path_hash"},
+    "reviewer_context_id": {"$ref": "#/$defs/id"},
+    "reviewer_freshness": {"const": "FRESH"},
+    "causal_link_ids_reviewed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "constraint_ids_reviewed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "transition_ids_reviewed": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "cycle_findings": {"type": "object", "additionalProperties": false, "required": ["closed_graph", "reward_changes_next_decision", "second_lap_materially_differs", "coupled_systems_preserved", "no_proxy_loop"], "properties": {"closed_graph": {"const": "PASS"}, "reward_changes_next_decision": {"const": "PASS"}, "second_lap_materially_differs": {"const": "PASS"}, "coupled_systems_preserved": {"const": "PASS"}, "no_proxy_loop": {"const": "PASS"}}},
+    "blocking_findings": {"type": "array", "maxItems": 0},
+    "verdict": {"const": "PASS_SYSTEM_REVIEW"},
+    "reviewed_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}, "path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}}
+}

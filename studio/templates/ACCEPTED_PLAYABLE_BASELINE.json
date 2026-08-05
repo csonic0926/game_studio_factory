@@ -1,5 +1,5 @@
 {
-  "schema_version": "accepted_playable_baseline.v2",
+  "schema_version": "accepted_playable_baseline.v3",
   "status": "ACCEPTED_PLAYABLE_BASELINE",
   "project_id": "<PROJECT_ID>",
   "baseline_id": "<BASELINE_ID>",
@@ -42,7 +42,13 @@
           "path": "<GAME_REPO_RELATIVE_GAMEPLAY_AUTHORITY_PATH>",
           "sha256": "<SHA256>"
         },
-        "human_playtest_status": "HUMAN_PLAYTEST_ACCEPTED"
+        "human_playtest_status": "HUMAN_PLAYTEST_ACCEPTED",
+        "studio_gameplay_system": {
+          "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+          "sha256": "<SHA256>"
+        },
+        "cycle_id": "<CYCLE_ID>",
+        "cycle_status": "ACCEPTED_TWO_LAP_CYCLE"
       }
     }
   ],

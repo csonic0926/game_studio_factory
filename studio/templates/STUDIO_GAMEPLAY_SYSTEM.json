@@ -1,0 +1,50 @@
+{
+  "schema_version": "studio_gameplay_system.v1",
+  "status": "STUDIO_GAMEPLAY_SYSTEM_READY",
+  "system_id": "<SYSTEM_ID>",
+  "cycle_id": "<CYCLE_ID>",
+  "project_id": "<PROJECT_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "product_authority": {"path": "design/product/PRODUCT_THESIS.md", "sha256": "<SHA256>"},
+  "product_input": {"path": "design/product/idea/PRODUCT_THESIS_INPUT.json", "sha256": "<SHA256>"},
+  "factory_constraints": {"path": "design/product/FACTORY_CONSTRAINTS.json", "sha256": "<SHA256>"},
+  "author_context_id": "<SYSTEM_AUTHOR_CONTEXT_ID>",
+  "system_promise": "<WHAT_REPEATED_PLAY_PROMISES>",
+  "core_player_verbs": ["<CORE_VERB>"],
+  "stages": [
+    {"stage_id": "decision", "player_goal": "<GOAL_BEFORE_COMMITMENT>"},
+    {"stage_id": "committed", "player_goal": "<GOAL_AFTER_COMMITMENT>"},
+    {"stage_id": "resolved", "player_goal": "<GOAL_AT_RESOLUTION>"},
+    {"stage_id": "reward_owned", "player_goal": "<GOAL_AFTER_REWARD>"}
+  ],
+  "state_objects": [
+    {"state_id": "feedback_state", "kind": "PROGRESSION", "owner": "PLAYER", "player_visible": true, "meaning": "<STATE_CHANGED_BY_REWARD_AND_READ_BY_NEXT_DECISION>"}
+  ],
+  "transitions": [
+    {"transition_id": "choose", "from_stage_id": "decision", "to_stage_id": "committed", "phase": "PLAYER_DECISION", "player_action": "<DECIDE>", "reads_state_ids": ["feedback_state"], "writes_state_ids": [], "visible_consequence": "<VISIBLE_COMMITMENT>", "motivation_effect": "<WHY_THIS_CHOICE_MATTERS>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": ["<CONSTRAINT_ID>"]},
+    {"transition_id": "commit", "from_stage_id": "committed", "to_stage_id": "committed", "phase": "COMMITMENT", "player_action": "<COMMIT>", "reads_state_ids": [], "writes_state_ids": [], "visible_consequence": "<IRREVERSIBLE_STATE>", "motivation_effect": "<ANTICIPATION>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": []},
+    {"transition_id": "resolve", "from_stage_id": "committed", "to_stage_id": "resolved", "phase": "RESOLUTION", "player_action": "<READ_RESOLUTION>", "reads_state_ids": [], "writes_state_ids": [], "visible_consequence": "<BATTLE_OR_OTHER_PRODUCT_SURFACE_RESOLUTION>", "motivation_effect": "<EMOTIONAL_PAYOFF>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": []},
+    {"transition_id": "reward", "from_stage_id": "resolved", "to_stage_id": "reward_owned", "phase": "REWARD", "player_action": "<CLAIM_OR_INTERNALIZE_REWARD>", "reads_state_ids": [], "writes_state_ids": ["feedback_state"], "visible_consequence": "<VISIBLE_REWARD>", "motivation_effect": "<NEW_DESIRE>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": []},
+    {"transition_id": "reinvest", "from_stage_id": "reward_owned", "to_stage_id": "reward_owned", "phase": "REINVESTMENT", "player_action": "<USE_REWARD_TO_FORM_NEXT_GOAL>", "reads_state_ids": ["feedback_state"], "writes_state_ids": ["feedback_state"], "visible_consequence": "<NEXT_OPPORTUNITY_CHANGES>", "motivation_effect": "<WHY_ANOTHER_LAP_IS_DESIRED>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": []},
+    {"transition_id": "return", "from_stage_id": "reward_owned", "to_stage_id": "decision", "phase": "RETURN", "player_action": "<ENTER_NEXT_LAP>", "reads_state_ids": ["feedback_state"], "writes_state_ids": [], "visible_consequence": "<CHANGED_NEXT_DECISION_SURFACE>", "motivation_effect": "<ACTIVE_RETURN_MOTIVE>", "causal_link_ids": ["<CAUSAL_LINK_ID>"], "constraint_ids": []}
+  ],
+  "cycle_path": ["choose", "commit", "resolve", "reward", "reinvest", "return"],
+  "feedback_state_ids": ["feedback_state"],
+  "coupled_systems": [
+    {"component_id": "<LOAD_BEARING_SYSTEM>", "role": "<ROLE_IN_THE_CYCLE>", "transition_ids": ["resolve", "reward"], "required_in_first_baseline": true}
+  ],
+  "causal_link_coverage": [
+    {"link_id": "<EVERY_PRODUCT_CAUSAL_LINK_ID>", "transition_ids": ["choose", "resolve", "reward", "return"], "status": "REALIZED_IN_CYCLE"}
+  ],
+  "constraint_coverage": [
+    {"constraint_id": "<EVERY_ALL_OR_GAMEPLAY_CONSTRAINT_ID>", "transition_ids": ["choose", "resolve"], "status": "REALIZED_IN_CYCLE"}
+  ],
+  "two_lap_witness": {
+    "lap_one": {"player_goal": "<LAP_ONE_GOAL>", "decision": "<LAP_ONE_DECISION>", "resolution": "<LAP_ONE_RESOLUTION>", "resulting_state": "<LAP_ONE_RESULTING_STATE>"},
+    "feedback_state_deltas": [{"state_id": "feedback_state", "before": "<BEFORE>", "after": "<AFTER>", "effect_on_next_decision": "<HOW_LAP_TWO_CHANGES>"}],
+    "lap_two": {"player_goal": "<CHANGED_LAP_TWO_GOAL>", "decision": "<CHANGED_LAP_TWO_DECISION>", "resolution": "<LAP_TWO_RESOLUTION>", "resulting_state": "<LAP_TWO_RESULTING_STATE>"},
+    "why_second_lap_is_not_repetition": "<MATERIAL_DIFFERENCE_CREATED_BY_LAP_ONE_REWARD>"
+  },
+  "forbidden_linearizations": ["Completion followed only by a replay button is not a cycle."],
+  "authored_at": "<ISO_8601_DATETIME>"
+}

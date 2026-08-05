@@ -8,10 +8,12 @@ Start with:
 - [`docs/AI_CALLER_LANDING.md`](docs/AI_CALLER_LANDING.md) — user/AI entry;
 - [`docs/STUDIO_FOUNDATION.md`](docs/STUDIO_FOUNDATION.md) — baseline, ratchet,
   research, scale-out, and scale-up semantics.
+- [`docs/GAMEPLAY_SYSTEM_WORKFLOW.md`](docs/GAMEPLAY_SYSTEM_WORKFLOW.md) — the
+  Studio-owned Product Thesis -> closed gameplay-cycle transition.
 - [`docs/BASELINE_ADMISSION_WORKFLOW.md`](docs/BASELINE_ADMISSION_WORKFLOW.md)
   — complete reconstruction and post-workflow promotion.
 
-The folder now includes the deterministic two-case baseline admission
-compiler/checker plus the installed `game-studio-factory` skill. It does not
-yet contain a persistent multi-cycle scheduler; see the explicit limitation in
-the landing contract.
+The folder now includes the gameplay-system/cycle validator, deterministic
+two-case baseline admission compiler/checker, and installed
+`game-studio-factory` skill. It does not yet contain a persistent multi-cycle
+scheduler; see the explicit limitation in the landing contract.

@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "status", "project_id", "baseline_id", "game_revision", "factory_revision", "product_authority", "runnable_build", "playable_scope", "accepted_gameplay_units", "regression", "known_gaps", "promotion", "delivery_eligibility"],
   "properties": {
-    "schema_version": {"const": "accepted_playable_baseline.v2"},
+    "schema_version": {"const": "accepted_playable_baseline.v3"},
     "status": {"const": "ACCEPTED_PLAYABLE_BASELINE"},
     "project_id": {"$ref": "#/$defs/id"},
     "baseline_id": {"$ref": "#/$defs/id"},
@@ -108,14 +108,17 @@
         "acceptance_review": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["path", "sha256", "reviewer_freshness", "verdict", "experience_authority", "human_playtest_status"],
+          "required": ["path", "sha256", "reviewer_freshness", "verdict", "experience_authority", "human_playtest_status", "studio_gameplay_system", "cycle_id", "cycle_status"],
           "properties": {
             "path": {"type": "string", "minLength": 1},
             "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
             "reviewer_freshness": {"const": "FRESH"},
             "verdict": {"const": "ACCEPTED"},
             "experience_authority": {"$ref": "#/$defs/path_hash"},
-            "human_playtest_status": {"enum": ["HUMAN_PLAYTEST_ACCEPTED", "LEGACY_ACCEPTANCE_GRANDFATHERED"]}
+            "human_playtest_status": {"enum": ["HUMAN_PLAYTEST_ACCEPTED", "LEGACY_ACCEPTANCE_GRANDFATHERED"]},
+            "studio_gameplay_system": {"$ref": "#/$defs/optional_path_hash"},
+            "cycle_id": {"type": "string"},
+            "cycle_status": {"enum": ["ACCEPTED_TWO_LAP_CYCLE", "PREDECESSOR_CYCLE_UNPROVEN"]}
           }
         }
       }

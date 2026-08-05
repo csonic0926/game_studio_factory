@@ -29,7 +29,7 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   fail closed before mutation;
 - objective-gameplay front end: explicit blank/foreign/factory-native
   case boundary, primary-progression-first object model, script-first Step 1,
-  and one-artifact Step 2 contract;
+  compact-card Step 2 plus exact-refinement Step 2.5 contract;
 - dependency-free `prepare.py context` ownership guard and material compiler:
   stable project model + small objective frontier merge, exact repo evidence
   tokens, locale CSV lookup, runtime objective selection /
@@ -37,14 +37,15 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   the distinct `READY_FOR_HOW_DESIGN`, `READY_FOR_NEW_GAMEPLAY_DESIGN`, and
   `BLOCKED_BY_MATERIAL` states;
 - blank `GAMEPLAY_DESIGN_MODEL.json`, `NEXT_GAMEPLAY_UNIT_INPUT.json`,
-  `OBJECTIVE_GAMEPLAY.md`, and exact `GAMEPLAY_DESIGN_VERDICT.json` templates
+  compact decision-card, dual conformance-review, `OBJECTIVE_GAMEPLAY.md`, and
+  exact `GAMEPLAY_DESIGN_VERDICT.json` v2 templates
   plus machine-readable schemas and
   adversarial preparation tests;
 - model-independent objective production planning: the factory user may choose a
   Plan Mode or ordinary model, while both persist the same SHA-bound
   `PRODUCTION_PLAN_MANIFEST.json` plus `N` Markdown change-unit plans;
-- dependency-free `plan.py validate` checks exact Factory revision, fresh
-  objective design review, human ruling, objective-row coverage, source hash
+- dependency-free `plan.py validate` checks exact Factory revision, compact
+  human card ruling, dual inverse conformance, objective-row coverage, source hash
   freshness, required plan sections/metadata, portable ownership,
   existing repo evidence, plan dependency cycles, ready/blocked consistency,
   and exclusive planned-path ownership;

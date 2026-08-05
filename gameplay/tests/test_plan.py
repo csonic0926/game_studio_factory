@@ -4,7 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from gameplay.design_gate import current_factory_revision
+from gameplay.design_gate import (
+    _validate_studio_card_projection,
+    current_factory_revision,
+    decision_payload_sha256,
+)
 from gameplay.plan import (
     BLOCKED_BY_PLAN_GAP,
     READY_FOR_EXECUTION,
@@ -35,7 +39,11 @@ class ProductionPlanValidationTests(unittest.TestCase):
         )
         self.objective_text = """# Objective Gameplay — `mission.next`
 
+- Step 1 context: `design/gameplay/objective_gameplay/mission.next/NEXT_GAMEPLAY_UNIT_CONTEXT.md`
 - Context status: `READY_FOR_HOW_DESIGN`
+- Author context id: `full-spec-author`
+- Objective: Choose a route and deliberately open its gate.
+- Frontier decision: `COMPLETE_CURRENT_UNIT`
 - Design status: `USER_APPROVED`
 
 ## Expected player experience
@@ -47,10 +55,20 @@ class ProductionPlanValidationTests(unittest.TestCase):
 - Failure / recovery: A wrong route can be reconsidered before the gate is opened.
 - Must not become: An automatic gate with no meaningful route choice.
 
-| # | Situation | Result |
-| --- | --- | --- |
-| 1 | Reach a fork. | Pick a route. |
-| 2 | Reach the gate. | Open it. |
+| # | Situation / objective progress | Player purpose or problem | Visible information | Available actions | Rewards / consequences | Meaningful decision or execution | Resulting next situation |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Reach a fork. | Choose a route. | Both route costs. | Inspect and select. | The chosen gate activates. | Compare the routes and commit. | Reach the selected gate. |
+| 2 | Reach the gate. | Open the chosen path. | The committed route. | Open its gate. | The route becomes traversable. | Execute the committed choice. | Continue through the route. |
+
+## New gameplay additions
+
+- A visible two-route commitment at the gate.
+
+## Completion handoff
+
+- Objective completion condition: The selected route's gate is opened.
+- Player-visible completion response: The chosen route visibly becomes traversable.
+- Successor objective/handoff: `WIRED` — Continue through the selected route.
 """
         (self.objective_dir / "OBJECTIVE_GAMEPLAY.md").write_text(
             self.objective_text, encoding="utf-8"
@@ -62,6 +80,18 @@ class ProductionPlanValidationTests(unittest.TestCase):
         self.verdict_relative = (
             "design/gameplay/objective_gameplay/mission.next/"
             "GAMEPLAY_DESIGN_VERDICT.json"
+        )
+        self.card_relative = (
+            "design/gameplay/objective_gameplay/mission.next/"
+            "GAMEPLAY_DECISION_CARD.json"
+        )
+        self.card_to_spec_relative = (
+            "design/gameplay/objective_gameplay/mission.next/"
+            "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"
+        )
+        self.spec_to_card_relative = (
+            "design/gameplay/objective_gameplay/mission.next/"
+            "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"
         )
         self._write_design_verdict()
         (self.game_repo / "game.gd").write_text("func open_gate():\n\tpass\n", encoding="utf-8")
@@ -115,36 +145,190 @@ No prerequisite plan.
         objective_sha256: str | None = None,
         factory_revision: str | None = None,
     ) -> None:
+        effective_factory_revision = factory_revision or self.factory_revision
+        effective_objective_sha = objective_sha256 or self.objective_sha256
+        card = {
+            "schema_version": "gameplay_decision_card.v1",
+            "card_id": "mission.next.card.1",
+            "project_id": "sample",
+            "objective_id": "mission.next",
+            "factory_revision": effective_factory_revision,
+            "routing": "DIRECT_SPECIALIST",
+            "product_authority": {"path": "", "sha256": ""},
+            "studio_gameplay_system": {"path": "", "sha256": ""},
+            "author_context_id": "card-author",
+            "player_promise": {
+                "claim_id": "promise.route-choice",
+                "text": "Read a route fork, commit to one route, and visibly open its gate.",
+            },
+            "core_cycle": [
+                {"claim_id": "cycle.read", "text": "Read two visible route options."},
+                {"claim_id": "cycle.commit", "text": "Commit to one route and open its gate."},
+                {"claim_id": "cycle.feedback", "text": "Use the visible route state to continue."},
+            ],
+            "material_commitments": [
+                {"claim_id": "commitment.two-routes", "text": "The gate exposes two routes and records the chosen one."}
+            ],
+            "red_lines": [
+                {"claim_id": "redline.automatic", "text": "The gate must not choose a route automatically."}
+            ],
+            "validation_hypotheses": [],
+            "decision_payload_sha256": "",
+            "human_verdict": {
+                "status": human_verdict,
+                "source_text": "",
+                "recorded_at": "2026-08-04T12:00:00+08:00",
+            },
+        }
+        card["decision_payload_sha256"] = decision_payload_sha256(card)
+        card["human_verdict"]["source_text"] = (
+            f"{human_verdict} {card['decision_payload_sha256']}"
+        )
+        card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
+        card_path.write_text(json.dumps(card, indent=2) + "\n", encoding="utf-8")
+        card_sha = hashlib.sha256(card_path.read_bytes()).hexdigest()
+
+        mapping = {
+            "promise.route-choice": [
+                "objective.promise", "expected.target_player", "expected.intended_experience"
+            ],
+            "cycle.read": ["expected.required_player_work", "row.1"],
+            "cycle.commit": [
+                "expected.earned_satisfaction", "row.2", "completion.objective",
+                "completion.response", "completion.successor",
+            ],
+            "cycle.feedback": ["expected.failure_recovery"],
+            "commitment.two-routes": ["addition.1"],
+            "redline.automatic": ["expected.must_not_become"],
+        }
+        card_to_spec = {
+            "schema_version": "gameplay_design_conformance_review.v1",
+            "review_id": "mission.next.card-to-spec.1",
+            "review_role": "CARD_TO_SPEC",
+            "project_id": "sample",
+            "objective_id": "mission.next",
+            "factory_revision": effective_factory_revision,
+            "decision_card": {"path": self.card_relative, "sha256": card_sha},
+            "objective_gameplay": {
+                "path": self.objective_relative,
+                "sha256": effective_objective_sha,
+            },
+            "reviewer_context_id": "card-to-spec-reviewer",
+            "reviewer_freshness": "FRESH",
+            "claim_coverage": [
+                {"claim_id": claim_id, "spec_refs": refs, "verdict": "PASS"}
+                for claim_id, refs in mapping.items()
+            ],
+            "spec_material_inventory": [],
+            "contradictions": [],
+            "ambiguities": [],
+            "unsupported_material_decisions": [],
+            "blocking_findings": [],
+            "verdict": "PASS_CONFORMANCE",
+            "reviewed_at": "2026-08-04T12:01:00+08:00",
+        }
+        card_to_spec_path = self.objective_dir / "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"
+        card_to_spec_path.write_text(
+            json.dumps(card_to_spec, indent=2) + "\n", encoding="utf-8"
+        )
+        card_to_spec_sha = hashlib.sha256(card_to_spec_path.read_bytes()).hexdigest()
+
+        reverse: dict[str, list[str]] = {}
+        for claim_id, spec_refs in mapping.items():
+            for spec_ref in spec_refs:
+                reverse.setdefault(spec_ref, []).append(claim_id)
+        spec_to_card = {
+            "schema_version": "gameplay_design_conformance_review.v1",
+            "review_id": "mission.next.spec-to-card.1",
+            "review_role": "SPEC_TO_CARD",
+            "project_id": "sample",
+            "objective_id": "mission.next",
+            "factory_revision": effective_factory_revision,
+            "decision_card": {"path": self.card_relative, "sha256": card_sha},
+            "objective_gameplay": {
+                "path": self.objective_relative,
+                "sha256": effective_objective_sha,
+            },
+            "reviewer_context_id": "spec-to-card-reviewer",
+            "reviewer_freshness": "FRESH",
+            "claim_coverage": [],
+            "spec_material_inventory": [
+                {
+                    "spec_ref": spec_ref,
+                    "claim_ids": claim_ids,
+                    "classification": "AUTHORIZED_BY_CARD",
+                    "rationale": "This full-spec item refines the named card claim.",
+                }
+                for spec_ref, claim_ids in reverse.items()
+            ],
+            "contradictions": [],
+            "ambiguities": [],
+            "unsupported_material_decisions": [],
+            "blocking_findings": [],
+            "verdict": "PASS_CONFORMANCE",
+            "reviewed_at": "2026-08-04T12:02:00+08:00",
+        }
+        spec_to_card_path = self.objective_dir / "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"
+        spec_to_card_path.write_text(
+            json.dumps(spec_to_card, indent=2) + "\n", encoding="utf-8"
+        )
+        spec_to_card_sha = hashlib.sha256(spec_to_card_path.read_bytes()).hexdigest()
+
         verdict = {
-            "schema_version": "gameplay_design_verdict.v1",
+            "schema_version": "gameplay_design_verdict.v2",
             "verdict_id": "mission.next.design.1",
             "project_id": "sample",
             "objective_id": "mission.next",
-            "factory_revision": factory_revision or self.factory_revision,
+            "factory_revision": effective_factory_revision,
             "objective_gameplay": {
                 "path": self.objective_relative,
-                "sha256": objective_sha256 or self.objective_sha256,
+                "sha256": effective_objective_sha,
             },
             "context_status": context_status,
-            "reviewer_context_id": "fresh.design.reviewer.1",
-            "reviewer_freshness": "FRESH",
-            "factory_verdict": "PASS_DESIGN_REVIEW",
-            "human_verdict": human_verdict,
-            "human_verdict_source": {
-                "kind": (
-                    "POST_DRAFT_APPROVAL"
-                    if human_verdict == "USER_APPROVED"
-                    else "EXPLICIT_DELEGATION"
-                ),
-                "text": "User approved this exact objective draft.",
-                "recorded_at": "2026-08-04T12:00:00+08:00",
+            "decision_card": {"path": self.card_relative, "sha256": card_sha},
+            "conformance_reviews": {
+                "card_to_spec": {
+                    "path": self.card_to_spec_relative,
+                    "sha256": card_to_spec_sha,
+                },
+                "spec_to_card": {
+                    "path": self.spec_to_card_relative,
+                    "sha256": spec_to_card_sha,
+                },
             },
+            "factory_verdict": "PASS_DESIGN_CONFORMANCE",
             "blocking_findings": [],
-            "reviewed_at": "2026-08-04T12:01:00+08:00",
+            "reviewed_at": "2026-08-04T12:03:00+08:00",
         }
         verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
         verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
         self.verdict_sha256 = hashlib.sha256(verdict_path.read_bytes()).hexdigest()
+
+    def _rebind_changed_card(self, card: dict) -> None:
+        card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
+        card_path.write_text(json.dumps(card, indent=2) + "\n", encoding="utf-8")
+        card_sha = hashlib.sha256(card_path.read_bytes()).hexdigest()
+        review_hashes: dict[str, str] = {}
+        for key, filename in (
+            ("card_to_spec", "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"),
+            ("spec_to_card", "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"),
+        ):
+            review_path = self.objective_dir / filename
+            review = json.loads(review_path.read_text())
+            review["decision_card"]["sha256"] = card_sha
+            review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
+            review_hashes[key] = hashlib.sha256(review_path.read_bytes()).hexdigest()
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        verdict = json.loads(verdict_path.read_text())
+        verdict["decision_card"]["sha256"] = card_sha
+        for key, digest in review_hashes.items():
+            verdict["conformance_reviews"][key]["sha256"] = digest
+        verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+        payload = self._manifest()
+        payload["design_verdict"]["sha256"] = hashlib.sha256(
+            verdict_path.read_bytes()
+        ).hexdigest()
+        self._write_manifest(payload)
 
     @staticmethod
     def _no_ui_impact() -> dict:
@@ -533,6 +717,93 @@ No prerequisite plan.
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("design_verdict hash" in error for error in result.errors))
 
+    def test_two_conformance_directions_must_be_exact_inverses(self) -> None:
+        review_path = self.objective_dir / "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"
+        review = json.loads(review_path.read_text())
+        review["spec_material_inventory"][0]["claim_ids"] = ["cycle.read"]
+        review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
+
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        verdict = json.loads(verdict_path.read_text())
+        verdict["conformance_reviews"]["spec_to_card"]["sha256"] = hashlib.sha256(
+            review_path.read_bytes()
+        ).hexdigest()
+        verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+
+        payload = self._manifest()
+        payload["design_verdict"]["sha256"] = hashlib.sha256(
+            verdict_path.read_bytes()
+        ).hexdigest()
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("exact inverses" in error for error in result.errors))
+
+    def test_full_spec_cannot_hide_uninventoried_material_prose(self) -> None:
+        objective = self.objective_text.replace(
+            "## Completion handoff",
+            "The route also grants an unapproved permanent multiplier.\n\n"
+            "## Completion handoff",
+        )
+        objective_path = self.objective_dir / "OBJECTIVE_GAMEPLAY.md"
+        objective_path.write_text(objective, encoding="utf-8")
+        objective_sha = hashlib.sha256(objective.encode("utf-8")).hexdigest()
+        self._write_design_verdict(objective_sha256=objective_sha)
+        payload = self._manifest()
+        payload["objective_gameplay_sha256"] = objective_sha
+        payload["design_verdict"]["sha256"] = self.verdict_sha256
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("canonical bullet" in error for error in result.errors))
+
+    def test_studio_routed_card_requires_validated_cycle_system(self) -> None:
+        card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
+        card = json.loads(card_path.read_text())
+        card["routing"] = "STUDIO_WHOLE_GAME"
+        card["decision_payload_sha256"] = decision_payload_sha256(card)
+        card["human_verdict"]["source_text"] = (
+            f"USER_APPROVED {card['decision_payload_sha256']}"
+        )
+        card_path.write_text(json.dumps(card, indent=2) + "\n", encoding="utf-8")
+        card_sha = hashlib.sha256(card_path.read_bytes()).hexdigest()
+
+        review_hashes: dict[str, str] = {}
+        for key, filename in (
+            ("card_to_spec", "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"),
+            ("spec_to_card", "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"),
+        ):
+            review_path = self.objective_dir / filename
+            review = json.loads(review_path.read_text())
+            review["decision_card"]["sha256"] = card_sha
+            review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
+            review_hashes[key] = hashlib.sha256(review_path.read_bytes()).hexdigest()
+
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        verdict = json.loads(verdict_path.read_text())
+        verdict["decision_card"]["sha256"] = card_sha
+        for key, digest in review_hashes.items():
+            verdict["conformance_reviews"][key]["sha256"] = digest
+        verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+
+        payload = self._manifest()
+        payload["design_verdict"]["sha256"] = hashlib.sha256(
+            verdict_path.read_bytes()
+        ).hexdigest()
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("must bind a gameplay system" in error for error in result.errors))
+
+    def test_human_verdict_must_bind_exact_decision_payload_token(self) -> None:
+        card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
+        card = json.loads(card_path.read_text())
+        card["human_verdict"]["source_text"] = "User said this was probably fine."
+        self._rebind_changed_card(card)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("exact verdict token" in error for error in result.errors))
+
     def test_factory_revision_mismatch_fails_closed(self) -> None:
         payload = self._manifest()
         payload["factory_revision"] = "0" * 40
@@ -557,6 +828,77 @@ No prerequisite plan.
         )
         self.assertEqual(READY_FOR_EXECUTION, historical.status)
         self.assertFalse(historical.errors)
+
+
+class StudioDecisionCardProjectionTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.system = {
+            "system_promise": "Choose, earn a changed opportunity, and choose again.",
+            "cycle_path": ["decide", "reward", "return"],
+            "transitions": [
+                {
+                    "transition_id": "decide",
+                    "player_action": "Choose a risk.",
+                    "visible_consequence": "The risk is committed.",
+                    "motivation_effect": "Anticipation begins.",
+                },
+                {
+                    "transition_id": "reward",
+                    "player_action": "Claim the result.",
+                    "visible_consequence": "Opportunity tier changes.",
+                    "motivation_effect": "A new risk opens.",
+                },
+                {
+                    "transition_id": "return",
+                    "player_action": "Choose again.",
+                    "visible_consequence": "The new risk is visible.",
+                    "motivation_effect": "The next decision differs.",
+                },
+            ],
+            "coupled_systems": [
+                {"component_id": "reward-return", "role": "Reward changes the next choice."}
+            ],
+            "forbidden_linearizations": ["A replay button alone is not a cycle."],
+        }
+        self.card = {
+            "player_promise": {
+                "claim_id": "promise.system",
+                "text": self.system["system_promise"],
+            },
+            "core_cycle": [
+                {
+                    "claim_id": f"cycle.{item['transition_id']}",
+                    "text": " -> ".join(
+                        item[field]
+                        for field in (
+                            "player_action", "visible_consequence", "motivation_effect"
+                        )
+                    ),
+                }
+                for item in self.system["transitions"]
+            ],
+            "material_commitments": [
+                {
+                    "claim_id": "commitment.reward-return",
+                    "text": "Reward changes the next choice.",
+                },
+                {"claim_id": "scope.one-card", "text": "Use one card in the first slice."},
+            ],
+            "red_lines": [
+                {"claim_id": "redline.1", "text": "A replay button alone is not a cycle."}
+            ],
+        }
+
+    def test_exact_system_projection_passes(self) -> None:
+        errors: list[str] = []
+        _validate_studio_card_projection(self.card, self.system, errors)
+        self.assertEqual([], errors)
+
+    def test_rewritten_core_cycle_fails(self) -> None:
+        self.card["core_cycle"][1]["text"] = "Show a result and replay."
+        errors: list[str] = []
+        _validate_studio_card_projection(self.card, self.system, errors)
+        self.assertTrue(any("exact ordered" in error for error in errors))
 
 
 if __name__ == "__main__":

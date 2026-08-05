@@ -1,0 +1,32 @@
+{
+  "schema_version": "gameplay_decision_card.v1",
+  "card_id": "<CARD_ID>",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "routing": "STUDIO_WHOLE_GAME | DIRECT_SPECIALIST",
+  "product_authority": {"path": "design/product/PRODUCT_THESIS.md", "sha256": "<SHA256_OR_EMPTY>"},
+  "studio_gameplay_system": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json", "sha256": "<SHA256_OR_EMPTY>"},
+  "author_context_id": "<CARD_AUTHOR_CONTEXT_ID>",
+  "player_promise": {"claim_id": "promise.system", "text": "<EXACT_STUDIO_SYSTEM_PROMISE_OR_DIRECT_SPECIALIST_PROMISE>"},
+  "core_cycle": [
+    {"claim_id": "cycle.<TRANSITION_ID>", "text": "<EXACT PLAYER_ACTION -> VISIBLE_CONSEQUENCE -> MOTIVATION_EFFECT PROJECTION>"}
+  ],
+  "material_commitments": [
+    {"claim_id": "commitment.<COUPLED_COMPONENT_ID>", "text": "<EXACT_COUPLED_SYSTEM_ROLE>"},
+    {"claim_id": "scope.1", "text": "<HUMAN_VISIBLE_OBJECTIVE_SCOPE_COMMITMENT>"}
+  ],
+  "red_lines": [
+    {"claim_id": "redline.1", "text": "<EXACT_SYSTEM_FORBIDDEN_LINEARIZATION>"},
+    {"claim_id": "scope.redline.1", "text": "<OBJECTIVE_SCOPE_DRIFT_TO_REJECT>"}
+  ],
+  "validation_hypotheses": [
+    {"claim_id": "hypothesis.1", "text": "<UNCERTAIN_EXPERIENCE_CLAIM>", "falsification_signal": "<WHAT_WOULD_DISPROVE_IT>"}
+  ],
+  "decision_payload_sha256": "<SHA256_OF_CANONICAL_MATERIAL_FIELDS_EXCLUDING_HUMAN_VERDICT>",
+  "human_verdict": {
+    "status": "USER_APPROVED",
+    "source_text": "USER_APPROVED <DECISION_PAYLOAD_SHA256>",
+    "recorded_at": "<ISO_8601_DATETIME>"
+  }
+}

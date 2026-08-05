@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/studio_gameplay_system_manifest.schema.json",
+  "title": "Studio Gameplay System Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "project_id", "system_id", "cycle_id", "factory_revision", "gameplay_system", "reviews"],
+  "properties": {
+    "schema_version": {"const": "studio_gameplay_system_manifest.v1"},
+    "status": {"const": "STUDIO_GAMEPLAY_SYSTEM_READY"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "system_id": {"$ref": "#/$defs/id"},
+    "cycle_id": {"$ref": "#/$defs/id"},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "gameplay_system": {"$ref": "#/$defs/path_hash"},
+    "reviews": {"type": "object", "additionalProperties": false, "required": ["product_fidelity", "cycle_closure"], "properties": {"product_fidelity": {"$ref": "#/$defs/path_hash"}, "cycle_closure": {"$ref": "#/$defs/path_hash"}}}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}, "path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}}
+}

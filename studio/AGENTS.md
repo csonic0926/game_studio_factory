@@ -38,15 +38,33 @@ these invariants:
    acceptance plus human playtest verdict for changed gameplay, and regression
    of every predecessor unit. Never use reconstruction to erase a
    valid ratchet history or promotion to inherit unreviewed gameplay.
+9. **Studio owns Idea -> gameplay system.** A commissioned Product Thesis must
+   become a closed decision/commitment/resolution/reward/reinvestment/return
+   graph before Studio selects an objective. The reward must change a visible
+   state read by the next decision, and a two-lap witness must show a materially
+   different second decision. A result plus replay prompt is linear, not a
+   gameplay cycle.
+10. **Bound the content, never the causal loop.** The first unit is the minimum
+    cycle-complete vertical slice. Studio may reduce breadth, fidelity, content
+    count, or opponent count; it may not defer a load-bearing product causal
+    link or one side of a coupled system such as “options packaged as battle.”
+11. **Human rules on a decision surface, not a generated full spec.** The
+    human approves a compact gameplay decision card. A separate author may
+    refine it into the full objective spec only when two fresh, independent
+    conformance reviews prove both card-to-spec completeness and spec-to-card
+    non-expansion. Never claim that the two artifacts are textually or
+    semantically identical.
 
 ## Formal production transition
 
 Let `B_t` be the current Accepted Playable Baseline, `P_t` the diagnosed
-pressure, `R_t` the external reference-token set, and `U_t` one bounded gameplay
-unit. The only legal promotion is:
+pressure, `R_t` the external reference-token set, `G_t` the validated gameplay
+system/cycle, and `U_t` one minimum cycle-complete gameplay unit. The only legal
+promotion is:
 
 ```text
-B_t + P_t + R_t -> design(U_t) -> production(U_t) -> integration
+B_t + P_t + R_t -> synthesize/validate(G_t) -> decision_card(G_t)
+    -> design(U_t) -> production(U_t) -> integration
     -> fresh gameplay acceptance + regression(B_t)
     -> B_(t+1)
 ```
@@ -59,6 +77,12 @@ Forbidden transitions:
 - reference surface/theme -> copied feature without mechanism translation;
 - candidate implementation state -> mutation of the prior accepted baseline
   record.
+- Product Thesis -> convenient linear objective without a validated `G_t`;
+- result/settlement -> replay prompt presented as a retention cycle;
+- smallest isolated feature -> first baseline when it cuts a load-bearing
+  causal edge;
+- human approval of a short card -> assumed correctness of an unreviewed full
+  spec.
 
 ## Current foundation boundary
 
