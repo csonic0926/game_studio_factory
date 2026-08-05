@@ -54,6 +54,15 @@ these invariants:
     conformance reviews prove both card-to-spec completeness and spec-to-card
     non-expansion. Never claim that the two artifacts are textually or
     semantically identical.
+12. **Freshly review every material human transition.** Before presenting a
+    material response, blocking question, or Studio decision card, bind the
+    exact raw user input, active authority, pending decisions, candidate output,
+    claim provenance, and proposed questions through
+    [`docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
+    A fresh subagent/context—not the candidate author—must reject authority
+    amnesia, semantic proxies, avoidable questions, and silent pending-card
+    drift. This reviewer advises the transition; it never owns product taste or
+    the human verdict.
 
 ## Formal production transition
 
@@ -67,6 +76,13 @@ B_t + P_t + R_t -> synthesize/validate(G_t) -> decision_card(G_t)
     -> design(U_t) -> production(U_t) -> integration
     -> fresh gameplay acceptance + regression(B_t)
     -> B_(t+1)
+```
+
+Every material human-facing arrow is additionally gated as:
+
+```text
+active authority + pending decisions + raw user input
+  -> candidate output -> fresh semantic alignment review -> user surface
 ```
 
 Forbidden transitions:

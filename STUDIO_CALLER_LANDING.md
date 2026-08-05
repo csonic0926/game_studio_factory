@@ -40,7 +40,10 @@ Playable Baseline** with:
 Read [`studio/docs/AI_CALLER_LANDING.md`](studio/docs/AI_CALLER_LANDING.md) for
 the baseline/ratchet/research/production loop and
 [`studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`](studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md)
-for the Studio-owned Idea-to-gameplay-system boundary.
+for the Studio-owned Idea-to-gameplay-system boundary. Material user input and
+material human-facing output additionally require the fresh-subagent semantic
+alignment gate in
+[`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
 
 ## Specialist capability model
 

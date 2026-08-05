@@ -213,6 +213,11 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> original caller executes dependency-ready plans
 ```
 
+For `STUDIO_WHOLE_GAME`, the arrow into the human verdict is gated by
+`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`: exact raw input and authority
+delta, fresh-subagent review of the candidate surface, and registration of the
+pending card. A superseded registered payload cannot be rendered or approved.
+
 The primary progression driver answers **what is next**. Gameplay is **how**
 the player reaches it through actions and their consequences/rewards.
 
@@ -240,6 +245,9 @@ At the human gate, show only the rendered compact card and request
 `USER_APPROVED <decision_payload_sha256>`. Do not dump reconstruction notes,
 research, full spec, or conformance reports unless the user asks. The payload
 hash excludes the later verdict field, so the exact ruling is non-circular.
+Studio cards must be rendered with `--game-repo`; the checked renderer rejects
+an unreviewed, unregistered, or superseded payload. Record the ruling with
+`record-card-verdict` so card bytes and lifecycle state change together.
 
 After design and before Step 3 planning, determine whether intended production
 touches UI. If so, run the UI Production Adapter workflow first. Do not ask the

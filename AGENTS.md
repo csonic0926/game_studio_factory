@@ -16,6 +16,9 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
 4. Studio and specialist outputs land in the target game repo, never here.
 5. Reusable workflow/provider/stage/schema changes land in the owning folder
    through normal commits; preserve compatibility surfaces for linked repos.
+6. Material Studio input/output transitions use the fresh-subagent semantic
+   alignment gate in `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`; ordinary
+   user language must not require Factory-specific prompt boilerplate.
 
 Specialist entry points:
 

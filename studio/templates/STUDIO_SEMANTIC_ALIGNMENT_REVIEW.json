@@ -1,0 +1,26 @@
+{
+  "schema_version": "studio_semantic_alignment_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "project_id": "<PROJECT_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "alignment_input": {"path": "design/studio/interaction_alignment/<INTERACTION_ID>/STUDIO_SEMANTIC_ALIGNMENT_INPUT.json", "sha256": "<SHA256>"},
+  "reviewer_context_id": "<FRESH_SUBAGENT_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "checks": {
+    "input_delta_complete": "PASS",
+    "authority_continuity": "PASS",
+    "claim_provenance": "PASS",
+    "question_necessity": "PASS",
+    "semantic_non_substitution": "PASS",
+    "routing_and_scope": "PASS",
+    "human_boundary": "PASS",
+    "surface_proportionality": "PASS",
+    "pending_decision_disposition": "PASS"
+  },
+  "findings": [
+    {"finding_id": "finding.1", "status": "PASS", "user_input_quote": "<EXACT_USER_QUOTE>", "authority_ids": ["product.current"], "candidate_output_quote": "<EXACT_OUTPUT_QUOTE>", "rationale": "<WHY_THE_TRANSITION_IS_ALIGNED>"}
+  ],
+  "blocking_findings": [],
+  "verdict": "PASS_ALIGNMENT | REVISE_BEFORE_USER | HUMAN_RULING_GENUINELY_REQUIRED",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "studio_decision_card_register.v1",
+  "project_id": "<PROJECT_ID>",
+  "entries": [
+    {
+      "card_id": "<CARD_ID>",
+      "objective_id": "<OBJECTIVE_ID>",
+      "decision_payload_sha256": "<DECISION_PAYLOAD_SHA256>",
+      "decision_card": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD.json", "sha256": "<SHA256>"},
+      "state": "PENDING | USER_APPROVED | USER_REJECTED | SUPERSEDED",
+      "alignment_input": {"path": "design/studio/interaction_alignment/<INTERACTION_ID>/STUDIO_SEMANTIC_ALIGNMENT_INPUT.json", "sha256": "<SHA256>"},
+      "alignment_review": {"path": "design/studio/interaction_alignment/<INTERACTION_ID>/STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json", "sha256": "<SHA256>"},
+      "supersedes": [],
+      "superseded_by": "",
+      "recorded_at": "<ISO_8601_DATETIME>",
+      "updated_at": "<ISO_8601_DATETIME>"
+    }
+  ],
+  "updated_at": "<ISO_8601_DATETIME>"
+}

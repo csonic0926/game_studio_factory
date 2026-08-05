@@ -147,16 +147,29 @@ research, or the future full spec—and request exactly:
 USER_APPROVED <decision_payload_sha256>
 ```
 
-Render the short card and token deterministically:
+For `STUDIO_WHOLE_GAME`, first follow
+`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`: produce the exact candidate
+surface with `draft-card-surface`, bind it to raw user input and active
+authority, obtain a fresh-subagent review, then use `register-card`. Any prior
+pending payload changed by the new input must be explicitly superseded in both
+the alignment input and decision-card register.
+
+Render the checked short card and token deterministically:
 
 ```bash
 python3 gameplay/design_gate.py render-card \
+  --game-repo <GAME_REPO> \
   --card design/gameplay/objective_gameplay/<objective_id>/GAMEPLAY_DECISION_CARD.json
 ```
 
-Persist that exact token as `human_verdict.source_text`. The validator
-recomputes the payload hash, avoiding the circular error where recording the
-verdict changes the artifact SHA that the user supposedly approved.
+For direct specialist work the alignment/register gate is not required and
+`--game-repo` may be omitted. For Studio work, the renderer fails closed on an
+unreviewed, unregistered, or superseded payload.
+
+Persist the exact token with `record-card-verdict`; do not independently edit
+the Studio card and register. The validator recomputes the payload hash,
+avoiding the circular error where recording the verdict changes the material
+surface the user supposedly approved.
 
 ## Step 2.5 — author the full spec and prove exact refinement
 

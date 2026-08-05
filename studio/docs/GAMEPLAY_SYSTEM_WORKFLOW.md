@@ -112,3 +112,12 @@ At the human gate, render only this compact projection and its
 `decision_payload_sha256`. Persist diagnostics and full system/spec artifacts;
 do not make the human read them unless requested. The exact ruling token is
 `USER_APPROVED <decision_payload_sha256>`.
+
+Before that surface is presented, follow
+[`SEMANTIC_ALIGNMENT_WORKFLOW.md`](SEMANTIC_ALIGNMENT_WORKFLOW.md). A fresh
+subagent/context must compare the raw user input, still-active authority,
+pending-card state, and exact candidate surface. Product-fidelity and
+cycle-closure reviews do not replace this gate: they validate `G` after the
+operator has interpreted the user, while semantic alignment validates the
+interpretation transition itself. Register the reviewed pending card so any
+superseded pending payload becomes mechanically ineligible.

@@ -19,6 +19,25 @@ See [`GAMEPLAY_SYSTEM_WORKFLOW.md`](GAMEPLAY_SYSTEM_WORKFLOW.md). A Product
 Thesis cannot route directly to an isolated feature merely because that
 feature is easy to build or verify.
 
+## 0. Semantic operator alignment
+
+Before Studio can preserve a gameplay ratchet, it must preserve what the user
+actually changed. Material turns therefore use a separate fresh-subagent gate:
+
+```text
+active authority + pending decisions + raw user input
+  -> candidate interpretation/output
+  -> semantic alignment review
+  -> present, revise, or request a genuine human ruling
+```
+
+This gate precedes Product Thesis, gameplay-system, and full-spec reviews. It
+detects authority amnesia, unsupported promotion of hypotheses, semantic proxy
+substitution, avoidable clarification, and silent pending-card drift. The
+machine-owned decision register separately prevents a superseded pending hash
+from being rendered or approved. See
+[`SEMANTIC_ALIGNMENT_WORKFLOW.md`](SEMANTIC_ALIGNMENT_WORKFLOW.md).
+
 ## 1. Accepted Playable Baseline
 
 `B_t` is a reproducible whole-game state, not a branch, screenshot, plan, or

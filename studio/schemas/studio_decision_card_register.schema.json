@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/studio_decision_card_register.schema.json",
+  "title": "Studio Decision Card Register",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "entries", "updated_at"],
+  "properties": {
+    "schema_version": {"const": "studio_decision_card_register.v1"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["card_id", "objective_id", "decision_payload_sha256", "decision_card", "state", "alignment_input", "alignment_review", "supersedes", "superseded_by", "recorded_at", "updated_at"],
+        "properties": {
+          "card_id": {"$ref": "#/$defs/id"},
+          "objective_id": {"$ref": "#/$defs/id"},
+          "decision_payload_sha256": {"$ref": "#/$defs/sha256"},
+          "decision_card": {"$ref": "#/$defs/path_hash"},
+          "state": {"enum": ["PENDING", "USER_APPROVED", "USER_REJECTED", "SUPERSEDED"]},
+          "alignment_input": {"$ref": "#/$defs/path_hash"},
+          "alignment_review": {"$ref": "#/$defs/path_hash"},
+          "supersedes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+          "superseded_by": {"type": "string", "pattern": "^$|^[0-9a-f]{64}$"},
+          "recorded_at": {"type": "string", "minLength": 1},
+          "updated_at": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "updated_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

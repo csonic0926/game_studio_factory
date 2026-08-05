@@ -15,6 +15,7 @@ Game Studio Factory owns the long-horizon control loop:
 
 ```text
 human product intent
+  -> fresh semantic alignment of material input/output
   -> product authority when missing
   -> synthesize and validate the exact gameplay system/cycle
   -> compact human-approved gameplay decision card
@@ -44,6 +45,11 @@ Thesis; **Studio** owns Product Thesis -> exact gameplay system; Gameplay owns
 the bounded objective/spec and implementation. Read
 [`GAMEPLAY_SYSTEM_WORKFLOW.md`](GAMEPLAY_SYSTEM_WORKFLOW.md). Do not route a
 whole-game thesis directly into a convenient Gameplay objective.
+
+Material user input and material human-facing output also obey
+[`SEMANTIC_ALIGNMENT_WORKFLOW.md`](SEMANTIC_ALIGNMENT_WORKFLOW.md). Ordinary
+user language is sufficient: the Studio owns authority-delta reconstruction,
+workflow routing, and proof that a blocking question is not already answered.
 
 ## Entry states
 
@@ -106,6 +112,8 @@ The game repo owns Studio state under:
 ```text
 design/studio/
   STUDIO_RUN_STATE.json
+  STUDIO_DECISION_CARD_REGISTER.json
+  interaction_alignment/<interaction_id>/STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json
   gameplay_system/<system_id>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json
   admissions/<admission_id>/BASELINE_ADMISSION_INPUT.json
   baselines/<baseline_id>/ACCEPTED_PLAYABLE_BASELINE.json

@@ -26,6 +26,14 @@ from pathlib import Path
 from typing import Any
 
 try:  # Package import in tests; direct script import for Gameplay CLI use.
+    from studio.alignment import (
+        AlignmentValidationError,
+        HUMAN_RULING_GENUINELY_REQUIRED,
+        record_card_verdict,
+        register_pending_card,
+        require_registered_card,
+        validate_alignment_review,
+    )
     from studio.cycle import (
         READY as STUDIO_GAMEPLAY_SYSTEM_READY,
         CycleValidationError,
@@ -33,6 +41,14 @@ try:  # Package import in tests; direct script import for Gameplay CLI use.
     )
 except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.alignment import (  # type: ignore[no-redef]
+        AlignmentValidationError,
+        HUMAN_RULING_GENUINELY_REQUIRED,
+        record_card_verdict,
+        register_pending_card,
+        require_registered_card,
+        validate_alignment_review,
+    )
     from studio.cycle import (  # type: ignore[no-redef]
         READY as STUDIO_GAMEPLAY_SYSTEM_READY,
         CycleValidationError,
@@ -678,6 +694,14 @@ def _validate_decision_card(
     if isinstance(human.get("source_text"), str) and len(human["source_text"]) > 500:
         errors.append("human_verdict.source_text exceeds 500 characters")
     _require_text(human.get("recorded_at"), "human_verdict.recorded_at", errors)
+
+    if routing == "STUDIO_WHOLE_GAME":
+        require_registered_card(
+            game_repo,
+            card_path,
+            required_state="USER_APPROVED",
+            errors=errors,
+        )
 
     return {
         "claim_ids": set(claim_ids),
@@ -1358,16 +1382,40 @@ def _parser() -> argparse.ArgumentParser:
         "card-hash", help="compute the compact material decision payload SHA"
     )
     card_hash.add_argument("--card", required=True)
+    draft_card = subparsers.add_parser(
+        "draft-card-surface",
+        help="render an unpresented candidate surface for semantic alignment review",
+    )
+    draft_card.add_argument("--card", required=True)
     render_card = subparsers.add_parser(
         "render-card", help="render the bounded human decision surface"
     )
     render_card.add_argument("--card", required=True)
+    render_card.add_argument("--game-repo")
+    register_card = subparsers.add_parser(
+        "register-card",
+        help="register one alignment-reviewed pending Studio decision card",
+    )
+    register_card.add_argument("--game-repo", required=True)
+    register_card.add_argument("--card", required=True)
+    register_card.add_argument("--alignment-input", required=True)
+    register_card.add_argument("--alignment-review", required=True)
+    register_card.add_argument("--supersede-payload", action="append", default=[])
+    register_card.add_argument("--recorded-at", required=True)
+    record_verdict = subparsers.add_parser(
+        "record-card-verdict",
+        help="record an exact user verdict on a registered pending Studio card",
+    )
+    record_verdict.add_argument("--game-repo", required=True)
+    record_verdict.add_argument("--card", required=True)
+    record_verdict.add_argument("--verdict-token", required=True)
+    record_verdict.add_argument("--recorded-at", required=True)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    if args.command in {"card-hash", "render-card"}:
+    if args.command in {"card-hash", "draft-card-surface", "render-card"}:
         path = Path(args.card).expanduser().resolve()
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
@@ -1379,8 +1427,89 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         if args.command == "card-hash":
             print(decision_payload_sha256(payload))
-        else:
+        elif args.command == "draft-card-surface":
             print(render_decision_card(payload), end="")
+        else:
+            rendered = render_decision_card(payload)
+            if payload.get("routing") == "STUDIO_WHOLE_GAME":
+                if not args.game_repo:
+                    print(
+                        "ERROR: Studio render-card requires --game-repo so alignment "
+                        "and supersession can be checked",
+                        file=sys.stderr,
+                    )
+                    return 2
+                errors: list[str] = []
+                entry = require_registered_card(
+                    args.game_repo,
+                    path,
+                    required_state="PENDING",
+                    errors=errors,
+                )
+                if entry:
+                    try:
+                        result = validate_alignment_review(
+                            args.game_repo,
+                            entry.get("alignment_input", {}).get("path", ""),
+                            entry.get("alignment_review", {}).get("path", ""),
+                            expected_output_text=rendered,
+                            expected_output_kind="DECISION_SURFACE",
+                        )
+                    except AlignmentValidationError as error:
+                        errors.append(str(error))
+                    else:
+                        errors.extend(result.errors)
+                        if result.status != HUMAN_RULING_GENUINELY_REQUIRED:
+                            errors.append(
+                                "Studio decision surface requires "
+                                "HUMAN_RULING_GENUINELY_REQUIRED alignment verdict"
+                            )
+                if errors:
+                    for error in errors:
+                        print(f"ERROR: {error}", file=sys.stderr)
+                    return 2
+            print(rendered, end="")
+        return 0
+    if args.command == "register-card":
+        repo = Path(args.game_repo).expanduser().resolve()
+        card_path = Path(args.card)
+        if not card_path.is_absolute():
+            card_path = repo / card_path
+        try:
+            payload = json.loads(card_path.read_text(encoding="utf-8"))
+            if not isinstance(payload, dict):
+                raise AlignmentValidationError("decision card must be a JSON object")
+            expected_digest = decision_payload_sha256(payload)
+            if payload.get("decision_payload_sha256") != expected_digest:
+                raise AlignmentValidationError(
+                    "decision card payload SHA does not match its material surface"
+                )
+            register_path = register_pending_card(
+                repo,
+                card_path,
+                args.alignment_input,
+                args.alignment_review,
+                expected_output_text=render_decision_card(payload),
+                supersede_payloads=list(args.supersede_payload),
+                recorded_at=args.recorded_at,
+            )
+        except (OSError, json.JSONDecodeError, AlignmentValidationError) as error:
+            print(f"ERROR: {error}", file=sys.stderr)
+            return 2
+        print(register_path.relative_to(repo).as_posix())
+        return 0
+    if args.command == "record-card-verdict":
+        try:
+            card_path = record_card_verdict(
+                args.game_repo,
+                args.card,
+                verdict_token=args.verdict_token,
+                recorded_at=args.recorded_at,
+            )
+        except AlignmentValidationError as error:
+            print(f"ERROR: {error}", file=sys.stderr)
+            return 2
+        print(card_path)
         return 0
     return 2
 

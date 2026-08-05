@@ -16,7 +16,8 @@ called by the Studio, not substitutes for whole-game delivery.
    `design/AI_FACTORY.local.md`, the installed-skills manifest, or this skill's
    real source path.
 3. Read `<STUDIO_ROOT>/studio/AGENTS.md` and
-   `<STUDIO_ROOT>/studio/docs/AI_CALLER_LANDING.md`.
+   `<STUDIO_ROOT>/studio/docs/AI_CALLER_LANDING.md`, including
+   `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
 4. If the game repo is unlinked, use `init-game-studio-factory` and continue in
    the same call.
 
@@ -34,6 +35,16 @@ minimum gameplay floor may not.
 
 ## Route the current state
 
+Before routing material new user input or presenting a material Studio answer,
+run the semantic-alignment workflow. The candidate author records the exact raw
+input, active authority, pending decision dispositions, candidate output,
+claim provenance, and any question. Spawn one fresh subagent/context using the
+`studio-semantic-alignment-reviewer` skill to review it.
+`REVISE_BEFORE_USER` returns privately to the author; only
+`PASS_ALIGNMENT` or `HUMAN_RULING_GENUINELY_REQUIRED` may reach the user. Do
+not ask the user to name this workflow or rewrite ordinary language as a
+Factory brief.
+
 - Missing/open product direction: invoke `idea-factory`. After the Product
   Thesis is commissioned, follow `studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`;
   Studio—not Gameplay Factory—must synthesize the exact closed gameplay system.
@@ -48,8 +59,10 @@ minimum gameplay floor may not.
   demonstrate two laps in which lap-one reward/state materially changes the
   lap-two decision. Do not call a result/replay sequence a loop or baseline.
 - At the approval boundary, use `gameplay/design_gate.py render-card` and show
-  only that decision surface. Persist reconstruction, research, full specs, and
-  review reports without dumping them into the user's verdict request.
+  only an alignment-reviewed, registered pending decision surface. Persist
+  reconstruction, research, full specs, and review reports without dumping
+  them into the user's verdict request. A revised pending card must
+  machine-supersede the old payload before rendering.
 - Accepted baseline exists: diagnose the next gameplay pressure or broken
   cycle edge, research new design tokens across same-type/cross-genre/non-game
   references, select one minimum cycle-complete unit, and use the specialist

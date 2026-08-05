@@ -20,6 +20,9 @@ class StudioFoundationContractTests(unittest.TestCase):
             "studio_gameplay_system.schema.json": "studio_gameplay_system.v1",
             "studio_gameplay_system_manifest.schema.json": "studio_gameplay_system_manifest.v1",
             "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v1",
+            "studio_semantic_alignment_input.schema.json": "studio_semantic_alignment_input.v1",
+            "studio_semantic_alignment_review.schema.json": "studio_semantic_alignment_review.v1",
+            "studio_decision_card_register.schema.json": "studio_decision_card_register.v1",
             "studio_run_state.schema.json": "studio_run_state.v3",
             "studio_workflow_completion.schema.json": "studio_workflow_completion.v2",
         }
@@ -127,6 +130,26 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertTrue(body.startswith("---\n"))
         self.assertIn("\nname: game-studio-factory\n", body)
         self.assertNotIn("TODO", body)
+
+    def test_semantic_alignment_requires_fresh_evidence_bound_review(self) -> None:
+        payload = json.loads(
+            (STUDIO_ROOT / "schemas/studio_semantic_alignment_review.schema.json").read_text()
+        )
+        self.assertEqual(
+            "FRESH", payload["properties"]["reviewer_freshness"]["const"]
+        )
+        required_checks = set(payload["properties"]["checks"]["required"])
+        self.assertIn("authority_continuity", required_checks)
+        self.assertIn("question_necessity", required_checks)
+        self.assertIn("semantic_non_substitution", required_checks)
+        self.assertIn("pending_decision_disposition", required_checks)
+
+    def test_decision_register_has_explicit_superseded_state(self) -> None:
+        payload = json.loads(
+            (STUDIO_ROOT / "schemas/studio_decision_card_register.schema.json").read_text()
+        )
+        states = payload["properties"]["entries"]["items"]["properties"]["state"]["enum"]
+        self.assertIn("SUPERSEDED", states)
 
 
 if __name__ == "__main__":

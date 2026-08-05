@@ -21,6 +21,7 @@ studio/       whole-game operator
   Accepted Playable Baseline
   Gameplay Ratchet
   Design Token Research
+  Semantic Input/Output Alignment
   Autonomous Production Loop
 
 idea/         product direction capability
@@ -183,8 +184,10 @@ skills/
   init-game-studio-factory     canonical linker
   init-game-ai-factory         compatibility alias
 studio/
+  alignment.py
   baseline.py
   skills/game-studio-factory
+  skills/studio-semantic-alignment-reviewer
   AGENTS.md
   docs/
   schemas/
