@@ -1,5 +1,5 @@
 {
-  "schema_version": "studio_gameplay_system.v1",
+  "schema_version": "studio_gameplay_system.v2",
   "status": "STUDIO_GAMEPLAY_SYSTEM_READY",
   "system_id": "<SYSTEM_ID>",
   "cycle_id": "<CYCLE_ID>",
@@ -38,6 +38,9 @@
   ],
   "constraint_coverage": [
     {"constraint_id": "<EVERY_ALL_OR_GAMEPLAY_CONSTRAINT_ID>", "transition_ids": ["choose", "resolve"], "status": "REALIZED_IN_CYCLE"}
+  ],
+  "non_goal_coverage": [
+    {"non_goal_id": "<EVERY_PRODUCT_NON_GOAL_ID>", "transition_ids": [], "status": "PRESERVED", "rationale": "<HOW_THE_CYCLE_PRESERVES_THE_BOUNDARY_WITHOUT_ERASING_A_CAUSAL_OR_REWARD_LOOP>"}
   ],
   "two_lap_witness": {
     "lap_one": {"player_goal": "<LAP_ONE_GOAL>", "decision": "<LAP_ONE_DECISION>", "resolution": "<LAP_ONE_RESOLUTION>", "resulting_state": "<LAP_ONE_RESULTING_STATE>"},

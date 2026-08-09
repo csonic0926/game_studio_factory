@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "review_id", "project_id", "factory_revision", "alignment_input", "reviewer_context_id", "reviewer_freshness", "checks", "independent_claim_inventory", "findings", "blocking_findings", "verdict", "reviewed_at"],
   "properties": {
-    "schema_version": {"const": "studio_semantic_alignment_review.v2"},
+    "schema_version": {"const": "studio_semantic_alignment_review.v3"},
     "review_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
@@ -16,10 +16,12 @@
     "checks": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["input_delta_complete", "authority_continuity", "claim_provenance", "material_claim_coverage", "question_necessity", "semantic_non_substitution", "routing_and_scope", "human_boundary", "surface_proportionality", "pending_decision_disposition"],
+      "required": ["input_delta_complete", "response_binding_fidelity", "authority_continuity", "authority_change_fidelity", "claim_provenance", "material_claim_coverage", "question_necessity", "semantic_non_substitution", "routing_and_scope", "human_boundary", "surface_proportionality", "pending_decision_disposition"],
       "properties": {
         "input_delta_complete": {"enum": ["PASS", "BLOCK"]},
+        "response_binding_fidelity": {"enum": ["PASS", "BLOCK"]},
         "authority_continuity": {"enum": ["PASS", "BLOCK"]},
+        "authority_change_fidelity": {"enum": ["PASS", "BLOCK"]},
         "claim_provenance": {"enum": ["PASS", "BLOCK"]},
         "material_claim_coverage": {"enum": ["PASS", "BLOCK"]},
         "question_necessity": {"enum": ["PASS", "BLOCK"]},
@@ -42,7 +44,7 @@
           "review_claim_id": {"$ref": "#/$defs/id"},
           "candidate_output_quote": {"type": "string", "minLength": 1},
           "author_claim_id": {"$ref": "#/$defs/id"},
-          "assessed_provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS", "MIXED_OR_UNCLEAR"]},
+          "assessed_provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "BOUND_USER_RESPONSE", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS", "MIXED_OR_UNCLEAR"]},
           "status": {"enum": ["PASS", "BLOCK"]},
           "rationale": {"type": "string", "minLength": 1}
         }
@@ -55,12 +57,14 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["finding_id", "status", "user_input_quote", "authority_ids", "candidate_output_quote", "rationale"],
+        "required": ["finding_id", "status", "user_input_quote", "response_binding_ids", "authority_ids", "authority_change_ids", "candidate_output_quote", "rationale"],
         "properties": {
           "finding_id": {"$ref": "#/$defs/id"},
           "status": {"enum": ["PASS", "BLOCK"]},
           "user_input_quote": {"type": "string"},
+          "response_binding_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "authority_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+          "authority_change_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "candidate_output_quote": {"type": "string"},
           "rationale": {"type": "string", "minLength": 1}
         }

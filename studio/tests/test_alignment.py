@@ -126,11 +126,12 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                     "output_quote": line,
                     "provenance": provenance,
                     "source_authority_ids": source_authority_ids,
+                    "source_response_binding_ids": [],
                     "source_quotes": source_quotes,
                 }
             )
         alignment_input = {
-            "schema_version": "studio_semantic_alignment_input.v2",
+            "schema_version": "studio_semantic_alignment_input.v3",
             "interaction_id": interaction_id,
             "project_id": "sample",
             "factory_revision": self.revision,
@@ -140,6 +141,7 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                 "text": self.user_text,
                 "sha256": text_sha256(self.user_text),
             },
+            "response_bindings": [],
             "active_authorities": [
                 {
                     "authority_id": "product.current",
@@ -147,11 +149,13 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                     "artifact": ref(self.repo, self.product),
                 }
             ],
+            "authority_changes": [],
             "pending_decisions": pending or [],
             "input_deltas": [
                 {
                     "delta_id": "delta.counterpick",
                     "source_quote": "make the loser counterpick the winner's card",
+                    "response_binding_ids": [],
                     "classification": "ADD",
                     "target_authority_ids": ["product.current"],
                     "interpretation": "Add a result-bound counterpick without replacing price judgment.",
@@ -168,6 +172,7 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                 {
                     "question_id": "question.approve",
                     "question_quote": question_quote,
+                    "answer_options": [],
                     "material_consequence": "Approval authorizes full-spec refinement.",
                     "searched_authority_ids": ["product.current"],
                     "why_unresolved": "Only the user may approve a Studio decision surface.",
@@ -179,7 +184,9 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
         review_path = root / "STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json"
         checks = {
             "input_delta_complete": "PASS",
+            "response_binding_fidelity": "PASS",
             "authority_continuity": "PASS",
+            "authority_change_fidelity": "PASS",
             "claim_provenance": "PASS",
             "material_claim_coverage": "PASS",
             "question_necessity": "PASS",
@@ -190,7 +197,7 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
             "pending_decision_disposition": "PASS",
         }
         review = {
-            "schema_version": "studio_semantic_alignment_review.v2",
+            "schema_version": "studio_semantic_alignment_review.v3",
             "review_id": f"review.{interaction_id}",
             "project_id": "sample",
             "factory_revision": self.revision,
@@ -214,7 +221,9 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
                     "finding_id": "finding.aligned",
                     "status": "PASS",
                     "user_input_quote": "make the loser counterpick the winner's card",
+                    "response_binding_ids": [],
                     "authority_ids": ["product.current"],
+                    "authority_change_ids": [],
                     "candidate_output_quote": "The loser counterpicks.",
                     "rationale": "The output preserves the price-battle authority and realizes the new delta.",
                 }
@@ -348,6 +357,149 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
             any("must cover a complete candidate line" in error for error in result.errors),
             result.errors,
         )
+
+    def test_markdown_heading_remains_a_material_claim(self) -> None:
+        self.assertEqual(
+            ["**Product direction:**", "Keep the exhibition reward loop."],
+            material_output_lines(
+                "**Product direction:**\nKeep the exhibition reward loop."
+            ),
+        )
+
+    def test_one_token_reply_requires_exact_prior_option_binding(self) -> None:
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.unbound-b"
+        )
+        alignment_input = json.loads(input_path.read_text())
+        alignment_input["user_input"] = {"text": "b", "sha256": text_sha256("b")}
+        alignment_input["input_deltas"][0]["source_quote"] = "b"
+        write_json(input_path, alignment_input)
+        review = json.loads(review_path.read_text())
+        review["alignment_input"] = ref(self.repo, input_path)
+        review["findings"][0]["user_input_quote"] = "b"
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertTrue(
+            any("one-token user reply requires" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_bound_option_reply_is_recorded_as_user_owned_request(self) -> None:
+        prior_root = self.repo / "design/studio/interaction_alignment/turn.prior"
+        prior_input_path = prior_root / "STUDIO_SEMANTIC_ALIGNMENT_INPUT.json"
+        prior_surface = (
+            "Which production order should Studio use?\n"
+            "A = update all five production documents now.\n"
+            "B = reissue the decision card first; update the five production documents only after approval."
+        )
+        prior_input = {
+            "schema_version": "studio_semantic_alignment_input.v3",
+            "interaction_id": "turn.prior",
+            "project_id": "sample",
+            "factory_revision": self.revision,
+            "trigger": "BLOCKING_HUMAN_QUESTION",
+            "author_context_id": "prior.author",
+            "user_input": {"text": "Choose the safe order.", "sha256": text_sha256("Choose the safe order.")},
+            "response_bindings": [],
+            "active_authorities": [{"authority_id": "product.current", "authority_kind": "PRODUCT", "artifact": ref(self.repo, self.product)}],
+            "authority_changes": [],
+            "pending_decisions": [],
+            "input_deltas": [{"delta_id": "delta.order", "source_quote": "Choose the safe order.", "response_binding_ids": [], "classification": "AMBIGUOUS", "target_authority_ids": ["product.current"], "interpretation": "Ask which safe production order the user wants."}],
+            "proposed_transition": "REQUEST_HUMAN_RULING",
+            "candidate_output": {"kind": "HUMAN_QUESTION", "text": prior_surface, "sha256": text_sha256(prior_surface)},
+            "output_claims": [
+                {"claim_id": "prior.a", "output_quote": "A = update all five production documents now.", "provenance": "AI_SYNTHESIS", "source_authority_ids": ["product.current"], "source_response_binding_ids": [], "source_quotes": []},
+                {"claim_id": "prior.b", "output_quote": "B = reissue the decision card first; update the five production documents only after approval.", "provenance": "AI_SYNTHESIS", "source_authority_ids": ["product.current"], "source_response_binding_ids": [], "source_quotes": []},
+            ],
+            "human_questions": [{
+                "question_id": "question.order",
+                "question_quote": "Which production order should Studio use?",
+                "answer_options": [
+                    {"option_id": "a", "option_quote": "A = update all five production documents now.", "accepted_response_tokens": ["a", "A"]},
+                    {"option_id": "b", "option_quote": "B = reissue the decision card first; update the five production documents only after approval.", "accepted_response_tokens": ["b", "B"]},
+                ],
+                "material_consequence": "The ruling changes the order of authority and plan updates.",
+                "searched_authority_ids": ["product.current"],
+                "why_unresolved": "Only the user can select the production order.",
+            }],
+            "authored_at": "2026-08-07T00:00:00+08:00",
+        }
+        write_json(prior_input_path, prior_input)
+        prior_review_path = prior_root / "STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json"
+        prior_review = {
+            "schema_version": "studio_semantic_alignment_review.v3",
+            "review_id": "review.turn.prior",
+            "project_id": "sample",
+            "factory_revision": self.revision,
+            "alignment_input": ref(self.repo, prior_input_path),
+            "reviewer_context_id": "prior.reviewer",
+            "reviewer_freshness": "FRESH",
+            "checks": {key: "PASS" for key in (
+                "input_delta_complete", "response_binding_fidelity", "authority_continuity",
+                "authority_change_fidelity", "claim_provenance", "material_claim_coverage",
+                "question_necessity", "semantic_non_substitution", "routing_and_scope",
+                "human_boundary", "surface_proportionality", "pending_decision_disposition",
+            )},
+            "independent_claim_inventory": [
+                {"review_claim_id": "prior.review.a", "candidate_output_quote": "A = update all five production documents now.", "author_claim_id": "prior.a", "assessed_provenance": "AI_SYNTHESIS", "status": "PASS", "rationale": "Exact option A was reviewed."},
+                {"review_claim_id": "prior.review.b", "candidate_output_quote": "B = reissue the decision card first; update the five production documents only after approval.", "author_claim_id": "prior.b", "assessed_provenance": "AI_SYNTHESIS", "status": "PASS", "rationale": "Exact option B was reviewed."},
+            ],
+            "findings": [],
+            "blocking_findings": [],
+            "verdict": "HUMAN_RULING_GENUINELY_REQUIRED",
+            "reviewed_at": "2026-08-07T00:01:00+08:00",
+        }
+        write_json(prior_review_path, prior_review)
+
+        card_path = write_json(
+            self.repo / "design/gameplay/objective_gameplay/first/GAMEPLAY_DECISION_CARD.json",
+            self.card("first"),
+        )
+        input_path, review_path = self.alignment_artifacts(
+            card_path, interaction_id="turn.bound-b"
+        )
+        alignment_input = json.loads(input_path.read_text())
+        alignment_input["user_input"] = {"text": "b", "sha256": text_sha256("b")}
+        alignment_input["response_bindings"] = [{
+            "binding_id": "reply.b",
+            "response_quote": "b",
+            "prior_alignment_input": ref(self.repo, prior_input_path),
+            "prior_alignment_review": ref(self.repo, prior_review_path),
+            "question_id": "question.order",
+            "selected_option_id": "b",
+            "selected_option_quote": "B = reissue the decision card first; update the five production documents only after approval.",
+        }]
+        alignment_input["input_deltas"][0]["source_quote"] = "b"
+        alignment_input["input_deltas"][0]["response_binding_ids"] = ["reply.b"]
+        bound_claim = next(
+            claim
+            for claim in alignment_input["output_claims"]
+            if claim["provenance"] == "NEW_USER_INPUT"
+        )
+        bound_claim["provenance"] = "BOUND_USER_RESPONSE"
+        bound_claim["source_authority_ids"] = []
+        bound_claim["source_response_binding_ids"] = ["reply.b"]
+        bound_claim["source_quotes"] = [
+            "b",
+            "B = reissue the decision card first; update the five production documents only after approval.",
+        ]
+        write_json(input_path, alignment_input)
+        review = json.loads(review_path.read_text())
+        review["alignment_input"] = ref(self.repo, input_path)
+        next(
+            item
+            for item in review["independent_claim_inventory"]
+            if item["author_claim_id"] == bound_claim["claim_id"]
+        )["assessed_provenance"] = "BOUND_USER_RESPONSE"
+        review["findings"][0]["user_input_quote"] = "b"
+        review["findings"][0]["response_binding_ids"] = ["reply.b"]
+        write_json(review_path, review)
+        result = validate_alignment_review(self.repo, input_path, review_path)
+        self.assertEqual(HUMAN_RULING_GENUINELY_REQUIRED, result.status, result.errors)
 
     def test_new_registered_card_supersedes_old_pending_payload(self) -> None:
         old_path = write_json(

@@ -130,6 +130,13 @@ commercial shape, experience intent, retention/replay thesis, differentiation,
 scope, causal links, sacrifices, validation hypotheses, and downstream
 constraints.
 
+Treat gamification, positive feedback, repeat motivation, and “make them want
+to do it again” as causal-loop intent. The underlying service may not need
+conventional combat or challenge mechanics, but that does not authorize a
+non-goal saying it has no reward/gameplay cycle. Preserve the distinction in
+the causal links and constraints; if a proposed non-goal erases the loop,
+return to semantic alignment rather than compiling it.
+
 Product decision authorities remain:
 
 - `USER_FIXED` — exact user statement/adoption;
@@ -144,8 +151,9 @@ commission says that exploration is mature enough to become authority.
 ## Compile/check guarantees
 
 The compiler validates ownership before writes, exact repo/exploration hashes,
-commission, source authority, causal structure, constraints, and absence of
-hidden assumptions. It preflights all canonical product outputs before writing.
+commission, source authority, causal structure, constraints, compiled
+non-goals, and absence of hidden assumptions. It preflights all canonical
+product outputs before writing.
 Exact outputs are idempotent; differing product authority is never overwritten.
 
 The checker proves the handoff, not that the idea is commercially successful,

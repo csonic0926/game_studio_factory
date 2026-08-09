@@ -4,9 +4,9 @@
   "title": "Studio Gameplay System Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "review_role", "project_id", "system_id", "cycle_id", "factory_revision", "gameplay_system", "reviewer_context_id", "reviewer_freshness", "causal_link_ids_reviewed", "constraint_ids_reviewed", "transition_ids_reviewed", "cycle_findings", "blocking_findings", "verdict", "reviewed_at"],
+  "required": ["schema_version", "review_id", "review_role", "project_id", "system_id", "cycle_id", "factory_revision", "gameplay_system", "reviewer_context_id", "reviewer_freshness", "causal_link_ids_reviewed", "constraint_ids_reviewed", "non_goal_ids_reviewed", "transition_ids_reviewed", "cycle_findings", "blocking_findings", "verdict", "reviewed_at"],
   "properties": {
-    "schema_version": {"const": "studio_gameplay_system_review.v1"},
+    "schema_version": {"const": "studio_gameplay_system_review.v2"},
     "review_id": {"$ref": "#/$defs/id"},
     "review_role": {"enum": ["PRODUCT_FIDELITY", "CYCLE_CLOSURE"]},
     "project_id": {"$ref": "#/$defs/id"},
@@ -18,8 +18,9 @@
     "reviewer_freshness": {"const": "FRESH"},
     "causal_link_ids_reviewed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
     "constraint_ids_reviewed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "non_goal_ids_reviewed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
     "transition_ids_reviewed": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-    "cycle_findings": {"type": "object", "additionalProperties": false, "required": ["closed_graph", "reward_changes_next_decision", "second_lap_materially_differs", "coupled_systems_preserved", "no_proxy_loop"], "properties": {"closed_graph": {"const": "PASS"}, "reward_changes_next_decision": {"const": "PASS"}, "second_lap_materially_differs": {"const": "PASS"}, "coupled_systems_preserved": {"const": "PASS"}, "no_proxy_loop": {"const": "PASS"}}},
+    "cycle_findings": {"type": "object", "additionalProperties": false, "required": ["closed_graph", "reward_changes_next_decision", "second_lap_materially_differs", "coupled_systems_preserved", "product_boundaries_consistent", "gamification_intent_is_reward_cycle", "no_proxy_loop"], "properties": {"closed_graph": {"const": "PASS"}, "reward_changes_next_decision": {"const": "PASS"}, "second_lap_materially_differs": {"const": "PASS"}, "coupled_systems_preserved": {"const": "PASS"}, "product_boundaries_consistent": {"const": "PASS"}, "gamification_intent_is_reward_cycle": {"const": "PASS"}, "no_proxy_loop": {"const": "PASS"}}},
     "blocking_findings": {"type": "array", "maxItems": 0},
     "verdict": {"const": "PASS_SYSTEM_REVIEW"},
     "reviewed_at": {"type": "string", "minLength": 1}

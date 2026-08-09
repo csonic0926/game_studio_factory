@@ -63,8 +63,9 @@ workflow routing, and proof that a blocking question is not already answered.
 A Studio call classifies the game repo before scaling:
 
 - `STUDIO_NEEDS_PRODUCT_AUTHORITY` — Idea Factory must openly explore and then
-  receive an explicit commission and `product.py activate`; Studio may not
-  invent a hidden thesis or reuse an archived one.
+  receive an explicit commission and alignment-bound `product.py activate`;
+  Studio may not invent a hidden thesis, lose a short reply's prior-surface
+  meaning, or reuse an archived one.
 - `BLOCKED_BY_LINEAR_GAMEPLAY` — the proposed system ends at a result/replay
   sequence, cuts a product-level coupling, or cannot show how lap-one state
   materially changes lap two.

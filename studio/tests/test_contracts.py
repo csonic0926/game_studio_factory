@@ -19,11 +19,11 @@ class StudioFoundationContractTests(unittest.TestCase):
             "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
             "product_authority_archive_snapshot.schema.json": "product_authority_archive_snapshot.v1",
             "product_authority_register.schema.json": "product_authority_register.v1",
-            "studio_gameplay_system.schema.json": "studio_gameplay_system.v1",
+            "studio_gameplay_system.schema.json": "studio_gameplay_system.v2",
             "studio_gameplay_system_manifest.schema.json": "studio_gameplay_system_manifest.v1",
-            "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v1",
-            "studio_semantic_alignment_input.schema.json": "studio_semantic_alignment_input.v2",
-            "studio_semantic_alignment_review.schema.json": "studio_semantic_alignment_review.v2",
+            "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v2",
+            "studio_semantic_alignment_input.schema.json": "studio_semantic_alignment_input.v3",
+            "studio_semantic_alignment_review.schema.json": "studio_semantic_alignment_review.v3",
             "studio_decision_card_register.schema.json": "studio_decision_card_register.v1",
             "studio_run_state.schema.json": "studio_run_state.v3",
             "studio_workflow_completion.schema.json": "studio_workflow_completion.v2",
@@ -142,6 +142,8 @@ class StudioFoundationContractTests(unittest.TestCase):
         )
         required_checks = set(payload["properties"]["checks"]["required"])
         self.assertIn("authority_continuity", required_checks)
+        self.assertIn("response_binding_fidelity", required_checks)
+        self.assertIn("authority_change_fidelity", required_checks)
         self.assertIn("material_claim_coverage", required_checks)
         self.assertIn("question_necessity", required_checks)
         self.assertIn("semantic_non_substitution", required_checks)

@@ -27,8 +27,8 @@ except ModuleNotFoundError:  # pragma: no cover - direct script invocation.
 
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
-SYSTEM_VERSION = "studio_gameplay_system.v1"
-REVIEW_VERSION = "studio_gameplay_system_review.v1"
+SYSTEM_VERSION = "studio_gameplay_system.v2"
+REVIEW_VERSION = "studio_gameplay_system_review.v2"
 MANIFEST_VERSION = "studio_gameplay_system_manifest.v1"
 READY = "STUDIO_GAMEPLAY_SYSTEM_READY"
 BLOCKED = "BLOCKED_BY_LINEAR_GAMEPLAY"
@@ -51,6 +51,8 @@ REQUIRED_CYCLE_FINDINGS = {
     "reward_changes_next_decision",
     "second_lap_materially_differs",
     "coupled_systems_preserved",
+    "product_boundaries_consistent",
+    "gamification_intent_is_reward_cycle",
     "no_proxy_loop",
 }
 
@@ -188,7 +190,9 @@ def _product_authority(
     input_ref: Any,
     constraints_ref: Any,
     errors: list[str],
-) -> tuple[dict[str, str], dict[str, str], dict[str, str], set[str], set[str]]:
+) -> tuple[
+    dict[str, str], dict[str, str], dict[str, str], set[str], set[str], set[str]
+]:
     product, product_path = _resolve_ref(game_repo, product_ref, "product_authority", errors)
     product_input, input_path = _resolve_ref(game_repo, input_ref, "product_input", errors)
     constraints, constraints_path = _resolve_ref(
@@ -225,8 +229,11 @@ def _product_authority(
                     causal_ids.add(link_id)
 
     constraint_ids: set[str] = set()
+    non_goal_ids: set[str] = set()
     if constraints_path is not None:
         payload = _json(constraints_path, "Factory constraints")
+        if payload.get("schema_version") != "factory_constraints.v2":
+            errors.append("Factory constraints must use factory_constraints.v2")
         if product_input and payload.get("source_input_sha256") != product_input.get("sha256"):
             errors.append("Factory constraints do not bind the exact Product Thesis input")
         constraints_list = payload.get("constraints")
@@ -248,13 +255,30 @@ def _product_authority(
                     )
                     if constraint_id:
                         constraint_ids.add(constraint_id)
+        non_goals = payload.get("non_goals")
+        if not isinstance(non_goals, list) or not non_goals:
+            errors.append("Factory constraints must contain compiled non_goals")
+        else:
+            for index, item in enumerate(non_goals):
+                if not isinstance(item, dict):
+                    errors.append(f"factory non_goals[{index}] must be an object")
+                    continue
+                non_goal_id = _identifier(
+                    item.get("non_goal_id"),
+                    f"factory non_goals[{index}].non_goal_id",
+                    errors,
+                )
+                if non_goal_id in non_goal_ids:
+                    errors.append(f"duplicate product non_goal_id: {non_goal_id}")
+                if non_goal_id:
+                    non_goal_ids.add(non_goal_id)
 
     if product_path is not None and product_input and input_path is not None:
         product_text = product_path.read_text(encoding="utf-8")
         for link_id in causal_ids:
             if f"`{link_id}`" not in product_text:
                 errors.append(f"Product Thesis is missing causal link {link_id}")
-    return product, product_input, constraints, causal_ids, constraint_ids
+    return product, product_input, constraints, causal_ids, constraint_ids, non_goal_ids
 
 
 def _validate_system(
@@ -271,7 +295,8 @@ def _validate_system(
         "factory_constraints", "author_context_id", "system_promise",
         "core_player_verbs", "stages", "state_objects", "transitions",
         "cycle_path", "feedback_state_ids", "coupled_systems",
-        "causal_link_coverage", "constraint_coverage", "two_lap_witness",
+        "causal_link_coverage", "constraint_coverage", "non_goal_coverage",
+        "two_lap_witness",
         "forbidden_linearizations", "authored_at",
     }
     _keys(payload, "Studio gameplay system", required, errors)
@@ -293,7 +318,14 @@ def _validate_system(
     _ids(payload.get("core_player_verbs"), "core_player_verbs", errors)
     _text(payload.get("authored_at"), "authored_at", errors)
 
-    product_ref, input_ref, constraints_ref, causal_ids, constraint_ids = _product_authority(
+    (
+        product_ref,
+        input_ref,
+        constraints_ref,
+        causal_ids,
+        constraint_ids,
+        non_goal_ids,
+    ) = _product_authority(
         game_repo,
         payload.get("product_authority"),
         payload.get("product_input"),
@@ -568,6 +600,51 @@ def _validate_system(
     coverage_ids("causal_link_coverage", causal_ids)
     coverage_ids("constraint_coverage", constraint_ids)
 
+    raw_non_goals = payload.get("non_goal_coverage")
+    if not isinstance(raw_non_goals, list):
+        errors.append("non_goal_coverage must be an array")
+        raw_non_goals = []
+    seen_non_goals: set[str] = set()
+    for index, item in enumerate(raw_non_goals):
+        coverage = _keys(
+            item,
+            f"non_goal_coverage[{index}]",
+            {"non_goal_id", "transition_ids", "status", "rationale"},
+            errors,
+        )
+        non_goal_id = _identifier(
+            coverage.get("non_goal_id"),
+            f"non_goal_coverage[{index}].non_goal_id",
+            errors,
+        )
+        if non_goal_id in seen_non_goals:
+            errors.append(f"duplicate non_goal_coverage id: {non_goal_id}")
+        seen_non_goals.add(non_goal_id)
+        ids = _ids(
+            coverage.get("transition_ids"),
+            f"non_goal_coverage[{index}].transition_ids",
+            errors,
+            allow_empty=True,
+        )
+        if not set(ids).issubset(set(cycle_path)):
+            errors.append(
+                f"non_goal_coverage[{index}] references transitions outside cycle_path"
+            )
+        if coverage.get("status") != "PRESERVED":
+            errors.append(f"non_goal_coverage[{index}].status must be PRESERVED")
+        _text(
+            coverage.get("rationale"),
+            f"non_goal_coverage[{index}].rationale",
+            errors,
+        )
+    if seen_non_goals != non_goal_ids:
+        missing = sorted(non_goal_ids - seen_non_goals)
+        extra = sorted(seen_non_goals - non_goal_ids)
+        if missing:
+            errors.append("non_goal_coverage is missing: " + ", ".join(missing))
+        if extra:
+            errors.append("non_goal_coverage has unknown ids: " + ", ".join(extra))
+
     witness = _keys(
         payload.get("two_lap_witness"),
         "two_lap_witness",
@@ -637,6 +714,7 @@ def _validate_system(
         "constraints_ref": constraints_ref,
         "causal_ids": causal_ids,
         "constraint_ids": constraint_ids,
+        "non_goal_ids": non_goal_ids,
         "transition_ids": set(transitions),
         "feedback_state_ids": feedback_state_ids,
     }
@@ -658,8 +736,9 @@ def _validate_review(
         "schema_version", "review_id", "review_role", "project_id", "system_id",
         "cycle_id", "factory_revision", "gameplay_system", "reviewer_context_id",
         "reviewer_freshness", "causal_link_ids_reviewed",
-        "constraint_ids_reviewed", "transition_ids_reviewed", "cycle_findings",
-        "blocking_findings", "verdict", "reviewed_at",
+        "constraint_ids_reviewed", "non_goal_ids_reviewed",
+        "transition_ids_reviewed", "cycle_findings", "blocking_findings",
+        "verdict", "reviewed_at",
     }
     _keys(payload, f"{expected_role} review", required, errors)
     if payload.get("schema_version") != REVIEW_VERSION:
@@ -700,6 +779,12 @@ def _validate_review(
         errors,
         allow_empty=expected_role == "CYCLE_CLOSURE",
     ))
+    non_goals = set(_ids(
+        payload.get("non_goal_ids_reviewed"),
+        f"{expected_role}.non_goal_ids_reviewed",
+        errors,
+        allow_empty=expected_role == "CYCLE_CLOSURE",
+    ))
     transitions = set(_ids(
         payload.get("transition_ids_reviewed"),
         f"{expected_role}.transition_ids_reviewed",
@@ -710,6 +795,8 @@ def _validate_review(
             errors.append("PRODUCT_FIDELITY review must cover every product causal link")
         if constraints != validated.get("constraint_ids", set()):
             errors.append("PRODUCT_FIDELITY review must cover every applicable constraint")
+        if non_goals != validated.get("non_goal_ids", set()):
+            errors.append("PRODUCT_FIDELITY review must cover every product non-goal")
     if transitions != validated.get("transition_ids", set()):
         errors.append(f"{expected_role} review must cover every system transition")
     findings = _keys(

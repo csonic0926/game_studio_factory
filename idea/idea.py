@@ -28,7 +28,7 @@ from typing import Any
 INPUT_SCHEMA_VERSION = "product_thesis_input.v2"
 EXPLORATION_SCHEMA_VERSION = "idea_exploration.v1"
 PROBE_SCHEMA_VERSION = "idea_factory_repo_probe.v2"
-CONSTRAINTS_SCHEMA_VERSION = "factory_constraints.v1"
+CONSTRAINTS_SCHEMA_VERSION = "factory_constraints.v2"
 RESULT_SCHEMA_VERSION = "idea_factory_result.v1"
 
 IDEA_EXPLORATION_REQUIRED = "IDEA_EXPLORATION_REQUIRED"
@@ -1497,11 +1497,14 @@ def _render_constraints(payload: dict[str, Any], input_sha256: str) -> str:
         "source_input_sha256": input_sha256,
         "product_thesis_path": THESIS_RELATIVE.as_posix(),
         "constraints": payload["factory_constraints"],
+        "non_goals": payload["non_goals"],
         "validation_hypotheses": payload["validation_hypotheses"],
         "decision_authority_index": decisions,
         "consumer_rule": (
-            "Factories must obey constraints applying to them. Validation hypotheses are "
-            "uncertain tests, not binding product facts. A contradiction returns to Idea Factory."
+            "Factories must obey applicable constraints and preserve every non-goal. "
+            "Non-goals may bound a mechanic but may not silently erase a declared product "
+            "causal or reward loop. Validation hypotheses are uncertain tests, not binding "
+            "product facts. A contradiction returns to Idea Factory."
         ),
     }
     return _json_text(value)

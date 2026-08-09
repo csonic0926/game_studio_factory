@@ -1,5 +1,5 @@
 {
-  "schema_version": "studio_gameplay_system_review.v1",
+  "schema_version": "studio_gameplay_system_review.v2",
   "review_id": "<REVIEW_ID>",
   "review_role": "PRODUCT_FIDELITY | CYCLE_CLOSURE",
   "project_id": "<PROJECT_ID>",
@@ -11,8 +11,9 @@
   "reviewer_freshness": "FRESH",
   "causal_link_ids_reviewed": ["<EVERY_PRODUCT_CAUSAL_LINK_FOR_PRODUCT_FIDELITY>"],
   "constraint_ids_reviewed": ["<EVERY_APPLICABLE_CONSTRAINT_FOR_PRODUCT_FIDELITY>"],
+  "non_goal_ids_reviewed": ["<EVERY_PRODUCT_NON_GOAL_FOR_PRODUCT_FIDELITY>"],
   "transition_ids_reviewed": ["<EVERY_TRANSITION_ID>"],
-  "cycle_findings": {"closed_graph": "PASS", "reward_changes_next_decision": "PASS", "second_lap_materially_differs": "PASS", "coupled_systems_preserved": "PASS", "no_proxy_loop": "PASS"},
+  "cycle_findings": {"closed_graph": "PASS", "reward_changes_next_decision": "PASS", "second_lap_materially_differs": "PASS", "coupled_systems_preserved": "PASS", "product_boundaries_consistent": "PASS", "gamification_intent_is_reward_cycle": "PASS", "no_proxy_loop": "PASS"},
   "blocking_findings": [],
   "verdict": "PASS_SYSTEM_REVIEW",
   "reviewed_at": "<ISO_8601_DATETIME>"

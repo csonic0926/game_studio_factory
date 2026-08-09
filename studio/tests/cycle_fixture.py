@@ -53,9 +53,13 @@ def write_valid_cycle(
         repo,
         constraints_relative,
         {
+            "schema_version": "factory_constraints.v2",
             "source_input_sha256": product_input_ref["sha256"],
             "constraints": [
                 {"constraint_id": "core-must-cycle", "factories": ["all"]}
+            ],
+            "non_goals": [
+                {"non_goal_id": "no-attendance-proxy"}
             ],
         },
     )
@@ -121,7 +125,7 @@ def write_valid_cycle(
         },
     ]
     system = {
-        "schema_version": "studio_gameplay_system.v1",
+        "schema_version": "studio_gameplay_system.v2",
         "status": READY,
         "system_id": "core",
         "cycle_id": "choice-reward-cycle",
@@ -163,6 +167,12 @@ def write_valid_cycle(
             "transition_ids": ["decide", "reward", "return"],
             "status": "REALIZED_IN_CYCLE",
         }],
+        "non_goal_coverage": [{
+            "non_goal_id": "no-attendance-proxy",
+            "transition_ids": ["reward", "return"],
+            "status": "PRESERVED",
+            "rationale": "The cycle returns through changed opportunity rather than attendance rewards.",
+        }],
         "two_lap_witness": {
             "lap_one": {
                 "player_goal": "Prove the first choice.",
@@ -198,7 +208,7 @@ def write_valid_cycle(
     ):
         relative = f"{root}/STUDIO_GAMEPLAY_SYSTEM_REVIEW_{suffix}.json"
         _write_json(repo, relative, {
-            "schema_version": "studio_gameplay_system_review.v1",
+            "schema_version": "studio_gameplay_system_review.v2",
             "review_id": f"core-{suffix.lower()}-review",
             "review_role": role,
             "project_id": project_id,
@@ -210,11 +220,15 @@ def write_valid_cycle(
             "reviewer_freshness": "FRESH",
             "causal_link_ids_reviewed": causal if role == "PRODUCT_FIDELITY" else [],
             "constraint_ids_reviewed": constraints if role == "PRODUCT_FIDELITY" else [],
+            "non_goal_ids_reviewed": ["no-attendance-proxy"] if role == "PRODUCT_FIDELITY" else [],
             "transition_ids_reviewed": transition_ids,
             "cycle_findings": {
                 "closed_graph": "PASS", "reward_changes_next_decision": "PASS",
                 "second_lap_materially_differs": "PASS",
-                "coupled_systems_preserved": "PASS", "no_proxy_loop": "PASS",
+                "coupled_systems_preserved": "PASS",
+                "product_boundaries_consistent": "PASS",
+                "gamification_intent_is_reward_cycle": "PASS",
+                "no_proxy_loop": "PASS",
             },
             "blocking_findings": [],
             "verdict": "PASS_SYSTEM_REVIEW",

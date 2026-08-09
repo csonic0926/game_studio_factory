@@ -114,7 +114,12 @@ For Studio-managed repositories, successful compile/check is followed by
 ## Downstream ownership
 
 `PRODUCT_THESIS.md` and `FACTORY_CONSTRAINTS.json` remain canonical downstream
-authority. `IDEA_EXPLORATION.md` never constrains Story, Gameplay, Asset, Sound,
+authority. Compiled Factory Constraints include every product non-goal so a
+downstream product-fidelity review cannot silently ignore a boundary. A
+non-goal may narrow mechanics or scope, but cannot erase a declared causal or
+reward loop. In particular, gamification/positive-feedback intent remains a
+cycle obligation even when the underlying service is not conventional
+gameplay. `IDEA_EXPLORATION.md` never constrains Story, Gameplay, Asset, Sound,
 or production. Downstream factories must ignore uncommissioned exploration and
 return product-level contradictions to Idea Factory.
 

@@ -557,6 +557,12 @@ class IdeaFactoryTests(unittest.TestCase):
         self._write_input(self._payload("USER_FIXED"))
         result = compile_product_thesis(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(IDEA_FACTORY_READY, result.status)
+        compiled = json.loads((self.game_repo / CONSTRAINTS_RELATIVE).read_text())
+        self.assertEqual("factory_constraints.v2", compiled["schema_version"])
+        self.assertEqual(
+            ["mass-market-volume"],
+            [item["non_goal_id"] for item in compiled["non_goals"]],
+        )
 
     def test_ai_delegated_without_authorization_is_rejected(self) -> None:
         payload = self._payload()

@@ -1,24 +1,26 @@
 {
-  "schema_version": "studio_semantic_alignment_input.v2",
+  "schema_version": "studio_semantic_alignment_input.v3",
   "interaction_id": "<INTERACTION_ID>",
   "project_id": "<PROJECT_ID>",
   "factory_revision": "<FACTORY_GIT_REVISION>",
   "trigger": "MATERIAL_USER_INPUT | REVISED_AUTHORITY | HUMAN_DECISION_SURFACE | BLOCKING_HUMAN_QUESTION",
   "author_context_id": "<CANDIDATE_OUTPUT_AUTHOR_CONTEXT_ID>",
   "user_input": {"text": "<EXACT_RAW_USER_INPUT>", "sha256": "<SHA256_OF_EXACT_UTF8_TEXT>"},
+  "response_bindings": [],
   "active_authorities": [
     {"authority_id": "product.current", "authority_kind": "PRODUCT", "artifact": {"path": "design/product/PRODUCT_THESIS.md", "sha256": "<SHA256>"}}
   ],
+  "authority_changes": [],
   "pending_decisions": [
     {"decision_payload_sha256": "<PENDING_PAYLOAD_SHA256>", "decision_card": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD.json", "sha256": "<SHA256>"}, "disposition": "PRESERVE_PENDING | SUPERSEDE_PENDING | WITHDRAW_BY_PRODUCT_ARCHIVE"}
   ],
   "input_deltas": [
-    {"delta_id": "delta.1", "source_quote": "<EXACT_USER_QUOTE>", "classification": "ADD | MODIFY | REVOKE | AMBIGUOUS", "target_authority_ids": ["product.current"], "interpretation": "<BOUNDED_INTERPRETATION>"}
+    {"delta_id": "delta.1", "source_quote": "<EXACT_USER_QUOTE>", "response_binding_ids": [], "classification": "ADD | MODIFY | REVOKE | AMBIGUOUS", "target_authority_ids": ["product.current"], "interpretation": "<BOUNDED_INTERPRETATION>"}
   ],
-  "proposed_transition": "CONTINUE_EXISTING_AUTHORITY | REOPEN_PRODUCT_EXPLORATION | REVISE_STUDIO_GAMEPLAY_SYSTEM | REVISE_DECISION_CARD | REQUEST_HUMAN_RULING | NO_MATERIAL_CHANGE | ARCHIVE_PRODUCT_DIRECTION",
+  "proposed_transition": "CONTINUE_EXISTING_AUTHORITY | REOPEN_PRODUCT_EXPLORATION | ACTIVATE_PRODUCT_AUTHORITY | REVISE_STUDIO_GAMEPLAY_SYSTEM | REVISE_DECISION_CARD | REQUEST_HUMAN_RULING | NO_MATERIAL_CHANGE | ARCHIVE_PRODUCT_DIRECTION",
   "candidate_output": {"kind": "DECISION_SURFACE | HUMAN_QUESTION | MATERIAL_RESPONSE", "text": "<EXACT_CANDIDATE_USER_FACING_TEXT>", "sha256": "<SHA256_OF_EXACT_UTF8_TEXT>"},
   "output_claims": [
-    {"claim_id": "output.1", "output_quote": "<ONE_COMPLETE_MATERIAL_OUTPUT_LINE>", "provenance": "PRESERVED_AUTHORITY | NEW_USER_INPUT | REPO_EVIDENCE | REFERENCE_EVIDENCE | AI_SYNTHESIS | AI_HYPOTHESIS", "source_authority_ids": ["product.current"], "source_quotes": ["<EXACT_SOURCE_QUOTE_IF_APPLICABLE>"]}
+    {"claim_id": "output.1", "output_quote": "<ONE_COMPLETE_MATERIAL_OUTPUT_LINE>", "provenance": "PRESERVED_AUTHORITY | NEW_USER_INPUT | BOUND_USER_RESPONSE | REPO_EVIDENCE | REFERENCE_EVIDENCE | AI_SYNTHESIS | AI_HYPOTHESIS", "source_authority_ids": ["product.current"], "source_response_binding_ids": [], "source_quotes": ["<EXACT_SOURCE_QUOTE_IF_APPLICABLE>"]}
   ],
   "human_questions": [],
   "authored_at": "<ISO_8601_DATETIME>"

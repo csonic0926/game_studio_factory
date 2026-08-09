@@ -15,7 +15,8 @@ turn.
    repo. Never scan sibling repos.
 2. Read `<STUDIO_ROOT>/studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
 3. Read the exact `STUDIO_SEMANTIC_ALIGNMENT_INPUT.json`, every referenced
-   active authority and pending card, and the exact candidate output.
+   active authority, response-bound prior surface, changed authority artifact,
+   pending card, and the exact candidate output.
 4. Do not rely on the candidate author's summary when a bound artifact exists.
 
 ## Independence and authority boundary
@@ -45,6 +46,11 @@ Check all nine schema findings. In particular:
 - no new user statement, repository fact, preserved authority, or AI
   hypothesis is mislabeled as another category;
 - every material candidate claim has exact provenance;
+- a short answer such as `b` is user authority only when it selects an exact
+  option on the bound, reviewed prior surface; never reconstruct the option
+  after receiving the answer or relabel it as repository evidence;
+- every `authority_changes` artifact is semantically faithful to the raw or
+  bound user input, not merely schema-valid;
 - independently enumerate every complete material candidate line; do not trust
   the author's selected `output_claims` as a complete inventory;
 - classify external-source support as `REFERENCE_EVIDENCE`, proposed framing as
@@ -54,7 +60,16 @@ Check all nine schema findings. In particular:
   authority or discoverable repository evidence;
 - no ledger, timer, observation, animation, replay prompt, completed code, or
   AI review substitutes for the semantic object the user requested;
+- “this service does not need conventional gameplay” does not mean “remove its
+  reward loop” when the same user input requests gamification, positive
+  feedback, repeated motivation, or a cycle; such intent must become a real
+  decision/reward/reinvestment loop unless the user explicitly rejects that
+  interpretation after the distinction is made;
 - every pending card has an explicit, justified disposition;
+- distinguish a broken current transition from downstream work that is simply
+  not due yet; if Studio has only reached the first valid gameplay cycle/card,
+  absent unit breakdown, plans, specs, or implementation are unfinished stages,
+  not evidence that the current transition misaligned;
 - the user-facing surface is the shortest surface sufficient for the genuine
   decision.
 

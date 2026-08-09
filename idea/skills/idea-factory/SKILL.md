@@ -75,6 +75,9 @@ adoption/freeze/commission authorize a Product Thesis. Then:
    exploration path, and exact SHA-256 in `PRODUCT_THESIS_INPUT.json` v2;
 3. use normal decision authority (`USER_FIXED`, `REPO_COMMITMENT`,
    `AI_RECOMMENDED`, `AI_DELEGATED`, `VALIDATION_REQUIRED`);
+   do not expand “this service does not need conventional gameplay” into “no
+   reward loop” when the input also requests gamification or positive repeat
+   motivation;
 4. run `compile` and `check` as directed by `idea/AGENTS.md`.
 
 The compiler rejects no-fit/open/multi-direction exploration and rejects AI
@@ -89,6 +92,8 @@ the caller—record the newly compiled authority before returning:
 python3 <STUDIO_ROOT>/studio/product.py activate \
   --game-repo <GAME_REPO> \
   --authority-id <SELECTED_DIRECTION_ID> \
+  --alignment-input <ACTIVATION_ALIGNMENT_INPUT> \
+  --alignment-review <ACTIVATION_ALIGNMENT_REVIEW> \
   --recorded-at <ISO_8601>
 ```
 

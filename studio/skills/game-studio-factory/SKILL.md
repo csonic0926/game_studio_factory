@@ -45,6 +45,11 @@ claim provenance, and any question. Spawn one fresh subagent/context using the
 `PASS_ALIGNMENT` or `HUMAN_RULING_GENUINELY_REQUIRED` may reach the user. Do
 not ask the user to name this workflow or rewrite ordinary language as a
 Factory brief.
+When a reply is elliptical (`b`, `yes`, `that one`), bind it to the exact
+reviewed prior question/option before treating the selected meaning as user
+authority. Include every internal Product/system/card/plan artifact changed by
+the interpretation in the same review; a compact human surface is not a waiver
+for hidden authority drift.
 
 Run `studio/product.py status` before trusting a canonical Product Thesis or an
 old accepted baseline. `NO_ACTIVE_PRODUCT_AUTHORITY` routes to Idea exploration
@@ -58,6 +63,9 @@ language. After a new Idea commission compiles and checks, run
 - Missing/open product direction: invoke `idea-factory`. After the Product
   Thesis is commissioned, follow `studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`;
   Studio—not Gameplay Factory—must synthesize the exact closed gameplay system.
+  A gamification or positive-feedback intent is a reward-loop obligation even
+  when the underlying service is not conventional gameplay. Preserve that
+  distinction through Product non-goals and product-fidelity review.
 - Run `python3 <STUDIO_ROOT>/studio/baseline.py start --game-repo <GAME_REPO>`.
   `BASELINE_RECONSTRUCTION_INPUT_REQUIRED` means freshly reconstruct the whole
   currently playable baseline; `BASELINE_PROMOTION_INPUT_REQUIRED` means bind

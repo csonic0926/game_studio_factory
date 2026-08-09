@@ -30,8 +30,8 @@ from typing import Any
 
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
-ALIGNMENT_INPUT_VERSION = "studio_semantic_alignment_input.v2"
-ALIGNMENT_REVIEW_VERSION = "studio_semantic_alignment_review.v2"
+ALIGNMENT_INPUT_VERSION = "studio_semantic_alignment_input.v3"
+ALIGNMENT_REVIEW_VERSION = "studio_semantic_alignment_review.v3"
 DECISION_REGISTER_VERSION = "studio_decision_card_register.v1"
 DECISION_REGISTER_PATH = "design/studio/STUDIO_DECISION_CARD_REGISTER.json"
 
@@ -42,7 +42,9 @@ PRESENTABLE_VERDICTS = {PASS_ALIGNMENT, HUMAN_RULING_GENUINELY_REQUIRED}
 
 ALIGNMENT_CHECKS = {
     "input_delta_complete",
+    "response_binding_fidelity",
     "authority_continuity",
+    "authority_change_fidelity",
     "claim_provenance",
     "material_claim_coverage",
     "question_necessity",
@@ -70,6 +72,7 @@ DELTA_CLASSES = {"ADD", "MODIFY", "REVOKE", "AMBIGUOUS"}
 PROPOSED_TRANSITIONS = {
     "CONTINUE_EXISTING_AUTHORITY",
     "REOPEN_PRODUCT_EXPLORATION",
+    "ACTIVATE_PRODUCT_AUTHORITY",
     "REVISE_STUDIO_GAMEPLAY_SYSTEM",
     "REVISE_DECISION_CARD",
     "REQUEST_HUMAN_RULING",
@@ -80,10 +83,23 @@ OUTPUT_KINDS = {"DECISION_SURFACE", "HUMAN_QUESTION", "MATERIAL_RESPONSE"}
 CLAIM_PROVENANCE = {
     "PRESERVED_AUTHORITY",
     "NEW_USER_INPUT",
+    "BOUND_USER_RESPONSE",
     "REPO_EVIDENCE",
     "REFERENCE_EVIDENCE",
     "AI_SYNTHESIS",
     "AI_HYPOTHESIS",
+}
+AUTHORITY_CHANGE_OPERATIONS = {"CREATE", "REVISE", "ACTIVATE", "SUPERSEDE", "ARCHIVE"}
+AUTHORITY_CHANGE_KINDS = {
+    "IDEA_EXPLORATION",
+    "PRODUCT_AUTHORITY_INPUT",
+    "PRODUCT_THESIS",
+    "FACTORY_CONSTRAINTS",
+    "IDEA_FACTORY_RESULT",
+    "STUDIO_GAMEPLAY_SYSTEM",
+    "GAMEPLAY_DECISION_CARD",
+    "ACCEPTED_BASELINE",
+    "PRODUCTION_PLAN",
 }
 PENDING_DISPOSITIONS = {
     "PRESERVE_PENDING",
@@ -116,6 +132,8 @@ class AlignmentValidationResult:
     candidate_output_kind: str = ""
     candidate_output_sha256: str = ""
     review_verdict: str = ""
+    proposed_transition: str = ""
+    authority_changes: list[dict[str, Any]] = field(default_factory=list)
 
 
 def text_sha256(text: str) -> str:
@@ -151,10 +169,6 @@ def material_output_lines(text: str, question_quotes: list[str] | None = None) -
         if line.startswith("Decision payload:") or line.startswith("Reply:"):
             continue
         if line in questions:
-            continue
-        # Markdown-only section labels such as **Why this direction:** carry no
-        # proposition by themselves.  A bold prefix plus following prose does.
-        if re.fullmatch(r"\*\*[^*]+\*\*:?", line):
             continue
         material.append(line)
     return material
@@ -299,6 +313,140 @@ def path_ref(game_repo: Path, path: Path) -> dict[str, str]:
     return {"path": relative, "sha256": file_sha256(resolved)}
 
 
+def _validated_prior_option(
+    game_repo: Path,
+    raw: Any,
+    label: str,
+    *,
+    current_user_text: str,
+    errors: list[str],
+) -> tuple[str, dict[str, str]]:
+    """Bind an elliptical reply to one exact option on a reviewed prior surface."""
+
+    item = _keys(
+        raw,
+        label,
+        {
+            "binding_id", "response_quote", "prior_alignment_input",
+            "prior_alignment_review", "question_id", "selected_option_id",
+            "selected_option_quote",
+        },
+        errors,
+    )
+    binding_id = _identifier(item.get("binding_id"), f"{label}.binding_id", errors)
+    response_quote = _text(item.get("response_quote"), f"{label}.response_quote", errors)
+    if response_quote and response_quote not in current_user_text:
+        errors.append(f"{label}.response_quote is not exact current user input text")
+    question_id = _identifier(item.get("question_id"), f"{label}.question_id", errors)
+    option_id = _identifier(
+        item.get("selected_option_id"), f"{label}.selected_option_id", errors
+    )
+    option_quote = _text(
+        item.get("selected_option_quote"), f"{label}.selected_option_quote", errors
+    )
+    prior_input_ref, prior_input_path = _resolve_ref(
+        game_repo, item.get("prior_alignment_input"), f"{label}.prior_alignment_input", errors
+    )
+    _, prior_review_path = _resolve_ref(
+        game_repo, item.get("prior_alignment_review"), f"{label}.prior_alignment_review", errors
+    )
+    if prior_input_path is None or prior_review_path is None:
+        return binding_id, {
+            "response_quote": response_quote,
+            "selected_option_quote": option_quote,
+        }
+
+    prior_input = _load_json(prior_input_path, f"{label} prior alignment input")
+    prior_review = _load_json(prior_review_path, f"{label} prior alignment review")
+    if prior_input.get("schema_version") != ALIGNMENT_INPUT_VERSION:
+        errors.append(f"{label} prior input cannot expose bindable answer options")
+    if prior_review.get("schema_version") != ALIGNMENT_REVIEW_VERSION:
+        errors.append(f"{label} prior review does not use the current binding contract")
+    if prior_input.get("project_id") != prior_review.get("project_id"):
+        errors.append(f"{label} prior alignment project ids do not match")
+    if prior_input.get("factory_revision") != prior_review.get("factory_revision"):
+        errors.append(f"{label} prior alignment Factory revisions do not match")
+    review_bound_input = prior_review.get("alignment_input")
+    if review_bound_input != prior_input_ref:
+        errors.append(f"{label} prior review does not bind the exact prior input")
+    if prior_review.get("reviewer_context_id") == prior_input.get("author_context_id"):
+        errors.append(f"{label} prior surface was self-reviewed")
+    if prior_review.get("reviewer_freshness") != "FRESH":
+        errors.append(f"{label} prior surface lacks a fresh reviewer")
+    if prior_review.get("verdict") not in PRESENTABLE_VERDICTS:
+        errors.append(f"{label} prior surface was not presentable")
+    if prior_review.get("blocking_findings") != []:
+        errors.append(f"{label} prior surface contains blocking findings")
+    prior_checks = prior_review.get("checks")
+    if (
+        not isinstance(prior_checks, dict)
+        or set(prior_checks) != ALIGNMENT_CHECKS
+        or any(value != "PASS" for value in prior_checks.values())
+    ):
+        errors.append(f"{label} prior surface review did not pass every recorded check")
+
+    candidate = prior_input.get("candidate_output")
+    candidate_text = candidate.get("text", "") if isinstance(candidate, dict) else ""
+    candidate_sha = candidate.get("sha256", "") if isinstance(candidate, dict) else ""
+    if not candidate_text or text_sha256(candidate_text) != candidate_sha:
+        errors.append(f"{label} prior surface does not bind its exact candidate text")
+    questions = prior_input.get("human_questions")
+    if not isinstance(questions, list):
+        questions = []
+    matched_questions = [
+        question
+        for question in questions
+        if isinstance(question, dict) and question.get("question_id") == question_id
+    ]
+    if len(matched_questions) != 1:
+        errors.append(f"{label}.question_id does not identify one prior question")
+        return binding_id, {
+            "response_quote": response_quote,
+            "selected_option_quote": option_quote,
+        }
+    options = matched_questions[0].get("answer_options")
+    if not isinstance(options, list):
+        options = []
+    matched_options = [
+        option
+        for option in options
+        if isinstance(option, dict) and option.get("option_id") == option_id
+    ]
+    if len(matched_options) != 1:
+        errors.append(f"{label}.selected_option_id does not identify one prior option")
+        return binding_id, {
+            "response_quote": response_quote,
+            "selected_option_quote": option_quote,
+        }
+    option = matched_options[0]
+    if option.get("option_quote") != option_quote:
+        errors.append(f"{label}.selected_option_quote does not match the prior option")
+    output_lines = {line.strip() for line in candidate_text.splitlines() if line.strip()}
+    if option_quote not in output_lines:
+        errors.append(f"{label}.selected_option_quote was not one exact prior surface line")
+    question_quotes = [
+        str(question.get("question_quote", ""))
+        for question in questions
+        if isinstance(question, dict)
+    ]
+    expected_inventory = set(material_output_lines(candidate_text, question_quotes))
+    inventory = prior_review.get("independent_claim_inventory")
+    inventoried = {
+        str(entry.get("candidate_output_quote", "")).strip()
+        for entry in inventory
+        if isinstance(entry, dict) and entry.get("status") == "PASS"
+    } if isinstance(inventory, list) else set()
+    if inventoried != expected_inventory:
+        errors.append(f"{label} prior reviewer did not inventory the exact prior surface")
+    tokens = option.get("accepted_response_tokens")
+    if not isinstance(tokens, list) or response_quote.strip() not in tokens:
+        errors.append(f"{label}.response_quote is not an accepted token for the selected option")
+    return binding_id, {
+        "response_quote": response_quote,
+        "selected_option_quote": option_quote,
+    }
+
+
 def _validate_alignment_input(
     game_repo: Path,
     payload: dict[str, Any],
@@ -308,9 +456,10 @@ def _validate_alignment_input(
 ) -> dict[str, Any]:
     required = {
         "schema_version", "interaction_id", "project_id", "factory_revision",
-        "trigger", "author_context_id", "user_input", "active_authorities",
-        "pending_decisions", "input_deltas", "proposed_transition",
-        "candidate_output", "output_claims", "human_questions", "authored_at",
+        "trigger", "author_context_id", "user_input", "response_bindings",
+        "active_authorities", "authority_changes", "pending_decisions",
+        "input_deltas", "proposed_transition", "candidate_output",
+        "output_claims", "human_questions", "authored_at",
     }
     _keys(payload, "semantic alignment input", required, errors)
     if payload.get("schema_version") != ALIGNMENT_INPUT_VERSION:
@@ -347,6 +496,30 @@ def _validate_alignment_input(
     if user_text and user_sha and text_sha256(user_text) != user_sha:
         errors.append("alignment input user_input SHA does not match its exact text")
 
+    raw_bindings = payload.get("response_bindings")
+    if not isinstance(raw_bindings, list):
+        errors.append("alignment input.response_bindings must be an array")
+        raw_bindings = []
+    response_binding_ids: set[str] = set()
+    response_bindings: dict[str, dict[str, str]] = {}
+    for index, raw in enumerate(raw_bindings):
+        binding_id, binding = _validated_prior_option(
+            game_repo,
+            raw,
+            f"response_bindings[{index}]",
+            current_user_text=user_text,
+            errors=errors,
+        )
+        if binding_id in response_binding_ids:
+            errors.append(f"duplicate response binding_id: {binding_id}")
+        if binding_id:
+            response_binding_ids.add(binding_id)
+            response_bindings[binding_id] = binding
+    if re.fullmatch(r"[A-Za-z0-9]", user_text.strip()) and not response_bindings:
+        errors.append(
+            "one-token user reply requires an exact binding to the reviewed prior option"
+        )
+
     active = payload.get("active_authorities")
     if not isinstance(active, list):
         errors.append("alignment input.active_authorities must be an array")
@@ -377,6 +550,45 @@ def _validate_alignment_input(
         )
         if authority_id and authority_path is not None:
             authority_paths[authority_id] = authority_path
+
+    raw_changes = payload.get("authority_changes")
+    if not isinstance(raw_changes, list):
+        errors.append("alignment input.authority_changes must be an array")
+        raw_changes = []
+    authority_change_ids: set[str] = set()
+    authority_changes: list[dict[str, Any]] = []
+    for index, raw in enumerate(raw_changes):
+        item = _keys(
+            raw,
+            f"authority_changes[{index}]",
+            {"change_id", "operation", "authority_kind", "artifact"},
+            errors,
+        )
+        change_id = _identifier(
+            item.get("change_id"), f"authority_changes[{index}].change_id", errors
+        )
+        if change_id in authority_change_ids:
+            errors.append(f"duplicate authority change_id: {change_id}")
+        authority_change_ids.add(change_id)
+        if item.get("operation") not in AUTHORITY_CHANGE_OPERATIONS:
+            errors.append(f"authority_changes[{index}].operation is unsupported")
+        if item.get("authority_kind") not in AUTHORITY_CHANGE_KINDS:
+            errors.append(f"authority_changes[{index}].authority_kind is unsupported")
+        artifact_ref, artifact_path = _resolve_ref(
+            game_repo,
+            item.get("artifact"),
+            f"authority_changes[{index}].artifact",
+            errors,
+        )
+        if change_id and artifact_path is not None:
+            authority_changes.append(
+                {
+                    "change_id": change_id,
+                    "operation": item.get("operation"),
+                    "authority_kind": item.get("authority_kind"),
+                    "artifact": artifact_ref,
+                }
+            )
 
     pending = payload.get("pending_decisions")
     if not isinstance(pending, list):
@@ -417,7 +629,10 @@ def _validate_alignment_input(
         item = _keys(
             raw,
             f"input_deltas[{index}]",
-            {"delta_id", "source_quote", "classification", "target_authority_ids", "interpretation"},
+            {
+                "delta_id", "source_quote", "response_binding_ids",
+                "classification", "target_authority_ids", "interpretation",
+            },
             errors,
         )
         delta_id = _identifier(item.get("delta_id"), f"input_deltas[{index}].delta_id", errors)
@@ -427,6 +642,24 @@ def _validate_alignment_input(
         quote = _text(item.get("source_quote"), f"input_deltas[{index}].source_quote", errors)
         if quote and quote not in user_text:
             errors.append(f"input_deltas[{index}].source_quote is not exact user input text")
+        delta_bindings = _string_list(
+            item.get("response_binding_ids"),
+            f"input_deltas[{index}].response_binding_ids",
+            errors,
+        )
+        for binding_id in delta_bindings:
+            if binding_id not in response_binding_ids:
+                errors.append(
+                    f"input_deltas[{index}] references unknown response binding_id {binding_id}"
+                )
+        if delta_bindings and quote not in {
+            response_bindings[binding_id]["response_quote"]
+            for binding_id in delta_bindings
+            if binding_id in response_bindings
+        }:
+            errors.append(
+                f"input_deltas[{index}].source_quote does not match its bound response"
+            )
         if item.get("classification") not in DELTA_CLASSES:
             errors.append(f"input_deltas[{index}].classification is unsupported")
         targets = _string_list(
@@ -472,7 +705,10 @@ def _validate_alignment_input(
         item = _keys(
             raw,
             f"output_claims[{index}]",
-            {"claim_id", "output_quote", "provenance", "source_authority_ids", "source_quotes"},
+            {
+                "claim_id", "output_quote", "provenance", "source_authority_ids",
+                "source_response_binding_ids", "source_quotes",
+            },
             errors,
         )
         claim_id = _identifier(item.get("claim_id"), f"output_claims[{index}].claim_id", errors)
@@ -501,6 +737,16 @@ def _validate_alignment_input(
         for source_id in source_ids:
             if source_id not in authority_ids:
                 errors.append(f"output_claims[{index}] references unknown authority_id {source_id}")
+        source_binding_ids = _string_list(
+            item.get("source_response_binding_ids"),
+            f"output_claims[{index}].source_response_binding_ids",
+            errors,
+        )
+        for binding_id in source_binding_ids:
+            if binding_id not in response_binding_ids:
+                errors.append(
+                    f"output_claims[{index}] references unknown response binding_id {binding_id}"
+                )
         source_quotes = _string_list(
             item.get("source_quotes"), f"output_claims[{index}].source_quotes", errors
         )
@@ -545,6 +791,10 @@ def _validate_alignment_input(
                 f"output_claims[{index}] AI_SYNTHESIS requires the inputs it synthesizes"
             )
         if provenance == "NEW_USER_INPUT":
+            if source_binding_ids:
+                errors.append(
+                    f"output_claims[{index}] NEW_USER_INPUT cannot cite a prior response binding"
+                )
             if not source_quotes:
                 errors.append(f"output_claims[{index}] requires exact user source_quotes")
             for source_quote in source_quotes:
@@ -552,6 +802,23 @@ def _validate_alignment_input(
                     errors.append(
                         f"output_claims[{index}].source_quotes contains text absent from user input"
                     )
+        if provenance == "BOUND_USER_RESPONSE":
+            if not source_binding_ids:
+                errors.append(
+                    f"output_claims[{index}] BOUND_USER_RESPONSE requires a response binding"
+                )
+            required_quotes: set[str] = set()
+            for binding_id in source_binding_ids:
+                binding = response_bindings.get(binding_id)
+                if binding is not None:
+                    required_quotes.add(binding["response_quote"])
+                    required_quotes.add(binding["selected_option_quote"])
+            missing_quotes = sorted(required_quotes - set(source_quotes))
+            if missing_quotes:
+                errors.append(
+                    f"output_claims[{index}] BOUND_USER_RESPONSE is missing exact "
+                    "response/option source quotes: " + ", ".join(missing_quotes)
+                )
         if provenance in authority_provenance:
             readable_sources: list[str] = []
             for source_id in source_ids:
@@ -584,7 +851,10 @@ def _validate_alignment_input(
         item = _keys(
             raw,
             f"human_questions[{index}]",
-            {"question_id", "question_quote", "material_consequence", "searched_authority_ids", "why_unresolved"},
+            {
+                "question_id", "question_quote", "answer_options",
+                "material_consequence", "searched_authority_ids", "why_unresolved",
+            },
             errors,
         )
         question_id = _identifier(item.get("question_id"), f"human_questions[{index}].question_id", errors)
@@ -599,6 +869,50 @@ def _validate_alignment_input(
         output_lines = {line.strip() for line in output_text.splitlines() if line.strip()}
         if quote and quote.strip() not in output_lines:
             errors.append(f"human_questions[{index}].question_quote must cover a complete candidate line")
+        options = item.get("answer_options")
+        if not isinstance(options, list):
+            errors.append(f"human_questions[{index}].answer_options must be an array")
+            options = []
+        option_ids: set[str] = set()
+        option_tokens: set[str] = set()
+        for option_index, raw_option in enumerate(options):
+            option = _keys(
+                raw_option,
+                f"human_questions[{index}].answer_options[{option_index}]",
+                {"option_id", "option_quote", "accepted_response_tokens"},
+                errors,
+            )
+            option_id = _identifier(
+                option.get("option_id"),
+                f"human_questions[{index}].answer_options[{option_index}].option_id",
+                errors,
+            )
+            if option_id in option_ids:
+                errors.append(f"human_questions[{index}] has duplicate option_id {option_id}")
+            option_ids.add(option_id)
+            option_quote = _text(
+                option.get("option_quote"),
+                f"human_questions[{index}].answer_options[{option_index}].option_quote",
+                errors,
+            )
+            if option_quote and option_quote not in output_lines:
+                errors.append(
+                    f"human_questions[{index}].answer_options[{option_index}].option_quote "
+                    "must be one exact candidate line"
+                )
+            tokens = _string_list(
+                option.get("accepted_response_tokens"),
+                f"human_questions[{index}].answer_options[{option_index}].accepted_response_tokens",
+                errors,
+                allow_empty=False,
+            )
+            duplicates = option_tokens.intersection(tokens)
+            if duplicates:
+                errors.append(
+                    f"human_questions[{index}] answer tokens select multiple options: "
+                    + ", ".join(sorted(duplicates))
+                )
+            option_tokens.update(tokens)
         _text(item.get("material_consequence"), f"human_questions[{index}].material_consequence", errors)
         searched = _string_list(
             item.get("searched_authority_ids"),
@@ -645,6 +959,9 @@ def _validate_alignment_input(
         "project_id": project_id,
         "author_context_id": author_context_id,
         "authority_ids": authority_ids,
+        "response_binding_ids": response_binding_ids,
+        "authority_change_ids": authority_change_ids,
+        "authority_changes": authority_changes,
         "claim_ids": claim_ids,
         "claim_quotes": claim_quotes,
         "claims_by_id": claims_by_id,
@@ -834,11 +1151,19 @@ def validate_alignment_review(
     user_text = alignment_input.get("user_input", {}).get("text", "")
     candidate_text = parsed.get("candidate_output_text", "")
     authority_ids = set(parsed.get("authority_ids", set()))
+    response_binding_ids = set(parsed.get("response_binding_ids", set()))
+    authority_change_ids = set(parsed.get("authority_change_ids", set()))
+    reviewed_binding_ids: set[str] = set()
+    reviewed_change_ids: set[str] = set()
     for index, raw in enumerate(findings):
         item = _keys(
             raw,
             f"alignment review.findings[{index}]",
-            {"finding_id", "status", "user_input_quote", "authority_ids", "candidate_output_quote", "rationale"},
+            {
+                "finding_id", "status", "user_input_quote",
+                "response_binding_ids", "authority_ids", "authority_change_ids",
+                "candidate_output_quote", "rationale",
+            },
             errors,
         )
         finding_id = _identifier(
@@ -862,6 +1187,19 @@ def validate_alignment_review(
             errors.append(
                 f"alignment review.findings[{index}].user_input_quote is not exact input text"
             )
+        cited_bindings = _string_list(
+            item.get("response_binding_ids"),
+            f"alignment review.findings[{index}].response_binding_ids",
+            errors,
+        )
+        for binding_id in cited_bindings:
+            if binding_id not in response_binding_ids:
+                errors.append(
+                    f"alignment review.findings[{index}] cites unknown response binding_id "
+                    f"{binding_id}"
+                )
+            else:
+                reviewed_binding_ids.add(binding_id)
         cited_authorities = _string_list(
             item.get("authority_ids"),
             f"alignment review.findings[{index}].authority_ids",
@@ -872,6 +1210,19 @@ def validate_alignment_review(
                 errors.append(
                     f"alignment review.findings[{index}] cites unknown authority_id {authority_id}"
                 )
+        cited_changes = _string_list(
+            item.get("authority_change_ids"),
+            f"alignment review.findings[{index}].authority_change_ids",
+            errors,
+        )
+        for change_id in cited_changes:
+            if change_id not in authority_change_ids:
+                errors.append(
+                    f"alignment review.findings[{index}] cites unknown authority change_id "
+                    f"{change_id}"
+                )
+            else:
+                reviewed_change_ids.add(change_id)
         output_quote = _text(
             item.get("candidate_output_quote"),
             f"alignment review.findings[{index}].candidate_output_quote",
@@ -883,6 +1234,11 @@ def validate_alignment_review(
                 f"alignment review.findings[{index}].candidate_output_quote is not exact output text"
             )
         _text(item.get("rationale"), f"alignment review.findings[{index}].rationale", errors)
+
+    for binding_id in sorted(response_binding_ids - reviewed_binding_ids):
+        errors.append("alignment review omitted response binding: " + binding_id)
+    for change_id in sorted(authority_change_ids - reviewed_change_ids):
+        errors.append("alignment review omitted authority change: " + change_id)
 
     blockers = _string_list(
         review.get("blocking_findings"),
@@ -935,6 +1291,8 @@ def validate_alignment_review(
         candidate_output_kind=str(parsed.get("candidate_output_kind", "")),
         candidate_output_sha256=str(parsed.get("candidate_output_sha256", "")),
         review_verdict=str(verdict),
+        proposed_transition=str(parsed.get("proposed_transition", "")),
+        authority_changes=list(parsed.get("authority_changes", [])),
     )
 
 

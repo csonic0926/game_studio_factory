@@ -8,7 +8,7 @@ authority continuity, and the decision to ask a genuinely unresolved question.
 This workflow guards the transition that precedes product/gameplay reviewers:
 
 ```text
-A_t + Q_t + U_t -> candidate transition/output O_t
+A_t + Q_t + U_t -> candidate transition/output O_t + authority changes C_t
                        -> fresh semantic review
                        -> present or revise
 ```
@@ -18,9 +18,13 @@ A_t + Q_t + U_t -> candidate transition/output O_t
 - `Q_t`: pending human decisions and their lifecycle state;
 - `U_t`: the exact raw user input, without a rewritten brief;
 - `O_t`: the exact proposed human-facing answer, question, or decision surface.
+- `C_t`: every product/system/card/plan artifact changed by the interpretation.
 
 The harness evaluates the transition. It does not approve product taste,
 gameplay fun, a decision card, or a build.
+It also does not turn later, not-yet-entered workflow stages into present
+defects: a valid cycle may correctly exist before unit breakdown, plans, specs,
+or implementation.
 
 ## When the gate is mandatory
 
@@ -47,7 +51,11 @@ design/studio/interaction_alignment/<interaction_id>/
 Use `schemas/studio_semantic_alignment_input.schema.json`. It binds:
 
 - the exact raw user message and UTF-8 SHA;
+- any elliptical reply bound to the exact reviewed prior question and option
+  that gives the reply meaning;
 - every active authority actually consulted;
+- every authority artifact the transition creates, revises, activates,
+  supersedes, or archives;
 - every pending decision card and whether it remains pending or is superseded;
 - input deltas classified as `ADD`, `MODIFY`, `REVOKE`, or `AMBIGUOUS`, each
   with an exact user quote;
@@ -70,6 +78,8 @@ remain covered because a title can itself smuggle a product conclusion.
 claims is invalid. Distinguish:
 
 - `NEW_USER_INPUT` — exact meaning supplied by the current user message;
+- `BOUND_USER_RESPONSE` — meaning created when the current exact reply selects
+  one exact option on a reviewed prior surface;
 - `PRESERVED_AUTHORITY` — already-active authority;
 - `REPO_EVIDENCE` — an exact repository fact;
 - `REFERENCE_EVIDENCE` — what an external source actually establishes;
@@ -79,6 +89,27 @@ claims is invalid. Distinguish:
 Reference product existence does not prove player demand. A reusable scene
 container does not prove a new landmark has no engineering risk. Conservative
 provenance is required when one line combines user facts and AI synthesis.
+
+### Elliptical replies are not self-interpreting
+
+`b`, `yes`, `that one`, and similar replies do not carry their full meaning in
+their own bytes. When a material delta depends on a prior menu/question, record
+`response_bindings` with the prior alignment input/review, question id, selected
+option id/quote, and accepted response token. The resulting user-owned claim is
+`BOUND_USER_RESPONSE`, never `REPO_EVIDENCE` or unattributed AI synthesis.
+A one-token alphanumeric reply is rejected mechanically without this binding.
+
+The prior question must list exact `answer_options`. Do not reconstruct a menu
+after the answer or attach a short reply to an option that was never shown.
+
+### Internal authority changes are part of the output
+
+Human-facing brevity does not exempt hidden authority artifacts from review.
+List each changed Product input, Product Thesis, Factory Constraints, Studio
+system, decision card, baseline, or production plan in `authority_changes`.
+The fresh reviewer reads the exact SHA-bound artifacts and cites every change
+in its findings. Product activation is fail-closed unless the exact canonical
+Product package passed this review.
 
 ## Step 2 — use one fresh subagent/context
 
@@ -93,15 +124,17 @@ design/studio/interaction_alignment/<interaction_id>/
 Use `schemas/studio_semantic_alignment_review.schema.json`. The reviewer checks:
 
 1. complete input-delta coverage;
-2. preservation of authority not revoked by the user;
-3. provenance for every material output claim;
-4. necessity of every human question;
-5. absence of semantic proxy substitution—ledger is not gameplay, watching is
+2. fidelity of every short-answer binding;
+3. preservation of authority not revoked by the user;
+4. fidelity of every changed authority artifact;
+5. provenance for every material output claim;
+6. necessity of every human question;
+7. absence of semantic proxy substitution—ledger is not gameplay, watching is
    not a battle move, replay is not a loop, implementation is not acceptance;
-6. correct Studio/specialist route and scope;
-7. a genuine human boundary rather than avoidable clarification;
-8. a proportional user-facing surface;
-9. explicit disposition of every pending card.
+8. correct Studio/specialist route and scope;
+9. a genuine human boundary rather than avoidable clarification;
+10. a proportional user-facing surface;
+11. explicit disposition of every pending card.
 
 The reviewer must independently inventory every complete material candidate
 line and match it to exactly one author claim. The validator compares this

@@ -63,6 +63,10 @@ these invariants:
     amnesia, semantic proxies, avoidable questions, and silent pending-card
     drift. This reviewer advises the transition; it never owns product taste or
     the human verdict.
+    Short/elliptical replies bind to the exact prior reviewed question/option;
+    they are never self-expanding user quotes. The same review binds every
+    internal Product/system/card/plan authority changed by the interpretation,
+    even when the human-facing surface stays compact.
 13. **Product authority has an explicit lifecycle.** Read
     `design/product/PRODUCT_AUTHORITY_REGISTER.json` when present. Whole-direction
     revocation uses [`docs/PRODUCT_AUTHORITY_LIFECYCLE.md`](docs/PRODUCT_AUTHORITY_LIFECYCLE.md):
@@ -70,6 +74,13 @@ these invariants:
     before mutation, withdraw pending cards as `PRODUCT_ARCHIVED` without
     inventing human verdict tokens, and return to Idea exploration. A new
     commissioned thesis must be activated before downstream work.
+14. **Gamification is a causal-loop obligation.** A service, exhibition, or
+    utility may not need conventional combat/challenge mechanics, but a request
+    for gamification, positive feedback, or repeated motivation still requires
+    an actual decision/reward/reinvestment/return loop. “Not conventional
+    gameplay” must not become “not a gameplay cycle.” Product non-goals are
+    compiled downstream and product-fidelity review must prove they bound the
+    loop without silently deleting it.
 
 ## Formal production transition
 

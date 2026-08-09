@@ -26,6 +26,8 @@ Studio-managed product authority is additionally governed by
 `design/product/PRODUCT_AUTHORITY_REGISTER.json`. A whole-direction archive
 uses `studio/product.py` plus fresh semantic alignment; old canonical files,
 code, or baselines cannot silently reactivate an archived direction.
+New activation likewise binds the exact compiled Product package through fresh
+semantic alignment, including any prior option selected by a short user reply.
 
 ## Whole-game delivery invariant
 

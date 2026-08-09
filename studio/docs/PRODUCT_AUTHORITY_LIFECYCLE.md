@@ -34,8 +34,15 @@ Then record the active authority:
 python3 <STUDIO_ROOT>/studio/product.py activate \
   --game-repo <GAME_REPO> \
   --authority-id <PORTABLE_AUTHORITY_ID> \
+  --alignment-input <ACTIVATION_ALIGNMENT_INPUT> \
+  --alignment-review <ACTIVATION_ALIGNMENT_REVIEW> \
   --recorded-at <ISO_8601>
 ```
+
+The activation alignment lists the exact Product Thesis input, compiled Product
+Thesis, Factory Constraints, and Idea result as `ACTIVATE` authority changes.
+This prevents a concise commission reply from losing its prior-surface meaning
+or a hidden compiled artifact from drifting beyond the user input.
 
 Activation reads the exact canonical Product Thesis, constraints, commission
 input, and Idea result. It refuses to replace another active authority.

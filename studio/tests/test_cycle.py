@@ -61,6 +61,7 @@ The same commitment must be presented and resolved as battle.
             self.repo,
             "design/product/FACTORY_CONSTRAINTS.json",
             {
+                "schema_version": "factory_constraints.v2",
                 "source_input_sha256": product_input_ref["sha256"],
                 "constraints": [
                     {
@@ -75,6 +76,9 @@ The same commitment must be presented and resolved as battle.
                         "constraint_id": "story-only",
                         "factories": ["story"],
                     },
+                ],
+                "non_goals": [
+                    {"non_goal_id": "no-attendance-proxy"}
                 ],
             },
         )
@@ -98,7 +102,7 @@ The same commitment must be presented and resolved as battle.
         causal = ["judgment-loop", "battle-skin"]
         constraints = ["core-is-cycle", "battle-is-surface"]
         return {
-            "schema_version": "studio_gameplay_system.v1",
+            "schema_version": "studio_gameplay_system.v2",
             "status": READY,
             "system_id": "core",
             "cycle_id": "forecast-battle-cycle",
@@ -147,6 +151,12 @@ The same commitment must be presented and resolved as battle.
                 {"constraint_id": item, "transition_ids": ["decide", "resolve", "reward"], "status": "REALIZED_IN_CYCLE"}
                 for item in constraints
             ],
+            "non_goal_coverage": [{
+                "non_goal_id": "no-attendance-proxy",
+                "transition_ids": ["reward", "return"],
+                "status": "PRESERVED",
+                "rationale": "The reward changes opportunity rather than paying attendance.",
+            }],
             "two_lap_witness": {
                 "lap_one": {"player_goal": "Prove one forecast.", "decision": "Choose the safer card battle.", "resolution": "The market resolves the battle.", "resulting_state": "Rank and wallet increase."},
                 "feedback_state_deltas": [
@@ -172,7 +182,7 @@ The same commitment must be presented and resolved as battle.
             )["transitions"]
         ]
         return {
-            "schema_version": "studio_gameplay_system_review.v1",
+            "schema_version": "studio_gameplay_system_review.v2",
             "review_id": f"review-{role.lower().replace('_', '-')}",
             "review_role": role,
             "project_id": "sample",
@@ -184,8 +194,9 @@ The same commitment must be presented and resolved as battle.
             "reviewer_freshness": "FRESH",
             "causal_link_ids_reviewed": ["judgment-loop", "battle-skin"] if role == "PRODUCT_FIDELITY" else [],
             "constraint_ids_reviewed": ["core-is-cycle", "battle-is-surface"] if role == "PRODUCT_FIDELITY" else [],
+            "non_goal_ids_reviewed": ["no-attendance-proxy"] if role == "PRODUCT_FIDELITY" else [],
             "transition_ids_reviewed": transition_ids,
-            "cycle_findings": {"closed_graph": "PASS", "reward_changes_next_decision": "PASS", "second_lap_materially_differs": "PASS", "coupled_systems_preserved": "PASS", "no_proxy_loop": "PASS"},
+            "cycle_findings": {"closed_graph": "PASS", "reward_changes_next_decision": "PASS", "second_lap_materially_differs": "PASS", "coupled_systems_preserved": "PASS", "product_boundaries_consistent": "PASS", "gamification_intent_is_reward_cycle": "PASS", "no_proxy_loop": "PASS"},
             "blocking_findings": [],
             "verdict": "PASS_SYSTEM_REVIEW",
             "reviewed_at": "2026-08-05T10:10:00+08:00",
@@ -282,6 +293,33 @@ The same commitment must be presented and resolved as battle.
         result = self.validate()
         self.assertEqual(BLOCKED, result.status)
         self.assertTrue(any("battle-skin" in error for error in result.errors))
+
+    def test_every_product_non_goal_must_be_preserved_and_reviewed(self) -> None:
+        payload = self.system()
+        payload["non_goal_coverage"] = []
+        self.write_system(payload)
+        self.write_reviews_and_manifest()
+        result = self.validate()
+        self.assertEqual(BLOCKED, result.status)
+        self.assertTrue(any("no-attendance-proxy" in error for error in result.errors))
+
+    def test_product_review_must_explicitly_check_gamification_as_cycle(self) -> None:
+        self.write_system()
+        self.write_reviews_and_manifest()
+        review = json.loads((self.repo / self.product_review_relative).read_text())
+        review["cycle_findings"].pop("gamification_intent_is_reward_cycle")
+        write_json(self.repo, self.product_review_relative, review)
+        manifest = json.loads((self.repo / self.manifest_relative).read_text())
+        manifest["reviews"]["product_fidelity"] = ref(
+            self.repo, self.product_review_relative
+        )
+        write_json(self.repo, self.manifest_relative, manifest)
+        result = self.validate()
+        self.assertEqual(BLOCKED, result.status)
+        self.assertTrue(
+            any("gamification_intent_is_reward_cycle" in error for error in result.errors),
+            result.errors,
+        )
 
     def test_bounded_scope_cannot_defer_coupled_system(self) -> None:
         payload = self.system()

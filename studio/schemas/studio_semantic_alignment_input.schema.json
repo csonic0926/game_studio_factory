@@ -4,9 +4,9 @@
   "title": "Studio Semantic Alignment Input",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "interaction_id", "project_id", "factory_revision", "trigger", "author_context_id", "user_input", "active_authorities", "pending_decisions", "input_deltas", "proposed_transition", "candidate_output", "output_claims", "human_questions", "authored_at"],
+  "required": ["schema_version", "interaction_id", "project_id", "factory_revision", "trigger", "author_context_id", "user_input", "response_bindings", "active_authorities", "authority_changes", "pending_decisions", "input_deltas", "proposed_transition", "candidate_output", "output_claims", "human_questions", "authored_at"],
   "properties": {
-    "schema_version": {"const": "studio_semantic_alignment_input.v2"},
+    "schema_version": {"const": "studio_semantic_alignment_input.v3"},
     "interaction_id": {"$ref": "#/$defs/id"},
     "project_id": {"$ref": "#/$defs/id"},
     "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
@@ -21,6 +21,24 @@
         "sha256": {"$ref": "#/$defs/sha256"}
       }
     },
+    "response_bindings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["binding_id", "response_quote", "prior_alignment_input", "prior_alignment_review", "question_id", "selected_option_id", "selected_option_quote"],
+        "properties": {
+          "binding_id": {"$ref": "#/$defs/id"},
+          "response_quote": {"type": "string", "minLength": 1},
+          "prior_alignment_input": {"$ref": "#/$defs/path_hash"},
+          "prior_alignment_review": {"$ref": "#/$defs/path_hash"},
+          "question_id": {"$ref": "#/$defs/id"},
+          "selected_option_id": {"$ref": "#/$defs/id"},
+          "selected_option_quote": {"type": "string", "minLength": 1}
+        }
+      }
+    },
     "active_authorities": {
       "type": "array",
       "uniqueItems": true,
@@ -31,6 +49,21 @@
         "properties": {
           "authority_id": {"$ref": "#/$defs/id"},
           "authority_kind": {"enum": ["PRODUCT", "STUDIO_GAMEPLAY_SYSTEM", "GAMEPLAY_DECISION_CARD", "ACCEPTED_BASELINE", "REPO_EVIDENCE", "REFERENCE_EVIDENCE"]},
+          "artifact": {"$ref": "#/$defs/path_hash"}
+        }
+      }
+    },
+    "authority_changes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["change_id", "operation", "authority_kind", "artifact"],
+        "properties": {
+          "change_id": {"$ref": "#/$defs/id"},
+          "operation": {"enum": ["CREATE", "REVISE", "ACTIVATE", "SUPERSEDE", "ARCHIVE"]},
+          "authority_kind": {"enum": ["IDEA_EXPLORATION", "PRODUCT_AUTHORITY_INPUT", "PRODUCT_THESIS", "FACTORY_CONSTRAINTS", "IDEA_FACTORY_RESULT", "STUDIO_GAMEPLAY_SYSTEM", "GAMEPLAY_DECISION_CARD", "ACCEPTED_BASELINE", "PRODUCTION_PLAN"]},
           "artifact": {"$ref": "#/$defs/path_hash"}
         }
       }
@@ -56,17 +89,18 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["delta_id", "source_quote", "classification", "target_authority_ids", "interpretation"],
+        "required": ["delta_id", "source_quote", "response_binding_ids", "classification", "target_authority_ids", "interpretation"],
         "properties": {
           "delta_id": {"$ref": "#/$defs/id"},
           "source_quote": {"type": "string", "minLength": 1},
+          "response_binding_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "classification": {"enum": ["ADD", "MODIFY", "REVOKE", "AMBIGUOUS"]},
           "target_authority_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "interpretation": {"type": "string", "minLength": 1}
         }
       }
     },
-    "proposed_transition": {"enum": ["CONTINUE_EXISTING_AUTHORITY", "REOPEN_PRODUCT_EXPLORATION", "REVISE_STUDIO_GAMEPLAY_SYSTEM", "REVISE_DECISION_CARD", "REQUEST_HUMAN_RULING", "NO_MATERIAL_CHANGE", "ARCHIVE_PRODUCT_DIRECTION"]},
+    "proposed_transition": {"enum": ["CONTINUE_EXISTING_AUTHORITY", "REOPEN_PRODUCT_EXPLORATION", "ACTIVATE_PRODUCT_AUTHORITY", "REVISE_STUDIO_GAMEPLAY_SYSTEM", "REVISE_DECISION_CARD", "REQUEST_HUMAN_RULING", "NO_MATERIAL_CHANGE", "ARCHIVE_PRODUCT_DIRECTION"]},
     "candidate_output": {
       "type": "object",
       "additionalProperties": false,
@@ -84,12 +118,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["claim_id", "output_quote", "provenance", "source_authority_ids", "source_quotes"],
+        "required": ["claim_id", "output_quote", "provenance", "source_authority_ids", "source_response_binding_ids", "source_quotes"],
         "properties": {
           "claim_id": {"$ref": "#/$defs/id"},
           "output_quote": {"type": "string", "minLength": 1},
-          "provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS"]},
+          "provenance": {"enum": ["PRESERVED_AUTHORITY", "NEW_USER_INPUT", "BOUND_USER_RESPONSE", "REPO_EVIDENCE", "REFERENCE_EVIDENCE", "AI_SYNTHESIS", "AI_HYPOTHESIS"]},
           "source_authority_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+          "source_response_binding_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "source_quotes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
         }
       }
@@ -100,10 +135,24 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["question_id", "question_quote", "material_consequence", "searched_authority_ids", "why_unresolved"],
+        "required": ["question_id", "question_quote", "answer_options", "material_consequence", "searched_authority_ids", "why_unresolved"],
         "properties": {
           "question_id": {"$ref": "#/$defs/id"},
           "question_quote": {"type": "string", "minLength": 1},
+          "answer_options": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["option_id", "option_quote", "accepted_response_tokens"],
+              "properties": {
+                "option_id": {"$ref": "#/$defs/id"},
+                "option_quote": {"type": "string", "minLength": 1},
+                "accepted_response_tokens": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+              }
+            }
+          },
           "material_consequence": {"type": "string", "minLength": 1},
           "searched_authority_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
           "why_unresolved": {"type": "string", "minLength": 1}

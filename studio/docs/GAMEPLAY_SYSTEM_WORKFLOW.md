@@ -59,7 +59,10 @@ itself a feedback edge.
 ## Product fidelity and coupled systems
 
 Every Product Thesis causal-link id and every applicable `all`/`gameplay`
-Factory constraint must be realized by named transitions. Any systems whose
+Factory constraint must be realized by named transitions. Every compiled
+product non-goal must have explicit `non_goal_coverage`, and the
+product-fidelity reviewer must confirm that it bounds the system without
+contradicting a declared causal link. Any systems whose
 coupling carries a product promise—such as “options packaged as battle”—must be
 listed in `coupled_systems` and marked `required_in_first_baseline: true`.
 
@@ -74,6 +77,12 @@ Studio may shrink:
 Studio may not shrink away a load-bearing causal edge or defer one side of a
 product-level coupled system. “Smallest” means the minimum vertical slice that
 still completes the cycle twice, not the smallest isolated feature.
+
+“Gamification,” positive response, repeat motivation, and reward language are
+cycle requirements, not visual tone. A service/exhibition can lack conventional
+combat or challenge mechanics while still requiring a real
+decision/reward/reinvestment/return loop. A Product non-goal that turns the
+former into “no gameplay cycle” is a blocking authority contradiction.
 
 ## Artifacts and validation
 

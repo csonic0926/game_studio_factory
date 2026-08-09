@@ -645,6 +645,8 @@ def archive_product_authority(
 
 def activate_product_authority(
     game_repo: str | Path,
+    alignment_input_path: str | Path,
+    alignment_review_path: str | Path,
     *,
     authority_id: str,
     recorded_at: str,
@@ -663,6 +665,54 @@ def activate_product_authority(
     quote = commission.get("authorization_quote")
     if not isinstance(quote, str) or not quote.strip():
         raise ProductAuthorityError("Product Thesis commission quote is missing")
+
+    alignment = validate_alignment_review(
+        repo,
+        alignment_input_path,
+        alignment_review_path,
+    )
+    if alignment.status != PASS_ALIGNMENT:
+        raise ProductAuthorityError(
+            "product activation requires PASS_ALIGNMENT: " + "; ".join(alignment.errors)
+        )
+    if alignment.proposed_transition != "ACTIVATE_PRODUCT_AUTHORITY":
+        raise ProductAuthorityError(
+            "product activation alignment must propose ACTIVATE_PRODUCT_AUTHORITY"
+        )
+    expected_changes = {
+        ("PRODUCT_THESIS", refs["product_thesis"]["path"], refs["product_thesis"]["sha256"]),
+        ("FACTORY_CONSTRAINTS", refs["factory_constraints"]["path"], refs["factory_constraints"]["sha256"]),
+        ("PRODUCT_AUTHORITY_INPUT", refs["product_input"]["path"], refs["product_input"]["sha256"]),
+        ("IDEA_FACTORY_RESULT", refs["idea_result"]["path"], refs["idea_result"]["sha256"]),
+    }
+    actual_changes = {
+        (
+            str(change.get("authority_kind", "")),
+            str(change.get("artifact", {}).get("path", "")),
+            str(change.get("artifact", {}).get("sha256", "")),
+        )
+        for change in alignment.authority_changes
+        if change.get("operation") == "ACTIVATE"
+    }
+    if actual_changes != expected_changes:
+        raise ProductAuthorityError(
+            "product activation alignment must bind the exact four canonical authority artifacts"
+        )
+    alignment_input_file = Path(alignment_input_path)
+    if not alignment_input_file.is_absolute():
+        alignment_input_file = repo / alignment_input_file
+    alignment_review_file = Path(alignment_review_path)
+    if not alignment_review_file.is_absolute():
+        alignment_review_file = repo / alignment_review_file
+    aligned_input = _json(alignment_input_file.resolve(), "Product activation alignment input")
+    aligned_user_input = aligned_input.get("user_input")
+    if not isinstance(aligned_user_input, dict):
+        raise ProductAuthorityError("product activation alignment has no exact user input")
+    aligned_user_text = aligned_user_input.get("text")
+    if not isinstance(aligned_user_text, str) or quote not in aligned_user_text:
+        raise ProductAuthorityError(
+            "Product Thesis commission quote is not present in the activation user input"
+        )
 
     register_path = repo / REGISTER_PATH
     if register_path.is_file():
@@ -693,10 +743,13 @@ def activate_product_authority(
             "transition_id": f"commission.{authority_id}",
             "action": "COMMISSIONED_BY_USER",
             "factory_revision": current_factory_revision(),
-            "user_input": {"text": quote, "sha256": text_sha256(quote)},
+            "user_input": {
+                "text": aligned_user_text,
+                "sha256": text_sha256(aligned_user_text),
+            },
             "authority_snapshot": refs["product_thesis"],
-            "alignment_input": None,
-            "alignment_review": None,
+            "alignment_input": path_ref(repo, alignment_input_file),
+            "alignment_review": path_ref(repo, alignment_review_file),
             "withdrawn_pending_payloads": [],
             "recorded_at": recorded_at,
         }
@@ -745,6 +798,8 @@ def main(argv: list[str] | None = None) -> int:
     activate = sub.add_parser("activate")
     activate.add_argument("--game-repo", required=True)
     activate.add_argument("--authority-id", required=True)
+    activate.add_argument("--alignment-input", required=True)
+    activate.add_argument("--alignment-review", required=True)
     activate.add_argument("--recorded-at", required=True)
     args = parser.parse_args(argv)
     try:
@@ -765,6 +820,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             result = activate_product_authority(
                 args.game_repo,
+                args.alignment_input,
+                args.alignment_review,
                 authority_id=args.authority_id,
                 recorded_at=args.recorded_at,
             )
