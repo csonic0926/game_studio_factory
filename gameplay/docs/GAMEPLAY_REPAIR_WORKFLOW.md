@@ -229,11 +229,12 @@ Every numbered repair row has exactly one coverage entry. Plans split by
 coherent file/state ownership and verification boundary, not by table row.
 Shared planned paths are invalid.
 
-Manifest v2 requires `ui_impact` on every plan. UI repair plans bind the exact
-checked UI Production Adapter SHA and select relevant rule, exemplar, and
-validation-scenario ids; the Markdown plan repeats them under
-`## UI realization contract`. Historical v1 repair manifests remain valid
-only for non-UI work.
+Manifest v3 requires `ui_impact` on every plan. UI repair plans bind the exact
+checked UI Production Adapter SHA, reopen the whole style blast radius of the
+affected change batch rather than only prompt-named symptoms, map each control
+to accepted exemplars and `VISUAL_GRAMMAR` rules, and select separate
+structural/visual scenarios. The Markdown repeats the binding and blast radius.
+Historical v1/v2 repair manifests remain valid only for non-UI work.
 
 Validate:
 

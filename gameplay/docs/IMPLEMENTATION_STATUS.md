@@ -88,13 +88,17 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   checked generation before replacing it and creates no backup artifacts;
 - explicit UI realization model covering layout structure, state ownership and
   refresh flow, scene/lifecycle integration, input/modal/layers, responsive
-  composition, localization fit, successful repo exemplars, and stateful
-  validation scenarios across every declared viewport/localization profile;
-- production manifest v3 / repair manifest v2 UI binding: UI-changing plans require the
-  exact UI adapter SHA plus selected rule/exemplar/scenario ids and matching
-  Markdown contract; explicit/obvious UI work cannot declare no impact,
-  stale/unknown bindings fail closed, and legacy v1 remains compatible only
-  with non-UI historical plans;
+  composition, localization fit, accepted visual grammar, baseline/user-ruling
+  exemplar provenance, and split structural/visual scenarios across every
+  declared viewport/localization profile;
+- UI adapter v2 proves accepted-baseline exemplar bytes at the baseline game
+  revision, blocks self-canonicalizing current targets, defaults to preserving
+  existing visual grammar, and requires mechanical visual comparisons (Godot
+  Theme/StyleBox identity or properties) before supplemental screenshots;
+- production manifest v4 / repair manifest v3 UI binding: every UI-changing
+  plan inventories the full new/modified/reopened-batch style blast radius,
+  maps targets to accepted exemplars and visual rules, selects separate
+  structural/visual scenarios, and repeats the exact contract in Markdown;
 
 - quant-first demand ordering: Span Quant Sheet template/module (span
   boundaries -> cadence contract -> implementation-blind playable-content
@@ -144,10 +148,9 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 - existing-project initialization has synthetic adversarial coverage but has
   not yet been piloted end to end on a real foreign game repo; its semantic
   reconstruction quality and token cost therefore remain unmeasured;
-- the UI Production Adapter and v2 plan gates have synthetic adversarial
-  coverage but have not yet been rerun on the auto-battler repo; the first real
-  follow-up must measure whether they preserve that repo's intended UI
-  composition/state/scene habits and reduce repair churn;
+- the UI Production Adapter v2 hardening is derived from the auto-battler
+  postmortem and has synthetic adversarial coverage; it has not yet been run as
+  a complete adapter migration plus production-plan cycle inside that game repo;
 
 - no real game-owned Beat Sheet -> implementation -> actual build evidence
   pilot has been supplied or run from this factory task;

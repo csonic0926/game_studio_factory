@@ -1,5 +1,5 @@
 {
-  "schema_version": "repair_plan_manifest.v2",
+  "schema_version": "repair_plan_manifest.v3",
   "project_id": "<PROJECT_ID>",
   "gap_id": "<GAP_ID>",
   "anchor_objective_id": "<OBJECTIVE_ID>",
@@ -34,7 +34,9 @@
         "adapter_sha256": "",
         "rule_ids": [],
         "exemplar_ids": [],
-        "validation_scenario_ids": []
+        "validation_scenario_ids": [],
+        "style_blast_radius_scope": "",
+        "style_blast_radius": []
       }
     }
   ],

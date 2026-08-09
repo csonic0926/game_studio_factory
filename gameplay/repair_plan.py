@@ -32,9 +32,10 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     )
 
 
-SCHEMA_VERSION = "repair_plan_manifest.v2"
+SCHEMA_VERSION = "repair_plan_manifest.v3"
 SUPPORTED_SCHEMA_VERSIONS = {
     "repair_plan_manifest.v1",
+    "repair_plan_manifest.v2",
     SCHEMA_VERSION,
 }
 READY_FOR_EXECUTION = "READY_FOR_EXECUTION"

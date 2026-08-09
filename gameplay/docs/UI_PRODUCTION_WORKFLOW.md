@@ -6,7 +6,7 @@ will change UI. Its output records how the current game repo actually builds
 and validates UI, so a later coding model does not reinterpret the feature
 through a generic UI architecture.
 
-The adapter addresses three different failure classes that must not be folded
+The adapter addresses four different failure classes that must not be folded
 into one vague “UI bug”:
 
 1. **layout structure** — containers, anchors, offsets, sizing, responsive
@@ -15,9 +15,13 @@ into one vague “UI bug”:
    forbidden duplicate view logic/state;
 3. **scene integration** — node paths, instantiation/lifecycle, input/focus,
    modals, canvas/layers, z-order, and teardown.
+4. **visual grammar** — accepted Theme/style resources, state StyleBoxes,
+   typography/color roles, target-to-reference mappings, and the default that
+   an additive change preserves the existing visual identity.
 
-It does not decide what feature to make, restyle the game, or award gameplay
-acceptance.
+It does not decide what feature to make, authorize a redesign, or award
+gameplay acceptance. Without an exact user redesign ruling, the compiled
+policy is always `PRESERVE_EXISTING_VISUAL_GRAMMAR`.
 
 ## Trigger
 
@@ -29,13 +33,16 @@ After objective/repair design is stable and before production planning:
 - if the change is genuinely non-UI, do not run it merely for completeness;
 - if a checked adapter already exists, reuse it and select only the relevant
   rules/exemplars/scenarios in the production plan;
+- v1 adapters are migration inputs, not production authority: `ui.py start`
+  emits a fresh probe and requires v2 reconstruction plus explicit `refresh`;
 - exact hashes of every cited UI evidence file determine reuse. Unrelated repo
   changes do not burn another investigation; if a cited source changes, rerun
   the workflow rather than letting a planner guess.
 
 An obvious UI path or `work_types: [UI]` cannot be hidden behind
-`touches_ui: false`. Historical v1 manifests remain valid for non-UI work, but
-historical UI plans must be regenerated with the v2 binding.
+`touches_ui: false`. Historical non-current manifests remain readable only at
+their documented non-UI/historical boundary; UI plans must be regenerated with
+the v2 adapter and current plan schemas.
 
 ## Step UI-1 — bounded mechanical probe
 
@@ -62,6 +69,10 @@ Use one bounded investigator, not independent layout/state/scene authors.
 Start from the feature's affected surface, then inspect:
 
 - at least one **successful existing surface** the new work should resemble;
+- the exact accepted baseline or explicit user ruling that makes each visual
+  reference canonical; a current target is never evidence for itself;
+- Theme/style/font/color resources and state-specific visual bindings, not
+  only node containment and sizing;
 - its scene/layout hierarchy and actual sizing rules;
 - the authoritative runtime state and state-to-view refresh/signal path;
 - scene ownership, node paths, lifecycle, input/focus, modals, and layers;
@@ -89,7 +100,7 @@ using `templates/UI_PRODUCTION_ADAPTER_INPUT.json`.
 - Keep `ai_assumptions` and `unresolved_material_gaps` empty. Conflicting or
   absent material blocks compilation instead of being silently completed.
 
-Every adapter must cover all seven rule categories:
+Every adapter must cover all eight rule categories:
 
 ```text
 LAYOUT_STRUCTURE
@@ -98,13 +109,32 @@ SCENE_INTEGRATION
 INPUT_AND_LAYERING
 RESPONSIVE_COMPOSITION
 LOCALIZATION_FIT
+VISUAL_GRAMMAR
 VALIDATION
 ```
 
-It must name at least one canonical exemplar. Validation scenarios must cover
-every declared viewport and localization profile and must specify UI states,
-an interaction path, assertions, and captures. A single happy-state screenshot
-is not structural validation.
+`VISUAL_GRAMMAR`, like the four core construction categories, must be backed by
+repo evidence or a user ruling.
+
+Every canonical exemplar must carry one of two machine-checked provenance
+forms:
+
+- `ACCEPTED_BASELINE`: a canonical Studio
+  `ACCEPTED_PLAYABLE_BASELINE.json`; the compiler verifies its project/status/
+  game revision and proves every exemplar evidence file existed **unchanged**
+  at that revision;
+- `USER_RULING`: the exact quote explicitly accepting that reference.
+
+This forbids circular certification such as treating a just-created target as
+its own canonical exemplar.
+
+Validation is deliberately split into `STRUCTURAL_FIT` and
+`VISUAL_CONSISTENCY`. Every viewport/localization combination needs both.
+Structural scenarios use geometry/state/scene/interaction comparisons. Visual
+scenarios require a mechanical style comparison; screenshots are supplemental,
+not sufficient. In Godot, visual scenarios must directly compare Theme/
+StyleBox resource identity or resource properties (including font/color
+properties where identity is not the right invariant).
 
 ## Step UI-3 — compile and check
 
@@ -151,8 +181,8 @@ and never silently overwrites a differing adapter.
 
 ## Step UI-4 — bind production plans
 
-Every v2 plan has `ui_impact`. A non-UI plan writes an explicit false/empty
-declaration. A UI plan writes:
+Every objective manifest v4 / repair manifest v3 plan has `ui_impact`. A non-UI
+plan writes an explicit false/empty declaration. A UI plan writes:
 
 ```json
 {
@@ -161,17 +191,42 @@ declaration. A UI plan writes:
   "adapter_sha256": "<EXACT_SHA256>",
   "rule_ids": ["<RELEVANT_RULE_ID>"],
   "exemplar_ids": ["<RELEVANT_EXEMPLAR_ID>"],
-  "validation_scenario_ids": ["<RELEVANT_SCENARIO_ID>"]
+  "validation_scenario_ids": ["<STRUCTURAL_ID>", "<VISUAL_ID>"],
+  "style_blast_radius_scope": "ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH",
+  "style_blast_radius": [
+    {
+      "target_id": "<TARGET_ID>",
+      "target_path": "<REPO_RELATIVE_PATH>",
+      "control_ids": ["<CONTROL_OR_NODE_ID>"],
+      "change_kind": "NEW_CONTROL | MODIFIED_CONTROL | REOPENED_BATCH_CONTROL",
+      "disposition": "IMPLEMENT_STYLE_CHANGE | VERIFIED_CONSISTENT",
+      "reference_exemplar_ids": ["<ACCEPTED_EXEMPLAR_ID>"],
+      "visual_rule_ids": ["<VISUAL_GRAMMAR_RULE_ID>"],
+      "structural_validation_scenario_ids": ["<STRUCTURAL_FIT_ID>"],
+      "visual_validation_scenario_ids": ["<VISUAL_CONSISTENCY_ID>"]
+    }
+  ]
 }
 ```
 
-The Markdown plan repeats that selection under `## UI realization contract`.
-`plan.py` and `repair_plan.py` reject a stale adapter hash, unknown ids, missing
-selection, false UI declaration, missing Markdown contract, or any attempt to
-mutate the adapter as part of feature production.
+The blast radius inventories every control introduced or modified by the
+change. When a style complaint reopens an earlier batch, it also inventories
+the whole batch—not just the controls named in the complaint—and records
+`VERIFIED_CONSISTENT` for reviewed siblings that need no write. Every target
+maps to an accepted exemplar, a `VISUAL_GRAMMAR` rule, and separate structural
+and visual scenarios. Every planned UI path must appear in this inventory.
+
+The Markdown plan repeats that selection under `## UI realization contract`
+and `## UI style blast radius`. `plan.py` and `repair_plan.py` reject a stale
+adapter hash, unknown ids, incomplete blast radius, non-visual rules, swapped
+validation kinds, screenshot-only visual checks, false UI declarations,
+missing Markdown contracts, or any attempt to mutate the adapter as part of
+feature production.
 
 During implementation, the selected scenarios are requirements, not advice.
 The coding caller validates the affected empty/loading/populated/disabled/
 modal/error states as applicable, exact interaction/refresh path, all selected
 viewport/localization combinations, and scene/layer behavior before reporting
-implementation complete.
+implementation complete. Visual validation compares target/reference resources
+or computed properties mechanically first; capture review then checks the
+remaining rendered gestalt.

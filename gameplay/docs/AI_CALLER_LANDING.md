@@ -190,10 +190,12 @@ python3 gameplay/ui.py start --game-repo <GAME_REPO>
 
 If it returns `UI_PRODUCTION_ADAPTER_INPUT_REQUIRED`, follow
 `UI_PRODUCTION_WORKFLOW.md` with one bounded evidence investigator, then
-compile/check the game-owned adapter. Manifest v3 UI plans bind its exact SHA
-and relevant rule/exemplar/validation-scenario ids. Do not use feature intent
-as permission to guess the repo's layout, state/refresh, scene/lifecycle,
-input/layer, responsive, localization, or validation conventions.
+compile/check the game-owned adapter. Objective manifest v4 / repair manifest
+v3 UI plans bind its exact SHA, complete style blast radius, accepted
+target-to-exemplar mappings, visual-grammar rules, and separate structural/
+visual scenarios. Do not use feature intent as permission to guess the repo's
+layout, state/refresh, scene/lifecycle, input/layer, responsive, localization,
+visual identity, or validation conventions.
 
 ```bash
 python3 gameplay/plan.py validate \

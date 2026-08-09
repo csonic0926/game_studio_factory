@@ -17,8 +17,9 @@ production surface:
    to canonical evidence, supports reproducible sessions/probes, and blinds
    the runtime reader.
 4. **UI Production Adapter** — how this repo owns layout, view state/refresh,
-   scene lifecycle, input/layers, responsive/localized composition, canonical
-   exemplars, and stateful UI validation. It is required only before UI work.
+   scene lifecycle, input/layers, responsive/localized composition, accepted
+   visual grammar/exemplar provenance, and split structural/visual UI
+   validation. It is required only before UI work.
 
 Production tests cannot substitute for observation. The Observation Adapter
 may physically be a mandatory independent section of the Production Adapter,
@@ -114,13 +115,17 @@ Mechanical tests can prove state/reference behavior but not player reception.
 The UI adapter is narrower and more structural than the general Production
 Adapter. It records:
 
-- owned surfaces and exact successful repo exemplars;
+- owned surfaces and exact accepted repo exemplars whose bytes are proven at an
+  accepted baseline revision or explicitly accepted by a user ruling;
 - container/anchor/offset/sizing and responsive-composition grammar;
 - authoritative state, state-to-view refresh, signal order, and forbidden
   duplicate view state/logic;
 - scene/node ownership, lifecycle, input/focus, modal/canvas/layer/z-order;
 - viewport/input profiles and localization fit/stress profiles;
-- stateful interaction/capture scenarios that cover those profiles;
+- separate structural-fit and visual-consistency scenarios that cover those
+  profiles, with mechanical style comparison before screenshot review;
+- target-to-exemplar mappings and exhaustive new/modified/reopened-batch style
+  blast radii in each consuming production plan;
 - evidenced anti-patterns and exact repo/user/factory authority for each rule.
 
 Objective/repair design owns **what** the player should see and do. This

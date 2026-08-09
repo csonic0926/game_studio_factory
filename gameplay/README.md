@@ -75,7 +75,8 @@ ui.py start
   -> one evidence-focused UI_PRODUCTION_ADAPTER_INPUT.json
   -> ui.py compile + check
   -> UI_PRODUCTION_ADAPTER.json/.md
-  -> v2 plan selects exact adapter SHA + rule/exemplar/scenario ids
+  -> objective-v4 / repair-v3 plan binds accepted target references,
+     complete style blast radius, and split structural/visual scenarios
 ```
 
 The investigation is revision/dirty-byte bound. Reuse is narrower: exact
@@ -149,11 +150,14 @@ checks dependencies and portable repo paths, and rejects shared planned-file
 ownership. The plans compile design into production requirements; they may
 return `BLOCKED_BY_PLAN_GAP` but may not redesign gameplay silently.
 
-Manifest v3 retains mandatory `ui_impact` and adds the design-verdict gate.
+Manifest v4 retains the design-verdict gate and strengthens mandatory
+`ui_impact`.
 Non-UI plans explicitly declare false.
-UI plans require a checked game-owned UI adapter, exact hash, selected rule/
-exemplar/validation ids, and matching Markdown contract. Legacy v1/v2 manifests
-are readable only through `check-historical` and cannot authorize execution.
+UI plans require a checked v2 game-owned UI adapter, exact hash, complete style
+blast radius, accepted target-to-exemplar mappings, visual-grammar rules,
+separate structural/visual validation ids, and matching Markdown contract.
+Legacy v1/v2/v3 manifests are readable only through `check-historical` and
+cannot authorize execution.
 
 ## Objective production — Step 4
 

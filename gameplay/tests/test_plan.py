@@ -339,11 +339,13 @@ No prerequisite plan.
             "rule_ids": [],
             "exemplar_ids": [],
             "validation_scenario_ids": [],
+            "style_blast_radius_scope": "",
+            "style_blast_radius": [],
         }
 
     def _manifest(self) -> dict:
         return {
-            "schema_version": "production_plan_manifest.v3",
+            "schema_version": "production_plan_manifest.v4",
             "factory_revision": self.factory_revision,
             "project_id": "sample",
             "objective_id": "mission.next",
@@ -407,18 +409,48 @@ No prerequisite plan.
             }
         ]
         adapter = {
-            "schema_version": "ui_production_adapter.v1",
+            "schema_version": "ui_production_adapter.v2",
             "status": "UI_PRODUCTION_ADAPTER_READY",
+            "visual_grammar_policy": {
+                "default_without_explicit_redesign": "PRESERVE_EXISTING_VISUAL_GRAMMAR",
+                "redesign_requires": "USER_RULING",
+            },
             "surfaces": [{"evidence_refs": evidence_refs}],
             "rules": [
-                {"rule_id": "layout.container", "evidence_refs": evidence_refs}
+                {
+                    "rule_id": "visual.existing-grammar",
+                    "category": "VISUAL_GRAMMAR",
+                    "evidence_refs": evidence_refs,
+                }
             ],
             "canonical_exemplars": [
-                {"exemplar_id": "main.panel", "evidence_refs": evidence_refs}
+                {
+                    "exemplar_id": "main.panel",
+                    "rules_illustrated": ["visual.existing-grammar"],
+                    "acceptance_provenance": {
+                        "authority": "USER_RULING",
+                        "accepted_baseline_path": "",
+                        "accepted_baseline_sha256": "",
+                        "accepted_game_revision": "",
+                        "user_quote": "Keep the existing main panel style.",
+                    },
+                    "evidence_refs": evidence_refs,
+                }
             ],
             "viewport_profiles": [{"viewport_id": "desktop"}],
             "localization_profiles": [{"profile_id": "stress"}],
-            "validation_scenarios": [{"scenario_id": "desktop.populated"}],
+            "validation_scenarios": [
+                {
+                    "scenario_id": "desktop.structural",
+                    "validation_kind": "STRUCTURAL_FIT",
+                    "comparison_methods": ["GEOMETRY_ASSERTION"],
+                },
+                {
+                    "scenario_id": "desktop.visual",
+                    "validation_kind": "VISUAL_CONSISTENCY",
+                    "comparison_methods": ["RESOURCE_IDENTITY"],
+                },
+            ],
         }
         adapter_path.write_text(json.dumps(adapter) + "\n", encoding="utf-8")
         adapter_sha = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
@@ -430,7 +462,7 @@ No prerequisite plan.
         result_path.write_text(
             json.dumps(
                 {
-                    "schema_version": "ui_production_adapter_result.v1",
+                    "schema_version": "ui_production_adapter_result.v2",
                     "status": "UI_PRODUCTION_ADAPTER_READY",
                     "outputs": {
                         "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json": adapter_sha
@@ -444,9 +476,23 @@ No prerequisite plan.
             "touches_ui": True,
             "adapter_path": "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
             "adapter_sha256": adapter_sha,
-            "rule_ids": ["layout.container"],
+            "rule_ids": ["visual.existing-grammar"],
             "exemplar_ids": ["main.panel"],
-            "validation_scenario_ids": ["desktop.populated"],
+            "validation_scenario_ids": ["desktop.structural", "desktop.visual"],
+            "style_blast_radius_scope": "ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH",
+            "style_blast_radius": [
+                {
+                    "target_id": "main.action-button",
+                    "target_path": "ui/main.tscn",
+                    "control_ids": ["ActionButton"],
+                    "change_kind": "NEW_CONTROL",
+                    "disposition": "IMPLEMENT_STYLE_CHANGE",
+                    "reference_exemplar_ids": ["main.panel"],
+                    "visual_rule_ids": ["visual.existing-grammar"],
+                    "structural_validation_scenario_ids": ["desktop.structural"],
+                    "visual_validation_scenario_ids": ["desktop.visual"],
+                }
+            ],
         }
 
     def test_valid_manifest_and_persisted_plan_are_ready(self) -> None:
@@ -626,7 +672,7 @@ No prerequisite plan.
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("legacy v1 UI plan" in error for error in result.errors))
 
-    def test_v2_ui_plan_must_bind_exact_adapter_and_markdown_contract(self) -> None:
+    def test_v4_ui_plan_must_bind_visual_grammar_blast_radius_and_split_validation(self) -> None:
         binding = self._ui_binding()
         (self.game_repo / "ui").mkdir(exist_ok=True)
         (self.game_repo / "ui/main.tscn").write_text("[node]\n", encoding="utf-8")
@@ -639,9 +685,12 @@ No prerequisite plan.
 ## UI realization contract
 - UI adapter: `{binding['adapter_path']}`
 - UI adapter SHA-256: `{binding['adapter_sha256']}`
-- UI rules: `layout.container`
+- UI rules: `visual.existing-grammar`
 - UI exemplars: `main.panel`
-- UI validation scenarios: `desktop.populated`
+- UI validation scenarios: `desktop.structural, desktop.visual`
+## UI style blast radius
+- Scope: `ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH`
+- `main.action-button` — `ui/main.tscn`; controls: `ActionButton`; change: `NEW_CONTROL`; disposition: `IMPLEMENT_STYLE_CHANGE`; references: `main.panel`; visual rules: `visual.existing-grammar`; structural validation: `desktop.structural`; visual validation: `desktop.visual`
 """
         (self.plan_dir / "P01_gate.md").write_text(plan, encoding="utf-8")
         result = validate_production_plan(str(self.game_repo), self.manifest_relative)
@@ -667,11 +716,41 @@ No prerequisite plan.
             "rule_ids": [],
             "exemplar_ids": [],
             "validation_scenario_ids": [],
+            "style_blast_radius_scope": "",
+            "style_blast_radius": [],
         }
         self._write_manifest(payload)
         result = validate_production_plan(str(self.game_repo), self.manifest_relative)
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("touches_ui=false" in error for error in result.errors))
+
+    def test_ui_plan_must_inventory_every_planned_ui_path(self) -> None:
+        binding = self._ui_binding()
+        payload = self._manifest()
+        payload["plans"][0]["work_types"] = ["UI", "TEST"]
+        payload["plans"][0]["planned_paths"] = [
+            "ui/main.tscn",
+            "scenes/staging_intelligence_panel.tscn",
+        ]
+        payload["plans"][0]["ui_impact"] = binding
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(
+            any("does not cover planned UI paths" in error for error in result.errors)
+        )
+
+    def test_ui_target_requires_visual_grammar_rule(self) -> None:
+        binding = self._ui_binding()
+        binding["style_blast_radius"][0]["visual_rule_ids"] = ["missing.visual"]
+        payload = self._manifest()
+        payload["plans"][0]["work_types"] = ["UI", "TEST"]
+        payload["plans"][0]["planned_paths"] = ["ui/main.tscn"]
+        payload["plans"][0]["ui_impact"] = binding
+        self._write_manifest(payload)
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(any("unknown rule" in error for error in result.errors))
 
     def test_ai_draft_cannot_enter_production(self) -> None:
         objective = self.objective_text.replace(

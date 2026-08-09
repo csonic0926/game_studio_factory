@@ -96,10 +96,12 @@ Before planning any change that touches gameplay UI, read
 `docs/UI_PRODUCTION_WORKFLOW.md` and run `gameplay/ui.py start`. Reuse a checked
 game-owned UI Production Adapter when ready; otherwise complete its one bounded
 repo-evidence investigation, compile, and check it in the same call. Then bind
-each UI-changing v3 plan to the exact adapter SHA and relevant rule, exemplar,
-and validation-scenario ids. Do not let the coding model infer the project's
-scene hierarchy, state ownership, refresh timing, responsive composition,
-localization fit, or modal/layer behavior from feature intent alone.
+each UI-changing objective-v4 / repair-v3 plan to the exact adapter SHA,
+accepted target-to-exemplar mapping, complete style blast radius, relevant
+visual-grammar rule, and separate structural/visual validation ids. Do not let
+the coding model infer the project's scene hierarchy, state ownership, refresh
+timing, responsive composition, localization fit, modal/layer behavior, or
+visual identity from feature intent alone.
 
 ## Boundaries
 

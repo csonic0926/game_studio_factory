@@ -7,8 +7,9 @@ files.  One evidence-focused investigator then fills the canonical input.
 ``check`` proves that the adapter is current; explicit ``refresh`` replaces a
 previously checked adapter after its cited convention sources change. The workflow reconstructs how
 this repository owns layout, state, scene integration, input/layers,
-responsive composition, localization fit, and UI validation.  It does not
-redesign the feature or infer repository conventions from filenames alone.
+responsive composition, localization fit, visual grammar, and separate
+structural/visual UI validation.  It does not redesign the feature or infer
+repository conventions from filenames alone.
 """
 
 from __future__ import annotations
@@ -25,9 +26,10 @@ from typing import Any, Iterable
 
 
 PROBE_SCHEMA_VERSION = "ui_production_repo_probe.v1"
-INPUT_SCHEMA_VERSION = "ui_production_adapter_input.v1"
-ADAPTER_SCHEMA_VERSION = "ui_production_adapter.v1"
-RESULT_SCHEMA_VERSION = "ui_production_adapter_result.v1"
+INPUT_SCHEMA_VERSION = "ui_production_adapter_input.v2"
+ADAPTER_SCHEMA_VERSION = "ui_production_adapter.v2"
+RESULT_SCHEMA_VERSION = "ui_production_adapter_result.v2"
+PREVIOUS_RESULT_SCHEMA_VERSIONS = {"ui_production_adapter_result.v1"}
 
 UI_PRODUCTION_ADAPTER_INPUT_REQUIRED = "UI_PRODUCTION_ADAPTER_INPUT_REQUIRED"
 UI_PRODUCTION_ADAPTER_READY = "UI_PRODUCTION_ADAPTER_READY"
@@ -119,6 +121,7 @@ REQUIRED_RULE_CATEGORIES = {
     "INPUT_AND_LAYERING",
     "RESPONSIVE_COMPOSITION",
     "LOCALIZATION_FIT",
+    "VISUAL_GRAMMAR",
     "VALIDATION",
 }
 PROJECT_BOUND_RULE_CATEGORIES = {
@@ -126,8 +129,40 @@ PROJECT_BOUND_RULE_CATEGORIES = {
     "STATE_OWNERSHIP",
     "SCENE_INTEGRATION",
     "INPUT_AND_LAYERING",
+    "VISUAL_GRAMMAR",
 }
 RULE_AUTHORITIES = {"REPO_EVIDENCE", "USER_RULING", "FACTORY_INVARIANT"}
+EXEMPLAR_AUTHORITIES = {"ACCEPTED_BASELINE", "USER_RULING"}
+VALIDATION_KINDS = {"STRUCTURAL_FIT", "VISUAL_CONSISTENCY"}
+COMPARISON_METHODS = {
+    "GEOMETRY_ASSERTION",
+    "STATE_ASSERTION",
+    "SCENE_ASSERTION",
+    "INTERACTION_TRACE",
+    "RESOURCE_IDENTITY",
+    "RESOURCE_PROPERTY_EQUALITY",
+    "COMPUTED_STYLE_EQUALITY",
+    "SCREENSHOT_REVIEW",
+}
+STRUCTURAL_COMPARISON_METHODS = {
+    "GEOMETRY_ASSERTION",
+    "STATE_ASSERTION",
+    "SCENE_ASSERTION",
+    "INTERACTION_TRACE",
+}
+MECHANICAL_VISUAL_COMPARISON_METHODS = {
+    "RESOURCE_IDENTITY",
+    "RESOURCE_PROPERTY_EQUALITY",
+    "COMPUTED_STYLE_EQUALITY",
+}
+GODOT_VISUAL_COMPARISON_METHODS = {
+    "RESOURCE_IDENTITY",
+    "RESOURCE_PROPERTY_EQUALITY",
+}
+VISUAL_GRAMMAR_POLICY = {
+    "default_without_explicit_redesign": "PRESERVE_EXISTING_VISUAL_GRAMMAR",
+    "redesign_requires": "USER_RULING",
+}
 
 
 class UiWorkflowError(ValueError):
@@ -393,9 +428,35 @@ def _adapter_complete(game_repo: Path) -> bool:
     return all((game_repo / relative).is_file() for relative in CANONICAL_OUTPUTS)
 
 
+def _adapter_generation_is_current(game_repo: Path) -> bool:
+    """Return whether an existing generation implements the current contract."""
+
+    try:
+        adapter = _load_json(
+            game_repo / ADAPTER_JSON_RELATIVE, "UI Production Adapter"
+        )
+        result = _load_json(
+            game_repo / RESULT_RELATIVE, "UI Production Adapter result"
+        )
+    except UiWorkflowError:
+        return False
+    return (
+        adapter.get("schema_version") == ADAPTER_SCHEMA_VERSION
+        and result.get("schema_version") == RESULT_SCHEMA_VERSION
+    )
+
+
 def start_ui_workflow(game_repo_text: str) -> UiWorkflowResult:
     game_repo = _resolve_game_repo(game_repo_text)
     if _adapter_complete(game_repo):
+        if not _adapter_generation_is_current(game_repo):
+            result = probe_repository(game_repo_text)
+            result.warnings.append(
+                "The existing UI adapter predates visual-grammar provenance, "
+                "style-blast-radius planning, or split structural/visual validation. "
+                "Reconstruct v2 input and use the explicit refresh command."
+            )
+            return result
         checked = check_ui_adapter(game_repo_text, INPUT_RELATIVE.as_posix())
         if checked.status == UI_PRODUCTION_ADAPTER_READY:
             checked.status = UI_PRODUCTION_ADAPTER_ALREADY_READY
@@ -506,6 +567,170 @@ def _validate_evidence_refs(
             }
         )
     return normalized
+
+
+def _git_file_at_revision(
+    game_repo: Path,
+    revision: str,
+    path_text: str,
+) -> bytes | None:
+    result = subprocess.run(
+        ["git", "-C", str(game_repo), "show", f"{revision}:{path_text}"],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return result.stdout if result.returncode == 0 else None
+
+
+def _validate_exemplar_provenance(
+    game_repo: Path,
+    value: Any,
+    evidence_refs: list[dict[str, Any]],
+    project_id: str,
+    label: str,
+    errors: list[str],
+) -> dict[str, str]:
+    """Prove an exemplar predates the target work or was explicitly accepted.
+
+    A Studio accepted baseline is executable provenance rather than a filename
+    claim: the compiler verifies the baseline payload and proves that every
+    cited exemplar byte already existed unchanged at its accepted game
+    revision. A USER_RULING is the only way to authorize another source.
+    """
+
+    empty = {
+        "authority": "",
+        "accepted_baseline_path": "",
+        "accepted_baseline_sha256": "",
+        "accepted_game_revision": "",
+        "user_quote": "",
+    }
+    if not isinstance(value, dict):
+        errors.append(f"{label} must be an object")
+        return empty
+    _exact_fields(
+        value,
+        {"authority", "accepted_baseline_path", "user_quote"},
+        label,
+        errors,
+    )
+    authority = _text(value.get("authority"), f"{label}.authority", errors)
+    baseline_path_text = _text(
+        value.get("accepted_baseline_path", ""),
+        f"{label}.accepted_baseline_path",
+        errors,
+        allow_empty=True,
+    )
+    user_quote = _text(
+        value.get("user_quote", ""),
+        f"{label}.user_quote",
+        errors,
+        allow_empty=True,
+    )
+    if authority not in EXEMPLAR_AUTHORITIES:
+        errors.append(f"{label}.authority has an unsupported value")
+        return {**empty, "authority": authority}
+    if authority == "USER_RULING":
+        if baseline_path_text:
+            errors.append(
+                f"{label}.accepted_baseline_path must be empty for USER_RULING"
+            )
+        if not user_quote:
+            errors.append(f"{label}.user_quote is required for USER_RULING")
+        return {
+            **empty,
+            "authority": authority,
+            "user_quote": user_quote,
+        }
+
+    if user_quote:
+        errors.append(f"{label}.user_quote must be empty for ACCEPTED_BASELINE")
+    if not baseline_path_text:
+        errors.append(
+            f"{label}.accepted_baseline_path is required for ACCEPTED_BASELINE"
+        )
+        return {**empty, "authority": authority}
+    if not re.fullmatch(
+        r"design/studio/baselines/[a-z0-9][a-z0-9._-]*/"
+        r"ACCEPTED_PLAYABLE_BASELINE\.json",
+        baseline_path_text,
+    ):
+        errors.append(
+            f"{label}.accepted_baseline_path must name a canonical Studio "
+            "ACCEPTED_PLAYABLE_BASELINE.json"
+        )
+    try:
+        baseline_path = _resolve_persisted_path(
+            game_repo, baseline_path_text, must_exist=True
+        )
+        baseline_bytes = baseline_path.read_bytes()
+        baseline = json.loads(baseline_bytes.decode("utf-8"))
+    except (UiWorkflowError, OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        errors.append(f"cannot validate {label} accepted baseline: {error}")
+        return {
+            **empty,
+            "authority": authority,
+            "accepted_baseline_path": baseline_path_text,
+        }
+    if not isinstance(baseline, dict):
+        errors.append(f"{label} accepted baseline must contain an object")
+        return {
+            **empty,
+            "authority": authority,
+            "accepted_baseline_path": baseline_path_text,
+            "accepted_baseline_sha256": _sha256_bytes(baseline_bytes),
+        }
+    if baseline.get("schema_version") not in {
+        "accepted_playable_baseline.v1",
+        "accepted_playable_baseline.v2",
+        "accepted_playable_baseline.v3",
+    }:
+        errors.append(f"{label} accepted baseline has an unsupported schema")
+    if baseline.get("status") != "ACCEPTED_PLAYABLE_BASELINE":
+        errors.append(f"{label} source is not an ACCEPTED_PLAYABLE_BASELINE")
+    if baseline.get("project_id") != project_id:
+        errors.append(f"{label} accepted baseline belongs to another project")
+    accepted_units = baseline.get("accepted_gameplay_units")
+    if not isinstance(accepted_units, list) or not accepted_units:
+        errors.append(f"{label} accepted baseline has no accepted gameplay units")
+    promotion = baseline.get("promotion")
+    if not isinstance(promotion, dict) or promotion.get("acceptance_owner") != "USER":
+        errors.append(f"{label} accepted baseline has no user-owned promotion")
+    eligibility = baseline.get("delivery_eligibility")
+    if (
+        not isinstance(eligibility, dict)
+        or eligibility.get("interactive_demo_only") is not False
+        or eligibility.get("minimum_gameplay_passed") is not True
+        or eligibility.get("blocking_gap_ids") != []
+    ):
+        errors.append(f"{label} accepted baseline is not delivery eligible")
+    revision = baseline.get("game_revision")
+    if not isinstance(revision, str) or not re.fullmatch(r"[0-9a-f]{7,64}", revision):
+        errors.append(f"{label} accepted baseline has no valid game_revision")
+        revision = ""
+    if revision:
+        for ref in evidence_refs:
+            path_text = ref.get("path", "")
+            accepted_bytes = _git_file_at_revision(game_repo, revision, path_text)
+            if accepted_bytes is None:
+                errors.append(
+                    f"{label} exemplar evidence did not exist in accepted baseline "
+                    f"revision {revision}: {path_text}"
+                )
+                continue
+            if _sha256_bytes(accepted_bytes) != ref.get("source_sha256"):
+                errors.append(
+                    f"{label} exemplar evidence changed after accepted baseline; "
+                    f"it cannot certify current visual grammar: {path_text}"
+                )
+    return {
+        "authority": authority,
+        "accepted_baseline_path": baseline_path_text,
+        "accepted_baseline_sha256": _sha256_bytes(baseline_bytes),
+        "accepted_game_revision": revision,
+        "user_quote": "",
+    }
 
 
 def _validate_repo_binding(
@@ -637,18 +862,38 @@ def _normalize_input(
             continue
         _exact_fields(
             raw,
-            {"exemplar_id", "why_canonical", "rules_illustrated", "evidence_refs"},
+            {
+                "exemplar_id",
+                "why_canonical",
+                "rules_illustrated",
+                "acceptance_provenance",
+                "evidence_refs",
+            },
             label,
             errors,
         )
         exemplar_id = _portable_id(raw.get("exemplar_id"), f"{label}.exemplar_id", errors)
         exemplar_ids.append(exemplar_id)
+        evidence_refs = _validate_evidence_refs(
+            game_repo,
+            raw.get("evidence_refs"),
+            f"{label}.evidence_refs",
+            errors,
+        )
         exemplars.append(
             {
                 "exemplar_id": exemplar_id,
                 "why_canonical": _text(raw.get("why_canonical"), f"{label}.why_canonical", errors),
                 "rules_illustrated": _string_list(raw.get("rules_illustrated"), f"{label}.rules_illustrated", errors),
-                "evidence_refs": _validate_evidence_refs(game_repo, raw.get("evidence_refs"), f"{label}.evidence_refs", errors),
+                "acceptance_provenance": _validate_exemplar_provenance(
+                    game_repo,
+                    raw.get("acceptance_provenance"),
+                    evidence_refs,
+                    project_id,
+                    f"{label}.acceptance_provenance",
+                    errors,
+                ),
+                "evidence_refs": evidence_refs,
             }
         )
     if len(exemplar_ids) != len(set(exemplar_ids)):
@@ -734,6 +979,17 @@ def _normalize_input(
                 f"canonical exemplar {exemplar['exemplar_id']} references unknown rules: "
                 + ", ".join(unknown)
             )
+    visual_rule_ids = {
+        rule["rule_id"] for rule in rules if rule["category"] == "VISUAL_GRAMMAR"
+    }
+    if visual_rule_ids and not any(
+        set(exemplar["rules_illustrated"]) & visual_rule_ids
+        for exemplar in exemplars
+    ):
+        errors.append(
+            "at least one accepted canonical exemplar must illustrate a "
+            "VISUAL_GRAMMAR rule"
+        )
 
     viewports_raw = _list(payload.get("viewport_profiles"), "viewport_profiles", errors)
     viewports: list[dict[str, Any]] = []
@@ -800,7 +1056,9 @@ def _normalize_input(
     scenario_ids: list[str] = []
     covered_viewports: set[str] = set()
     covered_locales: set[str] = set()
-    covered_combinations: set[tuple[str, str]] = set()
+    covered_combinations: set[tuple[str, str, str]] = set()
+    validation_kinds: set[str] = set()
+    is_godot_project = (game_repo / "project.godot").is_file()
     for index, raw in enumerate(scenarios_raw):
         label = f"validation_scenarios[{index}]"
         if not isinstance(raw, dict):
@@ -810,17 +1068,24 @@ def _normalize_input(
             raw,
             {
                 "scenario_id",
+                "validation_kind",
                 "viewport_id",
                 "localization_profile_id",
                 "ui_states",
                 "interaction_path",
                 "assertions",
+                "comparison_methods",
                 "capture_requirements",
             },
             label,
             errors,
         )
         scenario_id = _portable_id(raw.get("scenario_id"), f"{label}.scenario_id", errors)
+        validation_kind = _text(
+            raw.get("validation_kind"), f"{label}.validation_kind", errors
+        )
+        if validation_kind and validation_kind not in VALIDATION_KINDS:
+            errors.append(f"{label}.validation_kind has an unsupported value")
         viewport_id = _text(raw.get("viewport_id"), f"{label}.viewport_id", errors)
         locale_id = _text(raw.get("localization_profile_id"), f"{label}.localization_profile_id", errors)
         if viewport_id not in set(viewport_ids):
@@ -829,16 +1094,55 @@ def _normalize_input(
             errors.append(f"{label}.localization_profile_id references an unknown profile")
         covered_viewports.add(viewport_id)
         covered_locales.add(locale_id)
-        covered_combinations.add((viewport_id, locale_id))
+        covered_combinations.add((viewport_id, locale_id, validation_kind))
+        validation_kinds.add(validation_kind)
+        comparison_methods = _string_list(
+            raw.get("comparison_methods"),
+            f"{label}.comparison_methods",
+            errors,
+        )
+        unknown_methods = sorted(set(comparison_methods) - COMPARISON_METHODS)
+        if unknown_methods:
+            errors.append(
+                f"{label}.comparison_methods has unsupported values: "
+                + ", ".join(unknown_methods)
+            )
+        if (
+            validation_kind == "STRUCTURAL_FIT"
+            and not set(comparison_methods) & STRUCTURAL_COMPARISON_METHODS
+        ):
+            errors.append(
+                f"{label} STRUCTURAL_FIT requires a mechanical geometry, state, "
+                "scene, or interaction comparison"
+            )
+        if (
+            validation_kind == "VISUAL_CONSISTENCY"
+            and not set(comparison_methods) & MECHANICAL_VISUAL_COMPARISON_METHODS
+        ):
+            errors.append(
+                f"{label} VISUAL_CONSISTENCY requires mechanical style comparison; "
+                "screenshots alone are supplemental"
+            )
+        if (
+            is_godot_project
+            and validation_kind == "VISUAL_CONSISTENCY"
+            and not set(comparison_methods) & GODOT_VISUAL_COMPARISON_METHODS
+        ):
+            errors.append(
+                f"{label} Godot VISUAL_CONSISTENCY must compare Theme/StyleBox "
+                "resource identity or resource properties directly"
+            )
         scenario_ids.append(scenario_id)
         scenarios.append(
             {
                 "scenario_id": scenario_id,
+                "validation_kind": validation_kind,
                 "viewport_id": viewport_id,
                 "localization_profile_id": locale_id,
                 "ui_states": _string_list(raw.get("ui_states"), f"{label}.ui_states", errors),
                 "interaction_path": _string_list(raw.get("interaction_path"), f"{label}.interaction_path", errors),
                 "assertions": _string_list(raw.get("assertions"), f"{label}.assertions", errors),
+                "comparison_methods": comparison_methods,
                 "capture_requirements": _string_list(raw.get("capture_requirements"), f"{label}.capture_requirements", errors),
             }
         )
@@ -850,14 +1154,28 @@ def _normalize_input(
         errors.append("validation scenarios do not cover viewport profiles: " + ", ".join(missing_viewports))
     if missing_locales:
         errors.append("validation scenarios do not cover localization profiles: " + ", ".join(missing_locales))
+    missing_validation_kinds = sorted(VALIDATION_KINDS - validation_kinds)
+    if missing_validation_kinds:
+        errors.append(
+            "validation scenarios lack required validation kinds: "
+            + ", ".join(missing_validation_kinds)
+        )
     missing_combinations = sorted(
-        set((viewport, locale) for viewport in viewport_ids for locale in locale_profile_ids)
+        set(
+            (viewport, locale, validation_kind)
+            for viewport in viewport_ids
+            for locale in locale_profile_ids
+            for validation_kind in VALIDATION_KINDS
+        )
         - covered_combinations
     )
     if missing_combinations:
         errors.append(
-            "validation scenarios do not cover viewport/localization combinations: "
-            + ", ".join(f"{viewport}+{locale}" for viewport, locale in missing_combinations)
+            "validation scenarios do not cover viewport/localization/kind combinations: "
+            + ", ".join(
+                f"{viewport}+{locale}+{validation_kind}"
+                for viewport, locale, validation_kind in missing_combinations
+            )
         )
 
     anti_raw = _list(payload.get("anti_patterns"), "anti_patterns", errors, allow_empty=True)
@@ -902,6 +1220,7 @@ def _normalize_input(
         "repository_binding": binding,
         "source_probe_path": probe_path_text,
         "source_probe_sha256": probe_sha,
+        "visual_grammar_policy": VISUAL_GRAMMAR_POLICY,
         "surfaces": surfaces,
         "canonical_exemplars": exemplars,
         "rules": rules,
@@ -924,7 +1243,15 @@ def _render_markdown(adapter: dict[str, Any]) -> str:
         "",
         "This game-owned adapter is the UI construction authority for Gameplay",
         "Factory plans. It does not define feature intent; it defines how this repo",
-        "realizes that intent without breaking layout, state, or scene integration.",
+        "realizes that intent without breaking layout, state, scene integration, or",
+        "the accepted visual identity.",
+        "",
+        "## Visual grammar policy",
+        "",
+        "- Without explicit redesign authority: "
+        f"`{adapter['visual_grammar_policy']['default_without_explicit_redesign']}`",
+        "- Redesign authority must be: "
+        f"`{adapter['visual_grammar_policy']['redesign_requires']}`",
         "",
         "## Owned surfaces and flows",
         "",
@@ -946,10 +1273,17 @@ def _render_markdown(adapter: dict[str, Any]) -> str:
         )
     lines.extend(["## Canonical exemplars", ""])
     for exemplar in adapter["canonical_exemplars"]:
+        provenance = exemplar["acceptance_provenance"]
+        provenance_source = (
+            provenance["accepted_baseline_path"]
+            if provenance["authority"] == "ACCEPTED_BASELINE"
+            else provenance["user_quote"]
+        )
         lines.append(
             f"- `{exemplar['exemplar_id']}` — {exemplar['why_canonical']} "
             f"Rules: {', '.join(exemplar['rules_illustrated'])}. Evidence: "
             + ", ".join(f"`{ref['path']}`" for ref in exemplar["evidence_refs"])
+            + f". Acceptance: {provenance['authority']} ({provenance_source})"
         )
     lines.extend(["", "## Binding rules", ""])
     for rule in adapter["rules"]:
@@ -973,10 +1307,13 @@ def _render_markdown(adapter: dict[str, Any]) -> str:
     lines.extend(["", "## Validation scenarios", ""])
     for scenario in adapter["validation_scenarios"]:
         lines.append(
-            f"- `{scenario['scenario_id']}` — viewport `{scenario['viewport_id']}`, "
+            f"- `{scenario['scenario_id']}` [{scenario['validation_kind']}] — "
+            f"viewport `{scenario['viewport_id']}`, "
             f"locale profile `{scenario['localization_profile_id']}`; states: "
             f"{', '.join(scenario['ui_states'])}; assert: "
             + "; ".join(scenario["assertions"])
+            + "; compare: "
+            + ", ".join(scenario["comparison_methods"])
         )
     lines.extend(["", "## Known anti-patterns", ""])
     if adapter["anti_patterns"]:
@@ -1089,7 +1426,8 @@ def _existing_outputs_are_checked(game_repo: Path) -> list[str]:
     outputs = result.get("outputs") if isinstance(result, dict) else None
     if (
         not isinstance(result, dict)
-        or result.get("schema_version") != RESULT_SCHEMA_VERSION
+        or result.get("schema_version")
+        not in PREVIOUS_RESULT_SCHEMA_VERSIONS | {RESULT_SCHEMA_VERSION}
         or result.get("status") != UI_PRODUCTION_ADAPTER_READY
         or not isinstance(outputs, dict)
     ):

@@ -96,6 +96,7 @@ class UiWorkflowTests(unittest.TestCase):
             "INPUT_AND_LAYERING",
             "RESPONSIVE_COMPOSITION",
             "LOCALIZATION_FIT",
+            "VISUAL_GRAMMAR",
             "VALIDATION",
         ]
         rules = []
@@ -112,7 +113,7 @@ class UiWorkflowTests(unittest.TestCase):
                 }
             )
         payload = {
-            "schema_version": "ui_production_adapter_input.v1",
+            "schema_version": "ui_production_adapter_input.v2",
             "project_id": "sample-game",
             "probe_path": PROBE_RELATIVE.as_posix(),
             "probe_sha256": hashlib.sha256(probe_bytes).hexdigest(),
@@ -134,6 +135,11 @@ class UiWorkflowTests(unittest.TestCase):
                     "exemplar_id": "main.panel",
                     "why_canonical": "It is the existing working gameplay surface.",
                     "rules_illustrated": [rule["rule_id"] for rule in rules],
+                    "acceptance_provenance": {
+                        "authority": "USER_RULING",
+                        "accepted_baseline_path": "",
+                        "user_quote": "Keep the existing main panel as the accepted UI reference.",
+                    },
                     "evidence_refs": evidence,
                 }
             ],
@@ -156,13 +162,30 @@ class UiWorkflowTests(unittest.TestCase):
             ],
             "validation_scenarios": [
                 {
-                    "scenario_id": "main.populated.desktop",
+                    "scenario_id": "main.structural.desktop",
+                    "validation_kind": "STRUCTURAL_FIT",
                     "viewport_id": "desktop.16x9",
                     "localization_profile_id": "stress.all",
                     "ui_states": ["empty", "populated", "disabled", "modal"],
                     "interaction_path": ["Open the surface", "Press ActionButton"],
                     "assertions": ["State refreshes once and all controls remain visible."],
+                    "comparison_methods": ["GEOMETRY_ASSERTION", "STATE_ASSERTION"],
                     "capture_requirements": ["Capture every state in both locales."],
+                },
+                {
+                    "scenario_id": "main.visual.desktop",
+                    "validation_kind": "VISUAL_CONSISTENCY",
+                    "viewport_id": "desktop.16x9",
+                    "localization_profile_id": "stress.all",
+                    "ui_states": ["normal", "hover", "pressed", "disabled", "modal"],
+                    "interaction_path": ["Open the surface", "Exercise every button state"],
+                    "assertions": ["Theme, StyleBox, and font colors match the accepted exemplar."],
+                    "comparison_methods": [
+                        "RESOURCE_IDENTITY",
+                        "RESOURCE_PROPERTY_EQUALITY",
+                        "SCREENSHOT_REVIEW",
+                    ],
+                    "capture_requirements": ["Capture target and exemplar in every state."],
                 }
             ],
             "anti_patterns": [
@@ -269,6 +292,52 @@ class UiWorkflowTests(unittest.TestCase):
         self.assertEqual(BLOCKED_BY_EXISTING_UI_STATE, result.status)
         self.assertTrue(any("modified outside" in error for error in result.errors))
 
+    def test_v1_generation_is_migrated_through_probe_and_explicit_refresh(self) -> None:
+        adapter_path = self.game_repo / ADAPTER_JSON_RELATIVE
+        markdown_path = self.game_repo / ADAPTER_MD_RELATIVE
+        result_path = self.game_repo / RESULT_RELATIVE
+        adapter_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        adapter_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "ui_production_adapter.v1",
+                    "status": "UI_PRODUCTION_ADAPTER_READY",
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        markdown_path.write_text("# legacy adapter\n", encoding="utf-8")
+        result_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "ui_production_adapter_result.v1",
+                    "status": "UI_PRODUCTION_ADAPTER_READY",
+                    "outputs": {
+                        ADAPTER_JSON_RELATIVE.as_posix(): hashlib.sha256(
+                            adapter_path.read_bytes()
+                        ).hexdigest(),
+                        ADAPTER_MD_RELATIVE.as_posix(): hashlib.sha256(
+                            markdown_path.read_bytes()
+                        ).hexdigest(),
+                    },
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        started = start_ui_workflow(str(self.game_repo))
+        self.assertEqual(UI_PRODUCTION_ADAPTER_INPUT_REQUIRED, started.status)
+        self.assertTrue(any("predates" in warning for warning in started.warnings))
+        self._probe_and_input()
+        refreshed = refresh_ui_adapter(
+            str(self.game_repo), INPUT_RELATIVE.as_posix()
+        )
+        self.assertEqual(UI_PRODUCTION_ADAPTER_READY, refreshed.status)
+        adapter = json.loads(adapter_path.read_text())
+        self.assertEqual("ui_production_adapter.v2", adapter["schema_version"])
+
     def test_repo_change_after_probe_fails_closed(self) -> None:
         self._probe_and_input()
         self.ui_source.write_text(self.ui_source.read_text() + "# changed\n")
@@ -278,7 +347,11 @@ class UiWorkflowTests(unittest.TestCase):
 
     def test_missing_rule_category_fails_closed(self) -> None:
         payload = self._probe_and_input()
-        payload["rules"] = payload["rules"][:-1]
+        payload["rules"] = [
+            rule
+            for rule in payload["rules"]
+            if rule["category"] != "VISUAL_GRAMMAR"
+        ]
         (self.game_repo / INPUT_RELATIVE).write_text(json.dumps(payload) + "\n")
         result = compile_ui_adapter(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_UI_MODEL, result.status)
@@ -300,6 +373,125 @@ class UiWorkflowTests(unittest.TestCase):
         result = compile_ui_adapter(str(self.game_repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_UI_MODEL, result.status)
         self.assertTrue(any("user_quote is required" in e for e in result.errors))
+
+    def test_accepted_baseline_proves_exemplar_predates_current_change(self) -> None:
+        payload = self._probe_and_input()
+        revision = subprocess.run(
+            ["git", "-C", str(self.game_repo), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        baseline_relative = (
+            "design/studio/baselines/baseline-one/"
+            "ACCEPTED_PLAYABLE_BASELINE.json"
+        )
+        baseline_path = self.game_repo / baseline_relative
+        baseline_path.parent.mkdir(parents=True, exist_ok=True)
+        baseline_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "accepted_playable_baseline.v3",
+                    "status": "ACCEPTED_PLAYABLE_BASELINE",
+                    "project_id": "sample-game",
+                    "baseline_id": "baseline-one",
+                    "game_revision": revision,
+                    "accepted_gameplay_units": [{"unit_id": "unit-one"}],
+                    "promotion": {"acceptance_owner": "USER"},
+                    "delivery_eligibility": {
+                        "interactive_demo_only": False,
+                        "minimum_gameplay_passed": True,
+                        "blocking_gap_ids": [],
+                    },
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        payload = self._probe_and_input()
+        payload["canonical_exemplars"][0]["acceptance_provenance"] = {
+            "authority": "ACCEPTED_BASELINE",
+            "accepted_baseline_path": baseline_relative,
+            "user_quote": "",
+        }
+        (self.game_repo / INPUT_RELATIVE).write_text(json.dumps(payload) + "\n")
+        result = compile_ui_adapter(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(UI_PRODUCTION_ADAPTER_READY, result.status)
+        adapter = json.loads((self.game_repo / ADAPTER_JSON_RELATIVE).read_text())
+        provenance = adapter["canonical_exemplars"][0]["acceptance_provenance"]
+        self.assertEqual(revision, provenance["accepted_game_revision"])
+        self.assertRegex(provenance["accepted_baseline_sha256"], r"^[0-9a-f]{64}$")
+
+    def test_current_target_cannot_certify_itself_as_baseline_exemplar(self) -> None:
+        new_target = self.game_repo / "ui/new_intelligence_panel.tscn"
+        new_target.write_text(
+            '[node name="NewIntelligencePanel" type="Panel"]\n',
+            encoding="utf-8",
+        )
+        revision = subprocess.run(
+            ["git", "-C", str(self.game_repo), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        baseline_relative = (
+            "design/studio/baselines/baseline-one/"
+            "ACCEPTED_PLAYABLE_BASELINE.json"
+        )
+        baseline_path = self.game_repo / baseline_relative
+        baseline_path.parent.mkdir(parents=True, exist_ok=True)
+        baseline_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "accepted_playable_baseline.v3",
+                    "status": "ACCEPTED_PLAYABLE_BASELINE",
+                    "project_id": "sample-game",
+                    "baseline_id": "baseline-one",
+                    "game_revision": revision,
+                    "accepted_gameplay_units": [{"unit_id": "unit-one"}],
+                    "promotion": {"acceptance_owner": "USER"},
+                    "delivery_eligibility": {
+                        "interactive_demo_only": False,
+                        "minimum_gameplay_passed": True,
+                        "blocking_gap_ids": [],
+                    },
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        payload = self._probe_and_input()
+        payload["canonical_exemplars"][0]["evidence_refs"] = [
+            {
+                "role": "working_exemplar",
+                "path": "ui/new_intelligence_panel.tscn",
+                "contains": ["NewIntelligencePanel"],
+            }
+        ]
+        payload["canonical_exemplars"][0]["acceptance_provenance"] = {
+            "authority": "ACCEPTED_BASELINE",
+            "accepted_baseline_path": baseline_relative,
+            "user_quote": "",
+        }
+        (self.game_repo / INPUT_RELATIVE).write_text(json.dumps(payload) + "\n")
+        result = compile_ui_adapter(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_UI_MODEL, result.status)
+        self.assertTrue(
+            any("did not exist in accepted baseline" in error for error in result.errors)
+        )
+
+    def test_visual_consistency_cannot_rely_on_screenshots_only(self) -> None:
+        payload = self._probe_and_input()
+        visual = next(
+            scenario
+            for scenario in payload["validation_scenarios"]
+            if scenario["validation_kind"] == "VISUAL_CONSISTENCY"
+        )
+        visual["comparison_methods"] = ["SCREENSHOT_REVIEW"]
+        (self.game_repo / INPUT_RELATIVE).write_text(json.dumps(payload) + "\n")
+        result = compile_ui_adapter(str(self.game_repo), INPUT_RELATIVE.as_posix())
+        self.assertEqual(BLOCKED_BY_UI_MODEL, result.status)
+        self.assertTrue(any("screenshots alone" in error for error in result.errors))
 
     def test_validation_must_cover_each_viewport_and_locale_profile(self) -> None:
         payload = self._probe_and_input()

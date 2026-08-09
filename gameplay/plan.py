@@ -34,10 +34,11 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     )
 
 
-SCHEMA_VERSION = "production_plan_manifest.v3"
+SCHEMA_VERSION = "production_plan_manifest.v4"
 SUPPORTED_SCHEMA_VERSIONS = {
     "production_plan_manifest.v1",
     "production_plan_manifest.v2",
+    "production_plan_manifest.v3",
     SCHEMA_VERSION,
 }
 READY_FOR_EXECUTION = "READY_FOR_EXECUTION"

@@ -1,5 +1,5 @@
 {
-  "schema_version": "ui_production_adapter_input.v1",
+  "schema_version": "ui_production_adapter_input.v2",
   "project_id": "<PROJECT_ID>",
   "probe_path": "design/gameplay/ui/PROJECT_UI_REPO_PROBE.json",
   "probe_sha256": "<SHA256_OF_PROJECT_UI_REPO_PROBE_UTF8_BYTES>",
@@ -31,6 +31,11 @@
       "exemplar_id": "<EXEMPLAR_ID>",
       "why_canonical": "<WHY_NEW_UI_SHOULD_FOLLOW_THIS_EXISTING_SURFACE>",
       "rules_illustrated": ["<RULE_ID>"],
+      "acceptance_provenance": {
+        "authority": "ACCEPTED_BASELINE | USER_RULING",
+        "accepted_baseline_path": "<CANONICAL_ACCEPTED_BASELINE_PATH_OR_EMPTY>",
+        "user_quote": "<EXACT_USER_ACCEPTANCE_QUOTE_OR_EMPTY>"
+      },
       "evidence_refs": [
         {
           "role": "working_exemplar",
@@ -43,7 +48,7 @@
   "rules": [
     {
       "rule_id": "<RULE_ID>",
-      "category": "LAYOUT_STRUCTURE | STATE_OWNERSHIP | SCENE_INTEGRATION | INPUT_AND_LAYERING | RESPONSIVE_COMPOSITION | LOCALIZATION_FIT | VALIDATION",
+      "category": "LAYOUT_STRUCTURE | STATE_OWNERSHIP | SCENE_INTEGRATION | INPUT_AND_LAYERING | RESPONSIVE_COMPOSITION | LOCALIZATION_FIT | VISUAL_GRAMMAR | VALIDATION",
       "authority": "REPO_EVIDENCE | USER_RULING | FACTORY_INVARIANT",
       "requirement": "<BINDING_IMPLEMENTATION_REQUIREMENT>",
       "rationale": "<FAILURE_PREVENTED_OR_CONVENTION_PRESERVED>",
@@ -69,12 +74,25 @@
   ],
   "validation_scenarios": [
     {
-      "scenario_id": "<SCENARIO_ID>",
+      "scenario_id": "<STRUCTURAL_SCENARIO_ID>",
+      "validation_kind": "STRUCTURAL_FIT",
       "viewport_id": "<VIEWPORT_ID>",
       "localization_profile_id": "<LOCALIZATION_PROFILE_ID>",
       "ui_states": ["<EMPTY_LOADING_POPULATED_DISABLED_MODAL_OR_ERROR_STATE>"],
       "interaction_path": ["<PLAYER_INPUT_STEP>"],
       "assertions": ["<LAYOUT_STATE_AND_SCENE_INTEGRATION_ASSERTION>"],
+      "comparison_methods": ["GEOMETRY_ASSERTION"],
+      "capture_requirements": ["<SCREENSHOT_OR_RUNTIME_TRACE_REQUIREMENT>"]
+    },
+    {
+      "scenario_id": "<VISUAL_SCENARIO_ID>",
+      "validation_kind": "VISUAL_CONSISTENCY",
+      "viewport_id": "<VIEWPORT_ID>",
+      "localization_profile_id": "<LOCALIZATION_PROFILE_ID>",
+      "ui_states": ["<NORMAL_HOVER_PRESSED_DISABLED_MODAL_OR_ERROR_STATE>"],
+      "interaction_path": ["<PLAYER_INPUT_STEP>"],
+      "assertions": ["<TARGET_TO_ACCEPTED_REFERENCE_STYLE_ASSERTION>"],
+      "comparison_methods": ["RESOURCE_IDENTITY", "RESOURCE_PROPERTY_EQUALITY", "SCREENSHOT_REVIEW"],
       "capture_requirements": ["<SCREENSHOT_OR_RUNTIME_TRACE_REQUIREMENT>"]
     }
   ],

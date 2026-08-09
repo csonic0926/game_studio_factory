@@ -13,7 +13,7 @@
     "outputs"
   ],
   "properties": {
-    "schema_version": {"const": "ui_production_adapter_result.v1"},
+    "schema_version": {"const": "ui_production_adapter_result.v2"},
     "status": {"const": "UI_PRODUCTION_ADAPTER_READY"},
     "project_id": {"type": "string", "minLength": 1},
     "source_input_path": {"const": "design/gameplay/ui/UI_PRODUCTION_ADAPTER_INPUT.json"},

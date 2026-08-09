@@ -12,7 +12,8 @@ just-in-time UI realization preflight:
 3. **Gap repair** — close one concrete missing or broken gameplay contract
    inside an already-authored progression unit.
 4. **UI production adapter** — before any UI-changing production plan,
-   reconstruct and bind this repo's layout/state/scene construction grammar.
+   reconstruct and bind this repo's layout/state/scene construction grammar
+   and accepted visual grammar.
 
 Runtime evidence reading remains independently invoked. Product/game direction
 is owned by the umbrella Idea Factory; Gameplay initialization must not invent
@@ -256,9 +257,10 @@ an unreviewed, unregistered, or superseded payload. Record the ruling with
 After design and before Step 3 planning, determine whether intended production
 touches UI. If so, run the UI Production Adapter workflow first. Do not ask the
 production planner to rediscover scene hierarchy, state ownership, responsive
-composition, or validation conventions inside every plan. The adapter is
-reusable game-owned production authority, and each UI plan selects the exact
-relevant rule/exemplar/scenario ids plus adapter hash.
+composition, visual identity, or validation conventions inside every plan. The
+adapter is reusable game-owned production authority, and each UI plan selects
+the exact rule/exemplar/scenario ids, accepted target-reference mappings,
+complete style blast radius, and adapter hash.
 
 ## 5. Gap repair — current/previous unit closure
 
@@ -339,9 +341,12 @@ fresh acceptance and promotes the baseline.
 - **UI intent and UI construction stay separate.** Objective/repair design
   owns the required player-visible result; the checked game-owned UI
   Production Adapter owns layout, state refresh, scene/lifecycle, input/layer,
-  responsive/localization, exemplar, and validation conventions.
-- **No UI writes before UI authority.** A UI-changing plan must use manifest
-  v2, exact adapter SHA, relevant rule/exemplar/scenario ids, and the matching
+  responsive/localization, accepted visual grammar/exemplar provenance, and
+  split structural/visual validation conventions.
+- **No UI writes before UI authority.** A UI-changing plan must use objective
+  manifest v4 or repair manifest v3, exact adapter SHA, accepted
+  target-to-exemplar mappings, complete new/modified/reopened-batch style blast
+  radius, relevant visual-grammar and split-validation ids, and the matching
   Markdown contract. `touches_ui: false` may not hide explicit UI work.
 - **Plan ownership is exclusive.** Shared planned paths across plans are
   invalid.

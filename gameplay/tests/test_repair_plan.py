@@ -198,18 +198,48 @@ No prerequisite plan; runtime review closes the gap.
             }
         ]
         adapter = {
-            "schema_version": "ui_production_adapter.v1",
+            "schema_version": "ui_production_adapter.v2",
             "status": "UI_PRODUCTION_ADAPTER_READY",
+            "visual_grammar_policy": {
+                "default_without_explicit_redesign": "PRESERVE_EXISTING_VISUAL_GRAMMAR",
+                "redesign_requires": "USER_RULING",
+            },
             "surfaces": [{"evidence_refs": evidence_refs}],
             "rules": [
-                {"rule_id": "state.single-owner", "evidence_refs": evidence_refs}
+                {
+                    "rule_id": "visual.existing-grammar",
+                    "category": "VISUAL_GRAMMAR",
+                    "evidence_refs": evidence_refs,
+                }
             ],
             "canonical_exemplars": [
-                {"exemplar_id": "camp.panel", "evidence_refs": evidence_refs}
+                {
+                    "exemplar_id": "camp.panel",
+                    "rules_illustrated": ["visual.existing-grammar"],
+                    "acceptance_provenance": {
+                        "authority": "USER_RULING",
+                        "accepted_baseline_path": "",
+                        "accepted_baseline_sha256": "",
+                        "accepted_game_revision": "",
+                        "user_quote": "Keep the existing camp panel style.",
+                    },
+                    "evidence_refs": evidence_refs,
+                }
             ],
             "viewport_profiles": [{"viewport_id": "desktop"}],
             "localization_profiles": [{"profile_id": "stress"}],
-            "validation_scenarios": [{"scenario_id": "camp.returning"}],
+            "validation_scenarios": [
+                {
+                    "scenario_id": "camp.structural",
+                    "validation_kind": "STRUCTURAL_FIT",
+                    "comparison_methods": ["GEOMETRY_ASSERTION"],
+                },
+                {
+                    "scenario_id": "camp.visual",
+                    "validation_kind": "VISUAL_CONSISTENCY",
+                    "comparison_methods": ["COMPUTED_STYLE_EQUALITY"],
+                },
+            ],
         }
         adapter_path.write_text(json.dumps(adapter) + "\n", encoding="utf-8")
         adapter_sha = hashlib.sha256(adapter_path.read_bytes()).hexdigest()
@@ -221,7 +251,7 @@ No prerequisite plan; runtime review closes the gap.
         result_path.write_text(
             json.dumps(
                 {
-                    "schema_version": "ui_production_adapter_result.v1",
+                    "schema_version": "ui_production_adapter_result.v2",
                     "status": "UI_PRODUCTION_ADAPTER_READY",
                     "outputs": {
                         "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json": adapter_sha
@@ -235,9 +265,23 @@ No prerequisite plan; runtime review closes the gap.
             "touches_ui": True,
             "adapter_path": "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
             "adapter_sha256": adapter_sha,
-            "rule_ids": ["state.single-owner"],
+            "rule_ids": ["visual.existing-grammar"],
             "exemplar_ids": ["camp.panel"],
-            "validation_scenario_ids": ["camp.returning"],
+            "validation_scenario_ids": ["camp.structural", "camp.visual"],
+            "style_blast_radius_scope": "ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH",
+            "style_blast_radius": [
+                {
+                    "target_id": "camp.return-fire",
+                    "target_path": "game.gd",
+                    "control_ids": ["ReturnFireButton"],
+                    "change_kind": "REOPENED_BATCH_CONTROL",
+                    "disposition": "IMPLEMENT_STYLE_CHANGE",
+                    "reference_exemplar_ids": ["camp.panel"],
+                    "visual_rule_ids": ["visual.existing-grammar"],
+                    "structural_validation_scenario_ids": ["camp.structural"],
+                    "visual_validation_scenario_ids": ["camp.visual"],
+                }
+            ],
         }
 
     def test_valid_repair_manifest_is_ready(self) -> None:
@@ -359,10 +403,10 @@ No prerequisite plan; runtime review closes the gap.
         with self.assertRaises(RepairPlanningError):
             validate_repair_plan(str(self.game_repo), str(outside_manifest))
 
-    def test_v2_ui_repair_plan_binds_repo_ui_grammar(self) -> None:
+    def test_v3_ui_repair_plan_binds_visual_grammar_and_reopened_blast_radius(self) -> None:
         binding = self._ui_binding()
         payload = self._manifest()
-        payload["schema_version"] = "repair_plan_manifest.v2"
+        payload["schema_version"] = "repair_plan_manifest.v3"
         payload["plans"][0]["work_types"] = ["CODE", "UI", "TEST"]
         payload["plans"][0]["ui_impact"] = binding
         self._write_manifest(payload)
@@ -370,9 +414,12 @@ No prerequisite plan; runtime review closes the gap.
 ## UI realization contract
 - UI adapter: `{binding['adapter_path']}`
 - UI adapter SHA-256: `{binding['adapter_sha256']}`
-- UI rules: `state.single-owner`
+- UI rules: `visual.existing-grammar`
 - UI exemplars: `camp.panel`
-- UI validation scenarios: `camp.returning`
+- UI validation scenarios: `camp.structural, camp.visual`
+## UI style blast radius
+- Scope: `ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH`
+- `camp.return-fire` — `game.gd`; controls: `ReturnFireButton`; change: `REOPENED_BATCH_CONTROL`; disposition: `IMPLEMENT_STYLE_CHANGE`; references: `camp.panel`; visual rules: `visual.existing-grammar`; structural validation: `camp.structural`; visual validation: `camp.visual`
 """
         (self.plan_dir / "R01_fire.md").write_text(plan, encoding="utf-8")
         result = validate_repair_plan(str(self.game_repo), self.manifest_relative)

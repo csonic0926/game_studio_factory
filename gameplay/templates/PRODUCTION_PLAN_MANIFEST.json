@@ -1,5 +1,5 @@
 {
-  "schema_version": "production_plan_manifest.v3",
+  "schema_version": "production_plan_manifest.v4",
   "factory_revision": "<FACTORY_GIT_REVISION>",
   "project_id": "<PROJECT_ID>",
   "objective_id": "<OBJECTIVE_ID>",
@@ -37,7 +37,9 @@
         "adapter_sha256": "",
         "rule_ids": [],
         "exemplar_ids": [],
-        "validation_scenario_ids": []
+        "validation_scenario_ids": [],
+        "style_blast_radius_scope": "",
+        "style_blast_radius": []
       }
     }
   ],

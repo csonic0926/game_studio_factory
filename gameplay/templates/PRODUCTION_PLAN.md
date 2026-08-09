@@ -17,6 +17,11 @@ only when `ui_impact.touches_ui` is false:
 - UI exemplars: `<COMMA_SEPARATED_EXEMPLAR_IDS>`
 - UI validation scenarios: `<COMMA_SEPARATED_SCENARIO_IDS>`
 
+## UI style blast radius
+
+- Scope: `ALL_UI_CONTROLS_IN_CHANGE_AND_REOPENED_STYLE_BATCH`
+- `<TARGET_ID>` — `<TARGET_PATH>`; controls: `<COMMA_SEPARATED_CONTROL_IDS>`; change: `<NEW_CONTROL | MODIFIED_CONTROL | REOPENED_BATCH_CONTROL>`; disposition: `<IMPLEMENT_STYLE_CHANGE | VERIFIED_CONSISTENT>`; references: `<ACCEPTED_EXEMPLAR_IDS>`; visual rules: `<VISUAL_GRAMMAR_RULE_IDS>`; structural validation: `<STRUCTURAL_FIT_SCENARIO_IDS>`; visual validation: `<VISUAL_CONSISTENCY_SCENARIO_IDS>`
+
 ## Source authority
 
 State which objective rows this plan realizes and which player-visible

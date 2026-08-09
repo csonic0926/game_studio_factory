@@ -234,7 +234,8 @@ HUD, menu/modal/overlay, responsive composition, or localization fit, complete
 [`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md) before authoring the
 plans. This is a bounded reusable repo-convention preflight, not a new creative
 review. It prevents the planner/coding model from inventing a generic scene,
-layout, state-refresh, or input/layer architecture from the gameplay table.
+layout, state-refresh, input/layer architecture, or visual identity from the
+gameplay table.
 
 The choice never changes the artifact contract. Before production, both write:
 
@@ -249,7 +250,7 @@ Use:
 - `templates/PRODUCTION_PLAN_MANIFEST.json`
 - `templates/PRODUCTION_PLAN.md`
 
-Manifest v3 binds the Factory Git revision, exact UTF-8 SHA-256 of
+Manifest v4 binds the Factory Git revision, exact UTF-8 SHA-256 of
 `OBJECTIVE_GAMEPLAY.md`, and objective-local `GAMEPLAY_DESIGN_VERDICT.json`. It maps
 every numbered row to `IMPLEMENT`, `VERIFY_EXISTING`, or
 `NO_CHANGE_REQUIRED`, declares dependencies and exclusive planned-path
@@ -257,12 +258,13 @@ ownership, and records any blocking gap. Each Markdown plan preserves the
 player-visible result, exact repo reuse/evidence, owned production changes,
 locked non-goals, deterministic verification, and handoff.
 
-Manifest v3 requires `ui_impact` on every plan. Non-UI plans declare false
+Manifest v4 requires `ui_impact` on every plan. Non-UI plans declare false
 with empty binding fields. UI plans bind the exact checked
-`UI_PRODUCTION_ADAPTER.json` SHA and select relevant rule, exemplar, and
-validation-scenario ids; their Markdown repeats that selection under
-`## UI realization contract`. Legacy v1/v2 manifests are historical-check
-inputs only and cannot authorize new execution:
+`UI_PRODUCTION_ADAPTER.json` SHA, map every new/modified/reopened-batch control
+to accepted exemplars and `VISUAL_GRAMMAR` rules, and select separate
+`STRUCTURAL_FIT` / `VISUAL_CONSISTENCY` scenarios. Their Markdown repeats the
+binding and complete style blast radius. Legacy v1/v2/v3 manifests are
+historical-check inputs only and cannot authorize new execution:
 
 ```bash
 python3 gameplay/plan.py check-historical \
