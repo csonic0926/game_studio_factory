@@ -133,8 +133,10 @@ Forbidden transitions:
 
 The baseline admission compiler/checker is operational and owns only evidence
 binding plus state promotion; it does not issue gameplay verdicts. A persistent
-autonomous multi-cycle scheduler is not implemented yet. The Godot CLI adapter
-provides project discovery, import/run/export process evidence, and hashed
-logs; input injection, structured runtime state, and validated visual capture
-are not implemented. Never describe these bounded layers as proof that
-unattended multi-day production is already operational.
+autonomous multi-cycle scheduler is not implemented yet. The desktop Godot
+adapter provides versioned opt-in debug instrumentation, frame-bound scenarios,
+live sessions, structured/PNG/movie/performance capture, visual regression, and
+debug/release runtime evidence. It remains `EVIDENCE_ONLY`, cannot author game
+content, cannot approve a visual baseline, and cannot replace project semantic
+observation or human gameplay acceptance. Never describe these bounded layers
+as proof that unattended multi-day production is already operational.

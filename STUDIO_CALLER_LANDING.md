@@ -92,9 +92,10 @@ and the old installed-skills manifest remain readable compatibility surfaces.
 
 The specialist factories are operational at their documented maturity. The
 Studio folder establishes the operator contract, durable state, and two-case
-baseline admission compiler/checker. It also provides an evidence-only Godot 4
-CLI adapter for project discovery, bounded import/run/export operations, and
-hashed logs. Input injection, structured runtime state, validated visual
-capture, and a persistent autonomous scheduler remain to be implemented and
-proven on real game repos; the name/structure must not be mistaken for that
-proof.
+baseline admission compiler/checker. It also provides an evidence-only desktop
+Godot 4 automation platform for project discovery, bounded import/run/export,
+opt-in debug bridge control, frame-bound scenarios, live sessions, structured
+capture, visual regression, and release smoke. Those technical results cannot
+issue gameplay verdicts or prove a named game repo without a separate pilot. A
+persistent autonomous scheduler remains to be implemented and proven; the
+name/structure must not be mistaken for that proof.

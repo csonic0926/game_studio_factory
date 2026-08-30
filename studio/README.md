@@ -17,13 +17,16 @@ Start with:
   — explicit commission activation and whole-direction archive semantics.
 - [`docs/BASELINE_ADMISSION_WORKFLOW.md`](docs/BASELINE_ADMISSION_WORKFLOW.md)
   — complete reconstruction and post-workflow promotion.
-- [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md) — Godot 4
-  discovery, bounded CLI execution, build/run logs, and evidence binding.
+- [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md) — desktop
+  Godot 4 discovery, bridge/scenario/session control, visual/build verification,
+  and immutable evidence binding.
+- [`docs/GODOT_ENGINE_ADAPTER_MIGRATION.md`](docs/GODOT_ENGINE_ADAPTER_MIGRATION.md)
+  — opt-in migration from the compatible v1 CLI.
 
 The folder now includes the semantic-alignment validator/reviewer skill,
 gameplay-system/cycle validator, deterministic two-case baseline admission
-compiler/checker, evidence-only Godot CLI adapter, and installed
+compiler/checker, evidence-only desktop Godot automation platform, and installed
 `game-studio-factory` skill. It does not yet contain a persistent multi-cycle
-scheduler. Godot input injection, structured runtime state, and validated
-visual capture also remain future adapter layers; see the explicit limitations
-in the landing contracts.
+scheduler. The Godot bridge/scenario/session/visual layers produce technical
+evidence only and are not gameplay-verdict or baseline-promotion authority; see
+the explicit boundaries in the landing contracts.

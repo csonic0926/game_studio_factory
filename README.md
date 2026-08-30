@@ -22,7 +22,7 @@ studio/       whole-game operator
   Gameplay Ratchet
   Design Token Research
   Semantic Input/Output Alignment
-  Godot CLI Execution Evidence
+  Godot Automation and Execution Evidence
   Autonomous Production Loop
 
 idea/         product direction capability
@@ -209,11 +209,12 @@ only reusable contracts, tools, templates, schemas, and tests.
 
 The specialist factories are operational at their documented maturity. The
 Studio layer now includes naming, routing, operator invariants, durable state,
-the deterministic two-case baseline admission compiler/checker, and an
-evidence-only Godot CLI adapter for discovery/import/run/export. Input
-injection, structured runtime state, validated visual capture, and the
-persistent autonomous scheduler are not yet implemented or real-project
-proven. The repository name does not waive that boundary.
+the deterministic two-case baseline admission compiler/checker, and a desktop
+Godot automation/evidence platform for bounded runs, frame-bound scenarios,
+live debug sessions, capture, visual regression, and build smoke. The adapter
+still issues technical evidence only; it never supplies gameplay acceptance or
+a human verdict. The persistent autonomous scheduler is not yet implemented or
+real-project proven. The repository name does not waive that boundary.
 
 ## History and compatibility
 

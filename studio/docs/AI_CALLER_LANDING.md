@@ -146,19 +146,27 @@ python3 <STUDIO_ROOT>/studio/godot_adapter.py import-check \
 python3 <STUDIO_ROOT>/studio/godot_adapter.py run \
   --game-repo <GAME_REPO> --operation-id <OPERATION_ID> \
   --expect-output <PROJECT_DEFINED_MARKER>
+python3 <STUDIO_ROOT>/studio/godot_adapter.py doctor \
+  --game-repo <GAME_REPO> --operation-id <OPERATION_ID>
+python3 <STUDIO_ROOT>/studio/godot_adapter.py scenario run \
+  --game-repo <GAME_REPO> --operation-id <OPERATION_ID> \
+  --scenario <REPO_RELATIVE_SCENARIO>
 ```
 
 Read [`GODOT_ENGINE_ADAPTER.md`](GODOT_ENGINE_ADAPTER.md). A passing adapter
-operation proves only its bound process run and assertions. It cannot replace
+operation proves only its bound process/runtime/capture assertions. The opt-in
+debug bridge supports allowlisted input, structured state, frame-bound replay,
+live sessions, and structural-first visual regression, but it cannot replace
 fresh gameplay acceptance, the human playtest verdict, or predecessor
-regression. Input injection, structured runtime state, and validated visual
-capture remain explicit v1 gaps.
+regression. Project-owned resolved actions remain separate from injected input.
 
 ## Current limitations
 
 The durable state model and two-case baseline admission compiler/checker are
-implemented. The evidence-only Godot CLI adapter can discover, import-check,
-bounded-run, and export Godot projects with hashed logs. Until the persistent
-scheduler and real multi-cycle pilots pass—and until richer engine observation
-capabilities exist—the caller must not claim that Game Studio Factory already
+implemented. The evidence-only desktop Godot platform can discover,
+import-check, execute deterministic scenarios/live debug sessions, capture and
+compare visuals, run debug exports, and smoke-test releases with hashed
+evidence. It does not provide game-specific semantic observability or a named
+game-repo pilot by itself. Until the persistent scheduler and real multi-cycle
+pilots pass, the caller must not claim that Game Studio Factory already
 guarantees unattended multi-cycle delivery.

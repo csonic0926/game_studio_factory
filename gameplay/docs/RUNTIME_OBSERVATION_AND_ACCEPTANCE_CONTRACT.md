@@ -75,6 +75,14 @@ Minimum coverage includes:
 - neutral runtime ids. Private design/provenance mappings remain outside blind
   data.
 
+When the run was controlled by the Studio Godot adapter, the raw manifest may
+carry one `engine_adapter_evidence` path/SHA-256. This binds the exact technical
+operation without copying its `PASS` into Gameplay semantics. The game-owned
+Observation Adapter still owns resolved actions and field mapping; injected
+input and process/capture evidence do not issue an acceptance verdict. The
+reader resolves this reference inside the game Git root, verifies its bytes,
+supported adapter schema, and `EVIDENCE_ONLY / NOT_ISSUED` authority boundary.
+
 The logger must not write fields such as `player_understood`,
 `player_forecast`, `felt_fun`, `emotion`, `meaningful_alternative`, or semantic
 beat/sheet ids. The reference validator fails closed on prohibited field
@@ -205,6 +213,11 @@ The game-owned `OBSERVATION_ADAPTER.md` declares:
 - clock/order semantics and correlation ids;
 - private provenance handling and blind-field exclusions;
 - acceptance kernels currently `NOT_OBSERVABLE`.
+
+For Godot, it may additionally declare which
+`GODOT_AUTOMATION_EVIDENCE.json` hash produced the raw run. It must not expose
+the bridge token, treat `INJECTED_INPUT` as a resolved gameplay action, or use
+`EVIDENCE_ONLY / NOT_ISSUED` as a semantic verdict.
 
 The optional machine-readable mapping follows
 `../schemas/observation_mapping.schema.json`. Factory core does not hard-code

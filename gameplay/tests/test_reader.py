@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import io
 import json
 import tempfile
@@ -969,6 +970,32 @@ class ReaderTestCase(unittest.TestCase):
         self.assertNotIn("kind", first)
         self.assertEqual("visual", first["observation_channel"])
         self.assertEqual("on", first["observable"]["data"]["visual"]["door_light"])
+
+    def test_engine_adapter_evidence_is_hash_bound_provenance_not_verdict(self):
+        evidence_path = self.root / "design/studio/engine/godot/evidence_v2/run/GODOT_AUTOMATION_EVIDENCE.json"
+        evidence_path.parent.mkdir(parents=True)
+        evidence_path.write_text(json.dumps({
+            "schema_version": "godot_automation_evidence.v1",
+            "acceptance_authority": "EVIDENCE_ONLY",
+            "gameplay_verdict": "NOT_ISSUED",
+        }), encoding="utf-8")
+        reference = {
+            "path": "design/studio/engine/godot/evidence_v2/run/GODOT_AUTOMATION_EVIDENCE.json",
+            "sha256": hashlib.sha256(evidence_path.read_bytes()).hexdigest(),
+        }
+        self.manifest["engine_adapter_evidence"] = reference
+        self.write_inputs()
+        _, _, report = reader.validate_evidence(self.manifest_path, self.events_path)
+        self.assertEqual("PASS_INTEGRITY", report["status"])
+        stream, _ = reader.normalize_events(self.manifest_path, self.events_path, self.mapping_path)
+        self.assertEqual(reference, stream["run"]["engine_adapter_evidence"])
+        self.assertNotIn("verdict", stream["run"]["engine_adapter_evidence"])
+
+        self.manifest["engine_adapter_evidence"]["sha256"] = "a" * 64
+        self.write_inputs()
+        _, _, mismatch = reader.validate_evidence(self.manifest_path, self.events_path)
+        self.assertEqual("INCONCLUSIVE_EVIDENCE", mismatch["status"])
+        self.assertIn("ENGINE_ADAPTER_EVIDENCE_HASH_MISMATCH", {item["code"] for item in mismatch["findings"]})
 
     def test_forbidden_interpretation_field_fails_closed(self):
         self.events[0]["payload"]["player_understood"] = True

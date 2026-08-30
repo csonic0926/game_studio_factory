@@ -1,0 +1,38 @@
+name: Godot Engine Adapter
+
+on:
+  push:
+    paths:
+      - "studio/godot_adapter.py"
+      - "studio/godot_engine/**"
+      - "studio/schemas/godot_*.json"
+      - "studio/tests/test_godot*.py"
+      - ".github/workflows/godot-engine-adapter.yml"
+  pull_request:
+    paths:
+      - "studio/godot_adapter.py"
+      - "studio/godot_engine/**"
+      - "studio/schemas/godot_*.json"
+      - "studio/tests/test_godot*.py"
+      - ".github/workflows/godot-engine-adapter.yml"
+
+jobs:
+  adapter:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, ubuntu-24.04, windows-2022]
+        godot: ["4.6.3", "4.7.2"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install official Godot release
+        run: python studio/tests/install_godot_ci.py --version ${{ matrix.godot }}
+      - name: Show engine version
+        run: godot --version
+      - name: Run compatibility and automation tests
+        run: python -m unittest studio.tests.test_godot_adapter studio.tests.test_godot_engine_v2 studio.tests.test_contracts -v

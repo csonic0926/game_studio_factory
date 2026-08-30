@@ -150,6 +150,12 @@ v1 and single-loop v2 reviews and workflow completions remain readable for
 historical `check` or exact idempotent re-runs; they cannot authorize a new
 admission.
 
+Godot scenario/session/visual/build evidence may appear in acceptance
+`evidence_paths` or regression `result_paths` only as its exact repo-relative
+path and SHA-256. Its embedded `EVIDENCE_ONLY / NOT_ISSUED` boundary is
+preserved: an Adapter `PASS` is not copied into the reviewer verdict, the human
+playtest, or the baseline status.
+
 The human playtest ruling is also non-circular and exact. Compute
 `verdict_payload_sha256` from project/unit ids, committed game revision, build
 id, Factory revision, unit authority, acceptance input, Studio system manifest,

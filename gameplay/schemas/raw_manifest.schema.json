@@ -66,6 +66,16 @@
       "items": { "type": "string", "minLength": 1 },
       "uniqueItems": true
     },
+    "engine_adapter_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "description": "Optional path/hash of evidence-only engine execution. It does not carry a gameplay verdict."
+    },
     "probe_group": {
       "type": "object",
       "additionalProperties": false,

@@ -90,13 +90,15 @@ language. After a new Idea commission compiles and checks, run
   user playtest verdict, and regression of predecessor gameplay before
   promotion.
 - For a Godot target, use `studio/godot_adapter.py` after implementation or
-  integration to bind project discovery, import/run/export results, and hashed
-  logs before making technical runtime claims. Read
+  integration to bind project discovery, deterministic scenario/replay or live
+  debug-session execution, structured/visual capture, build smoke, and hashed
+  evidence before making technical runtime claims. Read
   `studio/docs/GODOT_ENGINE_ADAPTER.md`. Adapter evidence is evidence-only: a
-  passing process run cannot replace gameplay acceptance, the human playtest,
-  or baseline regression. Preserve v1's explicit gaps for input injection,
-  structured runtime state, and validated visual capture rather than claiming
-  those capabilities exist.
+  passing technical run cannot replace gameplay acceptance, the human
+  playtest, or baseline regression. Require project-owned Observation Provider
+  semantics and keep injected input distinct from resolved gameplay actions.
+  Never let the Adapter auto-approve a visual baseline or enable its bridge in
+  a release build.
 - Requested horizon reached: deliver only the runnable build represented by the
   promoted baseline.
 

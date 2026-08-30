@@ -11,7 +11,9 @@ verdict or a claim about player psychology.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -188,6 +190,7 @@ MANIFEST_KEYS = {
     "started_at",
     "raw_events_path",
     "capture_roots",
+    "engine_adapter_evidence",
     "probe_group",
     "observation_window",
 }
@@ -407,6 +410,42 @@ def validate_evidence(
         findings.append(_finding("PERFORMANCE_CONTEXT", "$.performance_context", "must be an object"))
     if "started_at" in manifest and not isinstance(manifest.get("started_at"), str):
         findings.append(_finding("STARTED_AT", "$.started_at", "must be a string"))
+
+    engine_evidence = manifest.get("engine_adapter_evidence")
+    if engine_evidence is not None:
+        if not isinstance(engine_evidence, dict):
+            findings.append(_finding("ENGINE_ADAPTER_EVIDENCE", "$.engine_adapter_evidence", "must be a path/hash object"))
+        else:
+            _unknown_fields(engine_evidence, {"path", "sha256"}, "$.engine_adapter_evidence", findings)
+            if not isinstance(engine_evidence.get("path"), str) or not _safe_relative(engine_evidence.get("path", "")):
+                findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_PATH", "$.engine_adapter_evidence.path", "must be a safe game-repo-relative path"))
+            if not isinstance(engine_evidence.get("sha256"), str) or re.fullmatch(r"[0-9a-f]{64}", engine_evidence.get("sha256", "")) is None:
+                findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_HASH", "$.engine_adapter_evidence.sha256", "must be a SHA-256 digest"))
+            if (
+                isinstance(engine_evidence.get("path"), str)
+                and _safe_relative(engine_evidence["path"])
+                and isinstance(engine_evidence.get("sha256"), str)
+                and re.fullmatch(r"[0-9a-f]{64}", engine_evidence["sha256"]) is not None
+            ):
+                git_root_candidate = next(
+                    (candidate for candidate in (manifest_path.parent, *manifest_path.parents) if (candidate / ".git").exists()),
+                    None,
+                )
+                git_root = git_root_candidate.resolve() if git_root_candidate else None
+                evidence_path = (git_root / engine_evidence["path"]).resolve() if git_root else None
+                if git_root is None or evidence_path is None or not _inside(evidence_path, git_root) or not evidence_path.is_file():
+                    findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_MISSING", "$.engine_adapter_evidence.path", "bound engine evidence file is missing from the game repo"))
+                elif hashlib.sha256(evidence_path.read_bytes()).hexdigest() != engine_evidence["sha256"]:
+                    findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_HASH_MISMATCH", "$.engine_adapter_evidence.sha256", "does not bind the referenced engine evidence bytes"))
+                else:
+                    try:
+                        adapter_payload = _load_json(evidence_path)
+                    except ReaderError:
+                        adapter_payload = None
+                    if not isinstance(adapter_payload, dict) or adapter_payload.get("schema_version") not in {"godot_engine_evidence.v1", "godot_automation_evidence.v1"}:
+                        findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_SCHEMA", "$.engine_adapter_evidence.path", "referenced file is not supported Godot adapter evidence"))
+                    elif adapter_payload.get("acceptance_authority") != "EVIDENCE_ONLY" or adapter_payload.get("gameplay_verdict") != "NOT_ISSUED":
+                        findings.append(_finding("ENGINE_ADAPTER_EVIDENCE_AUTHORITY", "$.engine_adapter_evidence.path", "adapter evidence must remain EVIDENCE_ONLY / NOT_ISSUED"))
 
     probe_group = manifest.get("probe_group")
     if manifest.get("evidence_mode") == "CONTROLLED_BRANCH_PROBE" and not isinstance(probe_group, dict):
@@ -916,6 +955,7 @@ def normalize_events(
             "setup": manifest["setup"],
             "display": manifest["display"],
             "performance_context": manifest.get("performance_context", {}),
+            "engine_adapter_evidence": manifest.get("engine_adapter_evidence"),
             "started_at": manifest.get("started_at"),
             "probe_group": manifest.get("probe_group"),
             "observation_window": manifest.get("observation_window"),
