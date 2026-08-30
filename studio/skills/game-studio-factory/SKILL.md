@@ -89,6 +89,14 @@ language. After a new Idea commission compiles and checks, run
   fresh new-gameplay acceptance with an observed two-lap cycle, an explicit
   user playtest verdict, and regression of predecessor gameplay before
   promotion.
+- For a Godot target, use `studio/godot_adapter.py` after implementation or
+  integration to bind project discovery, import/run/export results, and hashed
+  logs before making technical runtime claims. Read
+  `studio/docs/GODOT_ENGINE_ADAPTER.md`. Adapter evidence is evidence-only: a
+  passing process run cannot replace gameplay acceptance, the human playtest,
+  or baseline regression. Preserve v1's explicit gaps for input injection,
+  structured runtime state, and validated visual capture rather than claiming
+  those capabilities exist.
 - Requested horizon reached: deliver only the runnable build represented by the
   promoted baseline.
 

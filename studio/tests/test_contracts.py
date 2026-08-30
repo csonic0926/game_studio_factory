@@ -17,6 +17,8 @@ class StudioFoundationContractTests(unittest.TestCase):
             "design_token_research.schema.json": "design_token_research.v1",
             "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v2",
             "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
+            "godot_engine_capability_manifest.schema.json": "godot_engine_capability_manifest.v1",
+            "godot_engine_evidence.schema.json": "godot_engine_evidence.v1",
             "product_authority_archive_snapshot.schema.json": "product_authority_archive_snapshot.v1",
             "product_authority_register.schema.json": "product_authority_register.v1",
             "studio_gameplay_system.schema.json": "studio_gameplay_system.v2",

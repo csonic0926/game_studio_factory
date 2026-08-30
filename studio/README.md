@@ -17,9 +17,13 @@ Start with:
   — explicit commission activation and whole-direction archive semantics.
 - [`docs/BASELINE_ADMISSION_WORKFLOW.md`](docs/BASELINE_ADMISSION_WORKFLOW.md)
   — complete reconstruction and post-workflow promotion.
+- [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md) — Godot 4
+  discovery, bounded CLI execution, build/run logs, and evidence binding.
 
 The folder now includes the semantic-alignment validator/reviewer skill,
 gameplay-system/cycle validator, deterministic two-case baseline admission
-compiler/checker, and installed `game-studio-factory` skill. It does not yet
-contain a persistent multi-cycle scheduler; see the explicit limitation in the
-landing contract.
+compiler/checker, evidence-only Godot CLI adapter, and installed
+`game-studio-factory` skill. It does not yet contain a persistent multi-cycle
+scheduler. Godot input injection, structured runtime state, and validated
+visual capture also remain future adapter layers; see the explicit limitations
+in the landing contracts.

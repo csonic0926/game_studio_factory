@@ -81,6 +81,13 @@ these invariants:
     gameplay” must not become “not a gameplay cycle.” Product non-goals are
     compiled downstream and product-fidelity review must prove they bound the
     loop without silently deleting it.
+15. **Engine adapters provide evidence, not authority.** A passing import,
+    bounded run, export, log assertion, screenshot, or future runtime trace may
+    support technical verification and regression. It cannot issue the fresh
+    gameplay verdict, replace the exact-build human playtest, or promote a
+    baseline. For Godot projects use
+    [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md); respect its
+    explicit capability gaps instead of inventing ad-hoc proof.
 
 ## Formal production transition
 
@@ -126,6 +133,8 @@ Forbidden transitions:
 
 The baseline admission compiler/checker is operational and owns only evidence
 binding plus state promotion; it does not issue gameplay verdicts. A persistent
-autonomous multi-cycle scheduler is not implemented yet. Never describe this
-bounded admission workflow as proof that unattended multi-day production is
-already operational.
+autonomous multi-cycle scheduler is not implemented yet. The Godot CLI adapter
+provides project discovery, import/run/export process evidence, and hashed
+logs; input injection, structured runtime state, and validated visual capture
+are not implemented. Never describe these bounded layers as proof that
+unattended multi-day production is already operational.

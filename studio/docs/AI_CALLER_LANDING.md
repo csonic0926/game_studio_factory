@@ -134,9 +134,31 @@ creates a new baseline; it does not rewrite the predecessor. New gameplay must
 receive fresh acceptance and every prior accepted loop must retain regression
 evidence.
 
-## v0 limitation
+## Godot execution evidence
+
+For a Godot target, use the evidence-only adapter after implementation or
+integration and before making runtime-verification claims:
+
+```bash
+python3 <STUDIO_ROOT>/studio/godot_adapter.py probe --game-repo <GAME_REPO>
+python3 <STUDIO_ROOT>/studio/godot_adapter.py import-check \
+  --game-repo <GAME_REPO> --operation-id <OPERATION_ID>
+python3 <STUDIO_ROOT>/studio/godot_adapter.py run \
+  --game-repo <GAME_REPO> --operation-id <OPERATION_ID> \
+  --expect-output <PROJECT_DEFINED_MARKER>
+```
+
+Read [`GODOT_ENGINE_ADAPTER.md`](GODOT_ENGINE_ADAPTER.md). A passing adapter
+operation proves only its bound process run and assertions. It cannot replace
+fresh gameplay acceptance, the human playtest verdict, or predecessor
+regression. Input injection, structured runtime state, and validated visual
+capture remain explicit v1 gaps.
+
+## Current limitations
 
 The durable state model and two-case baseline admission compiler/checker are
-implemented. Until the persistent scheduler and real multi-cycle pilots pass,
-the caller must not claim that Game Studio Factory already guarantees
-unattended multi-cycle delivery.
+implemented. The evidence-only Godot CLI adapter can discover, import-check,
+bounded-run, and export Godot projects with hashed logs. Until the persistent
+scheduler and real multi-cycle pilots pass—and until richer engine observation
+capabilities exist—the caller must not claim that Game Studio Factory already
+guarantees unattended multi-cycle delivery.
