@@ -20,6 +20,7 @@ from studio.godot_adapter import (
     probe_godot,
     run_godot,
 )
+from studio.godot_engine.evidence import verify_evidence
 
 ADAPTER_SCRIPT = Path(__file__).resolve().parents[1] / "godot_adapter.py"
 
@@ -214,6 +215,7 @@ func _ready():
         rendered = json.dumps(payload)
         self.assertNotIn(str(self.repo), rendered)
         self.assertTrue(payload["invocation"]["command"][0].startswith("<GODOT_BINARY:"))
+        self.assertEqual(PASS, verify_evidence(self.repo, result.artifact_path).status)
 
     def test_logged_script_error_fails_even_when_engine_exits_zero(self) -> None:
         self._set_fake_mode("error")

@@ -19,6 +19,17 @@ class StudioFoundationContractTests(unittest.TestCase):
             "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
             "godot_engine_capability_manifest.schema.json": "godot_engine_capability_manifest.v1",
             "godot_engine_evidence.schema.json": "godot_engine_evidence.v1",
+            "godot_automation_evidence.schema.json": "godot_automation_evidence.v1",
+            "godot_automation_doctor.schema.json": "godot_automation_doctor.v1",
+            "godot_bridge_install_manifest.schema.json": "godot_bridge_install_manifest.v1",
+            "godot_bridge_result.schema.json": "godot_bridge_result.v1",
+            "godot_bridge_profile.schema.json": "godot_bridge_profile.v1",
+            "godot_operation_pending.schema.json": "godot_operation_pending.v1",
+            "godot_scenario.schema.json": "godot_scenario.v1",
+            "godot_session_trace_record.schema.json": "godot_session_trace_record.v1",
+            "godot_structural_capture.schema.json": "godot_structural_capture.v1",
+            "godot_visual_baseline.schema.json": "godot_visual_baseline.v1",
+            "godot_visual_comparison.schema.json": "godot_visual_comparison.v1",
             "product_authority_archive_snapshot.schema.json": "product_authority_archive_snapshot.v1",
             "product_authority_register.schema.json": "product_authority_register.v1",
             "studio_gameplay_system.schema.json": "studio_gameplay_system.v2",
@@ -34,6 +45,15 @@ class StudioFoundationContractTests(unittest.TestCase):
             payload = json.loads((STUDIO_ROOT / "schemas" / name).read_text())
             self.assertEqual("object", payload["type"])
             self.assertEqual(version, payload["properties"]["schema_version"]["const"])
+
+        bridge_message = json.loads(
+            (STUDIO_ROOT / "schemas/godot_bridge_message.schema.json").read_text()
+        )
+        self.assertEqual("object", bridge_message["type"])
+        self.assertEqual(
+            "godot_bridge_protocol.v1",
+            bridge_message["properties"]["protocol_version"]["const"],
+        )
 
     def test_baseline_schema_forbids_demo_only_delivery(self) -> None:
         payload = json.loads(

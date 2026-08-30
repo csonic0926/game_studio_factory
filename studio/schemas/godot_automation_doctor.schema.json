@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_automation_doctor.schema.json",
+  "title": "Godot Automation Doctor Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "engine", "platform", "available_capabilities", "checks", "blockers", "authority_boundary", "acceptance_authority", "gameplay_verdict"],
+  "properties": {
+    "schema_version": {"const": "godot_automation_doctor.v1"},
+    "status": {"enum": ["PASS", "BLOCKED"]},
+    "engine": {"type": "object"},
+    "platform": {"type": "string", "minLength": 1},
+    "available_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "checks": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["check", "status", "detail"], "properties": {"check": {"type": "string", "minLength": 1}, "status": {"enum": ["PASS", "BLOCKED"]}, "detail": {"type": "string"}}}},
+    "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "authority_boundary": {"type": "string", "minLength": 1},
+    "acceptance_authority": {"const": "EVIDENCE_ONLY"},
+    "gameplay_verdict": {"const": "NOT_ISSUED"}
+  }
+}

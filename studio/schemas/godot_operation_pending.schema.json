@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_operation_pending.schema.json",
+  "title": "Godot Recoverable Pending Operation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "adapter_version", "operation_id", "operation_type", "factory_revision", "started_at", "project_dir", "source_repository_before", "source_mutation_allowed", "automation_manifest", "acceptance_authority", "gameplay_verdict"],
+  "properties": {
+    "schema_version": {"const": "godot_operation_pending.v1"},
+    "adapter_version": {"const": "godot_automation.v1"},
+    "operation_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "operation_type": {"type": "string", "minLength": 1},
+    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "project_dir": {"type": "string", "minLength": 1},
+    "source_repository_before": {"type": "object"},
+    "source_mutation_allowed": {"type": "boolean"},
+    "automation_manifest": {"type": "object"},
+    "acceptance_authority": {"const": "EVIDENCE_ONLY"},
+    "gameplay_verdict": {"const": "NOT_ISSUED"}
+  }
+}

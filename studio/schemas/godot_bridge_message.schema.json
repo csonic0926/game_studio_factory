@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_bridge_message.schema.json",
+  "title": "Godot Bridge Length-prefixed JSON Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol_version", "type", "message_id", "payload"],
+  "properties": {
+    "protocol_version": {"const": "godot_bridge_protocol.v1"},
+    "type": {"enum": ["hello", "handshake", "handshake_ack", "command", "command_ack", "event", "error", "shutdown"]},
+    "message_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "payload": {"type": "object"}
+  },
+  "allOf": [
+    {"if": {"properties": {"type": {"const": "hello"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/hello"}}}},
+    {"if": {"properties": {"type": {"const": "handshake"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/handshake"}}}},
+    {"if": {"properties": {"type": {"const": "handshake_ack"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/handshake_ack"}}}},
+    {"if": {"properties": {"type": {"const": "command"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/command"}}}},
+    {"if": {"properties": {"type": {"const": "command_ack"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/command_ack"}}}},
+    {"if": {"properties": {"type": {"const": "event"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/event"}}}},
+    {"if": {"properties": {"type": {"const": "error"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/error"}}}},
+    {"if": {"properties": {"type": {"const": "shutdown"}}}, "then": {"properties": {"payload": {"$ref": "#/$defs/shutdown"}}}}
+  ],
+  "$defs": {
+    "hello": {"type": "object", "additionalProperties": false, "required": ["bridge_version", "capabilities", "single_client", "loopback_only"], "properties": {"bridge_version": {"type": "string", "minLength": 1}, "capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "single_client": {"const": true}, "loopback_only": {"const": true}}},
+    "handshake": {"type": "object", "additionalProperties": false, "required": ["token", "requested_capabilities"], "properties": {"token": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "requested_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}},
+    "handshake_ack": {"type": "object", "additionalProperties": false, "required": ["accepted"], "properties": {"accepted": {"type": "boolean"}, "capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}},
+    "command": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["command", "snapshot_id", "kind"], "properties": {"command": {"const": "snapshot"}, "snapshot_id": {"type": "string", "minLength": 1}, "kind": {"enum": ["OBSERVABLE", "MECHANICAL"]}, "observation": {"type": "string", "minLength": 1}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "action", "pressed"], "properties": {"command": {"const": "input_action"}, "action": {"type": "string", "minLength": 1}, "pressed": {"type": "boolean"}, "strength": {"type": "number", "minimum": 0, "maximum": 1}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "keycode", "pressed"], "properties": {"command": {"const": "key_event"}, "keycode": {"type": "integer", "minimum": 0}, "pressed": {"type": "boolean"}, "echo": {"type": "boolean"}, "unicode": {"type": "integer", "minimum": 0}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "button_index", "pressed", "position"], "properties": {"command": {"const": "mouse_button"}, "button_index": {"type": "integer", "minimum": 0}, "pressed": {"type": "boolean"}, "position": {"$ref": "#/$defs/vec2"}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "position", "relative"], "properties": {"command": {"const": "mouse_motion"}, "position": {"$ref": "#/$defs/vec2"}, "relative": {"$ref": "#/$defs/vec2"}, "button_mask": {"type": "integer", "minimum": 0}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "name"], "properties": {"command": {"const": "project_command"}, "name": {"type": "string", "minLength": 1}, "arguments": {"type": "object"}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "checkpoint"], "properties": {"command": {"const": "checkpoint"}, "checkpoint": {"type": "string", "minLength": 1}, "arguments": {"type": "object"}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "capture_id"], "properties": {"command": {"enum": ["capture_structure", "capture_png"]}, "capture_id": {"type": "string", "minLength": 1}}},
+      {"type": "object", "additionalProperties": false, "required": ["command", "marker"], "properties": {"command": {"const": "movie_marker"}, "marker": {"type": "string", "minLength": 1}}},
+      {"type": "object", "additionalProperties": false, "required": ["command"], "properties": {"command": {"const": "shutdown"}, "exit_code": {"type": "integer"}}}
+    ]},
+    "command_ack": {"type": "object", "additionalProperties": false, "required": ["ok"], "properties": {"ok": {"const": true}, "value": {}, "applied_frame": {"type": "integer", "minimum": 0}, "file": {"type": "string", "minLength": 1}}},
+    "event": {"type": "object", "additionalProperties": false, "required": ["event"], "properties": {"event": {"type": "object"}}},
+    "error": {"type": "object", "additionalProperties": false, "required": ["error"], "properties": {"error": {"type": "string", "minLength": 1}}},
+    "shutdown": {"type": "object", "additionalProperties": false, "maxProperties": 0},
+    "vec2": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false}
+  }
+}

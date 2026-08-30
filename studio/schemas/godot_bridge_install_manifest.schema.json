@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_bridge_install_manifest.schema.json",
+  "title": "Godot Bridge Installation Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "bridge_version", "installed_at", "project_dir", "autoload_enabled", "autoload_name", "vendor_files", "project_file_sha256_after", "acceptance_authority", "gameplay_verdict"],
+  "properties": {
+    "schema_version": {"const": "godot_bridge_install_manifest.v1"},
+    "bridge_version": {"const": "game_studio_godot_bridge.v1"},
+    "installed_at": {"type": "string", "format": "date-time"},
+    "project_dir": {"type": "string", "minLength": 1},
+    "autoload_enabled": {"type": "boolean"},
+    "autoload_name": {"const": "GameStudioGodotBridge"},
+    "vendor_files": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
+    },
+    "project_file_sha256_after": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "acceptance_authority": {"const": "EVIDENCE_ONLY"},
+    "gameplay_verdict": {"const": "NOT_ISSUED"}
+  }
+}

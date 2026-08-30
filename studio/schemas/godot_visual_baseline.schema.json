@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_visual_baseline.schema.json",
+  "title": "Godot User-approved Visual Baseline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "baseline_id", "environment", "source_revision", "image", "structure", "approval_evidence"],
+  "properties": {
+    "schema_version": {"const": "godot_visual_baseline.v1"},
+    "baseline_id": {"type": "string", "minLength": 1},
+    "environment": {"$ref": "#/$defs/environment"},
+    "source_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "image": {"$ref": "#/$defs/path_hash"},
+    "structure": {"$ref": "#/$defs/path_hash"},
+    "tolerances": {"$ref": "#/$defs/tolerances"},
+    "approval_evidence": {"$ref": "#/$defs/path_hash"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha"}}},
+    "environment": {"type": "object", "additionalProperties": false, "required": ["godot_version", "platform", "renderer", "viewport", "locale", "scale"], "properties": {"godot_version": {"type": "string", "minLength": 1}, "platform": {"type": "string", "minLength": 1}, "renderer": {"type": "string", "minLength": 1}, "viewport": {"type": "array", "prefixItems": [{"type": "integer", "minimum": 1}, {"type": "integer", "minimum": 1}], "items": false}, "locale": {"type": "string", "minLength": 1}, "scale": {"type": "number", "exclusiveMinimum": 0}}},
+    "tolerances": {"type": "object", "additionalProperties": false, "required": ["max", "mean", "rmse", "min_psnr", "changed_pixel_ratio"], "properties": {"max": {"type": "number", "minimum": 0}, "mean": {"type": "number", "minimum": 0}, "rmse": {"type": "number", "minimum": 0}, "min_psnr": {"type": "number"}, "changed_pixel_ratio": {"type": "number", "minimum": 0, "maximum": 1}}}
+  }
+}

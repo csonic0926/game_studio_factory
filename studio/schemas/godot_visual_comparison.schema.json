@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_visual_comparison.schema.json",
+  "title": "Godot Structural-first Visual Comparison",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "environment_compatible", "structural_status", "image_status", "metrics", "changed_bbox", "diff_image", "acceptance_authority", "gameplay_verdict"],
+  "properties": {
+    "schema_version": {"const": "godot_visual_comparison.v1"},
+    "status": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+    "environment_compatible": {"type": "boolean"},
+    "structural_status": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "image_status": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "metrics": {"type": ["object", "null"]},
+    "changed_bbox": {"type": ["array", "null"], "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "items": false},
+    "diff_image": {"type": ["object", "null"]},
+    "acceptance_authority": {"const": "EVIDENCE_ONLY"},
+    "gameplay_verdict": {"const": "NOT_ISSUED"}
+  }
+}

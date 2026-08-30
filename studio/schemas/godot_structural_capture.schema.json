@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_structural_capture.schema.json",
+  "title": "Godot Allowlisted Structural Capture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "frame", "nodes"],
+  "properties": {
+    "schema_version": {"const": "godot_structural_capture.v1"},
+    "frame": {"type": "integer", "minimum": 0},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "node_path", "exists"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "node_path": {"type": "string", "pattern": "^/"},
+          "exists": {"type": "boolean"},
+          "class": {"type": "string"},
+          "visible": {"type": "boolean"},
+          "focus": {"type": "boolean"},
+          "position": {"$ref": "#/$defs/nullable_vec2"},
+          "global_position": {"$ref": "#/$defs/nullable_vec2"},
+          "size": {"$ref": "#/$defs/nullable_vec2"},
+          "theme": {"type": "string"},
+          "styleboxes": {"type": "object"},
+          "text": {"type": "string"},
+          "disabled": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nullable_vec2": {"oneOf": [{"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false}, {"type": "null"}]}
+  }
+}

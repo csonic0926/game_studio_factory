@@ -1,0 +1,16 @@
+{
+  "schema_version": "godot_scenario.v1",
+  "scenario_id": "technical.smoke",
+  "seed": 1,
+  "initial_checkpoint": null,
+  "required_capabilities": ["FRAME_BOUND_EXECUTION"],
+  "fixed_fps": 60,
+  "max_frames": 120,
+  "steps": [
+    {"type": "wait_frames", "frames": 2},
+    {"type": "snapshot", "snapshot_id": "frame", "kind": "OBSERVABLE", "observation": "bridge.frame"},
+    {"type": "assert", "assertion_id": "bridge.frame.exists", "actual": "bridge.frame", "operator": "exists", "expected": true},
+    {"type": "finish", "exit_code": 0}
+  ],
+  "expected_exit": "BRIDGE_FINISH"
+}

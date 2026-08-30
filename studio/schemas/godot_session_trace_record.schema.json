@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_session_trace_record.schema.json",
+  "title": "Godot Append-only Session Trace Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "sequence", "frame", "kind", "payload"],
+  "properties": {
+    "schema_version": {"const": "godot_session_trace_record.v1"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "frame": {"type": "integer", "minimum": 0},
+    "kind": {"enum": ["BRIDGE_READY", "INJECTED_INPUT", "PROJECT_RESOLVED_ACTION", "COMMAND", "COMMAND_ACK", "OBSERVATION", "SNAPSHOT", "ASSERTION", "STRUCTURE", "CAPTURE", "MOVIE_MARKER", "ERROR", "FINISH", "DISCONNECT"]},
+    "payload": {"type": "object"}
+  }
+}

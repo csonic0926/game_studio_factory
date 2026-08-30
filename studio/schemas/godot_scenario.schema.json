@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_scenario.schema.json",
+  "title": "Godot Frame-bound Automation Scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scenario_id", "seed", "initial_checkpoint", "required_capabilities", "fixed_fps", "max_frames", "steps", "expected_exit"],
+  "properties": {
+    "schema_version": {"const": "godot_scenario.v1"},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "seed": {"type": "integer"},
+    "initial_checkpoint": {"type": ["string", "null"], "minLength": 1},
+    "required_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "fixed_fps": {"type": "integer", "minimum": 1},
+    "max_frames": {"type": "integer", "minimum": 1},
+    "steps": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/step"}},
+    "expected_exit": {"enum": ["BRIDGE_FINISH", "PROJECT_EXIT", "EITHER"]}
+  },
+  "$defs": {
+    "json_value": {"type": ["object", "array", "string", "number", "boolean", "null"]},
+    "condition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actual", "operator", "expected"],
+      "properties": {
+        "actual": {"type": "string", "minLength": 1},
+        "operator": {"enum": ["eq", "ne", "gt", "gte", "lt", "lte", "contains", "exists"]},
+        "expected": {"$ref": "#/$defs/json_value"}
+      }
+    },
+    "vec2": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false},
+    "step": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["type", "frames"], "properties": {"type": {"const": "wait_frames"}, "frames": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "condition", "deadline_frames"], "properties": {"type": {"const": "wait_until"}, "condition": {"$ref": "#/$defs/condition"}, "deadline_frames": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "action", "pressed"], "properties": {"type": {"const": "input_action"}, "action": {"type": "string", "minLength": 1}, "pressed": {"type": "boolean"}, "strength": {"type": "number", "minimum": 0, "maximum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "keycode", "pressed"], "properties": {"type": {"const": "key_event"}, "keycode": {"type": "integer", "minimum": 0}, "pressed": {"type": "boolean"}, "echo": {"type": "boolean"}, "unicode": {"type": "integer", "minimum": 0}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "button_index", "pressed", "position"], "properties": {"type": {"const": "mouse_button"}, "button_index": {"type": "integer", "minimum": 0}, "pressed": {"type": "boolean"}, "position": {"$ref": "#/$defs/vec2"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "position", "relative"], "properties": {"type": {"const": "mouse_motion"}, "position": {"$ref": "#/$defs/vec2"}, "relative": {"$ref": "#/$defs/vec2"}, "button_mask": {"type": "integer", "minimum": 0}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "command"], "properties": {"type": {"const": "project_command"}, "command": {"type": "string", "minLength": 1}, "arguments": {"type": "object"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "checkpoint"], "properties": {"type": {"const": "checkpoint"}, "checkpoint": {"type": "string", "minLength": 1}, "arguments": {"type": "object"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "snapshot_id", "kind"], "properties": {"type": {"const": "snapshot"}, "snapshot_id": {"type": "string", "minLength": 1}, "kind": {"enum": ["OBSERVABLE", "MECHANICAL"]}, "observation": {"type": "string", "minLength": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "assertion_id", "actual", "operator", "expected"], "properties": {"type": {"const": "assert"}, "assertion_id": {"type": "string", "minLength": 1}, "actual": {"type": "string", "minLength": 1}, "operator": {"enum": ["eq", "ne", "gt", "gte", "lt", "lte", "contains", "exists"]}, "expected": {"$ref": "#/$defs/json_value"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "capture_id"], "properties": {"type": {"const": "capture_structure"}, "capture_id": {"type": "string", "minLength": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "capture_id"], "properties": {"type": {"const": "capture_png"}, "capture_id": {"type": "string", "minLength": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "marker"], "properties": {"type": {"const": "movie_marker"}, "marker": {"type": "string", "minLength": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["type"], "properties": {"type": {"const": "finish"}, "exit_code": {"type": "integer"}}}
+      ]
+    }
+  }
+}

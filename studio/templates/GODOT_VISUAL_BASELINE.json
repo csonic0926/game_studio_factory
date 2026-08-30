@@ -1,0 +1,17 @@
+{
+  "schema_version": "godot_visual_baseline.v1",
+  "baseline_id": "user-approved.capture",
+  "environment": {
+    "godot_version": "REPLACE_WITH_EXACT_GODOT_VERSION",
+    "platform": "Darwin",
+    "renderer": "gl_compatibility",
+    "viewport": [1280, 720],
+    "locale": "en",
+    "scale": 1.0
+  },
+  "source_revision": "0000000000000000000000000000000000000000",
+  "image": {"path": "path/to/baseline.png", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"},
+  "structure": {"path": "path/to/structure.json", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"},
+  "tolerances": {"max": 0.0, "mean": 0.0, "rmse": 0.0, "min_psnr": 10000000000.0, "changed_pixel_ratio": 0.0},
+  "approval_evidence": {"path": "path/to/accepted-or-user-approved-evidence.json", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"}
+}

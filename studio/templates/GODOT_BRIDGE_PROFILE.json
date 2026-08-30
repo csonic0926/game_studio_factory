@@ -1,0 +1,12 @@
+{
+  "schema_version": "godot_bridge_profile.v1",
+  "profile_id": "project.default",
+  "provider_autoload": "ProjectObservationProvider",
+  "allowed_input_actions": [],
+  "allowed_keycodes": [],
+  "allowed_mouse_buttons": [],
+  "project_commands": [],
+  "observations": [],
+  "checkpoints": [],
+  "structural_nodes": []
+}

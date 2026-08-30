@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/godot_bridge_result.schema.json",
+  "title": "Godot Runtime Bridge Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "detail", "frame", "scenario_id", "seed", "initial_checkpoint", "acceptance_authority", "gameplay_verdict"],
+  "properties": {
+    "schema_version": {"const": "godot_bridge_result.v1"},
+    "status": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+    "detail": {"type": "string", "minLength": 1},
+    "frame": {"type": "integer", "minimum": 0},
+    "scenario_id": {"type": ["string", "null"]},
+    "seed": {"type": ["integer", "null"]},
+    "initial_checkpoint": {"type": ["string", "null"]},
+    "acceptance_authority": {"const": "EVIDENCE_ONLY"},
+    "gameplay_verdict": {"const": "NOT_ISSUED"}
+  }
+}
