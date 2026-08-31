@@ -27,13 +27,19 @@ actually changed. Material turns therefore use a separate fresh-subagent gate:
 ```text
 active authority + pending decisions + raw user input
   -> candidate interpretation/output
+  -> final Card Factory-compliance review when the output is a Card
   -> semantic alignment review
   -> present, revise, or request a genuine human ruling
 ```
 
-This gate precedes Product Thesis, gameplay-system, and full-spec reviews. It
-detects authority amnesia, unsupported promotion of hypotheses, semantic proxy
-substitution, avoidable clarification, and silent pending-card drift. The
+For a Card, the whole-result Factory-compliance reviewer and semantic reviewer
+are different fresh contexts: the former checks gameplay/workflow sufficiency,
+while the latter checks the interpretation and human surface. Early-input
+semantic alignment precedes Product Thesis/gameplay-system authoring; at the
+Card boundary the final compliance audit precedes the output-alignment gate,
+and both precede later full-spec review. Semantic alignment detects authority
+amnesia, unsupported promotion of hypotheses, semantic proxy substitution,
+avoidable clarification, and silent pending-card drift. The
 machine-owned decision register separately prevents a superseded pending hash
 from being rendered or approved. See
 [`SEMANTIC_ALIGNMENT_WORKFLOW.md`](SEMANTIC_ALIGNMENT_WORKFLOW.md).

@@ -1,0 +1,60 @@
+{
+  "schema_version": "gameplay_decision_card_factory_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "FINAL_CARD_FACTORY_COMPLIANCE",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_REVISION>",
+  "decision_card": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD.json",
+    "decision_payload_sha256": "<DECISION_PAYLOAD_SHA256>",
+    "rendered_surface_sha256": "<RENDERED_SURFACE_SHA256>"
+  },
+  "product_authority": {
+    "path": "design/product/PRODUCT_THESIS.md",
+    "sha256": "<SHA256>"
+  },
+  "studio_gameplay_system": {
+    "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+    "sha256": "<SHA256>"
+  },
+  "authority_inventory": {
+    "product_causal_links": [
+      {"authority_id": "<CAUSAL_LINK_ID>", "system_transition_ids": ["<TRANSITION_ID>"], "requirement_ids": ["<REQUIREMENT_ID>"], "evidence_claim_ids": ["cycle.<TRANSITION_ID>"], "verdict": "PASS", "rationale": "<RATIONALE>"}
+    ],
+    "factory_constraints": [
+      {"authority_id": "<FACTORY_CONSTRAINT_ID>", "system_transition_ids": ["<TRANSITION_ID>"], "requirement_ids": ["<REQUIREMENT_ID>"], "evidence_claim_ids": ["cycle.<TRANSITION_ID>"], "verdict": "PASS", "rationale": "<RATIONALE>"}
+    ],
+    "product_non_goals": [
+      {"authority_id": "<PRODUCT_NON_GOAL_ID>", "system_transition_ids": ["<TRANSITION_ID>"], "requirement_ids": ["<REQUIREMENT_ID>"], "evidence_claim_ids": ["cycle.<TRANSITION_ID>"], "verdict": "PASS", "rationale": "<RATIONALE>"}
+    ]
+  },
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "requirement_findings": {
+    "active_authority_and_scope_preserved": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "minimum_cycle_complete_slice": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "playable_span_sufficiency_not_inflated": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "meaningful_choice_not_certain_click": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "non_gameplay_activity_not_counted": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "player_work_world_response_carry_forward": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "reward_changes_next_decision": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "two_lap_decision_materially_differs": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "declared_alternatives_materially_distinct_and_reachable": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "cost_obligation_failure_and_recovery_are_concrete": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "red_lines_and_hypotheses_are_falsifiable": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "applicable_factory_gates_complete": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"},
+    "downstream_work_not_misrepresented_as_complete": {"verdict": "PASS", "evidence_claim_ids": ["<CLAIM_ID>"], "rationale": "<RATIONALE>"}
+  },
+  "claim_inventory": [
+    {
+      "claim_id": "<CLAIM_ID>",
+      "requirement_ids": ["<REQUIREMENT_ID>"],
+      "verdict": "PASS",
+      "rationale": "<RATIONALE>"
+    }
+  ],
+  "blocking_findings": [],
+  "verdict": "PASS_CARD_FACTORY_COMPLIANCE",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

@@ -23,6 +23,9 @@ commissioned P
   -> cycle-closure review(G)
   -> STUDIO_GAMEPLAY_SYSTEM_READY
   -> select a minimum cycle-complete vertical slice
+  -> author the exact pending Card
+  -> final Card Factory-compliance review
+  -> semantic-alignment review of the exact human surface
 ```
 
 It is forbidden to jump from a Product Thesis directly to a convenient
@@ -122,6 +125,18 @@ At the human gate, render only this compact projection and its
 do not make the human read them unless requested. The exact ruling token is
 `USER_APPROVED <decision_payload_sha256>`.
 
+Before semantic alignment, one additional fresh context must audit the exact
+pending Card as a complete result using the
+`studio-gameplay-decision-card-reviewer` skill. It reads the Card and all bound
+Product/system/review authority, inventories every Card claim, and checks every
+Factory obligation already due at this boundary. In particular, passing cycle
+reviews cannot excuse a Card whose playable substance is certain-outcome
+clicks, dialogue/task/marker advancement, missing player work/response/
+carry-forward, reskinned or unreachable alternatives, or an unearned claim
+that later production/acceptance is complete. Only
+`PASS_CARD_FACTORY_COMPLIANCE` proceeds. The reviewer neither edits the Card
+nor owns the human verdict.
+
 Before that surface is presented, follow
 [`SEMANTIC_ALIGNMENT_WORKFLOW.md`](SEMANTIC_ALIGNMENT_WORKFLOW.md). A fresh
 subagent/context must compare the raw user input, still-active authority,
@@ -129,4 +144,6 @@ pending-card state, and exact candidate surface. Product-fidelity and
 cycle-closure reviews do not replace this gate: they validate `G` after the
 operator has interpreted the user, while semantic alignment validates the
 interpretation transition itself. Register the reviewed pending card so any
-superseded pending payload becomes mechanically ineligible.
+superseded pending payload becomes mechanically ineligible. The final-Card
+reviewer and semantic-alignment reviewer must be different contexts; neither
+replaces the other.

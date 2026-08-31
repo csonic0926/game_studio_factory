@@ -293,6 +293,13 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "studio-semantic-alignment-reviewer",
                 "SKILL.md",
             ),
+            "studio-gameplay-decision-card-reviewer": os.path.join(
+                root,
+                "studio",
+                "skills",
+                "studio-gameplay-decision-card-reviewer",
+                "SKILL.md",
+            ),
         }
         for name, path in expected.items():
             with self.subTest(skill=name), open(path, encoding="utf-8") as handle:
@@ -314,6 +321,7 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "idea-factory",
                 "init-game-ai-factory",
                 "init-game-studio-factory",
+                "studio-gameplay-decision-card-reviewer",
                 "studio-semantic-alignment-reviewer",
             ],
         )

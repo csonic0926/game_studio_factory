@@ -148,9 +148,14 @@ USER_APPROVED <decision_payload_sha256>
 ```
 
 For `STUDIO_WHOLE_GAME`, first follow
-`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`: produce the exact candidate
-surface with `draft-card-surface`, bind it to raw user input and active
-authority, obtain a fresh-subagent review, then use `register-card`. Any prior
+the final Card review and then `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
+Spawn a fresh `studio-gameplay-decision-card-reviewer` to inventory every Card
+claim and audit the exact pending Card plus bound authorities against all
+Factory requirements already due. Only `PASS_CARD_FACTORY_COMPLIANCE` may
+continue. Then produce the exact candidate surface with `draft-card-surface`,
+bind it to raw user input and active authority, obtain a different fresh
+semantic-alignment review, and use `register-card` with
+`--factory-compliance-review <REVIEW_PATH>`. Any prior
 pending payload changed by the new input must be explicitly superseded in both
 the alignment input and decision-card register.
 

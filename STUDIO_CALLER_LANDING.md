@@ -51,6 +51,9 @@ for the Studio-owned Idea-to-gameplay-system boundary. Material user input and
 material human-facing output additionally require the fresh-subagent semantic
 alignment gate in
 [`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
+Every pending Studio Gameplay Decision Card additionally requires a different
+fresh end-to-end Factory-compliance reviewer before that semantic gate; passing
+step-local reviews alone cannot authorize a thin click/dialogue Card.
 
 ## Specialist capability model
 

@@ -38,7 +38,9 @@ material gaps and AI assumptions, and reuses the production material gate.
 stable game-owned progression/action model + objective frontier
   -> prepare.py context                         # Step 1, mechanical
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
-  -> compact decision card + human verdict     # Step 2
+  -> compact decision card                     # Step 2
+  -> Studio: final Card compliance + semantic review
+  -> human verdict
   -> separate author -> OBJECTIVE_GAMEPLAY.md  # Step 2.5
   -> dual exact conformance reviews
   -> user-selected planner                     # Step 3
@@ -130,7 +132,9 @@ output directory before ownership validation.
 
 The human first approves a compact `GAMEPLAY_DECISION_CARD.json`. Studio-routed
 cards bind a validated cycle-complete Studio gameplay-system manifest; direct
-specialist cards bind the user's explicit bounded request. A separate author
+specialist cards bind the user's explicit bounded request. Before presentation,
+a Studio card must pass an additional fresh whole-result Factory-compliance
+review and a different fresh semantic-alignment review. A separate author
 then writes `OBJECTIVE_GAMEPLAY.md`. Two different fresh reviewers map every
 card claim into the spec and every material spec item back to card claims. The
 pair mappings must be exact inverses before

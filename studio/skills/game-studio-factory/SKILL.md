@@ -51,6 +51,11 @@ authority. Include every internal Product/system/card/plan artifact changed by
 the interpretation in the same review; a compact human surface is not a waiver
 for hidden authority drift.
 
+An executable `make`, `redo`, `fix`, or `continue` request continues through
+the current runnable branch in the same call. A non-material acknowledgement
+such as “I will redo it” is not a stopping point and must not replace required
+artifact production or reviewer tool calls.
+
 Run `studio/product.py status` before trusting a canonical Product Thesis or an
 old accepted baseline. `NO_ACTIVE_PRODUCT_AUTHORITY` routes to Idea exploration
 even when historical code or artifacts remain. A whole-direction revocation
@@ -79,7 +84,15 @@ language. After a new Idea commission compiles and checks, run
 - At the approval boundary, use `gameplay/design_gate.py render-card` and show
   only an alignment-reviewed, registered pending decision surface. Persist
   reconstruction, research, full specs, and review reports without dumping
-  them into the user's verdict request. A revised pending card must
+  them into the user's verdict request. Before semantic alignment, spawn a
+  separate fresh subagent using `studio-gameplay-decision-card-reviewer` to
+  audit the exact pending Card plus all bound authorities against every Factory
+  requirement due at this boundary. Revise privately until
+  `PASS_CARD_FACTORY_COMPLIANCE`; this whole-result audit does not replace any
+  step-local reviewer, and the later semantic-alignment reviewer must be a
+  different context. Register with `--factory-compliance-review`; rendering
+  fails closed when that review is missing, stale, non-fresh, or incomplete.
+  A revised pending card must
   machine-supersede the old payload before rendering.
 - Accepted baseline exists: diagnose the next gameplay pressure or broken
   cycle edge, research new design tokens across same-type/cross-genre/non-game

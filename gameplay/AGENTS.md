@@ -219,9 +219,13 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
 ```
 
 For `STUDIO_WHOLE_GAME`, the arrow into the human verdict is gated by
-`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`: exact raw input and authority
-delta, fresh-subagent review of the candidate surface, and registration of the
-pending card. A superseded registered payload cannot be rendered or approved.
+two independent final gates. First, a fresh
+`studio-gameplay-decision-card-reviewer` audits the exact pending Card and all
+bound authorities against every Factory requirement already due, including
+gameplay sufficiency rather than certain clicks/dialogue/task proxies. Then a
+different fresh subagent follows `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`
+for the exact raw input, authority delta, and candidate surface. Registration
+validates both; a missing/stale review or superseded payload cannot render.
 
 The primary progression driver answers **what is next**. Gameplay is **how**
 the player reaches it through actions and their consequences/rewards.

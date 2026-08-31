@@ -10,7 +10,10 @@ fresh, independent reviews prove both directions of the refinement relation:
 
 For Studio-routed work, the card must also bind a validated, cycle-complete
 Idea-to-gameplay system.  A result/replay sequence is therefore unable to enter
-production merely by being described in more detail.
+production merely by being described in more detail.  Before human
+presentation, a separate fresh final-Card reviewer must inventory the exact
+Card and pass every Factory-compliance finding due at that boundary; semantic
+alignment remains a different later gate.
 """
 
 from __future__ import annotations
@@ -58,13 +61,50 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
 
 DESIGN_VERDICT_NAME = "GAMEPLAY_DESIGN_VERDICT.json"
 DECISION_CARD_NAME = "GAMEPLAY_DECISION_CARD.json"
+CARD_FACTORY_REVIEW_NAME = "GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json"
+CARD_FACTORY_REVIEW_AUTHORITY_ID = "card.factory-compliance-review"
 CARD_TO_SPEC_REVIEW_NAME = "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"
 SPEC_TO_CARD_REVIEW_NAME = "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"
 
 DESIGN_VERDICT_VERSION = "gameplay_design_verdict.v2"
 LEGACY_DESIGN_VERDICT_VERSION = "gameplay_design_verdict.v1"
 DECISION_CARD_VERSION = "gameplay_decision_card.v1"
+CARD_FACTORY_REVIEW_VERSION = "gameplay_decision_card_factory_review.v1"
 CONFORMANCE_REVIEW_VERSION = "gameplay_design_conformance_review.v1"
+
+PASS_CARD_FACTORY_REVIEW = "PASS_CARD_FACTORY_COMPLIANCE"
+FINAL_CARD_REQUIREMENT_IDS = (
+    "active_authority_and_scope_preserved",
+    "minimum_cycle_complete_slice",
+    "playable_span_sufficiency_not_inflated",
+    "meaningful_choice_not_certain_click",
+    "non_gameplay_activity_not_counted",
+    "player_work_world_response_carry_forward",
+    "reward_changes_next_decision",
+    "two_lap_decision_materially_differs",
+    "declared_alternatives_materially_distinct_and_reachable",
+    "cost_obligation_failure_and_recovery_are_concrete",
+    "red_lines_and_hypotheses_are_falsifiable",
+    "applicable_factory_gates_complete",
+    "downstream_work_not_misrepresented_as_complete",
+)
+FINAL_CARD_REQUIREMENT_CLAIM_PREFIXES = {
+    "active_authority_and_scope_preserved": ("promise.", "commitment."),
+    "minimum_cycle_complete_slice": ("cycle.", "commitment."),
+    "playable_span_sufficiency_not_inflated": ("cycle.",),
+    "meaningful_choice_not_certain_click": ("cycle.",),
+    "non_gameplay_activity_not_counted": ("redline.",),
+    "player_work_world_response_carry_forward": ("cycle.",),
+    "reward_changes_next_decision": ("cycle.",),
+    "two_lap_decision_materially_differs": ("cycle.",),
+    "declared_alternatives_materially_distinct_and_reachable": ("commitment.",),
+    "cost_obligation_failure_and_recovery_are_concrete": ("commitment.",),
+    "red_lines_and_hypotheses_are_falsifiable": ("redline.",),
+    "applicable_factory_gates_complete": (
+        "promise.", "cycle.", "commitment.", "redline."
+    ),
+    "downstream_work_not_misrepresented_as_complete": ("redline.",),
+}
 
 DECISION_PAYLOAD_FIELDS = (
     "schema_version", "card_id", "project_id", "objective_id",
@@ -131,6 +171,16 @@ class DesignGateBinding:
     studio_gameplay_system_path: str = ""
     studio_gameplay_system_sha256: str = ""
     cycle_id: str = ""
+
+
+@dataclass(frozen=True)
+class CardFactoryReviewResult:
+    """Validation result for the final independent pre-human Card audit."""
+
+    status: str
+    errors: list[str]
+    reviewer_context_id: str = ""
+    review_path: str = ""
 
 
 def current_factory_revision(factory_root: Path) -> str:
@@ -535,7 +585,10 @@ def _validate_decision_card(
     factory_revision: str,
     context_status: str,
     errors: list[str],
+    pre_human_review: bool = False,
 ) -> dict[str, Any]:
+    game_repo = game_repo.resolve()
+    card_path = card_path.resolve()
     card = _load_json(card_path, "gameplay decision card", errors)
     required = {
         "schema_version", "card_id", "project_id", "objective_id",
@@ -672,21 +725,25 @@ def _validate_decision_card(
         errors,
     )
     human_status = human.get("status", "")
-    if human_status not in HUMAN_VERDICTS:
-        errors.append("gameplay decision card requires an approving human verdict")
-    if routing == "STUDIO_WHOLE_GAME" and human_status != "USER_APPROVED":
-        errors.append(
-            "Studio whole-game decision cards require USER_APPROVED; delegation is insufficient"
-        )
-    if context_status == READY_FOR_NEW_GAMEPLAY_DESIGN and human_status != "USER_APPROVED":
-        errors.append(
-            "new gameplay design requires USER_APPROVED on the decision card; "
-            "delegation is insufficient"
-        )
+    if pre_human_review:
+        if human_status != "PENDING":
+            errors.append("pre-human decision-card review requires a PENDING card")
+    else:
+        if human_status not in HUMAN_VERDICTS:
+            errors.append("gameplay decision card requires an approving human verdict")
+        if routing == "STUDIO_WHOLE_GAME" and human_status != "USER_APPROVED":
+            errors.append(
+                "Studio whole-game decision cards require USER_APPROVED; delegation is insufficient"
+            )
+        if context_status == READY_FOR_NEW_GAMEPLAY_DESIGN and human_status != "USER_APPROVED":
+            errors.append(
+                "new gameplay design requires USER_APPROVED on the decision card; "
+                "delegation is insufficient"
+            )
     source_text = _require_text(
         human.get("source_text"), "human_verdict.source_text", errors
     )
-    expected_source = f"{human_status} {actual_payload_sha}"
+    expected_source = "PENDING" if pre_human_review else f"{human_status} {actual_payload_sha}"
     if source_text and source_text != expected_source:
         errors.append(
             "human_verdict.source_text must be the exact verdict token plus decision payload SHA"
@@ -695,15 +752,7 @@ def _validate_decision_card(
         errors.append("human_verdict.source_text exceeds 500 characters")
     _require_text(human.get("recorded_at"), "human_verdict.recorded_at", errors)
 
-    if routing == "STUDIO_WHOLE_GAME":
-        require_registered_card(
-            game_repo,
-            card_path,
-            required_state="USER_APPROVED",
-            errors=errors,
-        )
-
-    return {
+    card_binding = {
         "claim_ids": set(claim_ids),
         "hypothesis_ids": set(hypothesis_ids),
         "author_context_id": author_context_id,
@@ -714,7 +763,555 @@ def _validate_decision_card(
         "cycle_id": cycle_id,
         "feedback_state_ids": feedback_state_ids,
         "studio_context_ids": studio_context_ids,
+        "product_authority": card.get("product_authority", {}),
+        "product_causal_link_ids": {
+            str(item.get("link_id"))
+            for item in studio_system.get("causal_link_coverage", [])
+            if isinstance(item, dict) and item.get("link_id")
+        },
+        "factory_constraint_ids": {
+            str(item.get("constraint_id"))
+            for item in studio_system.get("constraint_coverage", [])
+            if isinstance(item, dict) and item.get("constraint_id")
+        },
+        "product_non_goal_ids": {
+            str(item.get("non_goal_id"))
+            for item in studio_system.get("non_goal_coverage", [])
+            if isinstance(item, dict) and item.get("non_goal_id")
+        },
+        "product_causal_link_coverage": {
+            str(item.get("link_id")): {
+                str(value) for value in item.get("transition_ids", [])
+            }
+            for item in studio_system.get("causal_link_coverage", [])
+            if isinstance(item, dict) and item.get("link_id")
+        },
+        "factory_constraint_coverage": {
+            str(item.get("constraint_id")): {
+                str(value) for value in item.get("transition_ids", [])
+            }
+            for item in studio_system.get("constraint_coverage", [])
+            if isinstance(item, dict) and item.get("constraint_id")
+        },
+        "product_non_goal_coverage": {
+            str(item.get("non_goal_id")): {
+                str(value) for value in item.get("transition_ids", [])
+            }
+            for item in studio_system.get("non_goal_coverage", [])
+            if isinstance(item, dict) and item.get("non_goal_id")
+        },
     }
+
+    if routing == "STUDIO_WHOLE_GAME" and not pre_human_review:
+        entry = require_registered_card(
+            game_repo,
+            card_path,
+            required_state="USER_APPROVED",
+            errors=errors,
+        )
+        forbidden_context_ids: set[str] = set()
+        if entry:
+            _, _, alignment_input_path = _validate_path_hash(
+                game_repo,
+                entry.get("alignment_input"),
+                "registered decision card alignment_input",
+                errors,
+            )
+            _, _, alignment_review_path = _validate_path_hash(
+                game_repo,
+                entry.get("alignment_review"),
+                "registered decision card alignment_review",
+                errors,
+            )
+            if alignment_review_path is not None:
+                alignment_review = _load_json(
+                    alignment_review_path, "registered semantic alignment review", errors
+                )
+                alignment_reviewer = alignment_review.get("reviewer_context_id")
+                if isinstance(alignment_reviewer, str) and alignment_reviewer:
+                    forbidden_context_ids.add(alignment_reviewer)
+            if alignment_input_path is not None and alignment_review_path is not None:
+                try:
+                    alignment_result = validate_alignment_review(
+                        game_repo,
+                        alignment_input_path,
+                        alignment_review_path,
+                        expected_output_text=render_decision_card(card),
+                        expected_output_kind="DECISION_SURFACE",
+                    )
+                except AlignmentValidationError as error:
+                    errors.append(str(error))
+                else:
+                    errors.extend(alignment_result.errors)
+                    if alignment_result.status != HUMAN_RULING_GENUINELY_REQUIRED:
+                        errors.append(
+                            "registered Studio decision surface lacks a valid "
+                            "HUMAN_RULING_GENUINELY_REQUIRED alignment verdict"
+                        )
+        _validate_card_factory_review_artifact(
+            game_repo=game_repo,
+            card_path=card_path,
+            card=card,
+            card_binding=card_binding,
+            review_path=card_path.with_name(CARD_FACTORY_REVIEW_NAME),
+            forbidden_context_ids=forbidden_context_ids,
+            errors=errors,
+        )
+
+    return card_binding
+
+
+def _validate_card_factory_review_artifact(
+    *,
+    game_repo: Path,
+    card_path: Path,
+    card: dict[str, Any],
+    card_binding: dict[str, Any],
+    review_path: Path,
+    forbidden_context_ids: set[str],
+    errors: list[str],
+) -> str:
+    expected_review_path = card_path.with_name(CARD_FACTORY_REVIEW_NAME).resolve()
+    if review_path.resolve() != expected_review_path:
+        errors.append(
+            "final Card Factory review must be the objective-local "
+            + CARD_FACTORY_REVIEW_NAME
+        )
+    review = _load_json(review_path, "final Card Factory review", errors)
+    if not review:
+        if not errors or "cannot read final Card Factory review JSON" not in errors[-1]:
+            errors.append("final Card Factory review must not be empty")
+        return ""
+    required = {
+        "schema_version", "review_id", "review_role", "project_id",
+        "objective_id", "factory_revision", "decision_card",
+        "product_authority", "studio_gameplay_system", "authority_inventory",
+        "reviewer_context_id", "reviewer_freshness",
+        "requirement_findings", "claim_inventory", "blocking_findings",
+        "verdict", "reviewed_at",
+    }
+    _require_exact_keys(review, "final Card Factory review", required, errors)
+    if review.get("schema_version") != CARD_FACTORY_REVIEW_VERSION:
+        errors.append(
+            "final Card Factory review schema_version must be "
+            + CARD_FACTORY_REVIEW_VERSION
+        )
+    if review.get("review_role") != "FINAL_CARD_FACTORY_COMPLIANCE":
+        errors.append(
+            "final Card Factory review review_role must be "
+            "FINAL_CARD_FACTORY_COMPLIANCE"
+        )
+    _require_id(review.get("review_id"), "final Card Factory review.review_id", errors)
+    if review.get("project_id") != card.get("project_id"):
+        errors.append("final Card Factory review project_id does not match the card")
+    if review.get("objective_id") != card.get("objective_id"):
+        errors.append("final Card Factory review objective_id does not match the card")
+    if review.get("factory_revision") != card.get("factory_revision"):
+        errors.append("final Card Factory review factory_revision does not match the card")
+
+    card_ref = _require_exact_keys(
+        review.get("decision_card"),
+        "final Card Factory review.decision_card",
+        {"path", "decision_payload_sha256", "rendered_surface_sha256"},
+        errors,
+    )
+    expected_card_path = card_path.resolve().relative_to(game_repo).as_posix()
+    if card_ref.get("path") != expected_card_path:
+        errors.append("final Card Factory review binds a different decision-card path")
+    if card_ref.get("decision_payload_sha256") != card.get("decision_payload_sha256"):
+        errors.append("final Card Factory review binds a different decision payload")
+    expected_surface_sha = hashlib.sha256(
+        render_decision_card(card).encode("utf-8")
+    ).hexdigest()
+    if card_ref.get("rendered_surface_sha256") != expected_surface_sha:
+        errors.append("final Card Factory review binds a different rendered Card surface")
+
+    product_path, product_sha, _ = _validate_path_hash(
+        game_repo,
+        review.get("product_authority"),
+        "final Card Factory review.product_authority",
+        errors,
+    )
+    expected_product = card_binding.get("product_authority", {})
+    if (
+        product_path != expected_product.get("path")
+        or product_sha != expected_product.get("sha256")
+    ):
+        errors.append("final Card Factory review binds different Product authority")
+
+    system_path, system_sha, _ = _validate_path_hash(
+        game_repo,
+        review.get("studio_gameplay_system"),
+        "final Card Factory review.studio_gameplay_system",
+        errors,
+    )
+    if (
+        system_path != card_binding.get("system_path")
+        or system_sha != card_binding.get("system_sha")
+    ):
+        errors.append(
+            "final Card Factory review does not bind the card's exact validated gameplay system"
+        )
+
+    authority_inventory = _require_exact_keys(
+        review.get("authority_inventory"),
+        "final Card Factory review.authority_inventory",
+        {
+            "product_causal_links",
+            "factory_constraints",
+            "product_non_goals",
+        },
+        errors,
+    )
+    authority_fields = {
+        "product_causal_links": "product_causal_link_coverage",
+        "factory_constraints": "factory_constraint_coverage",
+        "product_non_goals": "product_non_goal_coverage",
+    }
+    claim_ids = set(card_binding.get("claim_ids", set()))
+    for field, binding_field in authority_fields.items():
+        values = authority_inventory.get(field)
+        if not isinstance(values, list):
+            errors.append(f"authority_inventory.{field} must be an array")
+            values = []
+        authority_ids: list[str] = []
+        for index, raw in enumerate(values):
+            item = _require_exact_keys(
+                raw,
+                f"authority_inventory.{field}[{index}]",
+                {
+                    "authority_id", "system_transition_ids", "requirement_ids",
+                    "evidence_claim_ids", "verdict", "rationale",
+                },
+                errors,
+            )
+            authority_id = _require_id(
+                item.get("authority_id"),
+                f"authority_inventory.{field}[{index}].authority_id",
+                errors,
+            )
+            authority_ids.append(authority_id)
+            transition_ids = item.get("system_transition_ids")
+            if not isinstance(transition_ids, list):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].system_transition_ids "
+                    "must be an array"
+                )
+                transition_ids = []
+            if len(transition_ids) != len(set(transition_ids)):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].system_transition_ids "
+                    "must be unique"
+                )
+            requirement_ids = item.get("requirement_ids")
+            if not isinstance(requirement_ids, list) or not requirement_ids:
+                errors.append(
+                    f"authority_inventory.{field}[{index}].requirement_ids "
+                    "must be a non-empty array"
+                )
+                requirement_ids = []
+            if len(requirement_ids) != len(set(requirement_ids)):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].requirement_ids must be unique"
+                )
+            unknown_requirements = {
+                str(value) for value in requirement_ids
+            } - set(FINAL_CARD_REQUIREMENT_IDS)
+            if unknown_requirements:
+                errors.append(
+                    f"authority_inventory.{field}[{index}] cites unknown Factory "
+                    "requirements: " + ", ".join(sorted(unknown_requirements))
+                )
+            evidence_ids = item.get("evidence_claim_ids")
+            if not isinstance(evidence_ids, list) or not evidence_ids:
+                errors.append(
+                    f"authority_inventory.{field}[{index}].evidence_claim_ids "
+                    "must be a non-empty array"
+                )
+                evidence_ids = []
+            if len(evidence_ids) != len(set(evidence_ids)):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].evidence_claim_ids must be unique"
+                )
+            unknown_claims = {str(value) for value in evidence_ids} - claim_ids
+            if unknown_claims:
+                errors.append(
+                    f"authority_inventory.{field}[{index}] cites unknown Card claims: "
+                    + ", ".join(sorted(unknown_claims))
+                )
+            expected_coverage = dict(card_binding.get(binding_field, {})).get(
+                authority_id, set()
+            )
+            if set(transition_ids) != set(expected_coverage):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].system_transition_ids "
+                    "must exactly match the bound system coverage"
+                )
+            required_cycle_claims = {
+                f"cycle.{transition_id}" for transition_id in expected_coverage
+            }
+            if required_cycle_claims and not required_cycle_claims.issubset(
+                {str(value) for value in evidence_ids}
+            ):
+                errors.append(
+                    f"authority_inventory.{field}[{index}].evidence_claim_ids must "
+                    "cover every mapped system transition claim"
+                )
+            if item.get("verdict") != "PASS":
+                errors.append(
+                    f"authority_inventory.{field}[{index}].verdict must be PASS"
+                )
+            _require_text(
+                item.get("rationale"),
+                f"authority_inventory.{field}[{index}].rationale",
+                errors,
+            )
+        if len(authority_ids) != len(set(authority_ids)):
+            errors.append(f"authority_inventory.{field} repeats an authority id")
+        expected_values = set(dict(card_binding.get(binding_field, {})))
+        if set(authority_ids) != expected_values:
+            errors.append(
+                f"authority_inventory.{field} must exactly cover the bound system: "
+                + ", ".join(sorted(expected_values))
+            )
+
+    reviewer = _require_id(
+        review.get("reviewer_context_id"),
+        "final Card Factory review.reviewer_context_id",
+        errors,
+    )
+    if review.get("reviewer_freshness") != "FRESH":
+        errors.append("final Card Factory review reviewer_freshness must be FRESH")
+    prior_context_ids = {
+        str(card_binding.get("author_context_id", "")),
+        *{str(value) for value in card_binding.get("studio_context_ids", set())},
+        *{str(value) for value in forbidden_context_ids},
+    } - {""}
+    if reviewer and reviewer in prior_context_ids:
+        errors.append(
+            "final Card Factory reviewer must be fresh from Card/system authors, "
+            "system reviewers, and the semantic-alignment reviewer"
+        )
+
+    findings = _require_exact_keys(
+        review.get("requirement_findings"),
+        "final Card Factory review.requirement_findings",
+        set(FINAL_CARD_REQUIREMENT_IDS),
+        errors,
+    )
+    for requirement_id in FINAL_CARD_REQUIREMENT_IDS:
+        finding = _require_exact_keys(
+            findings.get(requirement_id),
+            f"requirement_findings.{requirement_id}",
+            {"verdict", "evidence_claim_ids", "rationale"},
+            errors,
+        )
+        if finding.get("verdict") != "PASS":
+            errors.append(f"requirement_findings.{requirement_id}.verdict must be PASS")
+        evidence_ids = finding.get("evidence_claim_ids")
+        if not isinstance(evidence_ids, list) or not evidence_ids:
+            errors.append(
+                f"requirement_findings.{requirement_id}.evidence_claim_ids "
+                "must be a non-empty array"
+            )
+            evidence_ids = []
+        if len(evidence_ids) != len(set(evidence_ids)):
+            errors.append(
+                f"requirement_findings.{requirement_id}.evidence_claim_ids "
+                "must be unique"
+            )
+        unknown = {str(item) for item in evidence_ids} - claim_ids
+        if unknown:
+            errors.append(
+                f"requirement_findings.{requirement_id} cites unknown Card claims: "
+                + ", ".join(sorted(unknown))
+            )
+        evidence_texts = {str(item) for item in evidence_ids}
+        for required_prefix in FINAL_CARD_REQUIREMENT_CLAIM_PREFIXES[requirement_id]:
+            if not any(item.startswith(required_prefix) for item in evidence_texts):
+                errors.append(
+                    f"requirement_findings.{requirement_id}.evidence_claim_ids "
+                    f"must include a {required_prefix} Card claim"
+                )
+        _require_text(
+            finding.get("rationale"),
+            f"requirement_findings.{requirement_id}.rationale",
+            errors,
+        )
+
+    inventory = review.get("claim_inventory")
+    if not isinstance(inventory, list):
+        errors.append("final Card Factory review.claim_inventory must be an array")
+        inventory = []
+    inventoried_ids: list[str] = []
+    for index, raw in enumerate(inventory):
+        item = _require_exact_keys(
+            raw,
+            f"claim_inventory[{index}]",
+            {"claim_id", "requirement_ids", "verdict", "rationale"},
+            errors,
+        )
+        claim_id = _require_id(
+            item.get("claim_id"), f"claim_inventory[{index}].claim_id", errors
+        )
+        inventoried_ids.append(claim_id)
+        requirement_ids = item.get("requirement_ids")
+        if not isinstance(requirement_ids, list) or not requirement_ids:
+            errors.append(
+                f"claim_inventory[{index}].requirement_ids must be a non-empty array"
+            )
+            requirement_ids = []
+        if len(requirement_ids) != len(set(requirement_ids)):
+            errors.append(f"claim_inventory[{index}].requirement_ids must be unique")
+        unknown_requirements = {
+            str(value) for value in requirement_ids
+        } - set(FINAL_CARD_REQUIREMENT_IDS)
+        if unknown_requirements:
+            errors.append(
+                f"claim_inventory[{index}] cites unknown Factory requirements: "
+                + ", ".join(sorted(unknown_requirements))
+            )
+        if item.get("verdict") != "PASS":
+            errors.append(f"claim_inventory[{index}].verdict must be PASS")
+        _require_text(
+            item.get("rationale"), f"claim_inventory[{index}].rationale", errors
+        )
+    if len(inventoried_ids) != len(set(inventoried_ids)):
+        errors.append("final Card Factory review.claim_inventory repeats a Card claim")
+    if set(inventoried_ids) != claim_ids:
+        missing = sorted(claim_ids - set(inventoried_ids))
+        extra = sorted(set(inventoried_ids) - claim_ids)
+        if missing:
+            errors.append("final Card Factory review misses Card claims: " + ", ".join(missing))
+        if extra:
+            errors.append("final Card Factory review invents Card claims: " + ", ".join(extra))
+
+    if review.get("blocking_findings") != []:
+        errors.append("final Card Factory review.blocking_findings must be empty")
+    if review.get("verdict") != PASS_CARD_FACTORY_REVIEW:
+        errors.append(
+            "final Card Factory review.verdict must be " + PASS_CARD_FACTORY_REVIEW
+        )
+    _require_text(review.get("reviewed_at"), "final Card Factory review.reviewed_at", errors)
+    return reviewer
+
+
+def validate_card_factory_review(
+    game_repo: str | Path,
+    card_path: str | Path,
+    review_path: str | Path,
+    *,
+    forbidden_context_ids: set[str] | None = None,
+) -> CardFactoryReviewResult:
+    """Validate the independent final Card audit before human presentation."""
+
+    repo = Path(game_repo).expanduser().resolve()
+    card_file = Path(card_path)
+    if not card_file.is_absolute():
+        card_file = repo / card_file
+    review_file = Path(review_path)
+    if not review_file.is_absolute():
+        review_file = repo / review_file
+    card_file = card_file.resolve()
+    review_file = review_file.resolve()
+    errors: list[str] = []
+    try:
+        card_file.relative_to(repo)
+        review_file.relative_to(repo)
+    except ValueError:
+        errors.append("final Card Factory review paths must stay inside the game repo")
+        return CardFactoryReviewResult("BLOCKED", errors)
+    card = _load_json(card_file, "gameplay decision card", errors)
+    if card.get("routing") != "STUDIO_WHOLE_GAME":
+        errors.append("final Card Factory review is required only for STUDIO_WHOLE_GAME cards")
+    card_binding = _validate_decision_card(
+        game_repo=repo,
+        card_path=card_file,
+        project_id=str(card.get("project_id", "")),
+        objective_id=str(card.get("objective_id", "")),
+        factory_revision=current_factory_revision(Path(__file__).resolve().parents[1]),
+        context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
+        errors=errors,
+        pre_human_review=True,
+    )
+    reviewer = _validate_card_factory_review_artifact(
+        game_repo=repo,
+        card_path=card_file,
+        card=card,
+        card_binding=card_binding,
+        review_path=review_file,
+        forbidden_context_ids=forbidden_context_ids or set(),
+        errors=errors,
+    )
+    relative_review = ""
+    try:
+        relative_review = review_file.relative_to(repo).as_posix()
+    except ValueError:
+        pass
+    return CardFactoryReviewResult(
+        PASS_CARD_FACTORY_REVIEW if not errors else "BLOCKED",
+        errors,
+        reviewer_context_id=reviewer,
+        review_path=relative_review,
+    )
+
+
+def validate_studio_card_presentation(
+    game_repo: str | Path,
+    card_path: str | Path,
+    card: dict[str, Any] | None = None,
+) -> list[str]:
+    """Validate both final reviewers for an exact registered pending Card."""
+
+    repo = Path(game_repo).expanduser().resolve()
+    path = Path(card_path)
+    if not path.is_absolute():
+        path = repo / path
+    path = path.resolve()
+    errors: list[str] = []
+    payload = card or _load_json(path, "gameplay decision card", errors)
+    if payload.get("routing") != "STUDIO_WHOLE_GAME":
+        return errors
+    rendered = render_decision_card(payload)
+    alignment_reviewer = ""
+    entry = require_registered_card(
+        repo,
+        path,
+        required_state="PENDING",
+        errors=errors,
+    )
+    if entry:
+        try:
+            result = validate_alignment_review(
+                repo,
+                entry.get("alignment_input", {}).get("path", ""),
+                entry.get("alignment_review", {}).get("path", ""),
+                expected_output_text=rendered,
+                expected_output_kind="DECISION_SURFACE",
+            )
+        except AlignmentValidationError as error:
+            errors.append(str(error))
+        else:
+            errors.extend(result.errors)
+            review_path = repo / entry.get("alignment_review", {}).get("path", "")
+            alignment_review = _load_json(
+                review_path, "registered semantic alignment review", errors
+            )
+            if isinstance(alignment_review.get("reviewer_context_id"), str):
+                alignment_reviewer = alignment_review["reviewer_context_id"]
+            if result.status != HUMAN_RULING_GENUINELY_REQUIRED:
+                errors.append(
+                    "Studio decision surface requires "
+                    "HUMAN_RULING_GENUINELY_REQUIRED alignment verdict"
+                )
+    compliance = validate_card_factory_review(
+        repo,
+        path,
+        path.with_name(CARD_FACTORY_REVIEW_NAME),
+        forbidden_context_ids={alignment_reviewer} - {""},
+    )
+    errors.extend(compliance.errors)
+    return errors
 
 
 def _section(objective_text: str, heading: str) -> str:
@@ -1392,14 +1989,22 @@ def _parser() -> argparse.ArgumentParser:
     )
     render_card.add_argument("--card", required=True)
     render_card.add_argument("--game-repo")
+    validate_card_review = subparsers.add_parser(
+        "validate-card-review",
+        help="validate the independent final Factory-compliance review for a Studio Card",
+    )
+    validate_card_review.add_argument("--game-repo", required=True)
+    validate_card_review.add_argument("--card", required=True)
+    validate_card_review.add_argument("--review", required=True)
     register_card = subparsers.add_parser(
         "register-card",
-        help="register one alignment-reviewed pending Studio decision card",
+        help="register one compliance- and alignment-reviewed pending Studio decision card",
     )
     register_card.add_argument("--game-repo", required=True)
     register_card.add_argument("--card", required=True)
     register_card.add_argument("--alignment-input", required=True)
     register_card.add_argument("--alignment-review", required=True)
+    register_card.add_argument("--factory-compliance-review", required=True)
     register_card.add_argument("--supersede-payload", action="append", default=[])
     register_card.add_argument("--recorded-at", required=True)
     record_verdict = subparsers.add_parser(
@@ -1439,37 +2044,21 @@ def main(argv: list[str] | None = None) -> int:
                         file=sys.stderr,
                     )
                     return 2
-                errors: list[str] = []
-                entry = require_registered_card(
-                    args.game_repo,
-                    path,
-                    required_state="PENDING",
-                    errors=errors,
+                errors = validate_studio_card_presentation(
+                    args.game_repo, path, payload
                 )
-                if entry:
-                    try:
-                        result = validate_alignment_review(
-                            args.game_repo,
-                            entry.get("alignment_input", {}).get("path", ""),
-                            entry.get("alignment_review", {}).get("path", ""),
-                            expected_output_text=rendered,
-                            expected_output_kind="DECISION_SURFACE",
-                        )
-                    except AlignmentValidationError as error:
-                        errors.append(str(error))
-                    else:
-                        errors.extend(result.errors)
-                        if result.status != HUMAN_RULING_GENUINELY_REQUIRED:
-                            errors.append(
-                                "Studio decision surface requires "
-                                "HUMAN_RULING_GENUINELY_REQUIRED alignment verdict"
-                            )
                 if errors:
                     for error in errors:
                         print(f"ERROR: {error}", file=sys.stderr)
                     return 2
             print(rendered, end="")
         return 0
+    if args.command == "validate-card-review":
+        result = validate_card_factory_review(args.game_repo, args.card, args.review)
+        print(result.status)
+        for error in result.errors:
+            print(f"ERROR: {error}")
+        return 0 if result.status == PASS_CARD_FACTORY_REVIEW else 1
     if args.command == "register-card":
         repo = Path(args.game_repo).expanduser().resolve()
         card_path = Path(args.card)
@@ -1483,6 +2072,51 @@ def main(argv: list[str] | None = None) -> int:
             if payload.get("decision_payload_sha256") != expected_digest:
                 raise AlignmentValidationError(
                     "decision card payload SHA does not match its material surface"
+                )
+            alignment_review_path = Path(args.alignment_review)
+            if not alignment_review_path.is_absolute():
+                alignment_review_path = repo / alignment_review_path
+            alignment_review = _load_json(
+                alignment_review_path.resolve(), "semantic alignment review", []
+            )
+            alignment_reviewer = alignment_review.get("reviewer_context_id", "")
+            compliance = validate_card_factory_review(
+                repo,
+                card_path,
+                args.factory_compliance_review,
+                forbidden_context_ids={str(alignment_reviewer)} - {""},
+            )
+            if compliance.errors or compliance.status != PASS_CARD_FACTORY_REVIEW:
+                raise AlignmentValidationError(
+                    "; ".join(compliance.errors)
+                    or "final Card Factory compliance review did not pass"
+                )
+            alignment_input_path = Path(args.alignment_input)
+            if not alignment_input_path.is_absolute():
+                alignment_input_path = repo / alignment_input_path
+            alignment_input = _load_json(
+                alignment_input_path.resolve(), "semantic alignment input", []
+            )
+            compliance_review_path = Path(args.factory_compliance_review)
+            if not compliance_review_path.is_absolute():
+                compliance_review_path = repo / compliance_review_path
+            compliance_review_path = compliance_review_path.resolve()
+            expected_review_ref = {
+                "path": compliance_review_path.relative_to(repo).as_posix(),
+                "sha256": hashlib.sha256(compliance_review_path.read_bytes()).hexdigest(),
+            }
+            bound_reviews = [
+                item
+                for item in alignment_input.get("active_authorities", [])
+                if isinstance(item, dict)
+                and item.get("authority_id") == CARD_FACTORY_REVIEW_AUTHORITY_ID
+                and item.get("authority_kind") == "REPO_EVIDENCE"
+                and item.get("artifact") == expected_review_ref
+            ]
+            if len(bound_reviews) != 1:
+                raise AlignmentValidationError(
+                    "semantic alignment input must bind the exact final Card Factory "
+                    f"review as active authority {CARD_FACTORY_REVIEW_AUTHORITY_ID}"
                 )
             register_path = register_pending_card(
                 repo,
@@ -1499,6 +2133,13 @@ def main(argv: list[str] | None = None) -> int:
         print(register_path.relative_to(repo).as_posix())
         return 0
     if args.command == "record-card-verdict":
+        presentation_errors = validate_studio_card_presentation(
+            args.game_repo, args.card
+        )
+        if presentation_errors:
+            for error in presentation_errors:
+                print(f"ERROR: {error}", file=sys.stderr)
+            return 2
         try:
             card_path = record_card_verdict(
                 args.game_repo,

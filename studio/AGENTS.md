@@ -53,7 +53,14 @@ these invariants:
     refine it into the full objective spec only when two fresh, independent
     conformance reviews prove both card-to-spec completeness and spec-to-card
     non-expansion. Never claim that the two artifacts are textually or
-    semantically identical.
+    semantically identical. Before the pending Card reaches semantic alignment
+    or the human, an additional fresh final-Card reviewer—not the Card/system
+    author or either system reviewer—must audit the exact Card and all bound
+    authorities against every Factory requirement due at this boundary. It
+    rejects certain-outcome clicks, dialogue/task/marker proxies, missing
+    player-work -> response -> carry-forward chains, non-distinct or unreachable
+    alternatives, scope/red-line breaches, and false gate/completion claims.
+    Step-local reviews do not substitute for this whole-result audit.
 12. **Freshly review every material human transition.** Before presenting a
     material response, blocking question, or Studio decision card, bind the
     exact raw user input, active authority, pending decisions, candidate output,
@@ -107,7 +114,8 @@ Every material human-facing arrow is additionally gated as:
 
 ```text
 active authority + pending decisions + raw user input
-  -> candidate output -> fresh semantic alignment review -> user surface
+  -> final Card Factory compliance review when applicable
+  -> candidate output -> separate fresh semantic alignment review -> user surface
 ```
 
 Forbidden transitions:

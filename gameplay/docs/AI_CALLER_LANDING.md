@@ -162,7 +162,9 @@ deductions into separate workers.
 
 Do not plan from `AI_DRAFT_FOR_REVIEW`. First obtain the human ruling on the
 compact objective-local `GAMEPLAY_DECISION_CARD.json`. For Studio work it must
-bind a validated closed gameplay-system manifest. A separate author writes the
+bind a validated closed gameplay-system manifest, pass an additional fresh
+whole-result Card Factory-compliance review, and then pass a different fresh
+semantic-alignment review before presentation. A separate author writes the
 full `OBJECTIVE_GAMEPLAY.md`; two separate fresh reviewers must then prove
 card-to-spec completeness and spec-to-card non-expansion before writing
 `GAMEPLAY_DESIGN_VERDICT.json` v2. From-scratch new gameplay requires

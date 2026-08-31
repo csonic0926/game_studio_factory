@@ -26,6 +26,16 @@ It also does not turn later, not-yet-entered workflow stages into present
 defects: a valid cycle may correctly exist before unit breakdown, plans, specs,
 or implementation.
 
+For a Studio Gameplay Decision Card, this gate runs only after the separate
+fresh final-Card Factory-compliance review has passed. That reviewer audits the
+Card as a gameplay/workflow result; this reviewer audits the interpretation and
+human-facing transition. They must be different contexts, and neither may be
+omitted or used as a substitute for the other. Bind the exact objective-local
+`GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json` path/SHA in `active_authorities`
+as `REPO_EVIDENCE` with authority id `card.factory-compliance-review`; this
+makes registration, rendering, and later production validation fail if the
+review is replaced or falls out of alignment.
+
 ## When the gate is mandatory
 
 Run it before presenting output when any of these is true:
@@ -180,6 +190,7 @@ input must be named on the command:
 python3 <STUDIO_ROOT>/gameplay/design_gate.py register-card \
   --game-repo <GAME_REPO> \
   --card <CARD_PATH> \
+  --factory-compliance-review <CARD_FACTORY_REVIEW_PATH> \
   --alignment-input <ALIGNMENT_INPUT_PATH> \
   --alignment-review <ALIGNMENT_REVIEW_PATH> \
   --supersede-payload <OLD_PENDING_PAYLOAD_SHA256> \

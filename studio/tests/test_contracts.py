@@ -172,6 +172,43 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertIn("pending_decision_disposition", required_checks)
         self.assertIn("independent_claim_inventory", payload["required"])
 
+    def test_final_card_review_is_separate_and_covers_gameplay_sufficiency(self) -> None:
+        factory_root = STUDIO_ROOT.parent
+        payload = json.loads(
+            (
+                factory_root
+                / "gameplay/schemas/gameplay_decision_card_factory_review.schema.json"
+            ).read_text()
+        )
+        self.assertEqual(
+            "gameplay_decision_card_factory_review.v1",
+            payload["properties"]["schema_version"]["const"],
+        )
+        findings = payload["properties"]["requirement_findings"]
+        required = set(findings["required"])
+        self.assertIn("playable_span_sufficiency_not_inflated", required)
+        self.assertIn("meaningful_choice_not_certain_click", required)
+        self.assertIn("non_gameplay_activity_not_counted", required)
+        self.assertIn("player_work_world_response_carry_forward", required)
+        self.assertIn("two_lap_decision_materially_differs", required)
+        self.assertIn("applicable_factory_gates_complete", required)
+        self.assertEqual(
+            {
+                "PASS_CARD_FACTORY_COMPLIANCE",
+                "REVISE_CARD_BEFORE_HUMAN",
+            },
+            set(payload["properties"]["verdict"]["enum"]),
+        )
+
+        reviewer_skill = (
+            STUDIO_ROOT
+            / "skills/studio-gameplay-decision-card-reviewer/SKILL.md"
+        ).read_text()
+        self.assertIn("certain-outcome", reviewer_skill)
+        self.assertIn("dialogue advance", reviewer_skill)
+        self.assertIn("semantic-alignment reviewer", reviewer_skill)
+        self.assertIn("must differ", reviewer_skill)
+
     def test_decision_register_has_explicit_superseded_state(self) -> None:
         payload = json.loads(
             (STUDIO_ROOT / "schemas/studio_decision_card_register.schema.json").read_text()

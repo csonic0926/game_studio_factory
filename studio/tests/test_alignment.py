@@ -7,8 +7,11 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from gameplay.design_gate import (
+    CardFactoryReviewResult,
+    PASS_CARD_FACTORY_REVIEW,
     decision_payload_sha256,
     main as design_gate_main,
     render_decision_card,
@@ -576,7 +579,10 @@ class StudioSemanticAlignmentTests(unittest.TestCase):
         self.assertEqual(2, exit_code)
         self.assertIn("superseded", stderr.getvalue())
         stdout = io.StringIO()
-        with redirect_stdout(stdout):
+        with patch(
+            "gameplay.design_gate.validate_card_factory_review",
+            return_value=CardFactoryReviewResult(PASS_CARD_FACTORY_REVIEW, []),
+        ), redirect_stdout(stdout):
             exit_code = design_gate_main(
                 [
                     "render-card",

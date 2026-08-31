@@ -19,6 +19,10 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
 6. Material Studio input/output transitions use the fresh-subagent semantic
    alignment gate in `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`; ordinary
    user language must not require Factory-specific prompt boilerplate.
+7. Every pending Studio Gameplay Decision Card first uses a different fresh
+   final-Card Factory-compliance subagent that audits the exact whole result and
+   all bound authorities; step-local reviews and semantic alignment do not
+   substitute for this gameplay/workflow sufficiency gate.
 
 Specialist entry points:
 
