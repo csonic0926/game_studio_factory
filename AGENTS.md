@@ -1,5 +1,14 @@
 # AGENTS — Game Studio Factory
 
+## Branch policy
+
+- Keep exactly one local and remote branch: `main`.
+- Work, commit, and push directly on `main`; never create, check out, or push
+  feature, agent, task, backup, safety, or other non-`main` branches.
+- If a non-`main` branch already exists, preserve any required work by moving it
+  into `main`, verify the result, then delete the non-`main` branch locally and
+  remotely.
+
 This repository contains the autonomous **Game Studio Factory** operator plus
 its specialist **Game AI Factories**.
 
