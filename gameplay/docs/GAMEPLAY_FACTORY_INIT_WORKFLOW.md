@@ -7,6 +7,9 @@ is already factory-readable. Users do not select numbered cases.
 ```text
 init.py start
   -> NEW_PROJECT_DEFINITION_REQUIRED
+     OR NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED
+     OR approved-authority probe -> explicit bootstrap input
+        -> compile-new -> check-new
      OR existing-project probe -> investigation -> compile -> check
      OR GAMEPLAY_FACTORY_ALREADY_READY
 ```
@@ -18,12 +21,25 @@ gameplay, or silently choose between conflicting runtime systems.
 
 ### Total-new project
 
-When no implemented runtime is present, `start` returns
-`NEW_PROJECT_DEFINITION_REQUIRED`. Route to the umbrella `idea-factory` skill.
-A genre-only request is not enough authority to create progression, actions,
-rewards, or adapters. Idea Factory can establish product direction, but a
-separate new-game Gameplay bootstrap must still create the initial progression
-and action/reward design before this existing-runtime compiler applies.
+When no implemented runtime is present and there is no active Product,
+`start` returns `NEW_PROJECT_DEFINITION_REQUIRED`. Route to the umbrella
+`idea-factory` skill. A genre-only request is not enough authority to create
+progression, actions, rewards, or adapters.
+
+With an explicit `ACTIVE` Product but without one validated, registered,
+`USER_APPROVED` Gameplay Decision Card, `start` returns
+`NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED`. Continue through Studio's closed
+gameplay-system and Card gates. Product prose, a validated system without its
+human-approved first objective, and a pending Card are not substitutes.
+
+When exactly one approved Card is available, `start` writes
+`GAMEPLAY_NEW_PROJECT_BOOTSTRAP_PROBE.json` and returns
+`NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED`. One explicit input chooses the planned
+technical ownership envelope and projects cited approved Card claims into the
+first objective. `compile-new` creates planned—not implemented—adapters, an
+empty-action stable model, empty experience ledgers, one locale row, and one
+design-authority frontier. It never manufactures runtime, reward mutation,
+observation, test, or acceptance evidence.
 
 ### Existing project joining in the middle
 
@@ -69,6 +85,8 @@ design/gameplay/
   init/
     GAMEPLAY_FACTORY_REPO_PROBE.json
     GAMEPLAY_FACTORY_INIT_INPUT.json
+    GAMEPLAY_NEW_PROJECT_BOOTSTRAP_PROBE.json
+    GAMEPLAY_NEW_PROJECT_BOOTSTRAP_INPUT.json
     GAMEPLAY_FACTORY_INIT_RESULT.json
   adapter/
     PROJECT_GAMEPLAY_PROFILE.md
@@ -129,12 +147,89 @@ remains stable.
 Start results:
 
 - `NEW_PROJECT_DEFINITION_REQUIRED` — route to `idea-factory`;
+- `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` — continue Studio system/Card
+  authority production;
+- `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED` — continue the new-project bootstrap
+  below;
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — continue the investigation;
 - `GAMEPLAY_FACTORY_ALREADY_READY` — return to production routing;
 - command error — wrong ownership, non-Git repo, illegal path, or
   conflicting existing probe.
 
 `probe-existing` is an internal repeat operation, not a normal user command.
+
+## Total-new bootstrap after approved authority
+
+The new path is causally separate from existing-runtime reconstruction:
+
+```text
+ACTIVE Product register
+  + validated cycle-complete Studio gameplay-system manifest
+  + exact registered USER_APPROVED Gameplay Decision Card
+  + fresh final Card review and semantic decision-surface review
+  -> probe-new
+  -> explicit bootstrap input
+  -> compile-new
+  -> check-new
+  -> READY_FOR_NEW_GAMEPLAY_DESIGN
+```
+
+If several approved Cards exist, `probe-new` fails closed until the caller
+supplies one exact game-owned `--card` path. No first-card selector is inferred.
+The probe binds the game revision (`UNBORN_HEAD` is supported), every unignored
+source path and byte, all active authority refs, the exact decision payload,
+and a mechanical projection of the validated gameplay system.
+
+Use:
+
+- `schemas/gameplay_new_project_bootstrap_probe.schema.json`
+- `schemas/gameplay_new_project_bootstrap_input.schema.json`
+- `templates/GAMEPLAY_NEW_PROJECT_BOOTSTRAP_INPUT.json`
+
+Write the canonical input at
+`design/gameplay/init/GAMEPLAY_NEW_PROJECT_BOOTSTRAP_INPUT.json`. It must state:
+
+1. the exact probe ref;
+2. primary locale, target runtime/platform, planned runtime roots, prospective
+   validation commands, and integration constraints;
+3. the approved Card objective id and an exact Card claim for the first locale
+   row;
+4. a bounded completion condition whose source claim ids all exist in the
+   approved Card;
+5. an honest `MISSING` or `UNKNOWN` successor handoff bound to approved claims;
+6. empty unresolved material gaps and AI assumptions.
+
+Planned roots are ownership intent, not file mappings. A prospective validation
+command is not a test result. Desired Card verbs are not implemented actions.
+When the approved claim language differs from the project's primary locale,
+record it under its honest authority-language column; the compile result warns
+that a primary-locale translation still requires normal production/validation.
+
+Compile and check:
+
+```bash
+python3 gameplay/init.py compile-new \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/init/GAMEPLAY_NEW_PROJECT_BOOTSTRAP_INPUT.json
+
+python3 gameplay/init.py check-new \
+  --game-repo <GAME_REPO> \
+  --input design/gameplay/init/GAMEPLAY_NEW_PROJECT_BOOTSTRAP_INPUT.json
+```
+
+Both commands revalidate current Product/System/Card authority, the exact probe
+hash, repository revision/path/byte binding, approved claim ids and exact locale
+claim text. All outputs are rendered and conflict-checked before the first
+write. Exact outputs are idempotent; a differing canonical file returns
+`BLOCKED_BY_EXISTING_FACTORY_STATE` without partial writes.
+
+The compiled model has `player_actions: []`. The initial frontier cites
+`design_selection_authority`, `design_completion_authority`, and optionally
+`design_successor_authority`. `prepare.py` accepts design selection/completion
+roles only while the applicable implemented-action list is empty, warns that
+runtime remains absent, and returns `READY_FOR_NEW_GAMEPLAY_DESIGN`. Any later
+frontier with implemented actions still requires `runtime_selection`,
+`runtime_completion`, and per-action `runtime_action` evidence.
 
 ## Step 2 — one evidence-focused investigation
 

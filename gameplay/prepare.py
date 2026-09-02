@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Compile a game-owned objective context before creative authoring.
 
-The tool is deliberately mechanical.  It verifies that the declared primary
-progression driver, current/next objective, locale text, runtime wiring, player
-actions, and action rewards exist in the target game repo.  It does not invent
-gameplay or decide whether an experience is good.
+The tool is deliberately mechanical. It verifies the declared progression
+driver, current/next objective, locale text, runtime wiring, player actions,
+and rewards. A new-project zero-action frontier may instead cite approved
+design selection/completion authority; that path remains explicitly
+unimplemented. The tool does not invent gameplay or decide whether an
+experience is good.
 """
 
 from __future__ import annotations
@@ -234,10 +236,6 @@ def validate_materials(payload: Any, game_repo: Path) -> PreparationResult:
         "frontier.evidence_refs",
         errors,
     )
-    for required_role in ("runtime_selection", "runtime_completion"):
-        if required_role not in frontier_roles:
-            errors.append(f"frontier requires a {required_role} evidence ref")
-
     successor = frontier.get("successor_handoff")
     if not isinstance(successor, dict):
         errors.append("frontier.successor_handoff must be an object")
@@ -293,6 +291,29 @@ def validate_materials(payload: Any, game_repo: Path) -> PreparationResult:
         )
         if "runtime_action" not in action_roles:
             errors.append(f"{action_label} requires a runtime_action evidence ref")
+
+    runtime_frontier_roles = {"runtime_selection", "runtime_completion"}
+    design_frontier_roles = {
+        "design_selection_authority",
+        "design_completion_authority",
+    }
+    if player_actions:
+        for required_role in sorted(runtime_frontier_roles):
+            if required_role not in frontier_roles:
+                errors.append(f"frontier requires a {required_role} evidence ref")
+    elif not (
+        runtime_frontier_roles.issubset(frontier_roles)
+        or design_frontier_roles.issubset(frontier_roles)
+    ):
+        errors.append(
+            "frontier with zero implemented actions requires either runtime selection/"
+            "completion evidence or approved design selection/completion authority"
+        )
+    elif design_frontier_roles.issubset(frontier_roles):
+        warnings.append(
+            "frontier is approved design authority only; runtime selection, completion, "
+            "actions, and rewards remain unimplemented"
+        )
 
     for list_field in ("recent_patterns", "design_constraints"):
         field_value = payload.get(list_field, [])

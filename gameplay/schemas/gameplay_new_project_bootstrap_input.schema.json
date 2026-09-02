@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/gameplay_new_project_bootstrap_input.schema.json",
+  "title": "Gameplay New-Project Bootstrap Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "init_date",
+    "author_context_id",
+    "probe",
+    "technical_profile",
+    "initial_frontier",
+    "user_rulings",
+    "unresolved_material_gaps",
+    "ai_assumptions"
+  ],
+  "properties": {
+    "schema_version": {"const": "gameplay_new_project_bootstrap_input.v1"},
+    "project_id": {"$ref": "#/$defs/id"},
+    "init_date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "author_context_id": {"$ref": "#/$defs/id"},
+    "probe": {"$ref": "#/$defs/ref"},
+    "technical_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_locale",
+        "target_runtime",
+        "planned_runtime_roots",
+        "validation_commands",
+        "integration_constraints"
+      ],
+      "properties": {
+        "primary_locale": {"type": "string", "minLength": 1},
+        "target_runtime": {"type": "string", "minLength": 1},
+        "planned_runtime_roots": {"$ref": "#/$defs/nonempty_strings"},
+        "validation_commands": {"$ref": "#/$defs/strings"},
+        "integration_constraints": {"$ref": "#/$defs/nonempty_strings"}
+      }
+    },
+    "initial_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "objective_dir",
+        "decision",
+        "current_state",
+        "objective_locale",
+        "completion_condition",
+        "completion_source_claim_ids",
+        "successor_handoff",
+        "recent_patterns",
+        "design_constraints"
+      ],
+      "properties": {
+        "objective_dir": {"$ref": "#/$defs/id"},
+        "decision": {"enum": ["COMPLETE_CURRENT_UNIT", "ADVANCE_TO_NEXT_UNIT"]},
+        "current_state": {"type": "string", "minLength": 1},
+        "objective_locale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "key_column", "locale_column", "key", "text", "source_claim_id"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "key_column": {"type": "string", "minLength": 1},
+            "locale_column": {"type": "string", "minLength": 1},
+            "key": {"type": "string", "minLength": 1},
+            "text": {"type": "string", "minLength": 1},
+            "source_claim_id": {"type": "string", "minLength": 1}
+          }
+        },
+        "completion_condition": {"type": "string", "minLength": 1},
+        "completion_source_claim_ids": {"$ref": "#/$defs/nonempty_strings"},
+        "successor_handoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "description", "source_claim_ids"],
+          "properties": {
+            "status": {"enum": ["MISSING", "UNKNOWN"]},
+            "description": {"type": "string", "minLength": 1},
+            "source_claim_ids": {"$ref": "#/$defs/nonempty_strings"}
+          }
+        },
+        "recent_patterns": {"$ref": "#/$defs/strings"},
+        "design_constraints": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "user_rulings": {"$ref": "#/$defs/strings"},
+    "unresolved_material_gaps": {"type": "array", "maxItems": 0},
+    "ai_assumptions": {"type": "array", "maxItems": 0}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "nonempty_strings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

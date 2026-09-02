@@ -51,10 +51,16 @@ python3 <FACTORY_ROOT>/gameplay/init.py start --game-repo <GAME_REPO>
 Continue the returned branch:
 
 - `NEW_PROJECT_DEFINITION_REQUIRED`: invoke `idea-factory`; after
-  `IDEA_FACTORY_READY`, route to new-game Gameplay bootstrap when available.
+  `IDEA_FACTORY_READY`, continue through Studio gameplay-system/Card authority.
   Open/no-fit/multiple-direction Idea states remain in exploration and must not
   be force-commissioned to unblock Gameplay. Do not invent progression,
   actions, or rewards inside initialization.
+- `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED`: continue the Studio gameplay-system
+  and registered `USER_APPROVED` Card route; do not substitute Product prose or
+  an AI-selected mechanic for the missing decision authority.
+- `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED`: follow the total-new branch in
+  `GAMEPLAY_FACTORY_INIT_WORKFLOW.md`, author the one explicit technical/frontier
+  input from approved claim ids, then run `compile-new` and `check-new`.
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED`: follow
   `GAMEPLAY_FACTORY_INIT_WORKFLOW.md` with one bounded evidence investigator,
   then run `compile` and `check`. This is reconstruction, not design.
@@ -111,6 +117,9 @@ visual identity from feature intent alone.
   reusable tools, schemas, templates, tests, and contracts.
 - Initialization never overwrites differing existing factory state or fills
   semantic gaps with AI assumptions.
+- New-project initialization records planned ownership and design authority;
+  it records zero implemented actions/rewards and no runtime or acceptance
+  evidence.
 - Known player-visible gaps precede forward progression.
 - Planning does not redesign; a missing design decision returns to its owning
   workflow.

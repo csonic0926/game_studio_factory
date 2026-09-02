@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from gameplay.init import (
     GAMEPLAY_FACTORY_ALREADY_READY,
@@ -17,6 +18,7 @@ from gameplay.init import (
     PROBE_RELATIVE,
     RESULT_RELATIVE,
     FactoryInitError,
+    FactoryInitResult,
     check_init,
     compile_init,
     probe_repository,
@@ -339,6 +341,27 @@ class GameplayFactoryInitTests(unittest.TestCase):
 
         self.assertEqual(NEW_PROJECT_DEFINITION_REQUIRED, result.status)
         self.assertFalse((blank_repo / PROBE_RELATIVE).exists())
+
+    def test_start_routes_active_new_product_to_authority_bootstrap(self) -> None:
+        blank_repo = Path(self.temporary_directory.name) / "authorized_new_game"
+        blank_repo.mkdir()
+        subprocess.run(
+            ["git", "-C", str(blank_repo), "init", "-b", "main"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        expected = FactoryInitResult("NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED")
+        with (
+            patch(
+                "gameplay.init.require_active_product_authority",
+                return_value=({"status": "ACTIVE"}, []),
+            ),
+            patch("gameplay.init.probe_new_project", return_value=expected) as probe,
+        ):
+            result = start_factory_init(str(blank_repo))
+        self.assertIs(expected, result)
+        probe.assert_called_once_with(str(blank_repo))
 
     def test_probe_rejects_illegal_output_before_creating_directory(self) -> None:
         outside = Path(self.temporary_directory.name) / "outside" / "probe.json"

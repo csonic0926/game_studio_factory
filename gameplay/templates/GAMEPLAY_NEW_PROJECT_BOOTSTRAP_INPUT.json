@@ -1,0 +1,42 @@
+{
+  "schema_version": "gameplay_new_project_bootstrap_input.v1",
+  "project_id": "<PROJECT_ID>",
+  "init_date": "<YYYY-MM-DD>",
+  "author_context_id": "<PORTABLE_AUTHOR_CONTEXT_ID>",
+  "probe": {
+    "path": "design/gameplay/init/GAMEPLAY_NEW_PROJECT_BOOTSTRAP_PROBE.json",
+    "sha256": "<EXACT_PROBE_SHA256>"
+  },
+  "technical_profile": {
+    "primary_locale": "zh_Hant",
+    "target_runtime": "<ENGINE_AND_TARGET_PLATFORM>",
+    "planned_runtime_roots": ["<PLANNED_RUNTIME_ROOT>"],
+    "validation_commands": [],
+    "integration_constraints": ["<EXPLICIT_TECHNICAL_OR_PRODUCT_CONSTRAINT>"]
+  },
+  "initial_frontier": {
+    "objective_dir": "<APPROVED_CARD_OBJECTIVE_ID>",
+    "decision": "COMPLETE_CURRENT_UNIT",
+    "current_state": "<PRE_IMPLEMENTATION_PLAYER_AND_WORLD_STATE>",
+    "objective_locale": {
+      "path": "locales/objectives.csv",
+      "key_column": "keys",
+      "locale_column": "<APPROVED_CLAIM_LANGUAGE_COLUMN>",
+      "key": "<OBJECTIVE_LOCALE_KEY>",
+      "text": "<EXACT_APPROVED_CARD_CLAIM_TEXT>",
+      "source_claim_id": "<APPROVED_CARD_CLAIM_ID>"
+    },
+    "completion_condition": "<BOUNDED_SYNTHESIS_OF_APPROVED_CARD_CLAIMS>",
+    "completion_source_claim_ids": ["<APPROVED_CARD_CLAIM_ID>"],
+    "successor_handoff": {
+      "status": "MISSING",
+      "description": "<HONEST_PRE_IMPLEMENTATION_HANDOFF_STATE>",
+      "source_claim_ids": ["<APPROVED_CARD_CLAIM_ID>"]
+    },
+    "recent_patterns": [],
+    "design_constraints": []
+  },
+  "user_rulings": [],
+  "unresolved_material_gaps": [],
+  "ai_assumptions": []
+}

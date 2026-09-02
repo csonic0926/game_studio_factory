@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Initialize Gameplay Factory for a new or existing game repository.
 
-``start`` detects whether the repo needs new-project definition, existing-
-project reconstruction, or is already factory-readable. The existing-project
-branch uses a bounded non-semantic probe, one evidence-focused input, and a
-preflighted compiler/checker. The new-project branch stops before gameplay
-invention and hands off to game-definition work.
+``start`` detects whether the repo needs Product/Studio gameplay authority,
+new-project authority bootstrap, existing-project reconstruction, or is already
+factory-readable. Existing projects use a bounded non-semantic probe. New
+projects use only an active Product, a validated Studio gameplay system, a
+registered USER_APPROVED Gameplay Decision Card, and explicit technical input.
 
 No command invents gameplay, silently chooses between conflicting runtime
 systems, or overwrites existing factory state.
@@ -30,12 +30,33 @@ try:  # Package import in tests; script import for ``python gameplay/init.py``.
         READY_FOR_NEW_GAMEPLAY_DESIGN,
         validate_materials,
     )
+    from gameplay.new_project_bootstrap import (
+        INPUT_RELATIVE as NEW_PROJECT_INPUT_RELATIVE,
+        NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED,
+        NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED,
+        NewProjectBootstrapError,
+        check_new_project,
+        compile_new_project,
+        probe_new_project,
+    )
+    from studio.product import require_active_product_authority
 except ModuleNotFoundError:  # pragma: no cover - exercised by CLI smoke tests.
     from prepare import (  # type: ignore[no-redef]
         READY_FOR_HOW_DESIGN,
         READY_FOR_NEW_GAMEPLAY_DESIGN,
         validate_materials,
     )
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from gameplay.new_project_bootstrap import (  # type: ignore[no-redef]
+        INPUT_RELATIVE as NEW_PROJECT_INPUT_RELATIVE,
+        NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED,
+        NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED,
+        NewProjectBootstrapError,
+        check_new_project,
+        compile_new_project,
+        probe_new_project,
+    )
+    from studio.product import require_active_product_authority  # type: ignore[no-redef]
 
 
 INPUT_SCHEMA_VERSION = "gameplay_factory_init_input.v1"
@@ -579,15 +600,16 @@ def start_factory_init(game_repo_text: str) -> FactoryInitResult:
     if _factory_state_complete(game_repo):
         return FactoryInitResult(GAMEPLAY_FACTORY_ALREADY_READY)
     if not _has_existing_game_material(game_repo):
-        return FactoryInitResult(
-            NEW_PROJECT_DEFINITION_REQUIRED,
-            warnings=[
-                "No implemented game runtime was found. Define the game before "
-                "compiling progression/action/reward adapters; initialization "
-                "must not invent the game from a blank or genre-only repo. "
-                "Route product definition through the installed idea-factory skill."
-            ],
-        )
+        _, product_errors = require_active_product_authority(game_repo)
+        if product_errors:
+            return FactoryInitResult(
+                NEW_PROJECT_DEFINITION_REQUIRED,
+                warnings=[
+                    "No implemented game runtime or active Product authority was found. "
+                    "Route product definition through the installed idea-factory skill."
+                ],
+            )
+        return probe_new_project(game_repo_text)
     return probe_repository(game_repo_text, PROBE_RELATIVE.as_posix())
 
 
@@ -1628,10 +1650,20 @@ def _build_parser() -> argparse.ArgumentParser:
     probe_parser.add_argument("--game-repo", required=True)
     probe_parser.add_argument("--max-candidates", type=int, default=200)
 
+    new_probe_parser = subparsers.add_parser("probe-new")
+    new_probe_parser.add_argument("--game-repo", required=True)
+    new_probe_parser.add_argument("--card")
+
     for command in ("compile", "check"):
         command_parser = subparsers.add_parser(command)
         command_parser.add_argument("--game-repo", required=True)
         command_parser.add_argument("--input", required=True)
+    for command in ("compile-new", "check-new"):
+        command_parser = subparsers.add_parser(command)
+        command_parser.add_argument("--game-repo", required=True)
+        command_parser.add_argument(
+            "--input", default=NEW_PROJECT_INPUT_RELATIVE.as_posix()
+        )
     return parser
 
 
@@ -1658,16 +1690,24 @@ def main(argv: list[str] | None = None) -> int:
                 PROBE_RELATIVE.as_posix(),
                 max_candidates=args.max_candidates,
             )
+        elif args.command == "probe-new":
+            result = probe_new_project(args.game_repo, card_text=args.card)
         elif args.command == "compile":
             result = compile_init(args.game_repo, args.input)
-        else:
+        elif args.command == "check":
             result = check_init(args.game_repo, args.input)
-    except FactoryInitError as error:
+        elif args.command == "compile-new":
+            result = compile_new_project(args.game_repo, args.input)
+        else:
+            result = check_new_project(args.game_repo, args.input)
+    except (FactoryInitError, NewProjectBootstrapError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
     _print_result(result)
     successful_statuses = {
         NEW_PROJECT_DEFINITION_REQUIRED,
+        NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED,
+        NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED,
         EXISTING_PROJECT_INIT_INPUT_REQUIRED,
         GAMEPLAY_FACTORY_ALREADY_READY,
         GAMEPLAY_FACTORY_READY,

@@ -142,9 +142,13 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
   runtime fix is created by this factory-side implementation;
 - open product discovery and explicit product commission are now implemented
   by the umbrella Idea Factory;
-  new-project initial progression/action/reward bootstrap remains unimplemented
-  and intentionally separate from both product definition and existing-runtime
-  reconstruction;
+- new-project initial progression/action/reward bootstrap is now implemented as
+  a separate authority-bound probe/input/compile/check path: it requires an
+  ACTIVE Product, validated Studio system, registered USER_APPROVED Card, emits
+  planned adapters and a zero-action model, and does not manufacture runtime or
+  acceptance evidence; it has synthetic adversarial coverage and its first
+  real authority/bootstrap handoff in Empire & Union, but still needs
+  portability evidence from additional projects and downstream production;
 - existing-project initialization has synthetic adversarial coverage but has
   not yet been piloted end to end on a real foreign game repo; its semantic
   reconstruction quality and token cost therefore remain unmeasured;

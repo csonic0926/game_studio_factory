@@ -7,8 +7,9 @@ Gameplay Factory has one initialization entry, two compact production
 entries, and a just-in-time UI production preflight:
 
 - [`GAMEPLAY_FACTORY_INIT_WORKFLOW.md`](GAMEPLAY_FACTORY_INIT_WORKFLOW.md)
-  routes a total-new project to game definition, reconstructs an existing repo,
-  or recognizes an already initialized repo;
+  routes a total-new project through Product/Studio/Card authority and an
+  explicit zero-runtime bootstrap, reconstructs an existing repo, or recognizes
+  an already initialized repo;
 - [`OBJECTIVE_GAMEPLAY_WORKFLOW.md`](OBJECTIVE_GAMEPLAY_WORKFLOW.md)
   produces/completes the primary progression's next objective;
 - [`GAMEPLAY_REPAIR_WORKFLOW.md`](GAMEPLAY_REPAIR_WORKFLOW.md)
@@ -46,6 +47,11 @@ Initialize before requiring adapters:
 
 - blank/genre-only input returns `NEW_PROJECT_DEFINITION_REQUIRED` and routes
   to the umbrella `idea-factory` skill;
+- an active new Product without one validated, registered, USER_APPROVED Card
+  returns `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` and continues Studio;
+- approved new-project authority returns
+  `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED` and continues the explicit
+  `compile-new` / `check-new` bootstrap;
 - an existing non-blank game repo without complete trustworthy gameplay
   adapters/model/state returns `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
 - a repo with those prerequisites returns `GAMEPLAY_FACTORY_ALREADY_READY`.

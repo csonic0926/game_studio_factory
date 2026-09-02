@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/gameplay_factory_init_result_v2.schema.json",
+  "title": "Gameplay Factory New-Project Initialization Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "initialization_mode",
+    "project_id",
+    "source_revision",
+    "source_paths",
+    "source_tree_sha256",
+    "authority_probe",
+    "approved_decision_payload_sha256",
+    "initial_objective_input_path",
+    "artifact_sha256",
+    "warnings",
+    "handoff"
+  ],
+  "properties": {
+    "schema_version": {"const": "gameplay_factory_init_result.v2"},
+    "status": {"const": "GAMEPLAY_FACTORY_READY"},
+    "initialization_mode": {"const": "NEW_PROJECT_AUTHORITY_BOOTSTRAP"},
+    "project_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "source_revision": {"type": "string", "minLength": 1},
+    "source_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_tree_sha256": {"$ref": "#/$defs/sha256"},
+    "authority_probe": {"$ref": "#/$defs/ref"},
+    "approved_decision_payload_sha256": {"$ref": "#/$defs/sha256"},
+    "initial_objective_input_path": {"type": "string", "minLength": 1},
+    "artifact_sha256": {
+      "type": "object",
+      "minProperties": 8,
+      "additionalProperties": {"$ref": "#/$defs/sha256"}
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "handoff": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

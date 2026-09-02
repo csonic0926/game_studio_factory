@@ -14,17 +14,16 @@ Normal usage from the game repo is simply:
 The skill links the repo if necessary and runs the internal initialization
 entry. It distinguishes a total-new project, an existing project joining in
 the middle, and an already initialized repo. Users do not select numbered
-cases or type the internal commands. A new project routes to the specialist Idea
-Factory for product definition; an existing project reconstructs existing
-runtime meaning without designing gameplay:
+cases or type the internal commands. A new project routes through Idea/Studio
+authority and then a bounded zero-runtime Gameplay bootstrap; an existing
+project reconstructs existing runtime meaning without designing gameplay:
 
 ```text
 init.py start
-  -> bounded repo probe
-  -> one evidence-focused GAMEPLAY_FACTORY_INIT_INPUT.json
-  -> init.py compile
+  -> new: approved-authority probe + explicit bootstrap input + compile-new
+     OR existing: bounded repo probe + evidence input + compile
   -> adapters + GAMEPLAY_DESIGN_MODEL + empty state + initial frontier
-  -> init.py check
+  -> check-new OR check
   -> GAMEPLAY_FACTORY_READY
 ```
 
@@ -105,20 +104,24 @@ acceptance remain separate downstream concerns.
 ## Initialization states
 
 - `NEW_PROJECT_DEFINITION_REQUIRED` — a blank/genre-only repo routes to
-  `idea-factory`; initial progression/action bootstrap remains distinct from
-  product definition.
+  `idea-factory`; Product definition alone is not gameplay authority.
+- `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` — an active Product still needs a
+  validated Studio gameplay system and registered `USER_APPROVED` Card.
+- `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED` — the authority probe is ready; author
+  one explicit technical/frontier input and run `compile-new` plus `check-new`.
 - `EXISTING_PROJECT_INIT_INPUT_REQUIRED` — one investigator reconstructs the
   existing progression/actions/rewards and adapters.
 - `GAMEPLAY_FACTORY_ALREADY_READY` — use objective production or gap repair.
-- `GAMEPLAY_FACTORY_READY` — the existing-project compile/check handoff is
-  complete.
+- `GAMEPLAY_FACTORY_READY` — the selected initialization compile/check handoff
+  is complete.
 
 ## Objective production — Step 1
 
 `GAMEPLAY_DESIGN_MODEL.json` stores the primary progression driver and
 action/reward vocabulary once. `prepare.py context` merges it with a small
 per-objective frontier input, then verifies game-repo ownership, progression evidence,
-locale text plus runtime wiring, the current/next objective, completion state,
+locale text plus runtime wiring or approved zero-runtime bootstrap authority,
+the current/next objective, completion state,
 and player actions with rewards. It emits:
 
 - `READY_FOR_HOW_DESIGN`
@@ -127,6 +130,12 @@ and player actions with rewards. It emits:
 
 It never treats locale-only text as implemented gameplay and never creates an
 output directory before ownership validation.
+
+For the new-project bootstrap only, the stable model contains zero implemented
+actions and the initial frontier uses `design_selection_authority` plus
+`design_completion_authority`. This yields `READY_FOR_NEW_GAMEPLAY_DESIGN` but
+does not prove runtime selection, completion, action, reward, observation, or
+acceptance. Any later model with implemented actions must use runtime evidence.
 
 ## Objective production — Steps 2 and 2.5
 

@@ -4,9 +4,9 @@ This file is the canonical entry for an AI caller. Gameplay Factory exposes
 one initialization entry, two ongoing production workflows, and one
 just-in-time UI realization preflight:
 
-1. **Factory initialization** — route a total-new project to game definition,
-   reconstruct an existing repo joining in the middle, or recognize an already
-   initialized repo.
+1. **Factory initialization** — route a total-new project through Product /
+   Studio authority and its initial progression bootstrap, reconstruct an
+   existing repo joining in the middle, or recognize an initialized repo.
 2. **Progression production** — make/complete the primary progression's next
    unit and its gameplay.
 3. **Gap repair** — close one concrete missing or broken gameplay contract
@@ -40,6 +40,10 @@ Reject:
 Determine initialization state before demanding adapters:
 
 - blank/genre-only repo: `NEW_PROJECT_DEFINITION_REQUIRED`;
+- active new Product without approved gameplay authority:
+  `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED`;
+- approved new-project authority awaiting explicit technical projection:
+  `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED`;
 - existing game missing factory-readable state:
   `EXISTING_PROJECT_INIT_INPUT_REQUIRED`;
 - complete trustworthy adapters/model/state: ordinary production.
@@ -164,6 +168,35 @@ retention system from a genre brief.
 Open/no-fit/live-direction Idea Factory states are not failures and are not
 product authority. Remain in product exploration; Gameplay must not force them
 into `IDEA_FACTORY_READY` merely to continue its own workflow.
+
+After Product is explicitly `ACTIVE`, `start` mechanically searches the Studio
+decision register for exactly one registered `USER_APPROVED` Gameplay Decision
+Card. It then routes as follows:
+
+```text
+active Product + validated Studio gameplay system + approved Card
+  -> GAMEPLAY_NEW_PROJECT_BOOTSTRAP_PROBE.json
+  -> NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED
+  -> one explicit technical/frontier input
+  -> init.py compile-new + check-new
+  -> planned adapters + zero-action model + design-authority frontier
+  -> GAMEPLAY_FACTORY_READY
+```
+
+`NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` returns to Studio/Card production; it
+does not authorize Gameplay to fill the missing authority. If multiple approved
+Cards exist, an exact `probe-new --card <path>` selection is required. The
+bootstrap input may choose planned runtime roots and synthesize a bounded
+completion statement only from cited approved Card claims. It may not claim
+implemented actions/rewards, runtime objective selection/completion,
+observation, validation success, or acceptance.
+
+The compiled `GAMEPLAY_DESIGN_MODEL.json` deliberately has
+`player_actions: []`. Its first `NEXT_GAMEPLAY_UNIT_INPUT.json` uses
+`design_selection_authority` and `design_completion_authority`; `prepare.py`
+accepts those roles only for a zero-action model and returns
+`READY_FOR_NEW_GAMEPLAY_DESIGN`. Once actions exist, ordinary runtime roles are
+mandatory again.
 
 ### Existing project joining in the middle
 

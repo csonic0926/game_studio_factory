@@ -128,6 +128,45 @@ class PrepareContextTests(unittest.TestCase):
         result = validate_materials(payload, self.game_repo)
         self.assertEqual(READY_FOR_NEW_GAMEPLAY_DESIGN, result.status)
 
+    def test_design_authority_can_bootstrap_a_zero_action_frontier(self) -> None:
+        payload = self._payload()
+        payload["player_actions"] = []
+        payload["frontier"]["evidence_refs"] = [
+            {
+                "role": "design_selection_authority",
+                "path": "progress.gd",
+                "contains": ["OBJECTIVE = 'mission.next'"],
+            },
+            {
+                "role": "design_completion_authority",
+                "path": "progress.gd",
+                "contains": ["complete_objective"],
+            },
+        ]
+        result = validate_materials(payload, self.game_repo)
+        self.assertEqual(READY_FOR_NEW_GAMEPLAY_DESIGN, result.status)
+        self.assertFalse(result.errors)
+        self.assertTrue(any("design authority only" in item for item in result.warnings))
+
+    def test_design_authority_never_substitutes_for_runtime_when_actions_exist(self) -> None:
+        payload = self._payload()
+        payload["frontier"]["evidence_refs"] = [
+            {
+                "role": "design_selection_authority",
+                "path": "progress.gd",
+                "contains": ["OBJECTIVE = 'mission.next'"],
+            },
+            {
+                "role": "design_completion_authority",
+                "path": "progress.gd",
+                "contains": ["complete_objective"],
+            },
+        ]
+        result = validate_materials(payload, self.game_repo)
+        self.assertEqual(BLOCKED_BY_MATERIAL, result.status)
+        self.assertTrue(any("runtime_selection" in item for item in result.errors))
+        self.assertTrue(any("runtime_completion" in item for item in result.errors))
+
     def test_missing_action_reward_blocks_authoring(self) -> None:
         payload = self._payload()
         payload["player_actions"][0]["rewards"] = []
