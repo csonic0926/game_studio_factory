@@ -211,6 +211,7 @@ class LinkGameRepoTest(unittest.TestCase):
             self.assertIn("`game-studio-factory` skill", body)
             self.assertIn("fresh player-facing interaction", body)
             self.assertIn("PROJECT_GAMEPLAY_PROFILE.md", body)
+            self.assertIn("PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json", body)
             self.assertIn("fresh project-standard review", body)
             self.assertIn("blind observation", body)
 
