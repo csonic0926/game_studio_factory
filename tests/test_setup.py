@@ -209,6 +209,8 @@ class LinkGameRepoTest(unittest.TestCase):
             self.assertIn("`idea-factory` skill", body)
             self.assertIn("`gameplay-factory` skill", body)
             self.assertIn("`game-studio-factory` skill", body)
+            self.assertIn("fresh player-facing interaction", body)
+            self.assertIn("blind observation", body)
 
     def test_existing_claude_md_is_untouched(self):
         with tempfile.TemporaryDirectory() as root:
@@ -300,6 +302,15 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "studio-gameplay-decision-card-reviewer",
                 "SKILL.md",
             ),
+            "studio-player-facing-interaction-reviewer": os.path.join(
+                root, "studio", "skills", "studio-player-facing-interaction-reviewer", "SKILL.md"
+            ),
+            "studio-blind-player-observer": os.path.join(
+                root, "studio", "skills", "studio-blind-player-observer", "SKILL.md"
+            ),
+            "studio-player-facing-evidence-comparison-reviewer": os.path.join(
+                root, "studio", "skills", "studio-player-facing-evidence-comparison-reviewer", "SKILL.md"
+            ),
         }
         for name, path in expected.items():
             with self.subTest(skill=name), open(path, encoding="utf-8") as handle:
@@ -321,7 +332,10 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "idea-factory",
                 "init-game-ai-factory",
                 "init-game-studio-factory",
+                "studio-blind-player-observer",
                 "studio-gameplay-decision-card-reviewer",
+                "studio-player-facing-evidence-comparison-reviewer",
+                "studio-player-facing-interaction-reviewer",
                 "studio-semantic-alignment-reviewer",
             ],
         )

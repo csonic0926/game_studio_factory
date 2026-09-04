@@ -1,0 +1,43 @@
+{
+  "schema_version": "player_facing_blind_observation.v1",
+  "observation_id": "<OBSERVATION_ID>",
+  "project_id": "<PROJECT_ID>",
+  "unit_id": "<UNIT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "build_id": "<BUILD_ID>",
+  "observation_input": {
+    "path": "<BLIND_OBSERVATION_INPUT_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "reviewer_context_id": "<FRESH_BLIND_OBSERVER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "context_attestation": {
+    "design_authority_read_before_observation": false,
+    "author_explanation_received": false,
+    "only_player_surface_materials_used": true
+  },
+  "observation": {
+    "interaction_observations": [
+      {
+        "attempt_id": "attempt.1",
+        "sequence": 1,
+        "surface_artifacts": [
+          {
+            "path": "<EXACT_BLIND_INPUT_SURFACE_ARTIFACT_PATH>",
+            "sha256": "<SHA256>"
+          }
+        ],
+        "cause": "<CAUSE_INFERRED_FROM_PLAYER_SURFACE>",
+        "goal": "<GOAL_INFERRED_FROM_PLAYER_SURFACE>",
+        "affordance": "<AFFORDANCE_PERCEIVED_ON_PLAYER_SURFACE>",
+        "input_and_judgment": "<INPUT_ATTEMPTED_AND_JUDGMENT_USED>",
+        "visible_response": "<VISIBLE_RESPONSE_OBSERVED>",
+        "persistent_change": "<PERSISTENT_CHANGE_OBSERVED>",
+        "next_motive": "<NEXT_ACTION_MOTIVE_INFERRED>",
+        "localization_readability": "<WHAT_TEXT_WAS_READABLE_OR_BLOCKED>"
+      }
+    ],
+    "lost_or_passive_points": []
+  },
+  "observed_at": "<ISO_8601_DATETIME>"
+}

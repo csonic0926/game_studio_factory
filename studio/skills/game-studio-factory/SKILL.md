@@ -81,7 +81,14 @@ language. After a new Idea commission compiles and checks, run
   use `gameplay-factory` for the minimum cycle-complete vertical slice. It must
   demonstrate two laps in which lap-one reward/state materially changes the
   lap-two decision. Do not call a result/replay sequence a loop or baseline.
-- At the approval boundary, use `gameplay/design_gate.py render-card` and show
+- At the approval boundary, first require the game-owned, current-scene
+  `PLAYER_FACING_INTERACTION_CONTRACT.json` and delegate a fresh
+  `studio-player-facing-interaction-reviewer`. The contract must decompose every
+  playable beat into visible cause/goal, concrete input and judgment, ordered
+  response, persistent change, changed next affordance, readable localization,
+  and future capture plan. Design hypotheses remain `TESTABLE_DESIGN`; a
+  falsifiable `reject if` statement is not a passed observation. Then use
+  `gameplay/design_gate.py render-card` and show
   only an alignment-reviewed, registered pending decision surface. Persist
   reconstruction, research, full specs, and review reports without dumping
   them into the user's verdict request. Before semantic alignment, spawn a
@@ -99,8 +106,15 @@ language. After a new Idea commission compiles and checks, run
   references, select one minimum cycle-complete unit, and use the specialist
   factories for production.
 - Candidate implementation complete: require revision-pinned, authority-bound
-  fresh new-gameplay acceptance with an observed two-lap cycle, an explicit
-  user playtest verdict, and regression of predecessor gameplay before
+  windowed player-facing interaction evidence from the exact build; delegate a
+  named preparer to attest that every Phase-A-visible field/path is stripped of
+  answer-bearing ids, intended answers, future knowledge, and non-Phase-A
+  material, then a different fresh `studio-blind-player-observer` with no
+  Card/code/state/author context,
+  then a different fresh
+  `studio-player-facing-evidence-comparison-reviewer` for Phase B. Require fresh
+  new-gameplay acceptance with an observed two-lap cycle, an explicit user
+  playtest verdict, and regression of predecessor gameplay before
   promotion.
 - For a Godot target, use `studio/godot_adapter.py` after implementation or
   integration to bind project discovery, deterministic scenario/replay or live
@@ -110,7 +124,8 @@ language. After a new Idea commission compiles and checks, run
   passing technical run cannot replace gameplay acceptance, the human
   playtest, or baseline regression. Require project-owned Observation Provider
   semantics and keep injected input distinct from resolved gameplay actions.
-  Never let the Adapter auto-approve a visual baseline or enable its bridge in
+  A screenshot alone, an input log alone, and tests/logs/state JSON cannot
+  satisfy the interaction-evidence chain. Never let the Adapter auto-approve a visual baseline or enable its bridge in
   a release build.
 - Requested horizon reached: deliver only the runnable build represented by the
   promoted baseline.

@@ -22,6 +22,7 @@ from gameplay.design_gate import (
     validate_card_factory_review,
 )
 from studio.tests import test_alignment, test_cycle
+from studio.tests.player_surface_fixture import write_contract_pair
 
 
 def write_json(path: Path, payload: dict) -> Path:
@@ -54,6 +55,20 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
         )
         self.card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
         self.review_path = self.objective_dir / CARD_FACTORY_REVIEW_NAME
+        (
+            self.interaction_contract_ref,
+            self.interaction_contract_review_ref,
+            self.interaction_beat_ids,
+        ) = write_contract_pair(
+            self.repo,
+            self.objective_dir,
+            project_id="sample",
+            objective_id="final-card",
+            factory_revision=self.revision,
+            product_ref=self.system["product_authority"],
+            system_ref=ref(self.repo, self.manifest_path),
+            transition_ids=list(self.system["cycle_path"]),
+        )
         self.card = self.make_card()
         write_json(self.card_path, self.card)
         self.review = self.make_review()
@@ -80,7 +95,7 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
                 }
             )
         card = {
-            "schema_version": "gameplay_decision_card.v1",
+            "schema_version": "gameplay_decision_card.v2",
             "card_id": "final-card.v1",
             "project_id": "sample",
             "objective_id": "final-card",
@@ -88,6 +103,8 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             "routing": "STUDIO_WHOLE_GAME",
             "product_authority": self.system["product_authority"],
             "studio_gameplay_system": ref(self.repo, self.manifest_path),
+            "player_facing_interaction_contract": self.interaction_contract_ref,
+            "player_facing_interaction_contract_review": self.interaction_contract_review_ref,
             "author_context_id": "card-author",
             "player_promise": {
                 "claim_id": "promise.system",
@@ -112,6 +129,7 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
                     "claim_id": "expected.meaningful-work",
                     "text": "The player can explain the judgment made before committing.",
                     "falsification_signal": "The span is understood as certain clicks or passive presentation.",
+                    "status": "TESTABLE_DESIGN",
                 }
             ],
             "decision_payload_sha256": "",
@@ -146,7 +164,7 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             for requirement_id in FINAL_CARD_REQUIREMENT_IDS
         }
         return {
-            "schema_version": "gameplay_decision_card_factory_review.v1",
+            "schema_version": "gameplay_decision_card_factory_review.v2",
             "review_id": "final-card.factory-review.v1",
             "review_role": "FINAL_CARD_FACTORY_COMPLIANCE",
             "project_id": "sample",
@@ -161,6 +179,8 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             },
             "product_authority": self.system["product_authority"],
             "studio_gameplay_system": ref(self.repo, self.manifest_path),
+            "player_facing_interaction_contract": self.interaction_contract_ref,
+            "player_facing_interaction_contract_review": self.interaction_contract_review_ref,
             "authority_inventory": {
                 "product_causal_links": [
                     self.authority_finding(
@@ -201,7 +221,11 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
                             index % len(FINAL_CARD_REQUIREMENT_IDS)
                         ]
                     ],
-                    "verdict": "PASS",
+                    "verdict": (
+                        "TESTABLE_DESIGN"
+                        if claim_id.startswith("expected.")
+                        else "PASS_DESIGN_CLAIM"
+                    ),
                     "rationale": "The exact Card claim is supported by the bound system.",
                 }
                 for index, claim_id in enumerate(claim_ids)
@@ -235,6 +259,91 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
         )
         self.assertEqual(PASS_CARD_FACTORY_REVIEW, result.status, result.errors)
         self.assertEqual([], result.errors)
+
+    def test_detailed_card_without_player_facing_contract_fails_closed(self) -> None:
+        card = copy.deepcopy(self.card)
+        card.pop("player_facing_interaction_contract")
+        card.pop("player_facing_interaction_contract_review")
+        card["decision_payload_sha256"] = decision_payload_sha256(card)
+        write_json(self.card_path, card)
+        result = validate_card_factory_review(self.repo, self.card_path, self.review_path)
+        self.assertEqual("BLOCKED", result.status)
+        self.assertTrue(any("player_facing_interaction_contract" in item for item in result.errors))
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            exit_code = design_gate_main(
+                [
+                    "register-card",
+                    "--game-repo",
+                    str(self.repo),
+                    "--card",
+                    str(self.card_path),
+                    "--factory-compliance-review",
+                    str(self.review_path),
+                    "--alignment-input",
+                    str(self.objective_dir / "missing-alignment-input.json"),
+                    "--alignment-review",
+                    str(self.objective_dir / "missing-alignment-review.json"),
+                    "--recorded-at",
+                    "2026-09-04T12:00:00Z",
+                ]
+            )
+        self.assertEqual(2, exit_code)
+        self.assertIn("player_facing_interaction_contract", stderr.getvalue())
+
+    def test_design_stage_hypothesis_cannot_be_marked_pass(self) -> None:
+        review = copy.deepcopy(self.review)
+        hypothesis = next(
+            item for item in review["claim_inventory"]
+            if item["claim_id"] == "expected.meaningful-work"
+        )
+        hypothesis["verdict"] = "PASS"
+        write_json(self.review_path, review)
+        result = validate_card_factory_review(self.repo, self.card_path, self.review_path)
+        self.assertEqual("BLOCKED", result.status)
+        self.assertTrue(any("cannot be labelled PASS or ACCEPTED" in item for item in result.errors))
+
+    def test_v1_card_is_readable_only_for_explicit_historical_check(self) -> None:
+        historical_revision = "1" * 40
+        legacy = copy.deepcopy(self.card)
+        legacy["schema_version"] = "gameplay_decision_card.v1"
+        legacy["factory_revision"] = historical_revision
+        legacy["routing"] = "DIRECT_SPECIALIST"
+        legacy["product_authority"] = {"path": "", "sha256": ""}
+        legacy["studio_gameplay_system"] = {"path": "", "sha256": ""}
+        legacy.pop("player_facing_interaction_contract")
+        legacy.pop("player_facing_interaction_contract_review")
+        for hypothesis in legacy["validation_hypotheses"]:
+            hypothesis.pop("status")
+        legacy["decision_payload_sha256"] = decision_payload_sha256(legacy)
+        write_json(self.card_path, legacy)
+
+        active_errors: list[str] = []
+        _validate_decision_card(
+            game_repo=self.repo,
+            card_path=self.card_path,
+            project_id="sample",
+            objective_id="final-card",
+            factory_revision=historical_revision,
+            context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
+            errors=active_errors,
+            pre_human_review=True,
+        )
+        self.assertTrue(any("historical checks" in item for item in active_errors))
+
+        historical_errors: list[str] = []
+        _validate_decision_card(
+            game_repo=self.repo,
+            card_path=self.card_path,
+            project_id="sample",
+            objective_id="final-card",
+            factory_revision=historical_revision,
+            context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
+            errors=historical_errors,
+            pre_human_review=True,
+            allow_legacy_historical=True,
+        )
+        self.assertEqual([], historical_errors)
 
     def test_missing_claim_inventory_entry_fails_closed(self) -> None:
         review = copy.deepcopy(self.review)

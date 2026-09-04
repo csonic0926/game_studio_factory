@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/player_facing_blind_observation.schema.json",
+  "title": "Blind Player Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "observation_id",
+    "project_id",
+    "unit_id",
+    "game_revision",
+    "build_id",
+    "observation_input",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "context_attestation",
+    "observation",
+    "observed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "player_facing_blind_observation.v1"
+    },
+    "observation_id": {
+      "$ref": "#/$defs/id"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "unit_id": {
+      "$ref": "#/$defs/id"
+    },
+    "game_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "build_id": {
+      "$ref": "#/$defs/id"
+    },
+    "observation_input": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "reviewer_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "reviewer_freshness": {
+      "const": "FRESH"
+    },
+    "context_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "design_authority_read_before_observation",
+        "author_explanation_received",
+        "only_player_surface_materials_used"
+      ],
+      "properties": {
+        "design_authority_read_before_observation": {
+          "const": false
+        },
+        "author_explanation_received": {
+          "const": false
+        },
+        "only_player_surface_materials_used": {
+          "const": true
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interaction_observations",
+        "lost_or_passive_points"
+      ],
+      "properties": {
+        "interaction_observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/interaction_observation"
+          }
+        },
+        "lost_or_passive_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "observed_at": {
+      "$ref": "#/$defs/text"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "interaction_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attempt_id",
+        "sequence",
+        "surface_artifacts",
+        "cause",
+        "goal",
+        "affordance",
+        "input_and_judgment",
+        "visible_response",
+        "persistent_change",
+        "next_motive",
+        "localization_readability"
+      ],
+      "properties": {
+        "attempt_id": {
+          "type": "string",
+          "pattern": "^attempt\\.[1-9][0-9]*$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "surface_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/path_hash"
+          }
+        },
+        "cause": {
+          "$ref": "#/$defs/text"
+        },
+        "goal": {
+          "$ref": "#/$defs/text"
+        },
+        "affordance": {
+          "$ref": "#/$defs/text"
+        },
+        "input_and_judgment": {
+          "$ref": "#/$defs/text"
+        },
+        "visible_response": {
+          "$ref": "#/$defs/text"
+        },
+        "persistent_change": {
+          "$ref": "#/$defs/text"
+        },
+        "next_motive": {
+          "$ref": "#/$defs/text"
+        },
+        "localization_readability": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    }
+  }
+}

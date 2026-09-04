@@ -23,6 +23,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+try:  # Studio acceptance consumes the exact approved specialist Card surface.
+    from gameplay.design_gate import (
+        CARD_FACTORY_REVIEW_AUTHORITY_ID,
+        decision_payload_sha256,
+    )
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from gameplay.design_gate import (  # type: ignore[no-redef]
+        CARD_FACTORY_REVIEW_AUTHORITY_ID,
+        decision_payload_sha256,
+    )
+
 try:  # Package import in tests; direct script path below.
     from studio.cycle import (
         READY as STUDIO_GAMEPLAY_SYSTEM_READY,
@@ -43,6 +55,25 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from studio.product import require_active_product_authority  # type: ignore[no-redef]
 
+try:
+    from studio.player_surface import (
+        validate_interaction_contract,
+        validate_interaction_contract_review,
+        validate_runtime_player_surface_chain,
+    )
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.player_surface import (  # type: ignore[no-redef]
+        validate_interaction_contract,
+        validate_interaction_contract_review,
+        validate_runtime_player_surface_chain,
+    )
+
+try:
+    from studio.alignment import require_registered_card
+except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from studio.alignment import require_registered_card  # type: ignore[no-redef]
 
 FACTORY_ROOT = Path(__file__).resolve().parents[1]
 ADMISSIONS_ROOT = Path("design/studio/admissions")
@@ -68,14 +99,16 @@ SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 REVISION_PATTERN = re.compile(r"^[0-9a-f]{7,64}$")
 SPECIALISTS = {"idea", "gameplay", "story", "asset", "sound", "repo_production"}
 
-ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v3"
-ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v2"
+ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v4"
+PREVIOUS_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v3"
+OLDER_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v2"
+ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v3"
+PREVIOUS_ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v2"
+OLDER_ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v1"
 WORKFLOW_COMPLETION_VERSION = "studio_workflow_completion.v2"
 BASELINE_VERSION = "accepted_playable_baseline.v3"
 RUN_STATE_VERSION = "studio_run_state.v3"
 LEGACY_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v1"
-PREVIOUS_ACCEPTANCE_REVIEW_VERSION = "gameplay_acceptance_review.v2"
-PREVIOUS_ACCEPTANCE_INPUT_VERSION = "gameplay_acceptance_input.v1"
 PREVIOUS_BASELINE_VERSION = "accepted_playable_baseline.v2"
 PREVIOUS_RUN_STATE_VERSION = "studio_run_state.v2"
 LEGACY_WORKFLOW_COMPLETION_VERSION = "studio_workflow_completion.v1"
@@ -322,6 +355,124 @@ def _validate_ref(
 
 def _ref_for_file(game_repo: Path, path: Path) -> dict[str, str]:
     return {"path": _relative(game_repo, path), "sha256": _sha256_file(path)}
+
+
+def _load_bound_json(
+    game_repo: Path,
+    value: Any,
+    label: str,
+    errors: list[str],
+) -> tuple[dict[str, str], dict[str, Any]]:
+    ref = _validate_ref(game_repo, value, label, errors)
+    if not ref["path"]:
+        return ref, {}
+    try:
+        path = _resolve_persisted_path(game_repo, ref["path"], must_exist=True)
+        return ref, _load_json(path, label)
+    except BaselineAdmissionError as error:
+        errors.append(str(error))
+        return ref, {}
+
+
+def _registered_card_design_context_ids(
+    game_repo: Path,
+    card_path: Path,
+    register_entry: dict[str, Any],
+    errors: list[str],
+) -> set[str]:
+    """Collect contexts that already saw answer-bearing Card/design authority."""
+
+    contexts: set[str] = set()
+    _, alignment_input = _load_bound_json(
+        game_repo,
+        register_entry.get("alignment_input"),
+        "registered Card alignment_input",
+        errors,
+    )
+    _, alignment_review = _load_bound_json(
+        game_repo,
+        register_entry.get("alignment_review"),
+        "registered Card alignment_review",
+        errors,
+    )
+    for payload, field in (
+        (alignment_input, "author_context_id"),
+        (alignment_review, "reviewer_context_id"),
+    ):
+        value = payload.get(field)
+        if isinstance(value, str) and value:
+            contexts.add(value)
+
+    authorities = alignment_input.get("active_authorities")
+    matching_reviews = [
+        item
+        for item in authorities
+        if isinstance(authorities, list)
+        and isinstance(item, dict)
+        and item.get("authority_id") == CARD_FACTORY_REVIEW_AUTHORITY_ID
+        and item.get("authority_kind") == "REPO_EVIDENCE"
+    ] if isinstance(authorities, list) else []
+    if len(matching_reviews) != 1:
+        errors.append(
+            "registered Card alignment input must bind exactly one final Card "
+            f"Factory review authority {CARD_FACTORY_REVIEW_AUTHORITY_ID}"
+        )
+    else:
+        review_ref, final_review = _load_bound_json(
+            game_repo,
+            matching_reviews[0].get("artifact"),
+            "registered Card final Factory review",
+            errors,
+        )
+        expected_review_path = card_path.with_name(
+            "GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json"
+        ).resolve()
+        if review_ref.get("path"):
+            try:
+                actual_review_path = _resolve_persisted_path(
+                    game_repo, review_ref["path"], must_exist=True
+                )
+            except BaselineAdmissionError:
+                actual_review_path = None
+            if actual_review_path != expected_review_path:
+                errors.append(
+                    "registered Card alignment input binds a non-canonical final "
+                    "Card Factory review"
+                )
+        reviewer = final_review.get("reviewer_context_id")
+        if isinstance(reviewer, str) and reviewer:
+            contexts.add(reviewer)
+
+    objective_path = card_path.with_name("OBJECTIVE_GAMEPLAY.md")
+    if objective_path.is_file():
+        match = re.search(
+            r"^- Author context id:\s*`([^`]+)`\s*$",
+            objective_path.read_text(encoding="utf-8"),
+            re.MULTILINE,
+        )
+        if match:
+            contexts.add(match.group(1))
+    design_verdict_path = card_path.with_name("GAMEPLAY_DESIGN_VERDICT.json")
+    if design_verdict_path.is_file():
+        try:
+            design_verdict = _load_json(design_verdict_path, "gameplay design verdict")
+        except BaselineAdmissionError as error:
+            errors.append(str(error))
+            design_verdict = {}
+        review_refs = design_verdict.get("conformance_reviews")
+        if isinstance(review_refs, dict):
+            for role in ("card_to_spec", "spec_to_card"):
+                _, conformance = _load_bound_json(
+                    game_repo,
+                    review_refs.get(role),
+                    f"gameplay design verdict {role} review",
+                    errors,
+                )
+                reviewer = conformance.get("reviewer_context_id")
+                if isinstance(reviewer, str) and reviewer:
+                    contexts.add(reviewer)
+    contexts.discard("")
+    return contexts
 
 
 def _current_revision(game_repo: Path) -> str:
@@ -640,11 +791,11 @@ def _validate_acceptance_review(
             "acceptance_input", "evidence_paths", "observed_complete_loop",
             "blocking_findings", "reviewed_at",
         }
-    elif schema_version == PREVIOUS_ACCEPTANCE_REVIEW_VERSION:
+    elif schema_version == OLDER_ACCEPTANCE_REVIEW_VERSION:
         if not allow_legacy_historical:
             errors.append(
                 f"acceptance review {unit_id} is historical-only; new admission requires "
-                f"{ACCEPTANCE_REVIEW_VERSION} with an observed two-lap cycle"
+                f"{ACCEPTANCE_REVIEW_VERSION} with player-facing interaction evidence"
             )
         required = {
             "schema_version", "review_id", "project_id", "unit_id", "game_revision",
@@ -653,7 +804,12 @@ def _validate_acceptance_review(
             "acceptance_input", "human_playtest", "evidence_paths",
             "observed_complete_loop", "blocking_findings", "reviewed_at",
         }
-    else:
+    elif schema_version == PREVIOUS_ACCEPTANCE_REVIEW_VERSION:
+        if not allow_legacy_historical:
+            errors.append(
+                f"acceptance review {unit_id} is historical-only; new admission requires "
+                f"{ACCEPTANCE_REVIEW_VERSION} with player-facing interaction evidence"
+            )
         required = {
             "schema_version", "review_id", "project_id", "unit_id", "game_revision",
             "build_id", "factory_revision", "experience_authority",
@@ -662,9 +818,19 @@ def _validate_acceptance_review(
             "observed_complete_loop", "observed_two_lap_cycle",
             "blocking_findings", "reviewed_at",
         }
+    else:
+        required = {
+            "schema_version", "review_id", "project_id", "unit_id", "game_revision",
+            "build_id", "factory_revision", "experience_authority",
+            "reviewer_context_id", "reviewer_freshness", "verdict",
+            "acceptance_input", "player_facing_evidence", "human_playtest",
+            "evidence_paths", "observed_complete_loop", "observed_two_lap_cycle",
+            "blocking_findings", "reviewed_at",
+        }
     _require_keys(review, f"acceptance review {unit_id}", required, errors)
     if schema_version not in {
         LEGACY_ACCEPTANCE_REVIEW_VERSION,
+        OLDER_ACCEPTANCE_REVIEW_VERSION,
         PREVIOUS_ACCEPTANCE_REVIEW_VERSION,
         ACCEPTANCE_REVIEW_VERSION,
     }:
@@ -698,8 +864,31 @@ def _validate_acceptance_review(
         "cycle_id": "",
         "feedback_state_ids": [],
     }
-    if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
-        if review.get("factory_revision") != factory_revision:
+    bound_factory_revision = factory_revision
+    if schema_version in {
+        OLDER_ACCEPTANCE_REVIEW_VERSION,
+        PREVIOUS_ACCEPTANCE_REVIEW_VERSION,
+        ACCEPTANCE_REVIEW_VERSION,
+    }:
+        recorded_factory_revision = _require_text(
+            review.get("factory_revision"),
+            f"acceptance review {unit_id}.factory_revision",
+            errors,
+        )
+        if (
+            recorded_factory_revision
+            and REVISION_PATTERN.fullmatch(recorded_factory_revision) is None
+        ):
+            errors.append(
+                f"acceptance review {unit_id}.factory_revision must be a Git revision"
+            )
+        historical_version = schema_version in {
+            OLDER_ACCEPTANCE_REVIEW_VERSION,
+            PREVIOUS_ACCEPTANCE_REVIEW_VERSION,
+        }
+        if historical_version and allow_legacy_historical:
+            bound_factory_revision = recorded_factory_revision
+        elif recorded_factory_revision != factory_revision:
             errors.append(
                 f"acceptance review {unit_id} factory_revision does not match the active Factory"
             )
@@ -721,9 +910,11 @@ def _validate_acceptance_review(
             unit_id=unit_id,
             game_revision=game_revision,
             build_id=build_id,
-            factory_revision=factory_revision,
+            factory_revision=bound_factory_revision,
             authority_ref=authority_ref,
             product_authority_ref=product_authority_ref,
+            production_context_ids=production_context_ids,
+            acceptance_reviewer_context_id=reviewer,
             allow_legacy_historical=allow_legacy_historical,
             errors=errors,
         )
@@ -735,7 +926,7 @@ def _validate_acceptance_review(
                 f"acceptance review {unit_id} requires {ACCEPTANCE_INPUT_VERSION}"
             )
         human_required = {"status", "verdict_owner", "verdict_source", "accepted_at"}
-        if schema_version == ACCEPTANCE_REVIEW_VERSION:
+        if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
             human_required.add("verdict_payload_sha256")
         human = _require_keys(
             review.get("human_playtest"),
@@ -756,13 +947,13 @@ def _validate_acceptance_review(
             f"acceptance review {unit_id}.human_playtest.verdict_source",
             errors,
         )
-        if schema_version == ACCEPTANCE_REVIEW_VERSION:
+        if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
             expected_payload_sha = human_playtest_payload_sha256(
                 project_id=project_id,
                 unit_id=unit_id,
                 game_revision=game_revision,
                 build_id=build_id,
-                factory_revision=factory_revision,
+                factory_revision=bound_factory_revision,
                 experience_authority=authority_ref,
                 acceptance_input=acceptance_input_ref,
                 studio_gameplay_system=input_binding.get(
@@ -789,6 +980,31 @@ def _validate_acceptance_review(
             errors,
         )
         human_playtest_status = str(human.get("status", ""))
+        if schema_version == ACCEPTANCE_REVIEW_VERSION:
+            review_chain = _require_keys(
+                review.get("player_facing_evidence"),
+                f"acceptance review {unit_id}.player_facing_evidence",
+                {
+                    "runtime_interaction_evidence", "blind_observation_input",
+                    "blind_observation", "comparison_review",
+                },
+                errors,
+            )
+            for key in (
+                "runtime_interaction_evidence", "blind_observation_input",
+                "blind_observation", "comparison_review",
+            ):
+                actual = _validate_ref(
+                    game_repo,
+                    review_chain.get(key),
+                    f"acceptance review {unit_id}.player_facing_evidence.{key}",
+                    errors,
+                )
+                if actual != input_binding.get("player_facing_evidence", {}).get(key):
+                    errors.append(
+                        f"acceptance review {unit_id} player-facing {key} does not "
+                        "bind the exact acceptance-input evidence"
+                    )
     evidence = review.get("evidence_paths")
     if not isinstance(evidence, list) or not evidence:
         errors.append(f"acceptance review {unit_id}.evidence_paths must not be empty")
@@ -805,7 +1021,7 @@ def _validate_acceptance_review(
     _require_string_list(loop.get("actions"), f"acceptance review {unit_id}.observed_complete_loop.actions", errors)
     _require_text(loop.get("consequences"), f"acceptance review {unit_id}.observed_complete_loop.consequences", errors)
     _require_text(loop.get("completion"), f"acceptance review {unit_id}.observed_complete_loop.completion", errors)
-    if schema_version == ACCEPTANCE_REVIEW_VERSION:
+    if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}:
         _validate_two_lap_cycle_observation(
             review.get("observed_two_lap_cycle"),
             f"acceptance review {unit_id}.observed_two_lap_cycle",
@@ -827,7 +1043,7 @@ def _validate_acceptance_review(
         "cycle_id": input_binding.get("cycle_id", ""),
         "cycle_status": (
             "ACCEPTED_TWO_LAP_CYCLE"
-            if schema_version == ACCEPTANCE_REVIEW_VERSION
+            if schema_version in {PREVIOUS_ACCEPTANCE_REVIEW_VERSION, ACCEPTANCE_REVIEW_VERSION}
             else "PREDECESSOR_CYCLE_UNPROVEN"
         ),
         "_review_schema_version": schema_version,
@@ -926,12 +1142,12 @@ def _validate_acceptance_cycle_manifest(
     factory_revision: str,
     product_authority_ref: dict[str, str],
     errors: list[str],
-) -> tuple[dict[str, str], str, list[str]]:
+) -> tuple[dict[str, str], str, list[str], set[str]]:
     manifest_ref = _validate_ref(
         game_repo, value, "gameplay acceptance Studio gameplay system", errors
     )
     if not manifest_ref["path"]:
-        return manifest_ref, "", []
+        return manifest_ref, "", [], set()
     try:
         result = validate_gameplay_system(
             str(game_repo),
@@ -940,7 +1156,7 @@ def _validate_acceptance_cycle_manifest(
         )
     except CycleValidationError as error:
         errors.append(f"cannot validate acceptance Studio gameplay system: {error}")
-        return manifest_ref, "", []
+        return manifest_ref, "", [], set()
     if result.status != STUDIO_GAMEPLAY_SYSTEM_READY:
         errors.extend(f"acceptance Studio gameplay system: {item}" for item in result.errors)
     if (
@@ -959,15 +1175,40 @@ def _validate_acceptance_cycle_manifest(
         "acceptance Studio manifest.gameplay_system",
         errors,
     )
+    design_context_ids: set[str] = set()
     if system_ref["path"]:
         system = _load_json(
             game_repo / system_ref["path"], "acceptance Studio gameplay system"
         )
+        if isinstance(system.get("author_context_id"), str):
+            design_context_ids.add(system["author_context_id"])
         if system.get("product_authority") != product_authority_ref:
             errors.append(
                 "acceptance Studio gameplay system product authority differs from admission"
             )
-    return manifest_ref, result.cycle_id, result.feedback_state_ids
+    reviews = manifest.get("reviews")
+    if isinstance(reviews, dict):
+        for key, value in reviews.items():
+            review_ref = _validate_ref(
+                game_repo,
+                value,
+                f"acceptance Studio manifest.reviews.{key}",
+                errors,
+            )
+            if review_ref["path"]:
+                review = _load_json(
+                    game_repo / review_ref["path"],
+                    f"acceptance Studio gameplay system {key} review",
+                )
+                if isinstance(review.get("reviewer_context_id"), str):
+                    design_context_ids.add(review["reviewer_context_id"])
+    design_context_ids.discard("")
+    return (
+        manifest_ref,
+        result.cycle_id,
+        result.feedback_state_ids,
+        design_context_ids,
+    )
 
 
 def _validate_gameplay_acceptance_input(
@@ -982,6 +1223,8 @@ def _validate_gameplay_acceptance_input(
     factory_revision: str,
     authority_ref: dict[str, str],
     product_authority_ref: dict[str, str],
+    production_context_ids: set[str],
+    acceptance_reviewer_context_id: str,
     allow_legacy_historical: bool,
     errors: list[str],
 ) -> dict[str, Any]:
@@ -990,6 +1233,7 @@ def _validate_gameplay_acceptance_input(
         "studio_gameplay_system": _empty_ref(),
         "cycle_id": "",
         "feedback_state_ids": [],
+        "player_facing_evidence": {},
     }
     if not ref["path"]:
         return empty
@@ -1008,10 +1252,15 @@ def _validate_gameplay_acceptance_input(
         "game_revision", "build_id", "factory_revision", "experience_authority",
         "expected_player_experience", "playtest_questions", "non_claims", "prepared_at",
     }
-    if schema_version == ACCEPTANCE_INPUT_VERSION:
+    if schema_version in {PREVIOUS_ACCEPTANCE_INPUT_VERSION, ACCEPTANCE_INPUT_VERSION}:
         required |= {"studio_gameplay_system", "cycle_id", "cycle_acceptance"}
+    if schema_version == ACCEPTANCE_INPUT_VERSION:
+        required |= {
+            "decision_card", "player_facing_interaction_contract",
+            "player_facing_interaction_contract_review", "player_facing_evidence",
+        }
     _require_keys(payload, f"gameplay acceptance input {unit_id}", required, errors)
-    if schema_version == PREVIOUS_ACCEPTANCE_INPUT_VERSION:
+    if schema_version in {OLDER_ACCEPTANCE_INPUT_VERSION, PREVIOUS_ACCEPTANCE_INPUT_VERSION}:
         if not allow_legacy_historical:
             errors.append(
                 f"gameplay acceptance input {unit_id} is historical-only; new admission "
@@ -1078,10 +1327,10 @@ def _validate_gameplay_acceptance_input(
         f"gameplay acceptance input {unit_id}.prepared_at",
         errors,
     )
-    if schema_version != ACCEPTANCE_INPUT_VERSION:
+    if schema_version not in {PREVIOUS_ACCEPTANCE_INPUT_VERSION, ACCEPTANCE_INPUT_VERSION}:
         return {**empty, "schema_version": str(schema_version or "")}
 
-    manifest_ref, actual_cycle_id, feedback_state_ids = (
+    manifest_ref, actual_cycle_id, feedback_state_ids, system_context_ids = (
         _validate_acceptance_cycle_manifest(
             game_repo,
             payload.get("studio_gameplay_system"),
@@ -1106,11 +1355,179 @@ def _validate_gameplay_acceptance_input(
         set(feedback_state_ids),
         errors,
     )
+    player_facing_evidence: dict[str, Any] = {}
+    if schema_version == ACCEPTANCE_INPUT_VERSION:
+        card_ref = _validate_ref(
+            game_repo,
+            payload.get("decision_card"),
+            f"gameplay acceptance input {unit_id}.decision_card",
+            errors,
+        )
+        contract_ref = _validate_ref(
+            game_repo,
+            payload.get("player_facing_interaction_contract"),
+            f"gameplay acceptance input {unit_id}.player_facing_interaction_contract",
+            errors,
+        )
+        contract_review_ref = _validate_ref(
+            game_repo,
+            payload.get("player_facing_interaction_contract_review"),
+            f"gameplay acceptance input {unit_id}.player_facing_interaction_contract_review",
+            errors,
+        )
+        card_payload = _load_json(game_repo / card_ref["path"], "gameplay decision card") if card_ref["path"] else {}
+        if card_payload.get("schema_version") != "gameplay_decision_card.v2":
+            errors.append(
+                f"gameplay acceptance input {unit_id} requires gameplay_decision_card.v2"
+            )
+        if card_payload.get("project_id") != project_id or card_payload.get("factory_revision") != factory_revision:
+            errors.append(f"gameplay acceptance input {unit_id} decision card identity does not match")
+        if card_payload.get("objective_id") != unit_id:
+            errors.append(
+                f"gameplay acceptance input {unit_id} decision card objective_id "
+                "does not match the admitted unit"
+            )
+        registered_design_context_ids: set[str] = set()
+        if card_payload.get("routing") != "STUDIO_WHOLE_GAME":
+            errors.append(
+                f"gameplay acceptance input {unit_id} requires a Studio whole-game Card"
+            )
+        else:
+            register_entry = require_registered_card(
+                game_repo,
+                game_repo / card_ref["path"],
+                required_state="USER_APPROVED",
+                errors=errors,
+            )
+            if register_entry:
+                registered_design_context_ids = _registered_card_design_context_ids(
+                    game_repo,
+                    game_repo / card_ref["path"],
+                    register_entry,
+                    errors,
+                )
+        card_payload_sha = decision_payload_sha256(card_payload)
+        if card_payload.get("decision_payload_sha256") != card_payload_sha:
+            errors.append(
+                f"gameplay acceptance input {unit_id} decision Card payload SHA "
+                "does not match its material surface"
+            )
+        if card_payload.get("human_verdict", {}).get("status") != "USER_APPROVED":
+            errors.append(f"gameplay acceptance input {unit_id} decision card must be USER_APPROVED")
+        elif card_payload.get("human_verdict", {}).get("source_text") != (
+            f"USER_APPROVED {card_payload_sha}"
+        ):
+            errors.append(
+                f"gameplay acceptance input {unit_id} decision Card human verdict "
+                "does not bind the exact payload"
+            )
+        if card_payload.get("player_facing_interaction_contract") != contract_ref:
+            errors.append(f"gameplay acceptance input {unit_id} contract differs from the approved Card")
+        if card_payload.get("player_facing_interaction_contract_review") != contract_review_ref:
+            errors.append(f"gameplay acceptance input {unit_id} contract review differs from the approved Card")
+        if card_payload.get("studio_gameplay_system") != manifest_ref:
+            errors.append(f"gameplay acceptance input {unit_id} Card binds a different Studio system")
+        hypotheses = card_payload.get("validation_hypotheses", [])
+        hypothesis_ids: set[str] = set()
+        if not isinstance(hypotheses, list):
+            errors.append(f"gameplay acceptance input {unit_id} Card hypotheses must be an array")
+            hypotheses = []
+        for index, item in enumerate(hypotheses):
+            if not isinstance(item, dict) or item.get("status") != "TESTABLE_DESIGN":
+                errors.append(
+                    f"gameplay acceptance input {unit_id} Card hypothesis[{index}] "
+                    "must remain TESTABLE_DESIGN until observed"
+                )
+            elif isinstance(item.get("claim_id"), str):
+                hypothesis_ids.add(item["claim_id"])
+        transition_ids = [
+            str(item).removeprefix("cycle.")
+            for item in (
+                entry.get("claim_id", "")
+                for entry in card_payload.get("core_cycle", [])
+                if isinstance(entry, dict)
+            )
+        ]
+        contract_binding = validate_interaction_contract(
+            game_repo,
+            contract_ref,
+            project_id=project_id,
+            objective_id=str(card_payload.get("objective_id", "")),
+            factory_revision=factory_revision,
+            product_authority=product_authority_ref,
+            studio_gameplay_system=manifest_ref,
+            expected_transition_ids=transition_ids,
+            errors=errors,
+        )
+        if contract_binding.get("payload", {}).get("target_player") != expected.get(
+            "target_player"
+        ):
+            errors.append(
+                f"gameplay acceptance input {unit_id} target player differs from "
+                "the interaction contract"
+            )
+        contract_review_binding = validate_interaction_contract_review(
+            game_repo,
+            contract_review_ref,
+            contract=contract_binding,
+            product_authority=product_authority_ref,
+            studio_gameplay_system=manifest_ref,
+            forbidden_context_ids={str(card_payload.get("author_context_id", ""))},
+            errors=errors,
+        )
+        raw_chain = _require_keys(
+            payload.get("player_facing_evidence"),
+            f"gameplay acceptance input {unit_id}.player_facing_evidence",
+            {
+                "runtime_interaction_evidence", "blind_observation_input",
+                "blind_observation", "comparison_review",
+            },
+            errors,
+        )
+        player_facing_evidence = validate_runtime_player_surface_chain(
+            game_repo,
+            raw_chain,
+            project_id=project_id,
+            unit_id=unit_id,
+            game_revision=game_revision,
+            build_id=build_id,
+            factory_revision=factory_revision,
+            expected_contract_ref=contract_ref,
+            expected_contract_review_ref=contract_review_ref,
+            expected_card_ref=card_ref,
+            expected_system_ref=manifest_ref,
+            expected_beat_ids=set(contract_binding.get("beat_ids", set())),
+            expected_answer_bearing_design_ids=set(
+                contract_binding.get("answer_bearing_design_ids", set())
+            ),
+            expected_target_locale=str(contract_binding.get("target_locale", "")),
+            expected_player_entry_knowledge=list(
+                contract_binding.get("player_entry_knowledge", [])
+            ),
+            hypothesis_ids=hypothesis_ids,
+            design_context_ids={
+                str(card_payload.get("author_context_id", "")),
+                str(contract_binding.get("author_context_id", "")),
+                str(contract_review_binding.get("reviewer_context_id", "")),
+                *system_context_ids,
+                *registered_design_context_ids,
+            } - {""},
+            production_context_ids=production_context_ids,
+            acceptance_reviewer_context_id=acceptance_reviewer_context_id,
+            errors=errors,
+        )
     return {
         "schema_version": schema_version,
         "studio_gameplay_system": manifest_ref,
         "cycle_id": cycle_id,
         "feedback_state_ids": feedback_state_ids,
+        "player_facing_evidence": {
+            key: player_facing_evidence.get(key, {})
+            for key in (
+                "runtime_interaction_evidence", "blind_observation_input",
+                "blind_observation", "comparison_review",
+            )
+        },
     }
 
 
@@ -1661,7 +2078,7 @@ def _validate_admission(
     }
     legacy_admission_material = LEGACY_ACCEPTANCE_REVIEW_VERSION in admitted_review_versions
     previous_admission_material = (
-        PREVIOUS_ACCEPTANCE_REVIEW_VERSION in admitted_review_versions
+        OLDER_ACCEPTANCE_REVIEW_VERSION in admitted_review_versions
     )
     if len(admitted_ids) != len(set(admitted_ids)):
         errors.append("admitted_units must not contain duplicate unit_id values")

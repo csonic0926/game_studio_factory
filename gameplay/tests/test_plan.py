@@ -11,10 +11,12 @@ from gameplay.design_gate import (
 )
 from gameplay.plan import (
     BLOCKED_BY_PLAN_GAP,
+    HISTORICAL_PLAN_READABLE,
     READY_FOR_EXECUTION,
     PlanningError,
     validate_production_plan,
 )
+from studio.tests.player_surface_fixture import write_contract_pair
 
 
 class ProductionPlanValidationTests(unittest.TestCase):
@@ -147,8 +149,18 @@ No prerequisite plan.
     ) -> None:
         effective_factory_revision = factory_revision or self.factory_revision
         effective_objective_sha = objective_sha256 or self.objective_sha256
+        contract_ref, contract_review_ref, _ = write_contract_pair(
+            self.game_repo,
+            self.objective_dir,
+            project_id="sample",
+            objective_id="mission.next",
+            factory_revision=effective_factory_revision,
+            product_ref={"path": "", "sha256": ""},
+            system_ref={"path": "", "sha256": ""},
+            transition_ids=["read", "commit", "feedback"],
+        )
         card = {
-            "schema_version": "gameplay_decision_card.v1",
+            "schema_version": "gameplay_decision_card.v2",
             "card_id": "mission.next.card.1",
             "project_id": "sample",
             "objective_id": "mission.next",
@@ -156,6 +168,8 @@ No prerequisite plan.
             "routing": "DIRECT_SPECIALIST",
             "product_authority": {"path": "", "sha256": ""},
             "studio_gameplay_system": {"path": "", "sha256": ""},
+            "player_facing_interaction_contract": contract_ref,
+            "player_facing_interaction_contract_review": contract_review_ref,
             "author_context_id": "card-author",
             "player_promise": {
                 "claim_id": "promise.route-choice",
@@ -172,7 +186,14 @@ No prerequisite plan.
             "red_lines": [
                 {"claim_id": "redline.automatic", "text": "The gate must not choose a route automatically."}
             ],
-            "validation_hypotheses": [],
+            "validation_hypotheses": [
+                {
+                    "claim_id": "hypothesis.route-readable",
+                    "text": "A first-time player can distinguish the two routes.",
+                    "falsification_signal": "A blind player cannot explain the route difference.",
+                    "status": "TESTABLE_DESIGN",
+                }
+            ],
             "decision_payload_sha256": "",
             "human_verdict": {
                 "status": human_verdict,
@@ -200,9 +221,10 @@ No prerequisite plan.
             "cycle.feedback": ["expected.failure_recovery"],
             "commitment.two-routes": ["addition.1"],
             "redline.automatic": ["expected.must_not_become"],
+            "hypothesis.route-readable": ["expected.target_player"],
         }
         card_to_spec = {
-            "schema_version": "gameplay_design_conformance_review.v1",
+            "schema_version": "gameplay_design_conformance_review.v2",
             "review_id": "mission.next.card-to-spec.1",
             "review_role": "CARD_TO_SPEC",
             "project_id": "sample",
@@ -216,7 +238,15 @@ No prerequisite plan.
             "reviewer_context_id": "card-to-spec-reviewer",
             "reviewer_freshness": "FRESH",
             "claim_coverage": [
-                {"claim_id": claim_id, "spec_refs": refs, "verdict": "PASS"}
+                {
+                    "claim_id": claim_id,
+                    "spec_refs": refs,
+                    "verdict": (
+                        "TESTABLE_DESIGN"
+                        if claim_id.startswith("hypothesis.")
+                        else "PASS_DESIGN_CLAIM"
+                    ),
+                }
                 for claim_id, refs in mapping.items()
             ],
             "spec_material_inventory": [],
@@ -238,7 +268,7 @@ No prerequisite plan.
             for spec_ref in spec_refs:
                 reverse.setdefault(spec_ref, []).append(claim_id)
         spec_to_card = {
-            "schema_version": "gameplay_design_conformance_review.v1",
+            "schema_version": "gameplay_design_conformance_review.v2",
             "review_id": "mission.next.spec-to-card.1",
             "review_role": "SPEC_TO_CARD",
             "project_id": "sample",
@@ -883,6 +913,36 @@ No prerequisite plan.
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("exact verdict token" in error for error in result.errors))
 
+    def test_design_conformance_hypothesis_cannot_be_marked_pass(self) -> None:
+        review_path = self.objective_dir / "GAMEPLAY_CONFORMANCE_CARD_TO_SPEC.json"
+        review = json.loads(review_path.read_text())
+        hypothesis = next(
+            item
+            for item in review["claim_coverage"]
+            if item["claim_id"] == "hypothesis.route-readable"
+        )
+        hypothesis["verdict"] = "PASS_DESIGN_CLAIM"
+        review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
+
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        verdict = json.loads(verdict_path.read_text())
+        verdict["conformance_reviews"]["card_to_spec"]["sha256"] = hashlib.sha256(
+            review_path.read_bytes()
+        ).hexdigest()
+        verdict_path.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+        manifest = self._manifest()
+        manifest["design_verdict"]["sha256"] = hashlib.sha256(
+            verdict_path.read_bytes()
+        ).hexdigest()
+        self._write_manifest(manifest)
+
+        result = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
+        self.assertTrue(
+            any("cannot be labelled PASS or ACCEPTED" in error for error in result.errors),
+            result.errors,
+        )
+
     def test_factory_revision_mismatch_fails_closed(self) -> None:
         payload = self._manifest()
         payload["factory_revision"] = "0" * 40
@@ -890,6 +950,32 @@ No prerequisite plan.
         result = validate_production_plan(str(self.game_repo), self.manifest_relative)
         self.assertEqual(BLOCKED_BY_PLAN_GAP, result.status)
         self.assertTrue(any("Factory HEAD" in error for error in result.errors))
+
+    def test_explicit_historical_check_reads_recorded_factory_revision(self) -> None:
+        historical_revision = "1" * 40
+        self._write_design_verdict(factory_revision=historical_revision)
+        payload = self._manifest()
+        payload["factory_revision"] = historical_revision
+        verdict_path = self.objective_dir / "GAMEPLAY_DESIGN_VERDICT.json"
+        payload["design_verdict"]["sha256"] = hashlib.sha256(
+            verdict_path.read_bytes()
+        ).hexdigest()
+        self._write_manifest(payload)
+
+        active = validate_production_plan(str(self.game_repo), self.manifest_relative)
+        self.assertEqual(BLOCKED_BY_PLAN_GAP, active.status)
+        self.assertTrue(any("Factory HEAD" in error for error in active.errors))
+
+        historical = validate_production_plan(
+            str(self.game_repo),
+            self.manifest_relative,
+            allow_legacy_historical=True,
+        )
+        self.assertEqual(
+            HISTORICAL_PLAN_READABLE, historical.status, historical.errors
+        )
+        self.assertEqual([], historical.errors)
+        self.assertTrue(any("does not authorize production" in item for item in historical.warnings))
 
     def test_legacy_manifest_is_historical_check_only(self) -> None:
         payload = self._manifest()
@@ -905,7 +991,7 @@ No prerequisite plan.
             self.manifest_relative,
             allow_legacy_historical=True,
         )
-        self.assertEqual(READY_FOR_EXECUTION, historical.status)
+        self.assertEqual(HISTORICAL_PLAN_READABLE, historical.status)
         self.assertFalse(historical.errors)
 
 

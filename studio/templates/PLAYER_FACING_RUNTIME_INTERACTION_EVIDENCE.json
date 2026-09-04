@@ -1,0 +1,25 @@
+{
+  "schema_version": "player_facing_runtime_interaction_evidence.v1",
+  "evidence_id": "<EVIDENCE_ID>", "project_id": "<PROJECT_ID>", "unit_id": "<UNIT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>", "build_id": "<BUILD_ID>", "factory_revision": "<FACTORY_GIT_REVISION>",
+  "interaction_contract": {"path": "<PLAYER_FACING_INTERACTION_CONTRACT_PATH>", "sha256": "<SHA256>"},
+  "producer_context_id": "<EVIDENCE_CAPTURE_CONTEXT_ID>",
+  "clean_start": {"save_identity": "<SAVE_ID>", "save_state": "CLEAN_START", "start_state": "<START_STATE>"},
+  "scenario_entry_state": "<EXACT_SCENARIO_ENTRY_STATE>",
+  "capture_environment": {"engine": "Godot", "window_mode": "WINDOWED", "rendering_mode": "IN_ENGINE"},
+  "ordered_input_trace": [{
+    "sequence": 1, "beat_id": "<BEAT_ID>", "input_kind": "MANIPULATION", "control": "<CONTROL>", "player_intent": "<INTENT>",
+    "frame_before": {"path": "<FRAME_BEFORE>", "sha256": "<SHA256>"}, "frame_during": {"path": "<FRAME_DURING>", "sha256": "<SHA256>"}, "frame_after": {"path": "<FRAME_AFTER>", "sha256": "<SHA256>"},
+    "observed_response": "<VISIBLE_WORLD_OR_PERSON_RESPONSE>"
+  }],
+  "structural_evidence": {"status": "CAPTURED", "evidence": [{"artifact_type": "STRUCTURAL_UI", "artifact": {"path": "<STRUCTURAL_CAPTURE>", "sha256": "<SHA256>"}}], "rationale": "<RATIONALE>"},
+  "observable_changes": [{"beat_id": "<BEAT_ID>", "before": "<BEFORE>", "after": "<AFTER>", "response_channels": ["WORLD_OBJECT"]}],
+  "returned_surface": {"frame": {"path": "<RETURN_FRAME>", "sha256": "<SHA256>"}, "visible_next_affordance": "<CHANGED_NEXT_ACTION>", "discovery_channels": ["WORLD_OBJECT"]},
+  "localization_observation": {"locale": "<TARGET_LOCALE>", "status": "OBSERVED_READABLE", "fallback_used": false, "garbled_text_present": false, "evidence": [{"artifact_type": "FRAME_AFTER", "artifact": {"path": "<FRAME_AFTER>", "sha256": "<SHA256>"}}]},
+  "evidence_files": [
+    {"artifact_type": "INPUT_TRACE", "artifact": {"path": "<INPUT_TRACE>", "sha256": "<SHA256>"}},
+    {"artifact_type": "FRAME_BEFORE", "artifact": {"path": "<FRAME_BEFORE>", "sha256": "<SHA256>"}},
+    {"artifact_type": "FRAME_DURING", "artifact": {"path": "<FRAME_DURING>", "sha256": "<SHA256>"}},
+    {"artifact_type": "FRAME_AFTER", "artifact": {"path": "<FRAME_AFTER>", "sha256": "<SHA256>"}}
+  ], "captured_at": "<ISO_8601_DATETIME>"
+}

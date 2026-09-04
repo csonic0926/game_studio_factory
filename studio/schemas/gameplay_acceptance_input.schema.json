@@ -5,96 +5,258 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "acceptance_input_id", "project_id", "unit_id",
-    "game_revision", "build_id", "factory_revision", "experience_authority",
-    "studio_gameplay_system", "cycle_id", "expected_player_experience",
-    "playtest_questions", "non_claims", "cycle_acceptance", "prepared_at"
+    "schema_version",
+    "acceptance_input_id",
+    "project_id",
+    "unit_id",
+    "game_revision",
+    "build_id",
+    "factory_revision",
+    "experience_authority",
+    "studio_gameplay_system",
+    "cycle_id",
+    "decision_card",
+    "player_facing_interaction_contract",
+    "player_facing_interaction_contract_review",
+    "player_facing_evidence",
+    "expected_player_experience",
+    "playtest_questions",
+    "non_claims",
+    "cycle_acceptance",
+    "prepared_at"
   ],
   "properties": {
-    "schema_version": {"const": "gameplay_acceptance_input.v2"},
-    "acceptance_input_id": {"$ref": "#/$defs/id"},
-    "project_id": {"$ref": "#/$defs/id"},
-    "unit_id": {"$ref": "#/$defs/id"},
-    "game_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
-    "build_id": {"$ref": "#/$defs/id"},
-    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
-    "experience_authority": {"$ref": "#/$defs/path_hash"},
-    "studio_gameplay_system": {"$ref": "#/$defs/path_hash"},
-    "cycle_id": {"$ref": "#/$defs/id"},
+    "schema_version": {
+      "const": "gameplay_acceptance_input.v3"
+    },
+    "acceptance_input_id": {
+      "$ref": "#/$defs/id"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "unit_id": {
+      "$ref": "#/$defs/id"
+    },
+    "game_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "build_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "experience_authority": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "studio_gameplay_system": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "cycle_id": {
+      "$ref": "#/$defs/id"
+    },
     "expected_player_experience": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "target_player", "intended_experience", "required_player_work",
-        "earned_satisfaction", "failure_recovery", "must_not_become"
+        "target_player",
+        "intended_experience",
+        "required_player_work",
+        "earned_satisfaction",
+        "failure_recovery",
+        "must_not_become"
       ],
       "properties": {
-        "target_player": {"$ref": "#/$defs/non_tbd_text"},
-        "intended_experience": {"$ref": "#/$defs/non_tbd_text"},
-        "required_player_work": {"$ref": "#/$defs/non_tbd_text"},
-        "earned_satisfaction": {"$ref": "#/$defs/non_tbd_text"},
-        "failure_recovery": {"$ref": "#/$defs/non_tbd_text"},
-        "must_not_become": {"$ref": "#/$defs/non_tbd_text"}
+        "target_player": {
+          "$ref": "#/$defs/non_tbd_text"
+        },
+        "intended_experience": {
+          "$ref": "#/$defs/non_tbd_text"
+        },
+        "required_player_work": {
+          "$ref": "#/$defs/non_tbd_text"
+        },
+        "earned_satisfaction": {
+          "$ref": "#/$defs/non_tbd_text"
+        },
+        "failure_recovery": {
+          "$ref": "#/$defs/non_tbd_text"
+        },
+        "must_not_become": {
+          "$ref": "#/$defs/non_tbd_text"
+        }
       }
     },
     "playtest_questions": {
-      "type": "array", "minItems": 1,
-      "items": {"$ref": "#/$defs/non_tbd_text"}
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_tbd_text"
+      }
     },
     "non_claims": {
-      "type": "array", "minItems": 1,
-      "items": {"$ref": "#/$defs/non_tbd_text"}
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_tbd_text"
+      }
     },
-    "cycle_acceptance": {"$ref": "#/$defs/two_lap_cycle"},
-    "prepared_at": {"type": "string", "minLength": 1}
+    "cycle_acceptance": {
+      "$ref": "#/$defs/two_lap_cycle"
+    },
+    "prepared_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_card": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "player_facing_interaction_contract": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "player_facing_interaction_contract_review": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "player_facing_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_interaction_evidence",
+        "blind_observation_input",
+        "blind_observation",
+        "comparison_review"
+      ],
+      "properties": {
+        "runtime_interaction_evidence": {
+          "$ref": "#/$defs/path_hash"
+        },
+        "blind_observation_input": {
+          "$ref": "#/$defs/path_hash"
+        },
+        "blind_observation": {
+          "$ref": "#/$defs/path_hash"
+        },
+        "comparison_review": {
+          "$ref": "#/$defs/path_hash"
+        }
+      }
+    }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
-    "non_tbd_text": {"type": "string", "minLength": 1, "not": {"pattern": "TBD"}},
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "non_tbd_text": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "TBD"
+      }
+    },
     "path_hash": {
-      "type": "object", "additionalProperties": false,
-      "required": ["path", "sha256"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
       "properties": {
-        "path": {"type": "string", "minLength": 1},
-        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
     "two_lap_cycle": {
-      "type": "object", "additionalProperties": false,
-      "required": ["first_lap", "feedback_state_changes", "second_lap", "why_player_has_new_motive"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_lap",
+        "feedback_state_changes",
+        "second_lap",
+        "why_player_has_new_motive"
+      ],
       "properties": {
         "first_lap": {
-          "type": "object", "additionalProperties": false,
-          "required": ["decision", "resolution", "reward"],
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "resolution",
+            "reward"
+          ],
           "properties": {
-            "decision": {"$ref": "#/$defs/non_tbd_text"},
-            "resolution": {"$ref": "#/$defs/non_tbd_text"},
-            "reward": {"$ref": "#/$defs/non_tbd_text"}
+            "decision": {
+              "$ref": "#/$defs/non_tbd_text"
+            },
+            "resolution": {
+              "$ref": "#/$defs/non_tbd_text"
+            },
+            "reward": {
+              "$ref": "#/$defs/non_tbd_text"
+            }
           }
         },
         "feedback_state_changes": {
-          "type": "array", "minItems": 1, "uniqueItems": true,
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
           "items": {
-            "type": "object", "additionalProperties": false,
-            "required": ["state_id", "before", "after", "effect_on_next_decision"],
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state_id",
+              "before",
+              "after",
+              "effect_on_next_decision"
+            ],
             "properties": {
-              "state_id": {"$ref": "#/$defs/id"},
-              "before": {"$ref": "#/$defs/non_tbd_text"},
-              "after": {"$ref": "#/$defs/non_tbd_text"},
-              "effect_on_next_decision": {"$ref": "#/$defs/non_tbd_text"}
+              "state_id": {
+                "$ref": "#/$defs/id"
+              },
+              "before": {
+                "$ref": "#/$defs/non_tbd_text"
+              },
+              "after": {
+                "$ref": "#/$defs/non_tbd_text"
+              },
+              "effect_on_next_decision": {
+                "$ref": "#/$defs/non_tbd_text"
+              }
             }
           }
         },
         "second_lap": {
-          "type": "object", "additionalProperties": false,
-          "required": ["changed_goal", "changed_decision", "reentry_action"],
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "changed_goal",
+            "changed_decision",
+            "reentry_action"
+          ],
           "properties": {
-            "changed_goal": {"$ref": "#/$defs/non_tbd_text"},
-            "changed_decision": {"$ref": "#/$defs/non_tbd_text"},
-            "reentry_action": {"$ref": "#/$defs/non_tbd_text"}
+            "changed_goal": {
+              "$ref": "#/$defs/non_tbd_text"
+            },
+            "changed_decision": {
+              "$ref": "#/$defs/non_tbd_text"
+            },
+            "reentry_action": {
+              "$ref": "#/$defs/non_tbd_text"
+            }
           }
         },
-        "why_player_has_new_motive": {"$ref": "#/$defs/non_tbd_text"}
+        "why_player_has_new_motive": {
+          "$ref": "#/$defs/non_tbd_text"
+        }
       }
     }
   }

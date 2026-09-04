@@ -129,6 +129,12 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 - fail-closed integrity and contamination checks;
 - manual fresh design/realization/packet/landing/runtime acceptance review
   templates;
+- a versioned Player-Facing Interaction Contract plus fresh design review that
+  fails Card registration on prose-only, proxy-only, non-visible, or
+  non-interactive beats;
+- exact-build runtime interaction evidence and separated blind-observation /
+  authority-comparison contracts, integrated into Studio acceptance without
+  replacing the user-owned playtest verdict;
 - unit tests using synthetic evidence.
 
 ## Not yet proven or complete
@@ -162,6 +168,9 @@ criteria. Contracts and synthetic tool tests are not a production pilot.
 - no `LIVE_BLIND_RUN` plus `CONTROLLED_BRANCH_PROBE` evidence set exists here;
 - no deliberate implementation/reception mismatch has yet demonstrated correct
   failure routing;
+- the player-facing evidence chain has positive and adversarial synthetic
+  coverage but has not yet been regenerated and piloted on a real game-owned
+  pending Card/build;
 - no second project/gameplay shape has demonstrated portability;
 - no human playtest has accepted enjoyment/commercial value;
 - no real span has driven the quant-first tower (quant sheet -> Beat Sheet ->

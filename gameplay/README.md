@@ -170,7 +170,7 @@ UI plans require a checked v2 game-owned UI adapter, exact hash, complete style
 blast radius, accepted target-to-exemplar mappings, visual-grammar rules,
 separate structural/visual validation ids, and matching Markdown contract.
 Legacy v1/v2/v3 manifests are readable only through `check-historical` and
-cannot authorize execution.
+return `HISTORICAL_PLAN_READABLE`; they cannot authorize execution.
 
 ## Objective production — Step 4
 

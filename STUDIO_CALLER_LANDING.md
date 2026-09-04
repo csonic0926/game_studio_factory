@@ -39,7 +39,9 @@ Playable Baseline** with:
 - a validated Studio gameplay system whose reward/state changes the next
   decision, plus an accepted two-lap vertical slice of that cycle;
 - fresh acceptance for newly introduced gameplay, bound to its canonical
-  expected-experience/cycle authority and an explicit human playtest verdict;
+  expected-experience/cycle authority, exact-build player-facing interaction
+  evidence, a sealed blind observation/comparison, and an explicit human
+  playtest verdict;
 - regression evidence for previously accepted gameplay;
 - no blocking known gap;
 - exact build, game-revision, and Factory-revision provenance.
@@ -52,8 +54,10 @@ material human-facing output additionally require the fresh-subagent semantic
 alignment gate in
 [`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
 Every pending Studio Gameplay Decision Card additionally requires a different
-fresh end-to-end Factory-compliance reviewer before that semantic gate; passing
-step-local reviews alone cannot authorize a thin click/dialogue Card.
+fresh player-facing interaction design review and an end-to-end
+Factory-compliance reviewer before that semantic gate; passing step-local
+reviews alone cannot authorize a thin click/dialogue Card. Read
+[`studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
 
 ## Specialist capability model
 

@@ -4,31 +4,182 @@
   "title": "Gameplay Decision Card / Full Spec Conformance Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "review_role", "project_id", "objective_id", "factory_revision", "decision_card", "objective_gameplay", "reviewer_context_id", "reviewer_freshness", "claim_coverage", "spec_material_inventory", "contradictions", "ambiguities", "unsupported_material_decisions", "blocking_findings", "verdict", "reviewed_at"],
+  "required": [
+    "schema_version",
+    "review_id",
+    "review_role",
+    "project_id",
+    "objective_id",
+    "factory_revision",
+    "decision_card",
+    "objective_gameplay",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "claim_coverage",
+    "spec_material_inventory",
+    "contradictions",
+    "ambiguities",
+    "unsupported_material_decisions",
+    "blocking_findings",
+    "verdict",
+    "reviewed_at"
+  ],
   "properties": {
-    "schema_version": {"const": "gameplay_design_conformance_review.v1"},
-    "review_id": {"$ref": "#/$defs/id"},
-    "review_role": {"enum": ["CARD_TO_SPEC", "SPEC_TO_CARD"]},
-    "project_id": {"$ref": "#/$defs/id"},
-    "objective_id": {"$ref": "#/$defs/id"},
-    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
-    "decision_card": {"$ref": "#/$defs/path_hash"},
-    "objective_gameplay": {"$ref": "#/$defs/path_hash"},
-    "reviewer_context_id": {"$ref": "#/$defs/id"},
-    "reviewer_freshness": {"const": "FRESH"},
-    "claim_coverage": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/claim_coverage"}},
-    "spec_material_inventory": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/spec_item"}},
-    "contradictions": {"type": "array", "maxItems": 0},
-    "ambiguities": {"type": "array", "maxItems": 0},
-    "unsupported_material_decisions": {"type": "array", "maxItems": 0},
-    "blocking_findings": {"type": "array", "maxItems": 0},
-    "verdict": {"const": "PASS_CONFORMANCE"},
-    "reviewed_at": {"type": "string", "minLength": 1}
+    "schema_version": {
+      "const": "gameplay_design_conformance_review.v2"
+    },
+    "review_id": {
+      "$ref": "#/$defs/id"
+    },
+    "review_role": {
+      "enum": [
+        "CARD_TO_SPEC",
+        "SPEC_TO_CARD"
+      ]
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "objective_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "decision_card": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "objective_gameplay": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "reviewer_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "reviewer_freshness": {
+      "const": "FRESH"
+    },
+    "claim_coverage": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/claim_coverage"
+      }
+    },
+    "spec_material_inventory": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/spec_item"
+      }
+    },
+    "contradictions": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "ambiguities": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "unsupported_material_decisions": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "blocking_findings": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "verdict": {
+      "const": "PASS_CONFORMANCE"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "minLength": 1
+    }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
-    "path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
-    "claim_coverage": {"type": "object", "additionalProperties": false, "required": ["claim_id", "spec_refs", "verdict"], "properties": {"claim_id": {"$ref": "#/$defs/id"}, "spec_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}, "verdict": {"const": "PASS"}}},
-    "spec_item": {"type": "object", "additionalProperties": false, "required": ["spec_ref", "claim_ids", "classification", "rationale"], "properties": {"spec_ref": {"$ref": "#/$defs/id"}, "claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}, "classification": {"enum": ["AUTHORIZED_BY_CARD", "VALIDATION_HYPOTHESIS"]}, "rationale": {"type": "string", "minLength": 1}}}
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "claim_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "spec_refs",
+        "verdict"
+      ],
+      "properties": {
+        "claim_id": {
+          "$ref": "#/$defs/id"
+        },
+        "spec_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "verdict": {
+          "enum": [
+            "PASS_DESIGN_CLAIM",
+            "TESTABLE_DESIGN"
+          ]
+        }
+      }
+    },
+    "spec_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spec_ref",
+        "claim_ids",
+        "classification",
+        "rationale"
+      ],
+      "properties": {
+        "spec_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "claim_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "classification": {
+          "enum": [
+            "AUTHORIZED_BY_CARD",
+            "VALIDATION_HYPOTHESIS"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
   }
 }

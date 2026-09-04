@@ -29,9 +29,12 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
    alignment gate in `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`; ordinary
    user language must not require Factory-specific prompt boilerplate.
 7. Every pending Studio Gameplay Decision Card first uses a different fresh
-   final-Card Factory-compliance subagent that audits the exact whole result and
-   all bound authorities; step-local reviews and semantic alignment do not
-   substitute for this gameplay/workflow sufficiency gate.
+   player-facing interaction reviewer, then a fresh final-Card
+   Factory-compliance subagent that audits the exact whole result and all bound
+   authorities; step-local reviews and semantic alignment do not substitute
+   for these gameplay/workflow sufficiency gates. Runtime acceptance separately
+   requires exact-build interaction evidence plus a blind observation and a
+   fresh authority comparison.
 
 Specialist entry points:
 

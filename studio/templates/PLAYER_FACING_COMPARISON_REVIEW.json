@@ -1,0 +1,78 @@
+{
+  "schema_version": "player_facing_comparison_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "PLAYER_FACING_AUTHORITY_COMPARISON",
+  "project_id": "<PROJECT_ID>",
+  "unit_id": "<UNIT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "build_id": "<BUILD_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "runtime_interaction_evidence": {
+    "path": "<RUNTIME_EVIDENCE_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "blind_observation": {
+    "path": "<BLIND_OBSERVATION_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "interaction_contract": {
+    "path": "<INTERACTION_CONTRACT_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "interaction_contract_review": {
+    "path": "<INTERACTION_CONTRACT_REVIEW_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "decision_card": {
+    "path": "<DECISION_CARD_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "studio_gameplay_system": {
+    "path": "<STUDIO_GAMEPLAY_SYSTEM_MANIFEST_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "reviewer_context_id": "<FRESH_COMPARISON_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "context_independence": {
+    "blind_record_precedes_authority_access": true,
+    "blind_observer_context_id": "<BLIND_OBSERVER_CONTEXT_ID>",
+    "comparison_reviewer_is_distinct": true
+  },
+  "beat_comparisons": [
+    {
+      "beat_id": "<BEAT_ID>",
+      "observation_citations": [
+        "attempt.1"
+      ],
+      "trace_sequences": [
+        1
+      ],
+      "cause": "OBSERVED",
+      "goal": "OBSERVED",
+      "affordance": "OBSERVED",
+      "input_and_judgment": "OBSERVED",
+      "visible_response": "OBSERVED",
+      "persistent_change": "OBSERVED",
+      "next_motive": "OBSERVED"
+    }
+  ],
+  "hypothesis_observations": [
+    {
+      "claim_id": "<HYPOTHESIS_CLAIM_ID>",
+      "status": "OBSERVED_SUPPORT",
+      "observation_citations": [
+        "attempt.1"
+      ],
+      "rationale": "<RATIONALE>"
+    }
+  ],
+  "localization_readability": {
+    "status": "OBSERVED_READABLE",
+    "observation_citations": [
+      "attempt.1"
+    ]
+  },
+  "blocking_findings": [],
+  "verdict": "PASS_PLAYER_FACING_COMPARISON",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

@@ -35,7 +35,9 @@ It requires:
 - a complete reconstruction inventory whose discovered unit ids exactly equal
   the admitted unit ids, with evidence for excluded candidates;
 - every gameplay unit admitted into the baseline, each with an independent
-  fresh `ACCEPTED` review, exact runtime evidence, canonical expected-experience
+  fresh `ACCEPTED` review, exact player-facing runtime interaction evidence,
+  an immutable blind Phase-A observation, a different fresh authority-comparison
+  Phase B, canonical expected-experience
   authority, exact validated `STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json`, an
   observed two-lap cycle in which every feedback state changes and affects the
   second decision, and a `USER`-owned `HUMAN_PLAYTEST_ACCEPTED` verdict on the
@@ -76,7 +78,12 @@ It requires:
 - fresh acceptance reviews whose reviewer context is not any production
   context, whose admission-local `GAMEPLAY_ACCEPTANCE_INPUT_<unit_id>.json`
   binds the exact admitted unit authority and states the expected player
-  experience plus cycle/two-lap acceptance criteria, whose fresh review records
+  experience plus cycle/two-lap acceptance criteria and exact Player-Facing
+  Interaction Contract/review, whose evidence bundle combines ordered inputs
+  with before/during/after windowed in-engine frames, whose blind observer saw
+  only legitimate prior knowledge, normal controls, and player surface output,
+  whose fresh Phase-B reviewer compares that immutable observation to authority,
+  whose fresh acceptance review records
   the observed first lap, feedback-state changes, and materially changed second
   lap, and whose human playtest verdict is explicitly accepted by the user;
 - a fresh regression review covering **exactly every predecessor gameplay
@@ -93,6 +100,10 @@ Use:
 studio/templates/STUDIO_WORKFLOW_COMPLETION.json
 studio/templates/GAMEPLAY_ACCEPTANCE_INPUT.json
 studio/templates/GAMEPLAY_ACCEPTANCE_REVIEW.json
+studio/templates/PLAYER_FACING_RUNTIME_INTERACTION_EVIDENCE.json
+studio/templates/PLAYER_FACING_BLIND_OBSERVATION_INPUT.json
+studio/templates/PLAYER_FACING_BLIND_OBSERVATION.json
+studio/templates/PLAYER_FACING_COMPARISON_REVIEW.json
 studio/templates/BASELINE_REGRESSION_REVIEW.json
 studio/templates/BASELINE_PROMOTION_INPUT.json
 ```
@@ -142,11 +153,14 @@ that the user's requested production horizon is complete or set
 `gameplay/reader.py` may prepare structurally valid runtime evidence, but it
 does not issue the gameplay verdict. Production tests and
 `IMPLEMENTED_PENDING_ACCEPTANCE` also do not issue it. A fresh reviewer may
-write the evidence comparison `ACCEPTED`, but baseline promotion additionally
+write the Phase-B player-facing comparison, but baseline promotion additionally
 requires both `ACCEPTED_TWO_LAP_CYCLE` evidence and a `USER`-owned
 `HUMAN_PLAYTEST_ACCEPTED` verdict. The compiler verifies the cycle against the
-exact Studio system rather than trusting a prose “complete loop” claim. Legacy
-v1 and single-loop v2 reviews and workflow completions remain readable for
+exact Studio system rather than trusting a prose “complete loop” claim. A
+screenshot without input does not prove interaction; an input trace without
+player-visible response does not prove gameplay; tests/logs/state JSON never
+substitute for either. Legacy v1/v2 and two-lap v3 acceptance reviews and
+workflow completions remain readable for
 historical `check` or exact idempotent re-runs; they cannot authorize a new
 admission.
 

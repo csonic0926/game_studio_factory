@@ -20,7 +20,8 @@ subagent/context delegated by `game-studio-factory` for one exact pending
    boundary.
 3. Read the exact pending `GAMEPLAY_DECISION_CARD.json`, its Product authority,
    Factory constraints, Studio gameplay-system manifest/system, both system
-   reviews, and any already-due objective/span authority named by the Card.
+   reviews, the exact Player-Facing Interaction Contract and fresh design
+   review, and any already-due objective/span authority named by the Card.
 4. Do not rely on the Card author's summary when a bound artifact exists.
 5. Write only the objective-local
    `GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json` from the Factory template.
@@ -65,10 +66,15 @@ a passing label:
 - costs, obligations, failure/recovery, and validation hypotheses are concrete
   and falsifiable at the promised boundary;
 - every Factory gate already due is present, valid, exact-SHA bound, and fresh;
+- every claimed beat is concretely visible/interactable in the player-facing
+  contract rather than explainable only through Card prose, state, popup,
+  dialogue, task text, journal, marker, or code;
 - work due only after human approval is not falsely claimed complete and its
   absence is not misreported as a present defect.
 
-Independently inventory every Card claim exactly once. Map each claim to one or
+Independently inventory every Card claim exactly once. Non-hypothesis claims
+use `PASS_DESIGN_CLAIM`; hypotheses use `TESTABLE_DESIGN` and must never be
+labelled `PASS` or `ACCEPTED`. Map each claim to one or
 more required Factory findings, record exact evidence-based rationale, and
 inventory every Product causal-link id, applicable Factory-constraint id, and
 Product non-goal id realized by the bound system. For each authority id, map

@@ -1,0 +1,146 @@
+{
+  "schema_version": "player_facing_interaction_contract.v1",
+  "contract_id": "<CONTRACT_ID>",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "product_authority": {
+    "path": "design/product/PRODUCT_THESIS.md",
+    "sha256": "<SHA256>"
+  },
+  "studio_gameplay_system": {
+    "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+    "sha256": "<SHA256>"
+  },
+  "author_context_id": "<CONTRACT_AUTHOR_CONTEXT_ID>",
+  "target_player": "<TARGET_PLAYER_AND_LEGITIMATE_PRIOR_KNOWLEDGE>",
+  "target_locale": "<LOCALE>",
+  "player_entry_knowledge": [
+    "<ONLY_ORDINARY_CONTROLS_OR_FACTS_THE_PLAYER_KNOWS_AT_SCENARIO_ENTRY>"
+  ],
+  "current_scene_composition": [
+    {
+      "sequence": 1,
+      "beat_id": "<BEAT_ID>",
+      "surface_moment": "ENTRY",
+      "artifact_type": "ANNOTATED_CURRENT_SCENE_FRAME",
+      "artifact": {
+        "path": "<CURRENT_SCENE_ENTRY_FRAME>",
+        "sha256": "<SHA256>"
+      }
+    },
+    {
+      "sequence": 2,
+      "beat_id": "<BEAT_ID>",
+      "surface_moment": "AFFORDANCE",
+      "artifact_type": "ANNOTATED_CURRENT_SCENE_FRAME",
+      "artifact": {
+        "path": "<CURRENT_SCENE_AFFORDANCE_FRAME>",
+        "sha256": "<SHA256>"
+      }
+    },
+    {
+      "sequence": 3,
+      "beat_id": "<BEAT_ID>",
+      "surface_moment": "EXPECTED_RESPONSE",
+      "artifact_type": "FAITHFUL_SCREEN_FLOW_PROTOTYPE",
+      "artifact": {
+        "path": "<CURRENT_SCENE_EXPECTED_RESPONSE_FRAME>",
+        "sha256": "<SHA256>"
+      }
+    },
+    {
+      "sequence": 4,
+      "beat_id": "<BEAT_ID>",
+      "surface_moment": "PERSISTENT_RETURN",
+      "artifact_type": "FAITHFUL_SCREEN_FLOW_PROTOTYPE",
+      "artifact": {
+        "path": "<CURRENT_SCENE_PERSISTENT_RETURN_FRAME>",
+        "sha256": "<SHA256>"
+      }
+    }
+  ],
+  "localization_readability": {
+    "locale": "<LOCALE>",
+    "readability_status": "VERIFIED_READABLE",
+    "fallback_used": false,
+    "garbled_text_present": false,
+    "evidence": [
+      {
+        "artifact_type": "ANNOTATED_CURRENT_SCENE_FRAME",
+        "artifact": {
+          "path": "<READABLE_FRAME>",
+          "sha256": "<SHA256>"
+        }
+      }
+    ]
+  },
+  "playable_beats": [
+    {
+      "beat_id": "<BEAT_ID>",
+      "system_transition_ids": [
+        "<TRANSITION_ID>"
+      ],
+      "entry_screen_state": "<WHAT_IS_VISIBLE_AT_ENTRY>",
+      "player_prior_knowledge": "<ONLY_WHAT_THE_PLAYER_KNOWS>",
+      "perceivable_cause": "<VISIBLE_OR_AUDIBLE_CAUSE>",
+      "visible_goal": "<DISCOVERABLE_GOAL>",
+      "available_input": {
+        "input_kind": "MANIPULATION",
+        "control": "<CONTROL>",
+        "affordance_cue": "<ON_SURFACE_CUE>"
+      },
+      "required_judgment": "<WHAT_THE_PLAYER_NOTICES_INFERS_OR_EXECUTES>",
+      "interaction_sequence": [
+        {
+          "step_id": "<STEP_ID>",
+          "input_kind": "MANIPULATION",
+          "control": "<CONTROL>",
+          "player_intent": "<INTENT>",
+          "visible_response": "<WORLD_OR_PERSON_RESPONSE>",
+          "response_channels": [
+            "WORLD_OBJECT"
+          ],
+          "counts_as_player_work": true
+        }
+      ],
+      "immediate_visible_response": "<OBSERVABLE_RESPONSE>",
+      "persistent_visible_change": "<VISIBLE_CHANGE_ON_RETURN>",
+      "next_affordance": {
+        "description": "<CHANGED_NEXT_ACTION>",
+        "discovery_channels": [
+          "WORLD_OBJECT"
+        ]
+      },
+      "allowed_text_support": {
+        "role": "SUPPORT_ONLY",
+        "text_can_complete_action": false,
+        "description": "<TEXT_MAY_CLARIFY_BUT_NOT_REPLACE_ACTION>"
+      },
+      "forbidden_proxy_check": {
+        "proxy_only": false,
+        "disallowed_proxies": [
+          "POPUP_ONLY",
+          "JOURNAL_ONLY",
+          "MARKER_ONLY",
+          "HIDDEN_FLAG_ONLY",
+          "STRAIGHT_TRAVERSAL_ONLY",
+          "DIALOGUE_ADVANCE_ONLY"
+        ],
+        "explanation": "<WHY_NONE_OF_THESE_PROXIES_SATISFY_THIS_BEAT>"
+      },
+      "player_surface_evidence_plan": {
+        "scenario_id": "<SCENARIO_ID>",
+        "start_state": "<CLEAN_SCENARIO_START>",
+        "ordered_capture_moments": [
+          "BEFORE_INPUT",
+          "DURING_INTERACTION",
+          "AFTER_RESPONSE",
+          "RETURNED_CHANGED_AFFORDANCE"
+        ]
+      }
+    }
+  ],
+  "design_status": "TESTABLE_DESIGN",
+  "authored_at": "<ISO_8601_DATETIME>"
+}

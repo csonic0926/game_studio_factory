@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/player_facing_comparison_review.schema.json",
+  "title": "Player-Facing Authority Comparison Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "review_role",
+    "project_id",
+    "unit_id",
+    "game_revision",
+    "build_id",
+    "factory_revision",
+    "runtime_interaction_evidence",
+    "blind_observation",
+    "interaction_contract",
+    "interaction_contract_review",
+    "decision_card",
+    "studio_gameplay_system",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "context_independence",
+    "beat_comparisons",
+    "hypothesis_observations",
+    "localization_readability",
+    "blocking_findings",
+    "verdict",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "player_facing_comparison_review.v1"
+    },
+    "review_id": {
+      "$ref": "#/$defs/id"
+    },
+    "review_role": {
+      "const": "PLAYER_FACING_AUTHORITY_COMPARISON"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "unit_id": {
+      "$ref": "#/$defs/id"
+    },
+    "game_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "build_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "runtime_interaction_evidence": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "blind_observation": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "interaction_contract": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "interaction_contract_review": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "decision_card": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "studio_gameplay_system": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "reviewer_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "reviewer_freshness": {
+      "const": "FRESH"
+    },
+    "context_independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blind_record_precedes_authority_access",
+        "blind_observer_context_id",
+        "comparison_reviewer_is_distinct"
+      ],
+      "properties": {
+        "blind_record_precedes_authority_access": {
+          "const": true
+        },
+        "blind_observer_context_id": {
+          "$ref": "#/$defs/id"
+        },
+        "comparison_reviewer_is_distinct": {
+          "const": true
+        }
+      }
+    },
+    "beat_comparisons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/beat"
+      }
+    },
+    "hypothesis_observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "status",
+          "observation_citations",
+          "rationale"
+        ],
+        "properties": {
+          "claim_id": {
+            "$ref": "#/$defs/id"
+          },
+          "status": {
+            "enum": [
+              "OBSERVED_SUPPORT",
+              "OBSERVED_REJECT"
+            ]
+          },
+          "observation_citations": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^attempt\\.[1-9][0-9]*$"
+            }
+          },
+          "rationale": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "localization_readability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "observation_citations"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "OBSERVED_READABLE",
+            "OBSERVED_BLOCKED"
+          ]
+        },
+        "observation_citations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^attempt\\.[1-9][0-9]*$"
+          }
+        }
+      }
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "verdict": {
+      "enum": [
+        "PASS_PLAYER_FACING_COMPARISON",
+        "REJECT_PLAYER_FACING_COMPARISON"
+      ]
+    },
+    "reviewed_at": {
+      "$ref": "#/$defs/text"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "observed": {
+      "enum": [
+        "OBSERVED",
+        "NOT_OBSERVED"
+      ]
+    },
+    "beat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beat_id",
+        "observation_citations",
+        "trace_sequences",
+        "cause",
+        "goal",
+        "affordance",
+        "input_and_judgment",
+        "visible_response",
+        "persistent_change",
+        "next_motive"
+      ],
+      "properties": {
+        "beat_id": {
+          "$ref": "#/$defs/id"
+        },
+        "observation_citations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^attempt\\.[1-9][0-9]*$"
+          }
+        },
+        "trace_sequences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "uniqueItems": true
+        },
+        "cause": {
+          "$ref": "#/$defs/observed"
+        },
+        "goal": {
+          "$ref": "#/$defs/observed"
+        },
+        "affordance": {
+          "$ref": "#/$defs/observed"
+        },
+        "input_and_judgment": {
+          "$ref": "#/$defs/observed"
+        },
+        "visible_response": {
+          "$ref": "#/$defs/observed"
+        },
+        "persistent_change": {
+          "$ref": "#/$defs/observed"
+        },
+        "next_motive": {
+          "$ref": "#/$defs/observed"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PASS_PLAYER_FACING_COMPARISON"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blocking_findings": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

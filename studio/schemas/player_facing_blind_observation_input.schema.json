@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-studio-factory.local/studio/player_facing_blind_observation_input.schema.json",
+  "title": "Blind Player Observation Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "observation_input_id",
+    "project_id",
+    "unit_id",
+    "game_revision",
+    "build_id",
+    "clean_start",
+    "scenario_entry_state",
+    "player_prior_knowledge",
+    "normal_controls",
+    "surface_artifacts",
+    "context_policy",
+    "preparation_attestation",
+    "prepared_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "player_facing_blind_observation_input.v1"
+    },
+    "observation_input_id": {
+      "$ref": "#/$defs/id"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "unit_id": {
+      "$ref": "#/$defs/id"
+    },
+    "game_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "build_id": {
+      "$ref": "#/$defs/id"
+    },
+    "clean_start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "save_identity",
+        "save_state",
+        "start_state"
+      ],
+      "properties": {
+        "save_identity": {
+          "$ref": "#/$defs/text"
+        },
+        "save_state": {
+          "const": "CLEAN_START"
+        },
+        "start_state": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "scenario_entry_state": {
+      "$ref": "#/$defs/text"
+    },
+    "player_prior_knowledge": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "normal_controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "surface_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_type",
+          "artifact"
+        ],
+        "properties": {
+          "artifact_type": {
+            "enum": [
+              "SCREEN_FRAME",
+              "AUDIO_CAPTURE",
+              "VIDEO_CAPTURE"
+            ]
+          },
+          "artifact": {
+            "$ref": "#/$defs/path_hash"
+          }
+        }
+      }
+    },
+    "context_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_access",
+        "allowed_materials"
+      ],
+      "properties": {
+        "authority_access": {
+          "const": "FORBIDDEN_BEFORE_OBSERVATION"
+        },
+        "allowed_materials": {
+          "const": "PLAYER_SURFACE_ONLY"
+        }
+      }
+    },
+    "preparation_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preparer_context_id",
+        "answer_bearing_design_ids_removed",
+        "intended_answers_removed",
+        "future_beat_knowledge_removed",
+        "only_phase_a_allowed_materials_present"
+      ],
+      "properties": {
+        "preparer_context_id": {
+          "$ref": "#/$defs/id"
+        },
+        "answer_bearing_design_ids_removed": {
+          "const": true
+        },
+        "intended_answers_removed": {
+          "const": true
+        },
+        "future_beat_knowledge_removed": {
+          "const": true
+        },
+        "only_phase_a_allowed_materials_present": {
+          "const": true
+        }
+      }
+    },
+    "prepared_at": {
+      "$ref": "#/$defs/text"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

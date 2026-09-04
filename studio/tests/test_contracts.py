@@ -15,8 +15,8 @@ class StudioFoundationContractTests(unittest.TestCase):
             "baseline_reconstruction_inventory.schema.json": "baseline_reconstruction_inventory.v1",
             "baseline_regression_review.schema.json": "baseline_regression_review.v1",
             "design_token_research.schema.json": "design_token_research.v1",
-            "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v2",
-            "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v3",
+            "gameplay_acceptance_input.schema.json": "gameplay_acceptance_input.v3",
+            "gameplay_acceptance_review.schema.json": "gameplay_acceptance_review.v4",
             "godot_engine_capability_manifest.schema.json": "godot_engine_capability_manifest.v1",
             "godot_engine_evidence.schema.json": "godot_engine_evidence.v1",
             "godot_automation_evidence.schema.json": "godot_automation_evidence.v1",
@@ -32,6 +32,10 @@ class StudioFoundationContractTests(unittest.TestCase):
             "godot_visual_comparison.schema.json": "godot_visual_comparison.v1",
             "product_authority_archive_snapshot.schema.json": "product_authority_archive_snapshot.v1",
             "product_authority_register.schema.json": "product_authority_register.v1",
+            "player_facing_blind_observation.schema.json": "player_facing_blind_observation.v1",
+            "player_facing_blind_observation_input.schema.json": "player_facing_blind_observation_input.v1",
+            "player_facing_comparison_review.schema.json": "player_facing_comparison_review.v1",
+            "player_facing_runtime_interaction_evidence.schema.json": "player_facing_runtime_interaction_evidence.v1",
             "studio_gameplay_system.schema.json": "studio_gameplay_system.v2",
             "studio_gameplay_system_manifest.schema.json": "studio_gameplay_system_manifest.v1",
             "studio_gameplay_system_review.schema.json": "studio_gameplay_system_review.v2",
@@ -87,6 +91,8 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertIn("expected_player_experience", acceptance_input["required"])
         self.assertIn("studio_gameplay_system", acceptance_input["required"])
         self.assertIn("cycle_acceptance", acceptance_input["required"])
+        self.assertIn("player_facing_interaction_contract", acceptance_input["required"])
+        self.assertIn("player_facing_evidence", acceptance_input["required"])
         review = json.loads(
             (STUDIO_ROOT / "schemas/gameplay_acceptance_review.schema.json").read_text()
         )
@@ -95,6 +101,24 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertEqual("USER", human["properties"]["verdict_owner"]["const"])
         self.assertIn("verdict_payload_sha256", human["required"])
         self.assertIn("observed_two_lap_cycle", review["required"])
+        self.assertIn("player_facing_evidence", review["required"])
+
+        runtime = json.loads(
+            (
+                STUDIO_ROOT
+                / "schemas/player_facing_runtime_interaction_evidence.schema.json"
+            ).read_text()
+        )
+        self.assertIn("$defs", runtime)
+        self.assertNotIn("$defs", runtime["properties"])
+        for field in (
+            "ordered_input_trace",
+            "observable_changes",
+            "returned_surface",
+            "localization_observation",
+            "evidence_files",
+        ):
+            self.assertIn(field, runtime["properties"])
 
     def test_baseline_promotion_names_repaired_or_new_units(self) -> None:
         payload = json.loads(
@@ -181,7 +205,7 @@ class StudioFoundationContractTests(unittest.TestCase):
             ).read_text()
         )
         self.assertEqual(
-            "gameplay_decision_card_factory_review.v1",
+            "gameplay_decision_card_factory_review.v2",
             payload["properties"]["schema_version"]["const"],
         )
         findings = payload["properties"]["requirement_findings"]
@@ -192,6 +216,7 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertIn("player_work_world_response_carry_forward", required)
         self.assertIn("two_lap_decision_materially_differs", required)
         self.assertIn("applicable_factory_gates_complete", required)
+        self.assertIn("player_facing_interaction_concretely_designed", required)
         self.assertEqual(
             {
                 "PASS_CARD_FACTORY_COMPLIANCE",
@@ -208,6 +233,88 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertIn("dialogue advance", reviewer_skill)
         self.assertIn("semantic-alignment reviewer", reviewer_skill)
         self.assertIn("must differ", reviewer_skill)
+
+    def test_player_facing_design_review_can_record_a_blocked_result(self) -> None:
+        schema = json.loads(
+            (
+                STUDIO_ROOT.parent
+                / "gameplay/schemas/player_facing_interaction_contract_review.schema.json"
+            ).read_text()
+        )
+        beat_verdicts = schema["properties"]["beat_findings"]["items"][
+            "properties"
+        ]["verdict"]["enum"]
+        self.assertIn("BLOCK", beat_verdicts)
+        self.assertNotIn("maxItems", schema["properties"]["blocking_findings"])
+        self.assertEqual(
+            1,
+            schema["allOf"][0]["else"]["properties"]["blocking_findings"][
+                "minItems"
+            ],
+        )
+
+    def test_player_facing_blind_schema_seals_deidentified_attempt_records(self) -> None:
+        factory_root = STUDIO_ROOT.parent
+        contract = json.loads(
+            (
+                factory_root
+                / "gameplay/schemas/player_facing_interaction_contract.schema.json"
+            ).read_text()
+        )
+        self.assertIn("player_entry_knowledge", contract["required"])
+        self.assertEqual(
+            "#/$defs/text",
+            contract["properties"]["player_entry_knowledge"]["items"]["$ref"],
+        )
+
+        blind_input = json.loads(
+            (
+                STUDIO_ROOT
+                / "schemas/player_facing_blind_observation_input.schema.json"
+            ).read_text()
+        )
+        self.assertEqual(
+            "#/$defs/text",
+            blind_input["properties"]["player_prior_knowledge"]["items"]["$ref"],
+        )
+        self.assertIn("preparation_attestation", blind_input["required"])
+        preparation = blind_input["properties"]["preparation_attestation"]
+        for field in (
+            "answer_bearing_design_ids_removed",
+            "intended_answers_removed",
+            "future_beat_knowledge_removed",
+            "only_phase_a_allowed_materials_present",
+        ):
+            self.assertIs(True, preparation["properties"][field]["const"])
+        blind = json.loads(
+            (STUDIO_ROOT / "schemas/player_facing_blind_observation.schema.json").read_text()
+        )
+        attempts = blind["properties"]["observation"]["properties"][
+            "interaction_observations"
+        ]
+        self.assertEqual("#/$defs/interaction_observation", attempts["items"]["$ref"])
+        self.assertEqual(
+            "^attempt\\.[1-9][0-9]*$",
+            blind["$defs"]["interaction_observation"]["properties"]["attempt_id"][
+                "pattern"
+            ],
+        )
+
+    def test_design_conformance_schema_preserves_hypothesis_lifecycle(self) -> None:
+        schema = json.loads(
+            (
+                STUDIO_ROOT.parent
+                / "gameplay/schemas/gameplay_design_conformance_review.schema.json"
+            ).read_text()
+        )
+        self.assertEqual(
+            "gameplay_design_conformance_review.v2",
+            schema["properties"]["schema_version"]["const"],
+        )
+        verdicts = set(
+            schema["$defs"]["claim_coverage"]["properties"]["verdict"]["enum"]
+        )
+        self.assertEqual({"PASS_DESIGN_CLAIM", "TESTABLE_DESIGN"}, verdicts)
 
     def test_decision_register_has_explicit_superseded_state(self) -> None:
         payload = json.loads(

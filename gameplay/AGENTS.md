@@ -240,6 +240,7 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> prepare.py context
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
   -> Studio cycle authority or explicit bounded specialist authority
+  -> current-scene Player-Facing Interaction Contract + fresh design review
   -> compact GAMEPLAY_DECISION_CARD.json -> human verdict
   -> separate full-spec author
   -> OBJECTIVE_GAMEPLAY.md
@@ -251,8 +252,11 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> original caller executes dependency-ready plans
 ```
 
-For `STUDIO_WHOLE_GAME`, the arrow into the human verdict is gated by
-two independent final gates. First, a fresh
+For `STUDIO_WHOLE_GAME`, no Card may be registered until it exact-SHA binds a
+game-owned `PLAYER_FACING_INTERACTION_CONTRACT.json` and a fresh
+`PASS_PLAYER_FACING_INTERACTION_DESIGN` review. This is a testable design
+verdict only: validation hypotheses remain `TESTABLE_DESIGN`. The arrow into
+the human verdict is then gated by two independent final gates. First, a fresh
 `studio-gameplay-decision-card-reviewer` audits the exact pending Card and all
 bound authorities against every Factory requirement already due, including
 gameplay sufficiency rather than certain clicks/dialogue/task proxies. Then a
@@ -282,6 +286,10 @@ detail and falsifiable hypotheses, but no unapproved material decision. An
 `READY_FOR_EXECUTION` starts production. For an ordinary
 make/continue request, the caller executes the plans automatically rather than
 asking the user to say “write the code”.
+
+`check-historical` returns only `HISTORICAL_PLAN_READABLE`; this status proves
+readability but is never an execution handoff. Only active validation may
+return `READY_FOR_EXECUTION`.
 
 At the human gate, show only the rendered compact card and request
 `USER_APPROVED <decision_payload_sha256>`. Do not dump reconstruction notes,

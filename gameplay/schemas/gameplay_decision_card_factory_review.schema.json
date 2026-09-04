@@ -4,56 +4,174 @@
   "title": "Final Gameplay Decision Card Factory Compliance Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "review_id", "review_role", "project_id", "objective_id", "factory_revision", "decision_card", "product_authority", "studio_gameplay_system", "authority_inventory", "reviewer_context_id", "reviewer_freshness", "requirement_findings", "claim_inventory", "blocking_findings", "verdict", "reviewed_at"],
+  "required": [
+    "schema_version",
+    "review_id",
+    "review_role",
+    "project_id",
+    "objective_id",
+    "factory_revision",
+    "decision_card",
+    "product_authority",
+    "studio_gameplay_system",
+    "player_facing_interaction_contract",
+    "player_facing_interaction_contract_review",
+    "authority_inventory",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "requirement_findings",
+    "claim_inventory",
+    "blocking_findings",
+    "verdict",
+    "reviewed_at"
+  ],
   "properties": {
-    "schema_version": {"const": "gameplay_decision_card_factory_review.v1"},
-    "review_id": {"$ref": "#/$defs/id"},
-    "review_role": {"const": "FINAL_CARD_FACTORY_COMPLIANCE"},
-    "project_id": {"$ref": "#/$defs/id"},
-    "objective_id": {"$ref": "#/$defs/id"},
-    "factory_revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "schema_version": {
+      "const": "gameplay_decision_card_factory_review.v2"
+    },
+    "review_id": {
+      "$ref": "#/$defs/id"
+    },
+    "review_role": {
+      "const": "FINAL_CARD_FACTORY_COMPLIANCE"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "objective_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
     "decision_card": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "decision_payload_sha256", "rendered_surface_sha256"],
+      "required": [
+        "path",
+        "decision_payload_sha256",
+        "rendered_surface_sha256"
+      ],
       "properties": {
-        "path": {"type": "string", "minLength": 1},
-        "decision_payload_sha256": {"$ref": "#/$defs/sha256"},
-        "rendered_surface_sha256": {"$ref": "#/$defs/sha256"}
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_payload_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "rendered_surface_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
       }
     },
-    "product_authority": {"$ref": "#/$defs/path_hash"},
-    "studio_gameplay_system": {"$ref": "#/$defs/path_hash"},
+    "product_authority": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "studio_gameplay_system": {
+      "$ref": "#/$defs/path_hash"
+    },
     "authority_inventory": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["product_causal_links", "factory_constraints", "product_non_goals"],
+      "required": [
+        "product_causal_links",
+        "factory_constraints",
+        "product_non_goals"
+      ],
       "properties": {
-        "product_causal_links": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/authority_finding"}},
-        "factory_constraints": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/authority_finding"}},
-        "product_non_goals": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/authority_finding"}}
+        "product_causal_links": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/authority_finding"
+          }
+        },
+        "factory_constraints": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/authority_finding"
+          }
+        },
+        "product_non_goals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/authority_finding"
+          }
+        }
       }
     },
-    "reviewer_context_id": {"$ref": "#/$defs/id"},
-    "reviewer_freshness": {"const": "FRESH"},
+    "reviewer_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "reviewer_freshness": {
+      "const": "FRESH"
+    },
     "requirement_findings": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["active_authority_and_scope_preserved", "minimum_cycle_complete_slice", "playable_span_sufficiency_not_inflated", "meaningful_choice_not_certain_click", "non_gameplay_activity_not_counted", "player_work_world_response_carry_forward", "reward_changes_next_decision", "two_lap_decision_materially_differs", "declared_alternatives_materially_distinct_and_reachable", "cost_obligation_failure_and_recovery_are_concrete", "red_lines_and_hypotheses_are_falsifiable", "applicable_factory_gates_complete", "downstream_work_not_misrepresented_as_complete"],
+      "required": [
+        "active_authority_and_scope_preserved",
+        "minimum_cycle_complete_slice",
+        "playable_span_sufficiency_not_inflated",
+        "meaningful_choice_not_certain_click",
+        "non_gameplay_activity_not_counted",
+        "player_work_world_response_carry_forward",
+        "reward_changes_next_decision",
+        "two_lap_decision_materially_differs",
+        "declared_alternatives_materially_distinct_and_reachable",
+        "cost_obligation_failure_and_recovery_are_concrete",
+        "red_lines_and_hypotheses_are_falsifiable",
+        "applicable_factory_gates_complete",
+        "player_facing_interaction_concretely_designed",
+        "downstream_work_not_misrepresented_as_complete"
+      ],
       "properties": {
-        "active_authority_and_scope_preserved": {"$ref": "#/$defs/finding"},
-        "minimum_cycle_complete_slice": {"$ref": "#/$defs/finding"},
-        "playable_span_sufficiency_not_inflated": {"$ref": "#/$defs/finding"},
-        "meaningful_choice_not_certain_click": {"$ref": "#/$defs/finding"},
-        "non_gameplay_activity_not_counted": {"$ref": "#/$defs/finding"},
-        "player_work_world_response_carry_forward": {"$ref": "#/$defs/finding"},
-        "reward_changes_next_decision": {"$ref": "#/$defs/finding"},
-        "two_lap_decision_materially_differs": {"$ref": "#/$defs/finding"},
-        "declared_alternatives_materially_distinct_and_reachable": {"$ref": "#/$defs/finding"},
-        "cost_obligation_failure_and_recovery_are_concrete": {"$ref": "#/$defs/finding"},
-        "red_lines_and_hypotheses_are_falsifiable": {"$ref": "#/$defs/finding"},
-        "applicable_factory_gates_complete": {"$ref": "#/$defs/finding"},
-        "downstream_work_not_misrepresented_as_complete": {"$ref": "#/$defs/finding"}
+        "active_authority_and_scope_preserved": {
+          "$ref": "#/$defs/finding"
+        },
+        "minimum_cycle_complete_slice": {
+          "$ref": "#/$defs/finding"
+        },
+        "playable_span_sufficiency_not_inflated": {
+          "$ref": "#/$defs/finding"
+        },
+        "meaningful_choice_not_certain_click": {
+          "$ref": "#/$defs/finding"
+        },
+        "non_gameplay_activity_not_counted": {
+          "$ref": "#/$defs/finding"
+        },
+        "player_work_world_response_carry_forward": {
+          "$ref": "#/$defs/finding"
+        },
+        "reward_changes_next_decision": {
+          "$ref": "#/$defs/finding"
+        },
+        "two_lap_decision_materially_differs": {
+          "$ref": "#/$defs/finding"
+        },
+        "declared_alternatives_materially_distinct_and_reachable": {
+          "$ref": "#/$defs/finding"
+        },
+        "cost_obligation_failure_and_recovery_are_concrete": {
+          "$ref": "#/$defs/finding"
+        },
+        "red_lines_and_hypotheses_are_falsifiable": {
+          "$ref": "#/$defs/finding"
+        },
+        "applicable_factory_gates_complete": {
+          "$ref": "#/$defs/finding"
+        },
+        "downstream_work_not_misrepresented_as_complete": {
+          "$ref": "#/$defs/finding"
+        },
+        "player_facing_interaction_concretely_designed": {
+          "$ref": "#/$defs/finding"
+        }
       }
     },
     "claim_inventory": {
@@ -62,12 +180,35 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["claim_id", "requirement_ids", "verdict", "rationale"],
+        "required": [
+          "claim_id",
+          "requirement_ids",
+          "verdict",
+          "rationale"
+        ],
         "properties": {
-          "claim_id": {"$ref": "#/$defs/id"},
-          "requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/requirement_id"}},
-          "verdict": {"enum": ["PASS", "BLOCK"]},
-          "rationale": {"type": "string", "minLength": 1}
+          "claim_id": {
+            "$ref": "#/$defs/id"
+          },
+          "requirement_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/requirement_id"
+            }
+          },
+          "verdict": {
+            "enum": [
+              "PASS_DESIGN_CLAIM",
+              "TESTABLE_DESIGN",
+              "BLOCK"
+            ]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
@@ -76,52 +217,197 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["finding_id", "requirement_id", "claim_ids", "detail"],
+        "required": [
+          "finding_id",
+          "requirement_id",
+          "claim_ids",
+          "detail"
+        ],
         "properties": {
-          "finding_id": {"$ref": "#/$defs/id"},
-          "requirement_id": {"$ref": "#/$defs/requirement_id"},
-          "claim_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-          "detail": {"type": "string", "minLength": 1}
+          "finding_id": {
+            "$ref": "#/$defs/id"
+          },
+          "requirement_id": {
+            "$ref": "#/$defs/requirement_id"
+          },
+          "claim_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/id"
+            }
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
-    "verdict": {"enum": ["PASS_CARD_FACTORY_COMPLIANCE", "REVISE_CARD_BEFORE_HUMAN"]},
-    "reviewed_at": {"type": "string", "minLength": 1}
+    "verdict": {
+      "enum": [
+        "PASS_CARD_FACTORY_COMPLIANCE",
+        "REVISE_CARD_BEFORE_HUMAN"
+      ]
+    },
+    "reviewed_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "player_facing_interaction_contract": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "player_facing_interaction_contract_review": {
+      "$ref": "#/$defs/path_hash"
+    }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "path_hash": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}}},
-    "requirement_id": {"enum": ["active_authority_and_scope_preserved", "minimum_cycle_complete_slice", "playable_span_sufficiency_not_inflated", "meaningful_choice_not_certain_click", "non_gameplay_activity_not_counted", "player_work_world_response_carry_forward", "reward_changes_next_decision", "two_lap_decision_materially_differs", "declared_alternatives_materially_distinct_and_reachable", "cost_obligation_failure_and_recovery_are_concrete", "red_lines_and_hypotheses_are_falsifiable", "applicable_factory_gates_complete", "downstream_work_not_misrepresented_as_complete"]},
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "requirement_id": {
+      "enum": [
+        "active_authority_and_scope_preserved",
+        "minimum_cycle_complete_slice",
+        "playable_span_sufficiency_not_inflated",
+        "meaningful_choice_not_certain_click",
+        "non_gameplay_activity_not_counted",
+        "player_work_world_response_carry_forward",
+        "reward_changes_next_decision",
+        "two_lap_decision_materially_differs",
+        "declared_alternatives_materially_distinct_and_reachable",
+        "cost_obligation_failure_and_recovery_are_concrete",
+        "red_lines_and_hypotheses_are_falsifiable",
+        "applicable_factory_gates_complete",
+        "player_facing_interaction_concretely_designed",
+        "downstream_work_not_misrepresented_as_complete"
+      ]
+    },
     "authority_finding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["authority_id", "system_transition_ids", "requirement_ids", "evidence_claim_ids", "verdict", "rationale"],
+      "required": [
+        "authority_id",
+        "system_transition_ids",
+        "requirement_ids",
+        "evidence_claim_ids",
+        "verdict",
+        "rationale"
+      ],
       "properties": {
-        "authority_id": {"$ref": "#/$defs/id"},
-        "system_transition_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-        "requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/requirement_id"}},
-        "evidence_claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-        "verdict": {"enum": ["PASS", "BLOCK"]},
-        "rationale": {"type": "string", "minLength": 1}
+        "authority_id": {
+          "$ref": "#/$defs/id"
+        },
+        "system_transition_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/requirement_id"
+          }
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "verdict": {
+          "enum": [
+            "PASS",
+            "BLOCK"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "finding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["verdict", "evidence_claim_ids", "rationale"],
+      "required": [
+        "verdict",
+        "evidence_claim_ids",
+        "rationale"
+      ],
       "properties": {
-        "verdict": {"enum": ["PASS", "BLOCK"]},
-        "evidence_claim_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-        "rationale": {"type": "string", "minLength": 1}
+        "verdict": {
+          "enum": [
+            "PASS",
+            "BLOCK"
+          ]
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   },
   "allOf": [
     {
-      "if": {"properties": {"verdict": {"const": "PASS_CARD_FACTORY_COMPLIANCE"}}},
-      "then": {"properties": {"blocking_findings": {"maxItems": 0}}},
-      "else": {"properties": {"blocking_findings": {"minItems": 1}}}
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PASS_CARD_FACTORY_COMPLIANCE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blocking_findings": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "blocking_findings": {
+            "minItems": 1
+          }
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,41 @@
+{
+  "schema_version": "player_facing_blind_observation_input.v1",
+  "observation_input_id": "<INPUT_ID>",
+  "project_id": "<PROJECT_ID>",
+  "unit_id": "<UNIT_ID>",
+  "game_revision": "<COMMITTED_GAME_REVISION>",
+  "build_id": "<BUILD_ID>",
+  "clean_start": {
+    "save_identity": "<SAVE_ID>",
+    "save_state": "CLEAN_START",
+    "start_state": "<START_STATE>"
+  },
+  "scenario_entry_state": "<EXACT_SCENARIO_ENTRY_STATE>",
+  "player_prior_knowledge": [
+    "<EXACT_DEIDENTIFIED_CONTRACT_PLAYER_ENTRY_KNOWLEDGE>"
+  ],
+  "normal_controls": [
+    "<NORMAL_PLAYER_CONTROL>"
+  ],
+  "surface_artifacts": [
+    {
+      "artifact_type": "SCREEN_FRAME",
+      "artifact": {
+        "path": "<PLAYER_SURFACE_FRAME>",
+        "sha256": "<SHA256>"
+      }
+    }
+  ],
+  "context_policy": {
+    "authority_access": "FORBIDDEN_BEFORE_OBSERVATION",
+    "allowed_materials": "PLAYER_SURFACE_ONLY"
+  },
+  "preparation_attestation": {
+    "preparer_context_id": "<PREPARER_CONTEXT_ID>",
+    "answer_bearing_design_ids_removed": true,
+    "intended_answers_removed": true,
+    "future_beat_knowledge_removed": true,
+    "only_phase_a_allowed_materials_present": true
+  },
+  "prepared_at": "<ISO_8601_DATETIME>"
+}

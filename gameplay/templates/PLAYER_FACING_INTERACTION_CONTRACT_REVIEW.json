@@ -1,0 +1,105 @@
+{
+  "schema_version": "player_facing_interaction_contract_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "PLAYER_FACING_INTERACTION_DESIGN_REVIEW",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_GIT_REVISION>",
+  "interaction_contract": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/PLAYER_FACING_INTERACTION_CONTRACT.json",
+    "sha256": "<SHA256>"
+  },
+  "product_authority": {
+    "path": "design/product/PRODUCT_THESIS.md",
+    "sha256": "<SHA256>"
+  },
+  "studio_gameplay_system": {
+    "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+    "sha256": "<SHA256>"
+  },
+  "reviewer_context_id": "<FRESH_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "hypothesis_lifecycle": "TESTABLE_DESIGN_ONLY",
+  "requirement_findings": {
+    "visible_entry_cause_and_goal": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "concrete_player_input_and_judgment": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "ordered_interaction_not_abstract_verb": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "visible_response_and_persistent_change": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "discoverable_changed_next_affordance": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "text_and_proxy_are_support_only": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "current_scene_visual_sequence_present": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "target_locale_readable": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "runtime_capture_plan_is_falsifiable": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<RATIONALE>"
+    },
+    "blind_prior_knowledge_is_deidentified": {
+      "verdict": "PASS",
+      "beat_ids": [
+        "<BEAT_ID>"
+      ],
+      "rationale": "<ENTRY_KNOWLEDGE_CONTAINS_NO_BEAT_IDS_SEQUENCE_OR_INTENDED_ANSWER>"
+    }
+  },
+  "beat_findings": [
+    {
+      "beat_id": "<BEAT_ID>",
+      "verdict": "PASS_TESTABLE_DESIGN",
+      "rationale": "<PLAYER_PERSPECTIVE_RATIONALE>"
+    }
+  ],
+  "blocking_findings": [],
+  "verdict": "PASS_PLAYER_FACING_INTERACTION_DESIGN",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

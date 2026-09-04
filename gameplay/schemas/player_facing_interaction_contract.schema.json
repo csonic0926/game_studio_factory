@@ -1,0 +1,473 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/player_facing_interaction_contract.schema.json",
+  "title": "Player-Facing Interaction Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "project_id",
+    "objective_id",
+    "factory_revision",
+    "product_authority",
+    "studio_gameplay_system",
+    "author_context_id",
+    "target_player",
+    "target_locale",
+    "player_entry_knowledge",
+    "current_scene_composition",
+    "localization_readability",
+    "playable_beats",
+    "design_status",
+    "authored_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "player_facing_interaction_contract.v1"
+    },
+    "contract_id": {
+      "$ref": "#/$defs/id"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "objective_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "product_authority": {
+      "$ref": "#/$defs/optional_path_hash"
+    },
+    "studio_gameplay_system": {
+      "$ref": "#/$defs/optional_path_hash"
+    },
+    "author_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "target_player": {
+      "$ref": "#/$defs/text"
+    },
+    "target_locale": {
+      "$ref": "#/$defs/text"
+    },
+    "current_scene_composition": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "$ref": "#/$defs/visual_artifact"
+      }
+    },
+    "localization_readability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locale",
+        "readability_status",
+        "fallback_used",
+        "garbled_text_present",
+        "evidence"
+      ],
+      "properties": {
+        "locale": {
+          "$ref": "#/$defs/text"
+        },
+        "readability_status": {
+          "const": "VERIFIED_READABLE"
+        },
+        "fallback_used": {
+          "const": false
+        },
+        "garbled_text_present": {
+          "const": false
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    },
+    "playable_beats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/beat"
+      }
+    },
+    "design_status": {
+      "const": "TESTABLE_DESIGN"
+    },
+    "authored_at": {
+      "$ref": "#/$defs/text"
+    },
+    "player_entry_knowledge": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "TBD"
+      }
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "artifact"
+      ],
+      "properties": {
+        "artifact_type": {
+          "$ref": "#/$defs/text"
+        },
+        "artifact": {
+          "$ref": "#/$defs/path_hash"
+        }
+      }
+    },
+    "visual_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "beat_id",
+        "surface_moment",
+        "artifact_type",
+        "artifact"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "beat_id": {
+          "$ref": "#/$defs/id"
+        },
+        "surface_moment": {
+          "enum": [
+            "ENTRY",
+            "AFFORDANCE",
+            "EXPECTED_RESPONSE",
+            "PERSISTENT_RETURN"
+          ]
+        },
+        "artifact_type": {
+          "enum": [
+            "IN_ENGINE_SCREENSHOT",
+            "ANNOTATED_CURRENT_SCENE_FRAME",
+            "FAITHFUL_SCREEN_FLOW_PROTOTYPE"
+          ]
+        },
+        "artifact": {
+          "$ref": "#/$defs/path_hash"
+        }
+      }
+    },
+    "beat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "beat_id",
+        "system_transition_ids",
+        "entry_screen_state",
+        "player_prior_knowledge",
+        "perceivable_cause",
+        "visible_goal",
+        "available_input",
+        "required_judgment",
+        "interaction_sequence",
+        "immediate_visible_response",
+        "persistent_visible_change",
+        "next_affordance",
+        "allowed_text_support",
+        "forbidden_proxy_check",
+        "player_surface_evidence_plan"
+      ],
+      "properties": {
+        "beat_id": {
+          "$ref": "#/$defs/id"
+        },
+        "system_transition_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "entry_screen_state": {
+          "$ref": "#/$defs/text"
+        },
+        "player_prior_knowledge": {
+          "$ref": "#/$defs/text"
+        },
+        "perceivable_cause": {
+          "$ref": "#/$defs/text"
+        },
+        "visible_goal": {
+          "$ref": "#/$defs/text"
+        },
+        "available_input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_kind",
+            "control",
+            "affordance_cue"
+          ],
+          "properties": {
+            "input_kind": {
+              "$ref": "#/$defs/work_input_kind"
+            },
+            "control": {
+              "$ref": "#/$defs/text"
+            },
+            "affordance_cue": {
+              "$ref": "#/$defs/text"
+            }
+          }
+        },
+        "required_judgment": {
+          "$ref": "#/$defs/text"
+        },
+        "interaction_sequence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/interaction_step"
+          }
+        },
+        "immediate_visible_response": {
+          "$ref": "#/$defs/text"
+        },
+        "persistent_visible_change": {
+          "$ref": "#/$defs/text"
+        },
+        "next_affordance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "discovery_channels"
+          ],
+          "properties": {
+            "description": {
+              "$ref": "#/$defs/text"
+            },
+            "discovery_channels": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/visible_channel"
+              }
+            }
+          }
+        },
+        "allowed_text_support": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "text_can_complete_action",
+            "description"
+          ],
+          "properties": {
+            "role": {
+              "const": "SUPPORT_ONLY"
+            },
+            "text_can_complete_action": {
+              "const": false
+            },
+            "description": {
+              "$ref": "#/$defs/text"
+            }
+          }
+        },
+        "forbidden_proxy_check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "proxy_only",
+            "disallowed_proxies",
+            "explanation"
+          ],
+          "properties": {
+            "proxy_only": {
+              "const": false
+            },
+            "disallowed_proxies": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "POPUP_ONLY",
+                  "JOURNAL_ONLY",
+                  "MARKER_ONLY",
+                  "HIDDEN_FLAG_ONLY",
+                  "STRAIGHT_TRAVERSAL_ONLY",
+                  "DIALOGUE_ADVANCE_ONLY"
+                ]
+              }
+            },
+            "explanation": {
+              "$ref": "#/$defs/text"
+            }
+          }
+        },
+        "player_surface_evidence_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scenario_id",
+            "start_state",
+            "ordered_capture_moments"
+          ],
+          "properties": {
+            "scenario_id": {
+              "$ref": "#/$defs/id"
+            },
+            "start_state": {
+              "$ref": "#/$defs/text"
+            },
+            "ordered_capture_moments": {
+              "type": "array",
+              "minItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "BEFORE_INPUT",
+                  "DURING_INTERACTION",
+                  "AFTER_RESPONSE",
+                  "RETURNED_CHANGED_AFFORDANCE"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "work_input_kind": {
+      "enum": [
+        "MOVEMENT",
+        "POSITIONING",
+        "AIM",
+        "TIMING",
+        "SELECTION",
+        "MANIPULATION",
+        "RESOURCE_COMMITMENT",
+        "COMBAT_COMMAND",
+        "NAVIGATION",
+        "CONTEXT_ACTION",
+        "DIALOGUE_CHOICE"
+      ]
+    },
+    "visible_channel": {
+      "enum": [
+        "WORLD_OBJECT",
+        "CHARACTER",
+        "CAMERA",
+        "ANIMATION",
+        "AUDIO",
+        "WORLD_GEOMETRY",
+        "CONTROL_STATE"
+      ]
+    },
+    "interaction_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "input_kind",
+        "control",
+        "player_intent",
+        "visible_response",
+        "response_channels",
+        "counts_as_player_work"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/id"
+        },
+        "input_kind": {
+          "$ref": "#/$defs/work_input_kind"
+        },
+        "control": {
+          "$ref": "#/$defs/text"
+        },
+        "player_intent": {
+          "$ref": "#/$defs/text"
+        },
+        "visible_response": {
+          "$ref": "#/$defs/text"
+        },
+        "response_channels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/visible_channel"
+          }
+        },
+        "counts_as_player_work": {
+          "const": true
+        }
+      }
+    },
+    "optional_path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^$|^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

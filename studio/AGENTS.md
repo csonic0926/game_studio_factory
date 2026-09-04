@@ -61,6 +61,11 @@ these invariants:
     player-work -> response -> carry-forward chains, non-distinct or unreachable
     alternatives, scope/red-line breaches, and false gate/completion claims.
     Step-local reviews do not substitute for this whole-result audit.
+    Before either review, the Card must bind a game-owned player-facing
+    interaction contract and a fresh whole-sequence design review. The contract
+    makes the current surface, input, response, persisted visible change, and
+    next affordance concrete; prose, dialogue, popups, markers, or hidden state
+    cannot substitute. Design hypotheses remain `TESTABLE_DESIGN`.
 12. **Freshly review every material human transition.** Before presenting a
     material response, blocking question, or Studio decision card, bind the
     exact raw user input, active authority, pending decisions, candidate output,
@@ -95,6 +100,17 @@ these invariants:
     baseline. For Godot projects use
     [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md); respect its
     explicit capability gaps instead of inventing ad-hoc proof.
+16. **Observe the player surface before reading the answer.** Every new
+    gameplay acceptance binds a windowed exact-build input-to-visible-response
+    evidence bundle. A fresh blind observer first receives only legitimate
+    de-identified entry knowledge (never beat ids/sequence), controls, and
+    player-facing output. A different preparer must attest that every
+    Phase-A-visible field/path is free of answer-bearing ids, intended answers,
+    future knowledge, and non-Phase-A material; a different fresh
+    reviewer then compares that sealed observation with the interaction
+    contract, Card, and system. Screenshots, input traces, tests, logs, state
+    JSON, or task/dialogue text alone do not prove interaction. See
+    [`docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
 
 ## Formal production transition
 
@@ -105,7 +121,9 @@ promotion is:
 
 ```text
 B_t + P_t + R_t -> synthesize/validate(G_t) -> decision_card(G_t)
-    -> design(U_t) -> production(U_t) -> integration
+    -> player-surface design contract/review -> design(U_t)
+    -> production(U_t) -> integration
+    -> exact-build interaction evidence -> blind observation/comparison
     -> fresh gameplay acceptance + regression(B_t)
     -> B_(t+1)
 ```

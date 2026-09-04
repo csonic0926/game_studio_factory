@@ -1,5 +1,5 @@
 {
-  "schema_version": "gameplay_acceptance_review.v3",
+  "schema_version": "gameplay_acceptance_review.v4",
   "review_id": "<REVIEW_ID>",
   "project_id": "<PROJECT_ID>",
   "unit_id": "<UNIT_ID>",
@@ -13,6 +13,12 @@
   "acceptance_input": {
     "path": "design/studio/admissions/<ADMISSION_ID>/GAMEPLAY_ACCEPTANCE_INPUT_<UNIT_ID>.json",
     "sha256": "<SHA256>"
+  },
+  "player_facing_evidence": {
+    "runtime_interaction_evidence": {"path": "<RUNTIME_INTERACTION_EVIDENCE_PATH>", "sha256": "<SHA256>"},
+    "blind_observation_input": {"path": "<BLIND_OBSERVATION_INPUT_PATH>", "sha256": "<SHA256>"},
+    "blind_observation": {"path": "<BLIND_OBSERVATION_PATH>", "sha256": "<SHA256>"},
+    "comparison_review": {"path": "<PLAYER_FACING_COMPARISON_REVIEW_PATH>", "sha256": "<SHA256>"}
   },
   "human_playtest": {
     "status": "HUMAN_PLAYTEST_ACCEPTED",

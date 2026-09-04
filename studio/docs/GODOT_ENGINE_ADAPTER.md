@@ -317,14 +317,19 @@ python3 <STUDIO_ROOT>/studio/godot_adapter.py evidence verify \
 ```text
 candidate revision/build
   -> Adapter technical evidence hash
+  -> required windowed interaction bundle (ordered input + before/during/after frames)
+  -> blind player observation with no design authority
+  -> separate fresh authority comparison
   -> Gameplay Observation Adapter semantic mapping and resolved actions
   -> fresh gameplay acceptance + exact-build human playtest
   -> predecessor regression
   -> Studio baseline admission
 ```
 
-Studio/Gameplay artifacts reference the adapter evidence path and SHA-256. They
-do not copy its process status into a gameplay verdict. Doctor reports missing
+Studio/Gameplay artifacts compose adapter outputs into the required
+`PLAYER_FACING_RUNTIME_INTERACTION_EVIDENCE.json`; a screenshot alone, input
+trace alone, headless/dummy frame, test, log, or state dump fails closed. They
+do not copy an Adapter process status into a gameplay verdict. Doctor reports missing
 observability as `BLOCKED`; it does not add game-specific logging or handlers.
 
 ## Scope boundary

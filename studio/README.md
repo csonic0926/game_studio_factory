@@ -17,6 +17,9 @@ Start with:
   — explicit commission activation and whole-direction archive semantics.
 - [`docs/BASELINE_ADMISSION_WORKFLOW.md`](docs/BASELINE_ADMISSION_WORKFLOW.md)
   — complete reconstruction and post-workflow promotion.
+- [`docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md)
+  — design-time interaction proof, exact-build runtime evidence, and blind
+  player observation/comparison without collapsing them into human acceptance.
 - [`docs/GODOT_ENGINE_ADAPTER.md`](docs/GODOT_ENGINE_ADAPTER.md) — desktop
   Godot 4 discovery, bridge/scenario/session control, visual/build verification,
   and immutable evidence binding.
@@ -24,8 +27,9 @@ Start with:
   — opt-in migration from the compatible v1 CLI.
 
 The folder now includes the semantic-alignment validator/reviewer skill,
-gameplay-system/cycle validator, deterministic two-case baseline admission
-compiler/checker, evidence-only desktop Godot automation platform, and installed
+gameplay-system/cycle validator, player-facing interaction/evidence validators
+and reviewer skills, deterministic two-case baseline admission compiler/checker,
+evidence-only desktop Godot automation platform, and installed
 `game-studio-factory` skill. It does not yet contain a persistent multi-cycle
 scheduler. The Godot bridge/scenario/session/visual layers produce technical
 evidence only and are not gameplay-verdict or baseline-promotion authority; see

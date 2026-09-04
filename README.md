@@ -84,8 +84,10 @@ B_t
 → diagnose the next gameplay pressure
 → web research for same-type, cross-genre, and non-game design tokens
 → select one bounded gameplay unit
+→ player-facing interaction contract + fresh design review
 → specialist design/planning/production
 → integration
+→ exact-build interaction evidence + blind observation/comparison
 → fresh new-gameplay acceptance + regression(B_t)
 → promote B_(t+1)
 → repeat
@@ -109,7 +111,8 @@ Baseline admission has two cases behind one entry:
 python3 studio/baseline.py start --game-repo <GAME_REPO>
 ```
 
-See [`studio/docs/BASELINE_ADMISSION_WORKFLOW.md`](studio/docs/BASELINE_ADMISSION_WORKFLOW.md).
+See [`studio/docs/BASELINE_ADMISSION_WORKFLOW.md`](studio/docs/BASELINE_ADMISSION_WORKFLOW.md)
+and [`studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
 
 ### Gameplay Ratchet
 

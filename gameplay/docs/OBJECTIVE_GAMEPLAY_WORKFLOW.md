@@ -111,7 +111,18 @@ the actions make good gameplay.
 
 ## Step 2 — freeze the compact human decision surface
 
-Do not ask a human to validate a generated full spec. First author the bounded
+Do not ask a human to validate a generated full spec. First author the
+objective-local `PLAYER_FACING_INTERACTION_CONTRACT.json` from the current real
+scene composition (in-engine/annotated frames or a faithful screen-flow
+prototype), then use a fresh `studio-player-facing-interaction-reviewer` to
+write `PLAYER_FACING_INTERACTION_CONTRACT_REVIEW.json`. Every claimed beat must
+bind visible entry/cause/goal, legitimate player prior knowledge, concrete
+input and judgment, an ordered input-response sequence, immediate response,
+persistent visible change, changed next affordance, localization readability,
+and an exact future capture plan. Pure prose/state diagrams and
+popup/journal/marker/dialogue/straight-traversal proxies fail closed.
+
+Only `PASS_PLAYER_FACING_INTERACTION_DESIGN` may feed the bounded
 `GAMEPLAY_DECISION_CARD.json` using
 `schemas/gameplay_decision_card.schema.json` and its template. It contains only:
 
@@ -119,7 +130,8 @@ Do not ask a human to validate a generated full spec. First author the bounded
 - three to six core-cycle steps;
 - one to five load-bearing commitments;
 - one to four red lines;
-- at most three explicitly falsifiable hypotheses.
+- at most three explicitly falsifiable hypotheses, each still labelled
+  `TESTABLE_DESIGN` rather than `PASS` or `ACCEPTED`.
 
 For `STUDIO_WHOLE_GAME`, the card binds the exact validated
 `STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json`; `studio/cycle.py` must return
@@ -147,11 +159,13 @@ research, or the future full spec—and request exactly:
 USER_APPROVED <decision_payload_sha256>
 ```
 
-For `STUDIO_WHOLE_GAME`, first follow
-the final Card review and then `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
+For `STUDIO_WHOLE_GAME`, the Card must exact-SHA bind the interaction contract
+and fresh review. Then follow the final Card review and
+`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
 Spawn a fresh `studio-gameplay-decision-card-reviewer` to inventory every Card
 claim and audit the exact pending Card plus bound authorities against all
-Factory requirements already due. Only `PASS_CARD_FACTORY_COMPLIANCE` may
+Factory requirements already due, including the complete player-facing
+contract/review. Only `PASS_CARD_FACTORY_COMPLIANCE` may
 continue. Then produce the exact candidate surface with `draft-card-surface`,
 bind it to raw user input and active authority, obtain a different fresh
 semantic-alignment review, and use `register-card` with
@@ -211,6 +225,10 @@ validator requires the two pair sets to be exact inverses, with no
 contradiction, ambiguity, unsupported material decision, or blocker.
 Validation hypotheses may map only to `expected.*` acceptance claims; they
 cannot by themselves authorize a gameplay row, addition, or completion rule.
+Both reviews use `gameplay_design_conformance_review.v2`. A card-to-spec
+ordinary claim uses `PASS_DESIGN_CLAIM`; a validation hypothesis uses only
+`TESTABLE_DESIGN`. The historical v1 review's generic `PASS` is readable only
+under an explicit historical check and cannot authorize regenerated work.
 
 This relation is refinement, not identity:
 
@@ -275,6 +293,10 @@ historical-check inputs only and cannot authorize new execution:
 python3 gameplay/plan.py check-historical \
   --game-repo <GAME_REPO> --manifest <LEGACY_MANIFEST>
 ```
+
+A successful historical check returns `HISTORICAL_PLAN_READABLE`, never
+`READY_FOR_EXECUTION`. This is a non-authorizing audit result and must not be
+handed to production.
 
 `N` is determined by coherent execution and verification boundaries. Do not
 make one plan per table row, split two plans that both mutate the same file, or

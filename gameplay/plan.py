@@ -43,6 +43,7 @@ SUPPORTED_SCHEMA_VERSIONS = {
 }
 READY_FOR_EXECUTION = "READY_FOR_EXECUTION"
 BLOCKED_BY_PLAN_GAP = "BLOCKED_BY_PLAN_GAP"
+HISTORICAL_PLAN_READABLE = "HISTORICAL_PLAN_READABLE"
 
 FACTORY_ROOT = Path(__file__).resolve().parent.parent
 CANONICAL_MANIFEST_NAME = "PRODUCTION_PLAN_MANIFEST.json"
@@ -625,7 +626,19 @@ def validate_production_plan(
     elif planning_status == BLOCKED_BY_PLAN_GAP and not blocked_gaps:
         errors.append("BLOCKED_BY_PLAN_GAP manifest requires at least one blocked gap")
 
-    status = BLOCKED_BY_PLAN_GAP if errors else planning_status
+    status = (
+        BLOCKED_BY_PLAN_GAP
+        if errors
+        else (
+            HISTORICAL_PLAN_READABLE
+            if allow_legacy_historical
+            else planning_status
+        )
+    )
+    if status == HISTORICAL_PLAN_READABLE:
+        warnings.append(
+            "historical plan validation is read-only and does not authorize production"
+        )
     return PlanValidationResult(
         status=status,
         errors=errors,
@@ -661,7 +674,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"WARNING: {warning}", file=sys.stderr)
     for error in result.errors:
         print(f"ERROR: {error}", file=sys.stderr)
-    return 0 if result.status == READY_FOR_EXECUTION else 2
+    successful_statuses = {
+        HISTORICAL_PLAN_READABLE
+        if args.command == "check-historical"
+        else READY_FOR_EXECUTION
+    }
+    return 0 if result.status in successful_statuses else 2
 
 
 if __name__ == "__main__":

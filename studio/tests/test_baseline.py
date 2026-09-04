@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from gameplay.design_gate import decision_payload_sha256
 from studio.baseline import (
     BASELINE_ADMISSION_VALID,
     BASELINE_ADMITTED,
@@ -17,6 +18,8 @@ from studio.baseline import (
     BLOCKED_BY_EXISTING_BASELINE,
     PRODUCT_DIRECTION_REQUIRED,
     BaselineAdmissionError,
+    _registered_card_design_context_ids,
+    _validate_acceptance_review,
     compile_baseline_admission,
     compute_playtest_token,
     check_baseline_admission,
@@ -24,6 +27,7 @@ from studio.baseline import (
     start_baseline_admission,
 )
 from studio.tests.cycle_fixture import write_valid_cycle
+from studio.tests.player_surface_fixture import write_contract_pair, write_runtime_chain
 
 
 def _run(repo: Path, *args: str) -> str:
@@ -81,10 +85,126 @@ class BaselineAdmissionTests(unittest.TestCase):
         _write_json(self.repo, "evidence/acceptance-input-one.json", {"run": "one"})
         _write_json(self.repo, "evidence/runtime-one.json", {"loop": "complete"})
         _write(self.repo, "evidence/verification-one.txt", "PASS\n")
+        self.player_surface_design: dict[str, dict] = {}
+        self._prepare_player_surface_design("unit-one")
         self.revision_one = _commit(self.repo, "initial playable game")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
+
+    def _prepare_player_surface_design(self, unit_id: str) -> None:
+        objective_dir = self.repo / f"design/gameplay/objective_gameplay/{unit_id}"
+        system_ref = _ref(self.repo, self.cycle_relative)
+        product_ref = _ref(self.repo, "design/product/PRODUCT_THESIS.md")
+        transition_ids = ["decide", "commit", "resolve", "reward", "reinvest", "return"]
+        contract_ref, contract_review_ref, beat_ids = write_contract_pair(
+            self.repo,
+            objective_dir,
+            project_id="sample-game",
+            objective_id=unit_id,
+            factory_revision=self.factory_revision,
+            product_ref=product_ref,
+            system_ref=system_ref,
+            transition_ids=transition_ids,
+        )
+        card_path = objective_dir / "GAMEPLAY_DECISION_CARD.json"
+        card = {
+            "schema_version": "gameplay_decision_card.v2",
+            "card_id": f"{unit_id}.card.v2", "project_id": "sample-game",
+            "objective_id": unit_id, "factory_revision": self.factory_revision,
+            "routing": "STUDIO_WHOLE_GAME", "product_authority": product_ref,
+            "studio_gameplay_system": system_ref,
+            "player_facing_interaction_contract": contract_ref,
+            "player_facing_interaction_contract_review": contract_review_ref,
+            "author_context_id": f"{unit_id}.card-author",
+            "player_promise": {"claim_id": "promise.system", "text": "Choose, resolve, gain a changed opportunity, and choose again."},
+            "core_cycle": [{"claim_id": f"cycle.{transition_id}", "text": f"Player-facing {transition_id} transition."} for transition_id in transition_ids],
+            "material_commitments": [{"claim_id": "commitment.choice-reward-return", "text": "Join decision, reward, and changed next opportunity."}],
+            "red_lines": [{"claim_id": "redline.1", "text": "A result and replay prompt are not the gameplay cycle."}],
+            "validation_hypotheses": [{"claim_id": "hypothesis.player-understands", "text": "The player understands cause, work, result, and next motive.", "falsification_signal": "A blind observer cannot explain any one of these.", "status": "TESTABLE_DESIGN"}],
+            "decision_payload_sha256": "",
+            "human_verdict": {"status": "USER_APPROVED", "source_text": "", "recorded_at": "2026-09-04T09:10:00Z"},
+        }
+        card["decision_payload_sha256"] = decision_payload_sha256(card)
+        card["human_verdict"]["source_text"] = f"USER_APPROVED {card['decision_payload_sha256']}"
+        _write_json(self.repo, card_path.relative_to(self.repo).as_posix(), card)
+        final_review_path = (
+            objective_dir / "GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json"
+        )
+        _write_json(
+            self.repo,
+            final_review_path.relative_to(self.repo).as_posix(),
+            {"reviewer_context_id": f"{unit_id}.final-card-reviewer"},
+        )
+        alignment_dir = self.repo / f"design/studio/interaction_alignment/{unit_id}"
+        alignment_input_path = alignment_dir / "STUDIO_SEMANTIC_ALIGNMENT_INPUT.json"
+        alignment_review_path = alignment_dir / "STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json"
+        _write_json(
+            self.repo,
+            alignment_input_path.relative_to(self.repo).as_posix(),
+            {
+                "author_context_id": f"{unit_id}.alignment-author",
+                "active_authorities": [
+                    {
+                        "authority_id": "card.factory-compliance-review",
+                        "authority_kind": "REPO_EVIDENCE",
+                        "artifact": _ref(
+                            self.repo,
+                            final_review_path.relative_to(self.repo).as_posix(),
+                        ),
+                    }
+                ],
+            },
+        )
+        _write_json(
+            self.repo,
+            alignment_review_path.relative_to(self.repo).as_posix(),
+            {"reviewer_context_id": f"{unit_id}.alignment-reviewer"},
+        )
+        register_path = self.repo / "design/studio/STUDIO_DECISION_CARD_REGISTER.json"
+        register = (
+            json.loads(register_path.read_text())
+            if register_path.is_file()
+            else {
+                "schema_version": "studio_decision_card_register.v1",
+                "project_id": "sample-game",
+                "entries": [],
+                "updated_at": "2026-09-04T09:10:00Z",
+            }
+        )
+        register["entries"].append(
+            {
+                "card_id": card["card_id"],
+                "objective_id": unit_id,
+                "decision_payload_sha256": card["decision_payload_sha256"],
+                "decision_card": _ref(
+                    self.repo, card_path.relative_to(self.repo).as_posix()
+                ),
+                "state": "USER_APPROVED",
+                "alignment_input": _ref(
+                    self.repo, alignment_input_path.relative_to(self.repo).as_posix()
+                ),
+                "alignment_review": _ref(
+                    self.repo, alignment_review_path.relative_to(self.repo).as_posix()
+                ),
+                "supersedes": [],
+                "superseded_by": "",
+                "recorded_at": "2026-09-04T09:10:00Z",
+                "updated_at": "2026-09-04T09:10:00Z",
+            }
+        )
+        _write_json(
+            self.repo,
+            register_path.relative_to(self.repo).as_posix(),
+            register,
+        )
+        self.player_surface_design[unit_id] = {
+            "card_ref": _ref(self.repo, card_path.relative_to(self.repo).as_posix()),
+            "contract_ref": contract_ref,
+            "contract_review_ref": contract_review_ref,
+            "beat_ids": beat_ids,
+            "hypothesis_ids": ["hypothesis.player-understands"],
+        }
 
     def _acceptance_review(
         self,
@@ -97,6 +217,19 @@ class BaselineAdmissionTests(unittest.TestCase):
         authority: str,
         evidence: str,
     ) -> dict[str, str]:
+        design = self.player_surface_design[unit_id]
+        admission_dir = self.repo / f"design/studio/admissions/{admission_id}"
+        player_facing_evidence = write_runtime_chain(
+            self.repo,
+            admission_dir,
+            project_id="sample-game", unit_id=unit_id,
+            game_revision=revision, build_id=build_id,
+            factory_revision=self.factory_revision,
+            contract_ref=design["contract_ref"],
+            contract_review_ref=design["contract_review_ref"],
+            card_ref=design["card_ref"], system_ref=_ref(self.repo, self.cycle_relative),
+            beat_ids=design["beat_ids"], hypothesis_ids=design["hypothesis_ids"],
+        )
         input_relative = (
             f"design/studio/admissions/{admission_id}/"
             f"GAMEPLAY_ACCEPTANCE_INPUT_{unit_id}.json"
@@ -105,7 +238,7 @@ class BaselineAdmissionTests(unittest.TestCase):
             self.repo,
             input_relative,
             {
-                "schema_version": "gameplay_acceptance_input.v2",
+                "schema_version": "gameplay_acceptance_input.v3",
                 "acceptance_input_id": f"input-{admission_id}-{unit_id}",
                 "project_id": "sample-game",
                 "unit_id": unit_id,
@@ -115,8 +248,12 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "experience_authority": _ref(self.repo, authority),
                 "studio_gameplay_system": _ref(self.repo, self.cycle_relative),
                 "cycle_id": "choice-reward-cycle",
+                "decision_card": design["card_ref"],
+                "player_facing_interaction_contract": design["contract_ref"],
+                "player_facing_interaction_contract_review": design["contract_review_ref"],
+                "player_facing_evidence": player_facing_evidence,
                 "expected_player_experience": {
-                    "target_player": "A player encountering this objective for the first time",
+                    "target_player": "A first-time player using only ordinary controls",
                     "intended_experience": "Understand the goal and make a deliberate choice",
                     "required_player_work": "Read state, choose, act, and observe the consequence",
                     "earned_satisfaction": "The visible result follows from the player's choice",
@@ -171,7 +308,7 @@ class BaselineAdmissionTests(unittest.TestCase):
             self.repo,
             relative,
             {
-                "schema_version": "gameplay_acceptance_review.v3",
+                "schema_version": "gameplay_acceptance_review.v4",
                 "review_id": f"review-{admission_id}-{unit_id}",
                 "project_id": "sample-game",
                 "unit_id": unit_id,
@@ -183,6 +320,7 @@ class BaselineAdmissionTests(unittest.TestCase):
                 "reviewer_freshness": "FRESH",
                 "verdict": "ACCEPTED",
                 "acceptance_input": acceptance_input_ref,
+                "player_facing_evidence": player_facing_evidence,
                 "human_playtest": {
                     "status": "HUMAN_PLAYTEST_ACCEPTED",
                     "verdict_owner": "USER",
@@ -190,7 +328,12 @@ class BaselineAdmissionTests(unittest.TestCase):
                     "verdict_source": f"HUMAN_PLAYTEST_ACCEPTED {verdict_payload_sha}",
                     "accepted_at": "2026-08-03T12:02:00Z",
                 },
-                "evidence_paths": [_ref(self.repo, evidence)],
+                "evidence_paths": [
+                    _ref(self.repo, evidence),
+                    player_facing_evidence["runtime_interaction_evidence"],
+                    player_facing_evidence["blind_observation"],
+                    player_facing_evidence["comparison_review"],
+                ],
                 "observed_complete_loop": {
                     "goal": "Reach the visible objective",
                     "actions": ["Choose and execute a meaningful action"],
@@ -324,6 +467,7 @@ class BaselineAdmissionTests(unittest.TestCase):
         _write(self.repo, "evidence/implementation-two.txt", "IMPLEMENTED\n")
         _write(self.repo, "evidence/verification-two.txt", "NEW PASS\n")
         _write(self.repo, "evidence/regression-one.txt", "OLD PASS\n")
+        self._prepare_player_surface_design("unit-two")
         self.revision_two = _commit(self.repo, "implement unit two")
 
         admission_id = "admission-two"
@@ -646,6 +790,63 @@ class BaselineAdmissionTests(unittest.TestCase):
         self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
         self.assertTrue(any("historical-only" in error for error in result.errors))
 
+    def test_historical_acceptance_uses_its_recorded_factory_revision(self) -> None:
+        historical_revision = "1" * 40
+        review_ref = self._acceptance_review(
+            admission_id="historical-admission",
+            unit_id="unit-one",
+            revision=self.revision_one,
+            build_id="build-one",
+            reviewer="historical-reviewer",
+            authority="design/gameplay/unit-one.md",
+            evidence="evidence/runtime-one.json",
+        )
+        review_path = self.repo / review_ref["path"]
+        review = json.loads(review_path.read_text())
+        input_path = self.repo / review["acceptance_input"]["path"]
+        acceptance_input = json.loads(input_path.read_text())
+        acceptance_input["schema_version"] = "gameplay_acceptance_input.v1"
+        acceptance_input["factory_revision"] = historical_revision
+        for field in (
+            "studio_gameplay_system", "cycle_id", "cycle_acceptance", "decision_card",
+            "player_facing_interaction_contract",
+            "player_facing_interaction_contract_review", "player_facing_evidence",
+        ):
+            acceptance_input.pop(field, None)
+        _write_json(
+            self.repo,
+            input_path.relative_to(self.repo).as_posix(),
+            acceptance_input,
+        )
+        review["schema_version"] = "gameplay_acceptance_review.v2"
+        review["factory_revision"] = historical_revision
+        review["acceptance_input"] = _ref(
+            self.repo, input_path.relative_to(self.repo).as_posix()
+        )
+        review.pop("player_facing_evidence")
+        review.pop("observed_two_lap_cycle")
+        review["human_playtest"].pop("verdict_payload_sha256")
+        _write_json(self.repo, review_path.relative_to(self.repo).as_posix(), review)
+
+        errors: list[str] = []
+        _validate_acceptance_review(
+            self.repo.resolve(),
+            _ref(self.repo, review_path.relative_to(self.repo).as_posix()),
+            project_id="sample-game",
+            unit_id="unit-one",
+            game_revision=self.revision_one,
+            build_id="build-one",
+            authority_ref=_ref(self.repo, "design/gameplay/unit-one.md"),
+            product_authority_ref=_ref(
+                self.repo, "design/product/PRODUCT_THESIS.md"
+            ),
+            factory_revision=self.factory_revision,
+            production_context_ids=set(),
+            allow_legacy_historical=True,
+            errors=errors,
+        )
+        self.assertEqual([], errors)
+
     def test_admission_acceptance_owner_must_be_user(self) -> None:
         relative, payload = self._reconstruction_input()
         payload["acceptance_owner"] = "fresh-reviewer-one"
@@ -673,6 +874,69 @@ class BaselineAdmissionTests(unittest.TestCase):
         result = compile_baseline_admission(str(self.repo), relative)
         self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
         self.assertTrue(any("exact admitted unit authority" in error for error in result.errors))
+
+    def test_new_acceptance_cannot_omit_player_facing_evidence_chain(self) -> None:
+        relative, payload = self._reconstruction_input()
+        review_relative = payload["admitted_units"][0]["acceptance_review"]["path"]
+        review = json.loads((self.repo / review_relative).read_text())
+        input_relative = review["acceptance_input"]["path"]
+        acceptance_input = json.loads((self.repo / input_relative).read_text())
+        acceptance_input.pop("player_facing_evidence")
+        _write_json(self.repo, input_relative, acceptance_input)
+        review["acceptance_input"] = _ref(self.repo, input_relative)
+        _write_json(self.repo, review_relative, review)
+        payload["admitted_units"][0]["acceptance_review"] = _ref(
+            self.repo, review_relative
+        )
+        _write_json(self.repo, relative, payload)
+
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(
+            any("player_facing_evidence" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_new_acceptance_requires_registered_user_approved_card(self) -> None:
+        relative, payload = self._reconstruction_input()
+        register_path = self.repo / "design/studio/STUDIO_DECISION_CARD_REGISTER.json"
+        register = json.loads(register_path.read_text())
+        register["entries"] = []
+        _write_json(
+            self.repo,
+            register_path.relative_to(self.repo).as_posix(),
+            register,
+        )
+
+        result = compile_baseline_admission(str(self.repo), relative)
+        self.assertEqual(BLOCKED_BY_ADMISSION_MATERIAL, result.status)
+        self.assertTrue(
+            any("not present in the decision-card register" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_registered_answer_bearing_reviewer_contexts_are_collected(self) -> None:
+        design = self.player_surface_design["unit-one"]
+        card_path = self.repo / design["card_ref"]["path"]
+        register = json.loads(
+            (self.repo / "design/studio/STUDIO_DECISION_CARD_REGISTER.json").read_text()
+        )
+        entry = next(
+            item for item in register["entries"]
+            if item["objective_id"] == "unit-one"
+        )
+        errors: list[str] = []
+        contexts = _registered_card_design_context_ids(
+            self.repo.resolve(), card_path, entry, errors
+        )
+        self.assertEqual([], errors)
+        self.assertTrue(
+            {
+                "unit-one.alignment-author",
+                "unit-one.alignment-reviewer",
+                "unit-one.final-card-reviewer",
+            }.issubset(contexts)
+        )
 
     def test_factory_revision_must_match_active_contracts(self) -> None:
         relative, payload = self._reconstruction_input()

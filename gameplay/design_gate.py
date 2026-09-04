@@ -42,6 +42,12 @@ try:  # Package import in tests; direct script import for Gameplay CLI use.
         CycleValidationError,
         validate_gameplay_system,
     )
+    from studio.player_surface import (
+        INTERACTION_CONTRACT_NAME,
+        INTERACTION_CONTRACT_REVIEW_NAME,
+        validate_interaction_contract,
+        validate_interaction_contract_review,
+    )
 except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from studio.alignment import (  # type: ignore[no-redef]
@@ -57,6 +63,12 @@ except ModuleNotFoundError:  # pragma: no cover - direct CLI smoke path.
         CycleValidationError,
         validate_gameplay_system,
     )
+    from studio.player_surface import (  # type: ignore[no-redef]
+        INTERACTION_CONTRACT_NAME,
+        INTERACTION_CONTRACT_REVIEW_NAME,
+        validate_interaction_contract,
+        validate_interaction_contract_review,
+    )
 
 
 DESIGN_VERDICT_NAME = "GAMEPLAY_DESIGN_VERDICT.json"
@@ -68,9 +80,11 @@ SPEC_TO_CARD_REVIEW_NAME = "GAMEPLAY_CONFORMANCE_SPEC_TO_CARD.json"
 
 DESIGN_VERDICT_VERSION = "gameplay_design_verdict.v2"
 LEGACY_DESIGN_VERDICT_VERSION = "gameplay_design_verdict.v1"
-DECISION_CARD_VERSION = "gameplay_decision_card.v1"
-CARD_FACTORY_REVIEW_VERSION = "gameplay_decision_card_factory_review.v1"
-CONFORMANCE_REVIEW_VERSION = "gameplay_design_conformance_review.v1"
+DECISION_CARD_VERSION = "gameplay_decision_card.v2"
+LEGACY_DECISION_CARD_VERSION = "gameplay_decision_card.v1"
+CARD_FACTORY_REVIEW_VERSION = "gameplay_decision_card_factory_review.v2"
+CONFORMANCE_REVIEW_VERSION = "gameplay_design_conformance_review.v2"
+LEGACY_CONFORMANCE_REVIEW_VERSION = "gameplay_design_conformance_review.v1"
 
 PASS_CARD_FACTORY_REVIEW = "PASS_CARD_FACTORY_COMPLIANCE"
 FINAL_CARD_REQUIREMENT_IDS = (
@@ -86,6 +100,7 @@ FINAL_CARD_REQUIREMENT_IDS = (
     "cost_obligation_failure_and_recovery_are_concrete",
     "red_lines_and_hypotheses_are_falsifiable",
     "applicable_factory_gates_complete",
+    "player_facing_interaction_concretely_designed",
     "downstream_work_not_misrepresented_as_complete",
 )
 FINAL_CARD_REQUIREMENT_CLAIM_PREFIXES = {
@@ -103,6 +118,7 @@ FINAL_CARD_REQUIREMENT_CLAIM_PREFIXES = {
     "applicable_factory_gates_complete": (
         "promise.", "cycle.", "commitment.", "redline."
     ),
+    "player_facing_interaction_concretely_designed": ("cycle.",),
     "downstream_work_not_misrepresented_as_complete": ("redline.",),
 }
 
@@ -110,8 +126,18 @@ DECISION_PAYLOAD_FIELDS = (
     "schema_version", "card_id", "project_id", "objective_id",
     "factory_revision", "routing", "product_authority",
     "studio_gameplay_system", "author_context_id", "player_promise",
+    "player_facing_interaction_contract",
+    "player_facing_interaction_contract_review",
     "core_cycle", "material_commitments", "red_lines",
     "validation_hypotheses",
+)
+LEGACY_DECISION_PAYLOAD_FIELDS = tuple(
+    field
+    for field in DECISION_PAYLOAD_FIELDS
+    if field not in {
+        "player_facing_interaction_contract",
+        "player_facing_interaction_contract_review",
+    }
 )
 
 FACTORY_REVISION_PATTERN = re.compile(r"^[0-9a-f]{7,64}$")
@@ -204,7 +230,12 @@ def current_factory_revision(factory_root: Path) -> str:
 def decision_payload_sha256(card: dict[str, Any]) -> str:
     """Hash exactly the compact material surface on which the human rules."""
 
-    payload = {field: card.get(field) for field in DECISION_PAYLOAD_FIELDS}
+    fields = (
+        LEGACY_DECISION_PAYLOAD_FIELDS
+        if card.get("schema_version") == LEGACY_DECISION_CARD_VERSION
+        else DECISION_PAYLOAD_FIELDS
+    )
+    payload = {field: card.get(field) for field in fields}
     canonical = json.dumps(
         payload,
         ensure_ascii=False,
@@ -372,16 +403,24 @@ def _validate_claim(
     max_length: int,
     errors: list[str],
     hypothesis: bool = False,
+    require_hypothesis_status: bool = True,
 ) -> str:
-    keys = {"claim_id", "text", "falsification_signal"} if hypothesis else {
-        "claim_id", "text"
-    }
+    keys = {"claim_id", "text"}
+    if hypothesis:
+        keys.add("falsification_signal")
+        if require_hypothesis_status:
+            keys.add("status")
     payload = _require_exact_keys(value, label, keys, errors)
     claim_id = _require_id(payload.get("claim_id"), f"{label}.claim_id", errors)
     text = _require_text(payload.get("text"), f"{label}.text", errors)
     if len(text) > max_length:
         errors.append(f"{label}.text exceeds {max_length} characters")
     if hypothesis:
+        if require_hypothesis_status and payload.get("status") != "TESTABLE_DESIGN":
+            errors.append(
+                f"{label}.status must be TESTABLE_DESIGN; design hypotheses "
+                "cannot be labelled PASS or ACCEPTED"
+            )
         signal = _require_text(
             payload.get("falsification_signal"),
             f"{label}.falsification_signal",
@@ -401,6 +440,7 @@ def _validate_claim_list(
     text_limit: int,
     errors: list[str],
     hypothesis: bool = False,
+    require_hypothesis_status: bool = True,
 ) -> list[str]:
     if not isinstance(value, list):
         errors.append(f"{label} must be an array")
@@ -414,6 +454,7 @@ def _validate_claim_list(
             max_length=text_limit,
             errors=errors,
             hypothesis=hypothesis,
+            require_hypothesis_status=require_hypothesis_status,
         )
         for index, item in enumerate(value)
     ]
@@ -586,10 +627,15 @@ def _validate_decision_card(
     context_status: str,
     errors: list[str],
     pre_human_review: bool = False,
+    allow_legacy_historical: bool = False,
 ) -> dict[str, Any]:
     game_repo = game_repo.resolve()
     card_path = card_path.resolve()
     card = _load_json(card_path, "gameplay decision card", errors)
+    version = card.get("schema_version")
+    legacy_card = (
+        version == LEGACY_DECISION_CARD_VERSION and allow_legacy_historical
+    )
     required = {
         "schema_version", "card_id", "project_id", "objective_id",
         "factory_revision", "routing", "product_authority",
@@ -597,10 +643,16 @@ def _validate_decision_card(
         "core_cycle", "material_commitments", "red_lines",
         "validation_hypotheses", "decision_payload_sha256", "human_verdict",
     }
+    if not legacy_card:
+        required |= {
+            "player_facing_interaction_contract",
+            "player_facing_interaction_contract_review",
+        }
     _require_exact_keys(card, "gameplay decision card", required, errors)
-    if card.get("schema_version") != DECISION_CARD_VERSION:
+    if version != DECISION_CARD_VERSION and not legacy_card:
         errors.append(
-            f"gameplay decision card schema_version must be {DECISION_CARD_VERSION}"
+            f"gameplay decision card schema_version must be {DECISION_CARD_VERSION}; "
+            f"{LEGACY_DECISION_CARD_VERSION} is readable only in historical checks"
         )
     _require_id(card.get("card_id"), "gameplay decision card.card_id", errors)
     if card.get("project_id") != project_id:
@@ -665,6 +717,7 @@ def _validate_decision_card(
         text_limit=120,
         errors=errors,
         hypothesis=True,
+        require_hypothesis_status=not legacy_card,
     )
     claim_ids = [promise_id, *cycle_ids, *commitment_ids, *red_line_ids, *hypothesis_ids]
     claim_ids = [item for item in claim_ids if item]
@@ -718,6 +771,36 @@ def _validate_decision_card(
     else:
         errors.append("gameplay decision card routing is unsupported")
 
+    expected_transition_ids = [
+        str(item) for item in studio_system.get("cycle_path", [])
+    ] if studio_system else [
+        claim_id.removeprefix("cycle.") for claim_id in cycle_ids
+        if claim_id.startswith("cycle.")
+    ]
+    contract_binding: dict[str, Any] = {}
+    contract_review_binding: dict[str, Any] = {}
+    if not legacy_card:
+        contract_binding = validate_interaction_contract(
+            game_repo,
+            card.get("player_facing_interaction_contract"),
+            project_id=project_id,
+            objective_id=objective_id,
+            factory_revision=factory_revision,
+            product_authority={"path": product_ref[0], "sha256": product_ref[1]},
+            studio_gameplay_system={"path": system_ref[0], "sha256": system_ref[1]},
+            expected_transition_ids=expected_transition_ids,
+            errors=errors,
+        )
+        contract_review_binding = validate_interaction_contract_review(
+            game_repo,
+            card.get("player_facing_interaction_contract_review"),
+            contract=contract_binding,
+            product_authority={"path": product_ref[0], "sha256": product_ref[1]},
+            studio_gameplay_system={"path": system_ref[0], "sha256": system_ref[1]},
+            forbidden_context_ids={author_context_id, *studio_context_ids} - {""},
+            errors=errors,
+        )
+
     human = _require_exact_keys(
         card.get("human_verdict"),
         "gameplay decision card.human_verdict",
@@ -763,6 +846,8 @@ def _validate_decision_card(
         "cycle_id": cycle_id,
         "feedback_state_ids": feedback_state_ids,
         "studio_context_ids": studio_context_ids,
+        "interaction_contract": contract_binding,
+        "interaction_contract_review": contract_review_binding,
         "product_authority": card.get("product_authority", {}),
         "product_causal_link_ids": {
             str(item.get("link_id"))
@@ -802,7 +887,7 @@ def _validate_decision_card(
         },
     }
 
-    if routing == "STUDIO_WHOLE_GAME" and not pre_human_review:
+    if routing == "STUDIO_WHOLE_GAME" and not pre_human_review and not legacy_card:
         entry = require_registered_card(
             game_repo,
             card_path,
@@ -886,6 +971,8 @@ def _validate_card_factory_review_artifact(
         "schema_version", "review_id", "review_role", "project_id",
         "objective_id", "factory_revision", "decision_card",
         "product_authority", "studio_gameplay_system", "authority_inventory",
+        "player_facing_interaction_contract",
+        "player_facing_interaction_contract_review",
         "reviewer_context_id", "reviewer_freshness",
         "requirement_findings", "claim_inventory", "blocking_findings",
         "verdict", "reviewed_at",
@@ -952,6 +1039,21 @@ def _validate_card_factory_review_artifact(
         errors.append(
             "final Card Factory review does not bind the card's exact validated gameplay system"
         )
+
+    contract_ref = card_binding.get("interaction_contract", {}).get("ref", {})
+    contract_review_ref = card_binding.get("interaction_contract_review", {}).get("ref", {})
+    for field, expected in (
+        ("player_facing_interaction_contract", contract_ref),
+        ("player_facing_interaction_contract_review", contract_review_ref),
+    ):
+        actual_path, actual_sha, _ = _validate_path_hash(
+            game_repo, review.get(field), f"final Card Factory review.{field}", errors
+        )
+        if {"path": actual_path, "sha256": actual_sha} != expected:
+            errors.append(
+                f"final Card Factory review.{field} does not bind the exact "
+                "validated player-facing design artifact"
+            )
 
     authority_inventory = _require_exact_keys(
         review.get("authority_inventory"),
@@ -1085,6 +1187,8 @@ def _validate_card_factory_review_artifact(
     prior_context_ids = {
         str(card_binding.get("author_context_id", "")),
         *{str(value) for value in card_binding.get("studio_context_ids", set())},
+        str(card_binding.get("interaction_contract", {}).get("author_context_id", "")),
+        str(card_binding.get("interaction_contract_review", {}).get("reviewer_context_id", "")),
         *{str(value) for value in forbidden_context_ids},
     } - {""}
     if reviewer and reviewer in prior_context_ids:
@@ -1171,8 +1275,16 @@ def _validate_card_factory_review_artifact(
                 f"claim_inventory[{index}] cites unknown Factory requirements: "
                 + ", ".join(sorted(unknown_requirements))
             )
-        if item.get("verdict") != "PASS":
-            errors.append(f"claim_inventory[{index}].verdict must be PASS")
+        expected_claim_verdict = (
+            "TESTABLE_DESIGN"
+            if claim_id in set(card_binding.get("hypothesis_ids", set()))
+            else "PASS_DESIGN_CLAIM"
+        )
+        if item.get("verdict") != expected_claim_verdict:
+            errors.append(
+                f"claim_inventory[{index}].verdict must be {expected_claim_verdict}; "
+                "a design hypothesis cannot be labelled PASS or ACCEPTED"
+            )
         _require_text(
             item.get("rationale"), f"claim_inventory[{index}].rationale", errors
         )
@@ -1512,6 +1624,7 @@ def _validate_conformance_review(
     claim_ids: set[str],
     hypothesis_ids: set[str],
     spec_refs: set[str],
+    allow_legacy_historical: bool,
     errors: list[str],
 ) -> dict[str, Any]:
     review = _load_json(review_path, f"{expected_role} conformance review", errors)
@@ -1524,9 +1637,15 @@ def _validate_conformance_review(
         "verdict", "reviewed_at",
     }
     _require_exact_keys(review, f"{expected_role} conformance review", required, errors)
-    if review.get("schema_version") != CONFORMANCE_REVIEW_VERSION:
+    review_version = review.get("schema_version")
+    legacy_review = (
+        review_version == LEGACY_CONFORMANCE_REVIEW_VERSION
+        and allow_legacy_historical
+    )
+    if review_version != CONFORMANCE_REVIEW_VERSION and not legacy_review:
         errors.append(
-            f"{expected_role} review schema_version must be {CONFORMANCE_REVIEW_VERSION}"
+            f"{expected_role} review schema_version must be {CONFORMANCE_REVIEW_VERSION}; "
+            f"{LEGACY_CONFORMANCE_REVIEW_VERSION} is readable only in historical checks"
         )
     _require_id(review.get("review_id"), f"{expected_role} review.review_id", errors)
     if review.get("review_role") != expected_role:
@@ -1599,8 +1718,20 @@ def _validate_conformance_review(
                 if spec_ref not in spec_refs:
                     errors.append(f"CARD_TO_SPEC references unknown spec_ref {spec_ref}")
                 pairs.add((claim_id, spec_ref))
-            if item.get("verdict") != "PASS":
-                errors.append(f"CARD_TO_SPEC claim {claim_id} verdict must be PASS")
+            expected_verdict = (
+                "PASS"
+                if legacy_review
+                else (
+                    "TESTABLE_DESIGN"
+                    if claim_id in hypothesis_ids
+                    else "PASS_DESIGN_CLAIM"
+                )
+            )
+            if item.get("verdict") != expected_verdict:
+                errors.append(
+                    f"CARD_TO_SPEC claim {claim_id} verdict must be {expected_verdict}; "
+                    "a design-stage hypothesis cannot be labelled PASS or ACCEPTED"
+                )
         if seen_claims != claim_ids:
             missing = sorted(claim_ids - seen_claims)
             extra = sorted(seen_claims - claim_ids)
@@ -1784,7 +1915,12 @@ def validate_objective_design_gate(
     except ValueError as error:
         errors.append(f"cannot resolve Factory revision: {error}")
         actual_factory_revision = ""
-    if factory_revision and actual_factory_revision and factory_revision != actual_factory_revision:
+    if (
+        not allow_legacy_historical
+        and factory_revision
+        and actual_factory_revision
+        and factory_revision != actual_factory_revision
+    ):
         errors.append(
             "factory_revision does not match the Factory HEAD; refresh the decision card, "
             "conformance reviews, and plans"
@@ -1890,6 +2026,7 @@ def validate_objective_design_gate(
             factory_revision=factory_revision,
             context_status=context_status,
             errors=errors,
+            allow_legacy_historical=allow_legacy_historical,
         )
 
     material_spec, objective_author = _extract_material_spec(objective_text, errors)
@@ -1932,6 +2069,7 @@ def validate_objective_design_gate(
                     claim_ids=set(card_binding.get("claim_ids", set())),
                     hypothesis_ids=set(card_binding.get("hypothesis_ids", set())),
                     spec_refs=set(material_spec),
+                    allow_legacy_historical=allow_legacy_historical,
                     errors=errors,
                 )
             )

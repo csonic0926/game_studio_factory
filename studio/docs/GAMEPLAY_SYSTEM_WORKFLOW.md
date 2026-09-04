@@ -114,7 +114,13 @@ python3 <STUDIO_ROOT>/studio/cycle.py validate \
 ```
 
 Only `STUDIO_GAMEPLAY_SYSTEM_READY` may feed a Studio-routed Gameplay decision
-card. The card binds the manifest's exact SHA and deterministically projects
+card. Before the Card exists, the game must add an objective-local
+Player-Facing Interaction Contract grounded in the current real scene
+composition and obtain a fresh
+`PASS_PLAYER_FACING_INTERACTION_DESIGN` review. Abstract verbs, explanatory
+prose, state ledgers, dialogue/popup advance, markers, straight traversal, and
+static frames without input-response work cannot satisfy this gate. The card
+binds the contract/review plus the manifest's exact SHA and deterministically projects
 the system promise, ordered cycle transitions, coupled-system roles, and
 forbidden linearizations. Only additional `scope.*` commitments/red lines may
 be authored for the bounded objective before human approval. Later objective
@@ -125,7 +131,8 @@ At the human gate, render only this compact projection and its
 do not make the human read them unless requested. The exact ruling token is
 `USER_APPROVED <decision_payload_sha256>`.
 
-Before semantic alignment, one additional fresh context must audit the exact
+Before semantic alignment, one additional fresh context—different from the
+interaction-contract reviewer—must audit the exact
 pending Card as a complete result using the
 `studio-gameplay-decision-card-reviewer` skill. It reads the Card and all bound
 Product/system/review authority, inventories every Card claim, and checks every
@@ -133,7 +140,8 @@ Factory obligation already due at this boundary. In particular, passing cycle
 reviews cannot excuse a Card whose playable substance is certain-outcome
 clicks, dialogue/task/marker advancement, missing player work/response/
 carry-forward, reskinned or unreachable alternatives, or an unearned claim
-that later production/acceptance is complete. Only
+that later production/acceptance is complete, or an interaction contract whose
+claims exist only outside the player surface. Only
 `PASS_CARD_FACTORY_COMPLIANCE` proceeds. The reviewer neither edits the Card
 nor owns the human verdict.
 

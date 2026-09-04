@@ -86,9 +86,16 @@ execution. Stop at plans only when the user explicitly asked for plan-only.
 An objective authored by AI is not design authority until an objective-local
 `GAMEPLAY_DESIGN_VERDICT.json` v2 binds its exact SHA, the compact human-approved
 decision card, and two fresh inverse conformance reviews. For Studio-routed
-work, the card must also bind a validated cycle-complete Studio gameplay-system
-manifest and pass a separate fresh end-to-end Card Factory-compliance review
-before a different fresh semantic-alignment reviewer permits presentation.
+work, first author a `PLAYER_FACING_INTERACTION_CONTRACT.json` that makes the
+current scene composition, ordered player inputs, in-engine responses,
+persistent state change, and next affordance concrete. A fresh interaction
+reviewer must return `PASS_PLAYER_FACING_INTERACTION_DESIGN`; dialogue,
+instructions, markers, or result text without player work are blockers. The
+Card must bind that contract/review plus the validated cycle-complete Studio
+gameplay-system manifest and pass a separate fresh end-to-end Card
+Factory-compliance review before a different fresh semantic-alignment reviewer
+permits presentation. Card hypotheses remain `TESTABLE_DESIGN`; neither a
+design artifact nor its reviewer may claim runtime `PASS`.
 New gameplay design requires user approval on the card; the user is not asked
 to review the generated full spec.
 
@@ -98,7 +105,19 @@ at a committed runtime revision plus a checked
 `studio/templates/STUDIO_WORKFLOW_COMPLETION.json`. Its status remains
 `IMPLEMENTED_PENDING_ACCEPTANCE`. Return control to Studio for fresh gameplay
 acceptance, predecessor regression, and baseline promotion; Gameplay Factory
-must not promote or self-accept the baseline.
+must not promote or self-accept the baseline. Before acceptance, Studio records
+the exact build's windowed player input trace with before/during/after frames,
+then gives a fresh blind observer only the contract's de-identified entry
+knowledge string list, controls, and the player surface—never beat ids,
+sequence labels, or an intended answer anywhere in its start-state text,
+controls, or artifact paths. A different preparation context must explicitly
+attest that all answer-bearing ids, intended answers, future knowledge, and
+non-Phase-A material were removed. Phase A freezes neutral structured
+`attempt.N` records. A separate comparison reviewer may read the design
+authority only after that observation is sealed and must bind every beat to
+unique existing attempts plus its exact runtime trace sequences.
+Screenshots-only, state-JSON-only, headless
+tests, logs, or dialogue-only proof cannot satisfy this runtime gate.
 
 Before planning any change that touches gameplay UI, read
 `docs/UI_PRODUCTION_WORKFLOW.md` and run `gameplay/ui.py start`. Reuse a checked

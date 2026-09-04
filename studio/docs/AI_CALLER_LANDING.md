@@ -18,6 +18,7 @@ human product intent
   -> fresh semantic alignment of material input/output
   -> product authority when missing
   -> synthesize and validate the exact gameplay system/cycle
+  -> player-facing interaction contract + fresh design review
   -> compact gameplay decision card
   -> fresh final-Card Factory-compliance audit
   -> separate semantic alignment + human approval
@@ -27,6 +28,8 @@ human product intent
   -> select one minimum cycle-complete gameplay unit
   -> specialist planning and production
   -> integration
+  -> exact-build interaction evidence
+  -> blind player observation + fresh authority comparison
   -> new gameplay acceptance + old-baseline regression
   -> promote the next baseline
   -> repeat until the requested production horizon is satisfied
@@ -115,8 +118,10 @@ Read [`BASELINE_ADMISSION_WORKFLOW.md`](BASELINE_ADMISSION_WORKFLOW.md). The
 compiler cannot convert tests, implementation completion, Reader output, or an
 AI review into a human gameplay verdict. It binds the exact unit experience
 authority, validated Studio gameplay-system manifest, Factory revision, fresh
-reviewer decision, observed two-lap feedback cycle, and explicit user playtest
-verdict.
+reviewer decision, observed two-lap feedback cycle, exact player-facing
+interaction evidence, a sealed blind observation/comparison, and explicit user
+playtest verdict. Read
+[`PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
 
 The game repo owns Studio state under:
 
@@ -126,7 +131,12 @@ design/studio/
   STUDIO_DECISION_CARD_REGISTER.json
   interaction_alignment/<interaction_id>/STUDIO_SEMANTIC_ALIGNMENT_REVIEW.json
   gameplay_system/<system_id>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json
+  objective-local PLAYER_FACING_INTERACTION_CONTRACT.json and review
   admissions/<admission_id>/BASELINE_ADMISSION_INPUT.json
+  admissions/<admission_id>/PLAYER_FACING_RUNTIME_INTERACTION_EVIDENCE.json
+  admissions/<admission_id>/PLAYER_FACING_BLIND_OBSERVATION_INPUT.json
+  admissions/<admission_id>/PLAYER_FACING_BLIND_OBSERVATION.json
+  admissions/<admission_id>/PLAYER_FACING_COMPARISON_REVIEW.json
   baselines/<baseline_id>/ACCEPTED_PLAYABLE_BASELINE.json
   research/<pressure_id>/DESIGN_TOKEN_RESEARCH.json
 ```

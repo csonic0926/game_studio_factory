@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-ai-factory.local/gameplay/player_facing_interaction_contract_review.schema.json",
+  "title": "Player-Facing Interaction Contract Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "review_role",
+    "project_id",
+    "objective_id",
+    "factory_revision",
+    "interaction_contract",
+    "product_authority",
+    "studio_gameplay_system",
+    "reviewer_context_id",
+    "reviewer_freshness",
+    "hypothesis_lifecycle",
+    "requirement_findings",
+    "beat_findings",
+    "blocking_findings",
+    "verdict",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "player_facing_interaction_contract_review.v1"
+    },
+    "review_id": {
+      "$ref": "#/$defs/id"
+    },
+    "review_role": {
+      "const": "PLAYER_FACING_INTERACTION_DESIGN_REVIEW"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "objective_id": {
+      "$ref": "#/$defs/id"
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "interaction_contract": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "product_authority": {
+      "$ref": "#/$defs/optional_path_hash"
+    },
+    "studio_gameplay_system": {
+      "$ref": "#/$defs/optional_path_hash"
+    },
+    "reviewer_context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "reviewer_freshness": {
+      "const": "FRESH"
+    },
+    "hypothesis_lifecycle": {
+      "const": "TESTABLE_DESIGN_ONLY"
+    },
+    "requirement_findings": {
+      "$ref": "#/$defs/requirement_findings"
+    },
+    "beat_findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "beat_id",
+          "verdict",
+          "rationale"
+        ],
+        "properties": {
+          "beat_id": {
+            "$ref": "#/$defs/id"
+          },
+          "verdict": {
+            "enum": [
+              "PASS_TESTABLE_DESIGN",
+              "BLOCK"
+            ]
+          },
+          "rationale": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "verdict": {
+      "enum": [
+        "PASS_PLAYER_FACING_INTERACTION_DESIGN",
+        "REVISE_PLAYER_FACING_INTERACTION_DESIGN"
+      ]
+    },
+    "reviewed_at": {
+      "$ref": "#/$defs/text"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "beat_ids",
+        "rationale"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": [
+            "PASS",
+            "BLOCK"
+          ]
+        },
+        "beat_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "rationale": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "requirement_findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visible_entry_cause_and_goal",
+        "concrete_player_input_and_judgment",
+        "ordered_interaction_not_abstract_verb",
+        "visible_response_and_persistent_change",
+        "discoverable_changed_next_affordance",
+        "text_and_proxy_are_support_only",
+        "current_scene_visual_sequence_present",
+        "target_locale_readable",
+        "runtime_capture_plan_is_falsifiable",
+        "blind_prior_knowledge_is_deidentified"
+      ],
+      "properties": {
+        "visible_entry_cause_and_goal": {
+          "$ref": "#/$defs/finding"
+        },
+        "concrete_player_input_and_judgment": {
+          "$ref": "#/$defs/finding"
+        },
+        "ordered_interaction_not_abstract_verb": {
+          "$ref": "#/$defs/finding"
+        },
+        "visible_response_and_persistent_change": {
+          "$ref": "#/$defs/finding"
+        },
+        "discoverable_changed_next_affordance": {
+          "$ref": "#/$defs/finding"
+        },
+        "text_and_proxy_are_support_only": {
+          "$ref": "#/$defs/finding"
+        },
+        "current_scene_visual_sequence_present": {
+          "$ref": "#/$defs/finding"
+        },
+        "target_locale_readable": {
+          "$ref": "#/$defs/finding"
+        },
+        "runtime_capture_plan_is_falsifiable": {
+          "$ref": "#/$defs/finding"
+        },
+        "blind_prior_knowledge_is_deidentified": {
+          "$ref": "#/$defs/finding"
+        }
+      }
+    },
+    "optional_path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^$|^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PASS_PLAYER_FACING_INTERACTION_DESIGN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blocking_findings": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "blocking_findings": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}
