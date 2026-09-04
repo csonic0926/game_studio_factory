@@ -10,6 +10,9 @@ Start with:
   research, scale-out, and scale-up semantics.
 - [`docs/GAMEPLAY_SYSTEM_WORKFLOW.md`](docs/GAMEPLAY_SYSTEM_WORKFLOW.md) — the
   Studio-owned Product Thesis -> closed gameplay-cycle transition.
+- [`../gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](../gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md)
+  — the mandatory game-owned Card standard, pre-Card composition, and fresh
+  project-specific review shared by Studio and direct-specialist routes.
 - [`docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](docs/SEMANTIC_ALIGNMENT_WORKFLOW.md)
   — fresh-subagent review of material user-input -> candidate-output
   transitions and deterministic pending-card supersession.

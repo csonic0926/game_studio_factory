@@ -53,10 +53,15 @@ for the Studio-owned Idea-to-gameplay-system boundary. Material user input and
 material human-facing output additionally require the fresh-subagent semantic
 alignment gate in
 [`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
-Every pending Studio Gameplay Decision Card additionally requires a different
-fresh player-facing interaction design review and an end-to-end
-Factory-compliance reviewer before that semantic gate; passing step-local
-reviews alone cannot authorize a thin click/dialogue Card. Read
+Every new or materially revised Gameplay Decision Card under either route must
+first exact-bind the game repository's active project Card-authoring standard,
+its required pre-Card composition artifacts, the player-facing interaction
+contract/review, and a fresh independent project-standard review. Every
+pending Studio Card additionally requires a different end-to-end generic
+Factory-compliance reviewer before the semantic gate; passing either project
+or step-local reviews alone cannot authorize a thin click/dialogue Card. Read
+[`gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md)
+and
 [`studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
 
 ## Specialist capability model

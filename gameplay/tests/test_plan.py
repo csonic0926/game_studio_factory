@@ -17,6 +17,7 @@ from gameplay.plan import (
     validate_production_plan,
 )
 from studio.tests.player_surface_fixture import write_contract_pair
+from gameplay.tests.project_card_fixture import attach_project_review
 
 
 class ProductionPlanValidationTests(unittest.TestCase):
@@ -160,7 +161,7 @@ No prerequisite plan.
             transition_ids=["read", "commit", "feedback"],
         )
         card = {
-            "schema_version": "gameplay_decision_card.v2",
+            "schema_version": "gameplay_decision_card.v3",
             "card_id": "mission.next.card.1",
             "project_id": "sample",
             "objective_id": "mission.next",
@@ -206,7 +207,13 @@ No prerequisite plan.
             f"{human_verdict} {card['decision_payload_sha256']}"
         )
         card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
-        card_path.write_text(json.dumps(card, indent=2) + "\n", encoding="utf-8")
+        attach_project_review(
+            self.game_repo,
+            self.objective_dir,
+            card,
+            interaction_contract_ref=contract_ref,
+            interaction_contract_review_ref=contract_review_ref,
+        )
         card_sha = hashlib.sha256(card_path.read_bytes()).hexdigest()
 
         mapping = {

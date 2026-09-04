@@ -28,6 +28,7 @@ from studio.baseline import (
 )
 from studio.tests.cycle_fixture import write_valid_cycle
 from studio.tests.player_surface_fixture import write_contract_pair, write_runtime_chain
+from gameplay.tests.project_card_fixture import attach_project_review
 
 
 def _run(repo: Path, *args: str) -> str:
@@ -109,7 +110,7 @@ class BaselineAdmissionTests(unittest.TestCase):
         )
         card_path = objective_dir / "GAMEPLAY_DECISION_CARD.json"
         card = {
-            "schema_version": "gameplay_decision_card.v2",
+            "schema_version": "gameplay_decision_card.v3",
             "card_id": f"{unit_id}.card.v2", "project_id": "sample-game",
             "objective_id": unit_id, "factory_revision": self.factory_revision,
             "routing": "STUDIO_WHOLE_GAME", "product_authority": product_ref,
@@ -127,7 +128,13 @@ class BaselineAdmissionTests(unittest.TestCase):
         }
         card["decision_payload_sha256"] = decision_payload_sha256(card)
         card["human_verdict"]["source_text"] = f"USER_APPROVED {card['decision_payload_sha256']}"
-        _write_json(self.repo, card_path.relative_to(self.repo).as_posix(), card)
+        attach_project_review(
+            self.repo,
+            objective_dir,
+            card,
+            interaction_contract_ref=contract_ref,
+            interaction_contract_review_ref=contract_review_ref,
+        )
         final_review_path = (
             objective_dir / "GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json"
         )

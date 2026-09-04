@@ -47,6 +47,10 @@ Initialize before requiring adapters:
 
 - blank/genre-only input returns `NEW_PROJECT_DEFINITION_REQUIRED` and routes
   to the umbrella `idea-factory` skill;
+- an active Product, or a complete existing adapter set, without an active,
+  adopted, exact-bound project Card-authoring standard returns
+  `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED`; seed only the missing blank
+  answer sheets, then have project/human authority fill and adopt them;
 - an active new Product without one validated, registered, USER_APPROVED Card
   returns `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` and continues Studio;
 - approved new-project authority returns
@@ -98,9 +102,11 @@ outside the game repo, sibling scanning, inferred projects, and committed
 absolute developer paths.
 
 Read `GAMEPLAY_DESIGN_MODEL.json`, `PROJECT_GAMEPLAY_PROFILE.md`,
-`PRODUCTION_ADAPTER.md`, and `OBSERVATION_ADAPTER.md` at
-`<GAMEPLAY_ROOT>/adapter/`. An ordinary production call never creates missing
-answers. Missing/blank/inconsistent answers mean `BLOCKED_BY_ADAPTER`.
+`PRODUCTION_ADAPTER.md`, `OBSERVATION_ADAPTER.md`, and the Profile-selected
+active project Card-authoring standard at `<GAMEPLAY_ROOT>/adapter/`. An
+ordinary production call never creates missing answers. Missing, blank,
+inactive, stale, or inconsistent answers mean `BLOCKED_BY_ADAPTER` (or the
+dedicated `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` initialization state).
 
 ## Gameplay Factory initialization
 
@@ -113,6 +119,18 @@ python3 <FACTORY_REPO>/setup.py link --game-repo <GAME_REPO>
 
 python3 gameplay/init.py start --game-repo <GAME_REPO>
 ```
+
+If that returns `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED`, follow
+[`PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md)
+and use the non-overwriting seed command:
+
+```bash
+python3 gameplay/init.py seed-card-standard --game-repo <GAME_REPO>
+```
+
+The generated standard is an inactive blank. The game repository—not the
+Factory checkout or chat—must fill, adopt, commit, and exact-bind it from the
+Project Gameplay Profile before Card authoring resumes.
 
 For an existing project, one investigator uses the generated bounded probe,
 exact repo evidence, and persisted user rulings to fill
@@ -133,8 +151,11 @@ The probe binds the revision, dirty paths, and dirty working-tree content.
 `compile` preflights every target, creates only missing canonical files, never
 overwrites differing state, and reuses the production material gate. Missing
 semantics return `BLOCKED_BY_INIT_MATERIAL`; conflicting existing
-factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`. Only
-`GAMEPLAY_FACTORY_READY` enters production. `NOT_AVAILABLE` observation capability is honest
+factory files return `BLOCKED_BY_EXISTING_FACTORY_STATE`.
+`GAMEPLAY_FACTORY_READY` completes adapter reconstruction; rerun `start` so an
+inactive generated Profile binding routes through
+`PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` before any new/materially revised
+Card. `NOT_AVAILABLE` observation capability is honest
 and blocks runtime acceptance, but does not fake evidence.
 
 When a repo has mechanics but the user identifies unresolved product
@@ -167,10 +188,14 @@ Do not split its internal necessary-action/problem/pressure/desire/choice
 deductions into separate workers.
 
 Do not plan from `AI_DRAFT_FOR_REVIEW`. First obtain the human ruling on the
-compact objective-local `GAMEPLAY_DECISION_CARD.json`. For Studio work it must
-bind a validated closed gameplay-system manifest, pass an additional fresh
-whole-result Card Factory-compliance review, and then pass a different fresh
-semantic-alignment review before presentation. A separate author writes the
+compact objective-local `GAMEPLAY_DECISION_CARD.json`. Every new or materially
+revised Card, under either route, must exact-bind the active project Card
+standard, all standard-required pre-Card composition artifacts, the Interaction
+Contract/review, and a fresh independent project-standard review. For Studio
+work it must additionally bind a validated closed gameplay-system manifest,
+pass a fresh whole-result Card Factory-compliance review, and then pass a
+different fresh semantic-alignment review before presentation. A separate
+author writes the
 full `OBJECTIVE_GAMEPLAY.md`; two separate fresh reviewers must then prove
 card-to-spec completeness and spec-to-card non-expansion before writing
 `GAMEPLAY_DESIGN_VERDICT.json` v2. From-scratch new gameplay requires
@@ -283,7 +308,7 @@ After implementation, the caller changes the game-owned gap status from
 
 - exact story anchors and causal constraints;
 - exact current runtime/world/player-knowledge state;
-- three complete adapter answers;
+- four complete initialization/pre-Card adapter answers;
 - current grammar/experience derived state;
 - a recognizable start/end gameplay span;
 - an approved Span Quant Sheet (span boundaries, cadence contract,
@@ -357,7 +382,7 @@ carry-forward delivers the next choice's hints — edits nothing, and writes
 
 ### 3. Preflight adapters and observability
 
-Bind the exact sheet version/checksum and read current state/three adapters.
+Bind the exact sheet version/checksum and read current state/four adapters.
 For every acceptance kernel, identify cue, attempt, response, carry-forward,
 captures, timing, and required live/recorded/branch/static evidence modes. If
 any required chain is missing, stop `BLOCKED_BY_OBSERVABILITY` before

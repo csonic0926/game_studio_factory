@@ -17,7 +17,13 @@
   ],
   "properties": {
     "schema_version": {"const": "gameplay_factory_repo_probe.v1"},
-    "status": {"enum": ["EXISTING_PROJECT_INIT_INPUT_REQUIRED", "GAMEPLAY_FACTORY_ALREADY_READY"]},
+    "status": {
+      "enum": [
+        "EXISTING_PROJECT_INIT_INPUT_REQUIRED",
+        "PROJECT_CARD_AUTHORING_STANDARD_REQUIRED",
+        "GAMEPLAY_FACTORY_ALREADY_READY"
+      ]
+    },
     "repository": {
       "type": "object",
       "additionalProperties": false,

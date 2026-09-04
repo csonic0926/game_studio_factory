@@ -1,5 +1,5 @@
 {
-  "schema_version": "gameplay_decision_card.v2",
+  "schema_version": "gameplay_decision_card.v3",
   "card_id": "<CARD_ID>",
   "project_id": "<PROJECT_ID>",
   "objective_id": "<OBJECTIVE_ID>",
@@ -7,8 +7,13 @@
   "routing": "STUDIO_WHOLE_GAME | DIRECT_SPECIALIST",
   "product_authority": {"path": "design/product/PRODUCT_THESIS.md", "sha256": "<SHA256_OR_EMPTY>"},
   "studio_gameplay_system": {"path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json", "sha256": "<SHA256_OR_EMPTY>"},
+  "project_card_authoring_standard": {"path": "design/gameplay/adapter/<PROJECT_STANDARD_FILE>.json", "version": "<PROJECT_STANDARD_VERSION>", "sha256": "<SHA256>"},
+  "project_composition_artifacts": [
+    {"artifact_id": "<ARTIFACT_ID>", "kind_id": "<KIND_DECLARED_BY_PROJECT_STANDARD>", "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/<PROJECT_COMPOSITION_FILE>", "sha256": "<SHA256>", "author_context_id": "<COMPOSITION_AUTHOR_CONTEXT_ID>"}
+  ],
   "player_facing_interaction_contract": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/PLAYER_FACING_INTERACTION_CONTRACT.json", "sha256": "<SHA256>"},
   "player_facing_interaction_contract_review": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/PLAYER_FACING_INTERACTION_CONTRACT_REVIEW.json", "sha256": "<SHA256>"},
+  "project_card_review": {"path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD_PROJECT_REVIEW.json", "sha256": "<SHA256>"},
   "author_context_id": "<CARD_AUTHOR_CONTEXT_ID>",
   "player_promise": {"claim_id": "promise.system", "text": "<EXACT_STUDIO_SYSTEM_PROMISE_OR_DIRECT_SPECIALIST_PROMISE>"},
   "core_cycle": [
@@ -23,7 +28,7 @@
     {"claim_id": "scope.redline.1", "text": "<OBJECTIVE_SCOPE_DRIFT_TO_REJECT>"}
   ],
   "validation_hypotheses": [
-    {"claim_id": "hypothesis.1", "text": "<UNCERTAIN_EXPERIENCE_CLAIM>", "falsification_signal": "<WHAT_WOULD_DISPROVE_IT>", "status": "TESTABLE_DESIGN"}
+    {"claim_id": "hypothesis.1", "text": "<UNCERTAIN_EXPERIENCE_CLAIM>", "validation_method_id": "<METHOD_DECLARED_BY_PROJECT_STANDARD>", "falsification_signal": "<WHAT_WOULD_DISPROVE_IT>", "status": "TESTABLE_DESIGN"}
   ],
   "decision_payload_sha256": "<SHA256_OF_CANONICAL_MATERIAL_FIELDS_EXCLUDING_HUMAN_VERDICT>",
   "human_verdict": {

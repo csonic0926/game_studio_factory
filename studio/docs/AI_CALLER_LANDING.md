@@ -18,8 +18,9 @@ human product intent
   -> fresh semantic alignment of material input/output
   -> product authority when missing
   -> synthesize and validate the exact gameplay system/cycle
+  -> active project Card-authoring standard + required composition artifacts
   -> player-facing interaction contract + fresh design review
-  -> compact gameplay decision card
+  -> compact gameplay decision card + fresh project-standard review
   -> fresh final-Card Factory-compliance audit
   -> separate semantic alignment + human approval
   -> Accepted Playable Baseline

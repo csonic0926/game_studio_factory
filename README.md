@@ -84,7 +84,9 @@ B_t
 → diagnose the next gameplay pressure
 → web research for same-type, cross-genre, and non-game design tokens
 → select one bounded gameplay unit
+→ active game-owned Card standard + required pre-Card composition
 → player-facing interaction contract + fresh design review
+→ compact Card + fresh project-standard review
 → specialist design/planning/production
 → integration
 → exact-build interaction evidence + blind observation/comparison

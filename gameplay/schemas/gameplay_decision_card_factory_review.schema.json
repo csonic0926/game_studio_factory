@@ -14,6 +14,9 @@
     "decision_card",
     "product_authority",
     "studio_gameplay_system",
+    "project_card_authoring_standard",
+    "project_composition_artifacts",
+    "project_card_review",
     "player_facing_interaction_contract",
     "player_facing_interaction_contract_review",
     "authority_inventory",
@@ -27,7 +30,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "gameplay_decision_card_factory_review.v2"
+      "const": "gameplay_decision_card_factory_review.v3"
     },
     "review_id": {
       "$ref": "#/$defs/id"
@@ -70,6 +73,17 @@
       "$ref": "#/$defs/path_hash"
     },
     "studio_gameplay_system": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "project_card_authoring_standard": {
+      "$ref": "#/$defs/versioned_path_hash"
+    },
+    "project_composition_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/composition_ref"}
+    },
+    "project_card_review": {
       "$ref": "#/$defs/path_hash"
     },
     "authority_inventory": {
@@ -285,6 +299,28 @@
         "sha256": {
           "$ref": "#/$defs/sha256"
         }
+      }
+    },
+    "versioned_path_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "composition_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "kind_id", "path", "sha256", "author_context_id"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/id"},
+        "kind_id": {"$ref": "#/$defs/id"},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "author_context_id": {"$ref": "#/$defs/id"}
       }
     },
     "requirement_id": {

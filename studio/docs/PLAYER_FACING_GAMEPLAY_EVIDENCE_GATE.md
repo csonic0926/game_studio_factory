@@ -125,8 +125,9 @@ The validators reject, at minimum:
 Existing committed historical artifacts remain readable by their historical
 validation paths, but they do not satisfy a new claim:
 
-- regenerate every new/revised Card as `gameplay_decision_card.v2` and its
-  final review as `gameplay_decision_card_factory_review.v2`;
+- regenerate every new/revised Card as `gameplay_decision_card.v3`, add its
+  exact project-standard/composition/project-review bindings, and regenerate
+  the final review as `gameplay_decision_card_factory_review.v3`;
 - regenerate both design-conformance reviews as
   `gameplay_design_conformance_review.v2`; ordinary claims use
   `PASS_DESIGN_CLAIM`, while hypotheses remain `TESTABLE_DESIGN`;

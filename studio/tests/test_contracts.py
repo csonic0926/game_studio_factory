@@ -205,9 +205,15 @@ class StudioFoundationContractTests(unittest.TestCase):
             ).read_text()
         )
         self.assertEqual(
-            "gameplay_decision_card_factory_review.v2",
+            "gameplay_decision_card_factory_review.v3",
             payload["properties"]["schema_version"]["const"],
         )
+        for project_binding in (
+            "project_card_authoring_standard",
+            "project_composition_artifacts",
+            "project_card_review",
+        ):
+            self.assertIn(project_binding, payload["required"])
         findings = payload["properties"]["requirement_findings"]
         required = set(findings["required"])
         self.assertIn("playable_span_sufficiency_not_inflated", required)
@@ -233,6 +239,7 @@ class StudioFoundationContractTests(unittest.TestCase):
         self.assertIn("dialogue advance", reviewer_skill)
         self.assertIn("semantic-alignment reviewer", reviewer_skill)
         self.assertIn("must differ", reviewer_skill)
+        self.assertIn("project-standard reviewer", reviewer_skill)
 
     def test_player_facing_design_review_can_record_a_blocked_result(self) -> None:
         schema = json.loads(

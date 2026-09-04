@@ -1,5 +1,5 @@
 {
-  "schema_version": "gameplay_decision_card_factory_review.v2",
+  "schema_version": "gameplay_decision_card_factory_review.v3",
   "review_id": "<REVIEW_ID>",
   "review_role": "FINAL_CARD_FACTORY_COMPLIANCE",
   "project_id": "<PROJECT_ID>",
@@ -16,6 +16,24 @@
   },
   "studio_gameplay_system": {
     "path": "design/studio/gameplay_system/<SYSTEM_ID>/STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json",
+    "sha256": "<SHA256>"
+  },
+  "project_card_authoring_standard": {
+    "path": "design/gameplay/adapter/<PROJECT_STANDARD_FILE>.json",
+    "version": "<PROJECT_STANDARD_VERSION>",
+    "sha256": "<SHA256>"
+  },
+  "project_composition_artifacts": [
+    {
+      "artifact_id": "<ARTIFACT_ID>",
+      "kind_id": "<KIND_ID>",
+      "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/<PROJECT_COMPOSITION_FILE>",
+      "sha256": "<SHA256>",
+      "author_context_id": "<COMPOSITION_AUTHOR_CONTEXT_ID>"
+    }
+  ],
+  "project_card_review": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD_PROJECT_REVIEW.json",
     "sha256": "<SHA256>"
   },
   "player_facing_interaction_contract": {

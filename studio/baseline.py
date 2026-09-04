@@ -1376,9 +1376,9 @@ def _validate_gameplay_acceptance_input(
             errors,
         )
         card_payload = _load_json(game_repo / card_ref["path"], "gameplay decision card") if card_ref["path"] else {}
-        if card_payload.get("schema_version") != "gameplay_decision_card.v2":
+        if card_payload.get("schema_version") != "gameplay_decision_card.v3":
             errors.append(
-                f"gameplay acceptance input {unit_id} requires gameplay_decision_card.v2"
+                f"gameplay acceptance input {unit_id} requires gameplay_decision_card.v3"
             )
         if card_payload.get("project_id") != project_id or card_payload.get("factory_revision") != factory_revision:
             errors.append(f"gameplay acceptance input {unit_id} decision card identity does not match")

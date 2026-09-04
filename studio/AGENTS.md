@@ -61,8 +61,13 @@ these invariants:
     player-work -> response -> carry-forward chains, non-distinct or unreachable
     alternatives, scope/red-line breaches, and false gate/completion claims.
     Step-local reviews do not substitute for this whole-result audit.
-    Before either review, the Card must bind a game-owned player-facing
-    interaction contract and a fresh whole-sequence design review. The contract
+    Before either review, the Card must bind the Project Gameplay Profile's
+    active/adopted project Card-authoring standard, all project-required
+    pre-Card composition artifacts, a fresh independent project-standard Card
+    review, a game-owned player-facing interaction contract, and a fresh
+    whole-sequence design review. The project review owns project-specific
+    completeness; the final Card review owns generic Factory compliance, and
+    neither substitutes for the other. The contract
     makes the current surface, input, response, persisted visible change, and
     next affordance concrete; prose, dialogue, popups, markers, or hidden state
     cannot substitute. Design hypotheses remain `TESTABLE_DESIGN`.
@@ -132,6 +137,7 @@ Every material human-facing arrow is additionally gated as:
 
 ```text
 active authority + pending decisions + raw user input
+  -> project-standard Card review when applicable
   -> final Card Factory compliance review when applicable
   -> candidate output -> separate fresh semantic alignment review -> user surface
 ```

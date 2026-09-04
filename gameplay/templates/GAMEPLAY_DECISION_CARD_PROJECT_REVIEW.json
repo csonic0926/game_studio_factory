@@ -1,0 +1,73 @@
+{
+  "schema_version": "gameplay_decision_card_project_review.v1",
+  "review_id": "<REVIEW_ID>",
+  "review_role": "PROJECT_CARD_AUTHORING_STANDARD_REVIEW",
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "factory_revision": "<FACTORY_REVISION>",
+  "project_card_authoring_standard": {
+    "path": "design/gameplay/adapter/<PROJECT_STANDARD_FILE>.json",
+    "version": "<PROJECT_STANDARD_VERSION>",
+    "sha256": "<SHA256>"
+  },
+  "project_composition_artifacts": [
+    {
+      "artifact_id": "<ARTIFACT_ID>",
+      "kind_id": "<KIND_ID_DECLARED_BY_STANDARD>",
+      "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/<PROJECT_COMPOSITION_FILE>",
+      "sha256": "<SHA256>",
+      "author_context_id": "<COMPOSITION_AUTHOR_CONTEXT_ID>"
+    }
+  ],
+  "player_facing_interaction_contract": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/PLAYER_FACING_INTERACTION_CONTRACT.json",
+    "sha256": "<SHA256>"
+  },
+  "player_facing_interaction_contract_review": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/PLAYER_FACING_INTERACTION_CONTRACT_REVIEW.json",
+    "sha256": "<SHA256>"
+  },
+  "decision_card": {
+    "path": "design/gameplay/objective_gameplay/<OBJECTIVE_ID>/GAMEPLAY_DECISION_CARD.json",
+    "decision_payload_sha256": "<DECISION_PAYLOAD_SHA256>",
+    "rendered_surface_sha256": "<RENDERED_SURFACE_SHA256>"
+  },
+  "author_context_ids": {
+    "composition_artifact_authors": [
+      "<COMPOSITION_AUTHOR_CONTEXT_ID>"
+    ],
+    "interaction_contract_author": "<INTERACTION_CONTRACT_AUTHOR_CONTEXT_ID>",
+    "decision_card_author": "<DECISION_CARD_AUTHOR_CONTEXT_ID>"
+  },
+  "reviewer_context_id": "<FRESH_PROJECT_REVIEWER_CONTEXT_ID>",
+  "reviewer_freshness": "FRESH",
+  "requirement_findings": [
+    {
+      "requirement_id": "<EVERY_STANDARD_REQUIREMENT_ID_EXACTLY_ONCE>",
+      "applicability": "APPLICABLE",
+      "verdict": "PASS",
+      "evidence_refs": [
+        {
+          "surface": "CARD_CLAIM",
+          "ref": "<CARD_CLAIM_ID>"
+        }
+      ],
+      "rationale": "<PROJECT_SPECIFIC_SEMANTIC_JUDGMENT>"
+    }
+  ],
+  "render_only_findings": [
+    {
+      "requirement_id": "<EVERY_RENDER_ONLY_REQUIREMENT_ID_EXACTLY_ONCE>",
+      "evidence_claim_ids": [
+        "<CARD_CLAIM_ID>"
+      ],
+      "verdict": "PASS",
+      "rationale": "<WHY_THE_RENDERED_CARD_ALONE_ANSWERS_THIS_REQUIREMENT>"
+    }
+  ],
+  "blocking_findings": [
+    "<REMOVE_ONLY_AFTER_EVERY_PROJECT_REQUIREMENT_AND_RENDER_ONLY_ITEM_PASSES>"
+  ],
+  "verdict": "REVISE_PROJECT_CARD_BEFORE_FACTORY",
+  "reviewed_at": "<ISO_8601_DATETIME>"
+}

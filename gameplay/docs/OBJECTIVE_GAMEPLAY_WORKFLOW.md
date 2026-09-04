@@ -111,18 +111,27 @@ the actions make good gameplay.
 
 ## Step 2 — freeze the compact human decision surface
 
-Do not ask a human to validate a generated full spec. First author the
-objective-local `PLAYER_FACING_INTERACTION_CONTRACT.json` from the current real
-scene composition (in-engine/annotated frames or a faithful screen-flow
-prototype), then use a fresh `studio-player-facing-interaction-reviewer` to
-write `PLAYER_FACING_INTERACTION_CONTRACT_REVIEW.json`. Every claimed beat must
+Do not ask a human to validate a generated full spec. First load the active
+Project Gameplay Profile binding and game-owned Card authoring standard, then
+author every required project composition artifact before the Card. The
+Factory suggests `PROJECT_GAMEPLAY_COMPOSITION.json`, but the active project
+standard owns the actual artifact names, vocabulary, granularity, player-work,
+settlement, failure/recovery, validation, and finite rendered-Card checklist.
+Read
+[`PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md).
+
+Then author the objective-local `PLAYER_FACING_INTERACTION_CONTRACT.json` from
+the frozen project composition and current real scene composition
+(in-engine/annotated frames or a faithful screen-flow prototype), then use a
+fresh `studio-player-facing-interaction-reviewer` to write
+`PLAYER_FACING_INTERACTION_CONTRACT_REVIEW.json`. Every claimed beat must
 bind visible entry/cause/goal, legitimate player prior knowledge, concrete
 input and judgment, an ordered input-response sequence, immediate response,
 persistent visible change, changed next affordance, localization readability,
 and an exact future capture plan. Pure prose/state diagrams and
 popup/journal/marker/dialogue/straight-traversal proxies fail closed.
 
-Only `PASS_PLAYER_FACING_INTERACTION_DESIGN` may feed the bounded
+Only `PASS_PLAYER_FACING_INTERACTION_DESIGN` may feed the bounded v3
 `GAMEPLAY_DECISION_CARD.json` using
 `schemas/gameplay_decision_card.schema.json` and its template. It contains only:
 
@@ -131,7 +140,26 @@ Only `PASS_PLAYER_FACING_INTERACTION_DESIGN` may feed the bounded
 - one to five load-bearing commitments;
 - one to four red lines;
 - at most three explicitly falsifiable hypotheses, each still labelled
-  `TESTABLE_DESIGN` rather than `PASS` or `ACCEPTED`.
+  `TESTABLE_DESIGN` rather than `PASS` or `ACCEPTED`, and each naming one
+  validation method permitted by the active project standard.
+
+The Card binds the active project standard's exact path/version/SHA, every required
+composition artifact with its author context, the Interaction Contract/review,
+and the objective-local `GAMEPLAY_DECISION_CARD_PROJECT_REVIEW.json`. The
+project review is authored only after the decision payload is stable. It maps
+every active project requirement and every render-only checklist item to exact
+Card/composition/Contract evidence. Its reviewer must differ from every
+composition, Contract, and Card author. Only
+`PASS_PROJECT_CARD_AUTHORING_STANDARD` with no blockers may continue under
+either routing mode.
+
+Validate that exact project layer before route-specific gates:
+
+```bash
+python3 gameplay/design_gate.py validate-project-card-review \
+  --game-repo <GAME_REPO> \
+  --card design/gameplay/objective_gameplay/<objective_id>/GAMEPLAY_DECISION_CARD.json
+```
 
 For `STUDIO_WHOLE_GAME`, the card binds the exact validated
 `STUDIO_GAMEPLAY_SYSTEM_MANIFEST.json`; `studio/cycle.py` must return
@@ -159,8 +187,8 @@ research, or the future full spec—and request exactly:
 USER_APPROVED <decision_payload_sha256>
 ```
 
-For `STUDIO_WHOLE_GAME`, the Card must exact-SHA bind the interaction contract
-and fresh review. Then follow the final Card review and
+For `STUDIO_WHOLE_GAME`, the passed project review is an additional input to
+the separate final Factory Card review and
 `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`.
 Spawn a fresh `studio-gameplay-decision-card-reviewer` to inventory every Card
 claim and audit the exact pending Card plus bound authorities against all
@@ -181,12 +209,13 @@ python3 gameplay/design_gate.py render-card \
   --card design/gameplay/objective_gameplay/<objective_id>/GAMEPLAY_DECISION_CARD.json
 ```
 
-For direct specialist work the alignment/register gate is not required and
-`--game-repo` may be omitted. For Studio work, the renderer fails closed on an
+For direct specialist work the alignment/register gate is not required, but
+`--game-repo` and the active standard/composition/project-review chain remain
+mandatory. For Studio work, the renderer additionally fails closed on an
 unreviewed, unregistered, or superseded payload.
 
 Persist the exact token with `record-card-verdict`; do not independently edit
-the Studio card and register. The validator recomputes the payload hash,
+the Card (or the Studio register when applicable). The validator recomputes the payload hash,
 avoiding the circular error where recording the verdict changes the material
 surface the user supposedly approved.
 

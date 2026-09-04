@@ -1137,7 +1137,6 @@ def _expected_artifacts(
     )
     locale_path = Path(locale["path"])
     artifacts: dict[Path, str] = {
-        PROFILE_RELATIVE: _render_profile(payload, probe, card),
         PRODUCTION_RELATIVE: _render_production_adapter(payload),
         OBSERVATION_RELATIVE: _render_observation_adapter(payload),
         MODEL_RELATIVE: _json_text(_build_model(payload, probe, card)),

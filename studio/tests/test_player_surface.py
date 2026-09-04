@@ -40,7 +40,7 @@ class PlayerFacingEvidenceGateTests(unittest.TestCase):
             transition_ids=self.transition_ids,
         )
         self.card_path = self.objective_dir / "GAMEPLAY_DECISION_CARD.json"
-        write_json(self.card_path, {"schema_version": "gameplay_decision_card.v2"})
+        write_json(self.card_path, {"schema_version": "gameplay_decision_card.v3"})
         self.card_ref = ref(self.repo, self.card_path)
         self.hypothesis_ids = ["hypothesis.player-understands"]
         self.admission_dir = self.repo / "design/studio/admissions/one"

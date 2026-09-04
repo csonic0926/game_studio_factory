@@ -7,6 +7,7 @@ is already factory-readable. Users do not select numbered cases.
 ```text
 init.py start
   -> NEW_PROJECT_DEFINITION_REQUIRED
+     OR PROJECT_CARD_AUTHORING_STANDARD_REQUIRED
      OR NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED
      OR approved-authority probe -> explicit bootstrap input
         -> compile-new -> check-new
@@ -16,6 +17,25 @@ init.py start
 
 Initialization does not invent a game, author meaningful choices, improve weak
 gameplay, or silently choose between conflicting runtime systems.
+
+### Mandatory project Card-authoring layer
+
+After Product authority exists and before the first Card, and after legacy
+adapter reconstruction before ordinary new Card production, the game repo must
+own an active Profile-bound Gameplay Decision Card authoring standard. Missing,
+blank, `TBD`, inferred, unadopted, stale, absolute-path, or Factory-owned
+authority returns `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED`.
+
+Seed only missing blank answer sheets with:
+
+```bash
+python3 gameplay/init.py seed-card-standard --game-repo <GAME_REPO>
+```
+
+This command never overwrites existing project state and never activates the
+draft. Fill/adopt it and update the Project Gameplay Profile's exact
+path/version/SHA/status binding before continuing. Read
+[`PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md).
 
 ## Initialization branches
 
@@ -31,6 +51,8 @@ With an explicit `ACTIVE` Product but without one validated, registered,
 `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED`. Continue through Studio's closed
 gameplay-system and Card gates. Product prose, a validated system without its
 human-approved first objective, and a pending Card are not substitutes.
+The active project Card standard is an earlier prerequisite; without it,
+`start` returns `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` instead.
 
 When exactly one approved Card is available, `start` writes
 `GAMEPLAY_NEW_PROJECT_BOOTSTRAP_PROBE.json` and returns
@@ -40,6 +62,8 @@ first objective. `compile-new` creates planned—not implemented—adapters, an
 empty-action stable model, empty experience ledgers, one locale row, and one
 design-authority frontier. It never manufactures runtime, reward mutation,
 observation, test, or acceptance evidence.
+The bootstrap preserves the already established game-owned Project Gameplay
+Profile rather than replacing its standard binding.
 
 ### Existing project joining in the middle
 
@@ -49,8 +73,11 @@ the evidence-focused reconstruction below.
 
 ### Already initialized
 
-When all canonical adapter/model/state files exist, `start` returns
-`GAMEPLAY_FACTORY_ALREADY_READY`. Return to [`../AGENTS.md`](../AGENTS.md).
+When all canonical adapter/model/state files exist and the Profile-selected
+project Card standard is active, adopted, and exact-bound, `start` returns
+`GAMEPLAY_FACTORY_ALREADY_READY`. If the other files exist but this authority
+does not, it returns `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` instead. Return
+to [`../AGENTS.md`](../AGENTS.md) only after resolving that state.
 Current production material checks still decide whether the state is
 trustworthy; initialization never overwrites invalid pre-existing state.
 
@@ -90,6 +117,7 @@ design/gameplay/
     GAMEPLAY_FACTORY_INIT_RESULT.json
   adapter/
     PROJECT_GAMEPLAY_PROFILE.md
+    PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json
     PRODUCTION_ADAPTER.md
     OBSERVATION_ADAPTER.md
     GAMEPLAY_DESIGN_MODEL.json
@@ -147,6 +175,8 @@ remains stable.
 Start results:
 
 - `NEW_PROJECT_DEFINITION_REQUIRED` — route to `idea-factory`;
+- `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` — seed/fill/adopt the game-owned
+  answer sheet and exact Profile binding; no Card may be shown;
 - `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` — continue Studio system/Card
   authority production;
 - `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED` — continue the new-project bootstrap
@@ -164,6 +194,7 @@ The new path is causally separate from existing-runtime reconstruction:
 
 ```text
 ACTIVE Product register
+  + active Profile-bound project Card-authoring standard
   + validated cycle-complete Studio gameplay-system manifest
   + exact registered USER_APPROVED Gameplay Decision Card
   + fresh final Card review and semantic decision-surface review
@@ -291,7 +322,9 @@ targets before its first write, and then:
 - never overwrites an adapter, state ledger, model, or objective input.
 
 Successful compile returns `GAMEPLAY_FACTORY_READY` and writes SHA-256 for
-every generated artifact into `GAMEPLAY_FACTORY_INIT_RESULT.json`.
+every generated artifact into `GAMEPLAY_FACTORY_INIT_RESULT.json`. Its generated
+Profile deliberately carries an inactive standard binding; this technical
+readiness does not authorize a new Card.
 
 ### Observation capability
 
@@ -314,11 +347,15 @@ rebuilds the expected artifacts in memory, and compares every byte. Any stale
 evidence, modified artifact, unresolved assumption, or source
 revision/dirty-path change returns `BLOCKED_BY_INIT_MATERIAL`.
 
-Only `GAMEPLAY_FACTORY_READY` completes Existing-project initialization.
+Only `GAMEPLAY_FACTORY_READY` completes existing-runtime reconstruction. Rerun
+`start`; it returns `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` until the
+game-owned standard is filled, adopted, and exact-bound.
 
 ## Handoff to production
 
-After `GAMEPLAY_FACTORY_READY`, return to [`../AGENTS.md`](../AGENTS.md):
+After `GAMEPLAY_FACTORY_READY`, rerun `start`, resolve any
+`PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` state, then return to
+[`../AGENTS.md`](../AGENTS.md):
 
 1. if an evidenced `OPEN` gameplay gap is already recorded, use gap repair;
 2. otherwise run objective production using the generated

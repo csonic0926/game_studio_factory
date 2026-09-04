@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 try:  # Package import in tests; script import for ``python gameplay/init.py``.
+    from gameplay.project_card_standard import inspect_active_project_standard
     from gameplay.prepare import (
         READY_FOR_HOW_DESIGN,
         READY_FOR_NEW_GAMEPLAY_DESIGN,
@@ -47,6 +48,9 @@ except ModuleNotFoundError:  # pragma: no cover - exercised by CLI smoke tests.
         validate_materials,
     )
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from gameplay.project_card_standard import (  # type: ignore[no-redef]
+        inspect_active_project_standard,
+    )
     from gameplay.new_project_bootstrap import (  # type: ignore[no-redef]
         INPUT_RELATIVE as NEW_PROJECT_INPUT_RELATIVE,
         NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED,
@@ -69,6 +73,9 @@ EXISTING_PROJECT_INIT_INPUT_REQUIRED = "EXISTING_PROJECT_INIT_INPUT_REQUIRED"
 NEW_PROJECT_DEFINITION_REQUIRED = "NEW_PROJECT_DEFINITION_REQUIRED"
 GAMEPLAY_FACTORY_ALREADY_READY = "GAMEPLAY_FACTORY_ALREADY_READY"
 GAMEPLAY_FACTORY_READY = "GAMEPLAY_FACTORY_READY"
+PROJECT_CARD_AUTHORING_STANDARD_REQUIRED = (
+    "PROJECT_CARD_AUTHORING_STANDARD_REQUIRED"
+)
 BLOCKED_BY_INIT_MATERIAL = "BLOCKED_BY_INIT_MATERIAL"
 BLOCKED_BY_EXISTING_FACTORY_STATE = "BLOCKED_BY_EXISTING_FACTORY_STATE"
 
@@ -80,6 +87,9 @@ INPUT_RELATIVE = INIT_ROOT_RELATIVE / "GAMEPLAY_FACTORY_INIT_INPUT.json"
 RESULT_RELATIVE = INIT_ROOT_RELATIVE / "GAMEPLAY_FACTORY_INIT_RESULT.json"
 
 PROFILE_RELATIVE = Path("design/gameplay/adapter/PROJECT_GAMEPLAY_PROFILE.md")
+PROJECT_CARD_STANDARD_RELATIVE = Path(
+    "design/gameplay/adapter/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json"
+)
 PRODUCTION_RELATIVE = Path("design/gameplay/adapter/PRODUCTION_ADAPTER.md")
 OBSERVATION_RELATIVE = Path("design/gameplay/adapter/OBSERVATION_ADAPTER.md")
 MODEL_RELATIVE = Path("design/gameplay/adapter/GAMEPLAY_DESIGN_MODEL.json")
@@ -598,6 +608,18 @@ def start_factory_init(game_repo_text: str) -> FactoryInitResult:
 
     game_repo = _resolve_game_repo(game_repo_text)
     if _factory_state_complete(game_repo):
+        active, standard_errors = inspect_active_project_standard(game_repo)
+        if not active:
+            return FactoryInitResult(
+                PROJECT_CARD_AUTHORING_STANDARD_REQUIRED,
+                warnings=[
+                    "No active Profile-bound project Gameplay Decision Card standard "
+                    "is available. Run init.py seed-card-standard, fill the game-owned "
+                    "answer sheet, record human/project adoption, point the committed "
+                    "collaboration contract to it, and update the Profile version/SHA/status.",
+                    *standard_errors,
+                ],
+            )
         return FactoryInitResult(GAMEPLAY_FACTORY_ALREADY_READY)
     if not _has_existing_game_material(game_repo):
         _, product_errors = require_active_product_authority(game_repo)
@@ -609,8 +631,56 @@ def start_factory_init(game_repo_text: str) -> FactoryInitResult:
                     "Route product definition through the installed idea-factory skill."
                 ],
             )
+        active, standard_errors = inspect_active_project_standard(game_repo)
+        if not active:
+            return FactoryInitResult(
+                PROJECT_CARD_AUTHORING_STANDARD_REQUIRED,
+                warnings=[
+                    "Active Product authority exists, but the project must adopt its "
+                    "game-owned Card authoring standard before Studio can create the "
+                    "first Gameplay Decision Card. Run init.py seed-card-standard.",
+                    *standard_errors,
+                ],
+            )
         return probe_new_project(game_repo_text)
     return probe_repository(game_repo_text, PROBE_RELATIVE.as_posix())
+
+
+def seed_project_card_standard(game_repo_text: str) -> FactoryInitResult:
+    """Create missing blank answer sheets without activating or overwriting them."""
+
+    game_repo = _resolve_game_repo(game_repo_text)
+    sources = {
+        PROFILE_RELATIVE: FACTORY_ROOT
+        / "gameplay/adapters/_template/PROJECT_GAMEPLAY_PROFILE.md",
+        PROJECT_CARD_STANDARD_RELATIVE: FACTORY_ROOT
+        / "gameplay/templates/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json",
+    }
+    created: list[str] = []
+    verified: list[str] = []
+    for relative, source in sources.items():
+        target = _resolve_persisted_owned_path(game_repo, relative.as_posix())
+        if target.exists():
+            if not target.is_file():
+                raise FactoryInitError(
+                    f"project Card answer-sheet target is not a file: {relative.as_posix()}"
+                )
+            verified.append(relative.as_posix())
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+        created.append(relative.as_posix())
+    return FactoryInitResult(
+        PROJECT_CARD_AUTHORING_STANDARD_REQUIRED,
+        warnings=[
+            "Blank answer sheets are DRAFT_NOT_ADOPTED and contain placeholders. "
+            "They cannot authorize a Card until the project fills them, records "
+            "human/project adoption, commits a collaboration-contract pointer, and "
+            "updates the Profile with the exact ACTIVE version and SHA-256."
+        ],
+        created_paths=sorted(created),
+        verified_paths=sorted(verified),
+    )
 
 
 def probe_repository(
@@ -660,7 +730,16 @@ def probe_repository(
         if any(term in relative.lower() for term in TEST_COMMAND_TERMS)
     ][:100]
 
-    status = GAMEPLAY_FACTORY_ALREADY_READY if _factory_state_complete(game_repo) else EXISTING_PROJECT_INIT_INPUT_REQUIRED
+    standard_errors: list[str] = []
+    if _factory_state_complete(game_repo):
+        active_standard, standard_errors = inspect_active_project_standard(game_repo)
+        status = (
+            GAMEPLAY_FACTORY_ALREADY_READY
+            if active_standard
+            else PROJECT_CARD_AUTHORING_STANDARD_REQUIRED
+        )
+    else:
+        status = EXISTING_PROJECT_INIT_INPUT_REQUIRED
     payload = {
         "schema_version": PROBE_SCHEMA_VERSION,
         "status": status,
@@ -680,6 +759,12 @@ def probe_repository(
         "interpretation_warning": (
             "Paths and scores are search hints only. They do not establish the "
             "live progression driver, objective, action, reward, or authority."
+            + (
+                " The existing gameplay adapters are present, but project Card "
+                "authority is not active: " + "; ".join(standard_errors)
+                if standard_errors
+                else ""
+            )
         ),
     }
     rendered = _json_text(payload)
@@ -690,10 +775,18 @@ def probe_repository(
                 "probe output already exists with different content; remove it "
                 "only after preserving intentional game-owned work"
             )
-        return FactoryInitResult(status, verified_paths=[PROBE_RELATIVE.as_posix()])
+        return FactoryInitResult(
+            status,
+            warnings=standard_errors,
+            verified_paths=[PROBE_RELATIVE.as_posix()],
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(rendered, encoding="utf-8")
-    return FactoryInitResult(status, created_paths=[PROBE_RELATIVE.as_posix()])
+    return FactoryInitResult(
+        status,
+        warnings=standard_errors,
+        created_paths=[PROBE_RELATIVE.as_posix()],
+    )
 
 
 def _validate_repository_binding(
@@ -1230,6 +1323,19 @@ def _render_profile(payload: dict[str, Any]) -> str:
         f"- Target runtime/platform: {profile['target_runtime']}",
         f"- Machine gameplay model: `{MODEL_RELATIVE.as_posix()}`",
         "",
+        "## Gameplay Decision Card authoring authority",
+        "",
+        "- Project Card authoring standard path: "
+        f"`{PROJECT_CARD_STANDARD_RELATIVE.as_posix()}`",
+        "- Project Card authoring standard version: `NOT_ADOPTED`",
+        "- Project Card authoring standard SHA-256: `NOT_ADOPTED`",
+        "- Project Card authoring standard status: `DRAFT_NOT_ADOPTED`",
+        "",
+        "Initialization does not infer or activate game-specific Card rules. "
+        "Run `python3 gameplay/init.py seed-card-standard --game-repo <GAME_REPO>`, "
+        "fill/adopt the answer sheet, point the committed collaboration contract "
+        "to it, and replace this block with its exact active version/SHA.",
+        "",
         "## Authoritative inputs",
         "",
     ]
@@ -1499,8 +1605,10 @@ def _expected_artifacts(
         "artifact_sha256": hashes,
         "warnings": warnings,
         "handoff": (
-            "Return to gameplay/AGENTS.md. Route OPEN repairs first; otherwise "
-            "run objective production from the initial objective input."
+            "Return to gameplay/AGENTS.md and rerun init.py start. Complete the "
+            "project Card-authoring standard branch before any new/materially "
+            "revised Card; then route OPEN repairs first or run objective production "
+            "from the initial objective input."
         ),
     }
     artifacts[RESULT_RELATIVE] = _json_text(result_payload)
@@ -1646,6 +1754,9 @@ def _build_parser() -> argparse.ArgumentParser:
     start_parser = subparsers.add_parser("start")
     start_parser.add_argument("--game-repo", required=True)
 
+    seed_standard_parser = subparsers.add_parser("seed-card-standard")
+    seed_standard_parser.add_argument("--game-repo", required=True)
+
     probe_parser = subparsers.add_parser("probe-existing")
     probe_parser.add_argument("--game-repo", required=True)
     probe_parser.add_argument("--max-candidates", type=int, default=200)
@@ -1684,6 +1795,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "start":
             result = start_factory_init(args.game_repo)
+        elif args.command == "seed-card-standard":
+            result = seed_project_card_standard(args.game_repo)
         elif args.command == "probe-existing":
             result = probe_repository(
                 args.game_repo,
@@ -1711,6 +1824,7 @@ def main(argv: list[str] | None = None) -> int:
         EXISTING_PROJECT_INIT_INPUT_REQUIRED,
         GAMEPLAY_FACTORY_ALREADY_READY,
         GAMEPLAY_FACTORY_READY,
+        PROJECT_CARD_AUTHORING_STANDARD_REQUIRED,
     }
     return 0 if result.status in successful_statuses else 2
 

@@ -16,6 +16,20 @@ the fixed `<GAME_REPO>/design/gameplay`; neither is stored here. Keep
 game-owned paths relative to the Git root and do not commit a developer's
 absolute filesystem path.
 
+## Gameplay Decision Card authoring authority
+
+- Project Card authoring standard path: `design/gameplay/adapter/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json`
+- Project Card authoring standard version: `<PROJECT_STANDARD_VERSION>`
+- Project Card authoring standard SHA-256: `<SHA256_AFTER_FILLING_AND_ADOPTION>`
+- Project Card authoring standard status: `DRAFT_NOT_ADOPTED`
+
+Copy the Factory's blank
+`gameplay/templates/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json`, replace all
+placeholders with this game's own rules, record human/project adoption, make
+the root `AGENTS.md` (or equivalent committed collaboration contract) point
+to it, then update the exact version/SHA and set this status to `ACTIVE`.
+Factory examples are questions only and are never active project decisions.
+
 Explain how an author selects the exact story-anchor range and current-state
 snapshot without copying a stale summary:
 

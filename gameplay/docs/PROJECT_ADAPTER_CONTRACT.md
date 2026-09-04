@@ -6,17 +6,20 @@ Gameplay Factory core is project-agnostic. The factory owns contracts,
 schemas, reader tools, and blank answer sheets. Each game repo owns filled
 answers and versions them beside the code/data/evidence they describe.
 
-There are three initialization-time answer surfaces and one just-in-time UI
+There are four initialization/pre-Card answer surfaces and one just-in-time UI
 production surface:
 
 1. **Project Gameplay Profile** — player frames, verbs, systems, spaces,
    engagement generators, presentation/control, grammar, budgets, and review.
-2. **Production Adapter** — how approved packets land into runtime code/data,
+2. **Project Gameplay Decision Card Authoring Standard** — the game-owned,
+   human/project-adopted vocabulary, composition granularity, player-work,
+   resolution/failure/validation rules, and finite rendered-Card checklist.
+3. **Production Adapter** — how approved packets land into runtime code/data,
    other factories, and mechanical validation.
-3. **Observation Adapter** — how instrumentation captures actual play, maps it
+4. **Observation Adapter** — how instrumentation captures actual play, maps it
    to canonical evidence, supports reproducible sessions/probes, and blinds
    the runtime reader.
-4. **UI Production Adapter** — how this repo owns layout, view state/refresh,
+5. **UI Production Adapter** — how this repo owns layout, view state/refresh,
    scene lifecycle, input/layers, responsive/localized composition, accepted
    visual grammar/exemplar provenance, and split structural/visual UI
    validation. It is required only before UI work.
@@ -27,7 +30,7 @@ but its ownership, completeness, version, and blocker semantics remain
 separate. The factory blank template uses a separate file.
 
 Objective authoring additionally requires a compact machine-checked
-projection, `GAMEPLAY_DESIGN_MODEL.json`. It does not replace the three answer
+projection, `GAMEPLAY_DESIGN_MODEL.json`. It does not replace the four answer
 surfaces; it records the primary progression driver plus implemented player
 actions/rewards once so every objective worker does not reread and summarize
 the full profile/codebase.
@@ -37,6 +40,7 @@ the full profile/codebase.
 ```text
 <GAME_REPO>/design/gameplay/adapter/
   PROJECT_GAMEPLAY_PROFILE.md
+  PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json
   PRODUCTION_ADAPTER.md
   OBSERVATION_ADAPTER.md
   GAMEPLAY_DESIGN_MODEL.json
@@ -59,7 +63,7 @@ Resolve in this order:
 3. ignored `gameplay/adapters/registry.local.md`, only for an explicit
    project id.
 
-Then read all three answer files at the fixed adapter location. Objective
+Then read all four answer surfaces at the fixed adapter location. Objective
 preparation additionally reads `GAMEPLAY_DESIGN_MODEL.json`. Reject
 a game root inside this factory. Never scan siblings, borrow another factory's
 registry, infer a game from engine code, or commit developer paths.
@@ -88,10 +92,31 @@ The profile declares:
 - gameplay grammar/rhythm/repetition/expectation/handoff conventions;
 - explicit time, complexity, content, asset, sound, engineering, and
   attention budgets;
-- approval owner, USER-ruling evidence, and human playtest evidence.
+- approval owner, USER-ruling evidence, and human playtest evidence;
+- the canonical game-repo-relative path, exact version, SHA-256, and `ACTIVE`
+  status of the project-owned Gameplay Decision Card authoring standard.
 
 Project-specific verbs, modes, budgets, or commercial/fantasy rulings in
 factory core are defects.
+
+## Project Gameplay Decision Card authoring answers
+
+The standard is a mandatory versioned game-repo artifact for every new or
+materially revised Card under both `STUDIO_WHOLE_GAME` and
+`DIRECT_SPECIALIST`. It declares the project's vocabulary, repeatable-lap
+meaning, player-work boundary, required composition/interaction granularity,
+control/input/judgment/response/persistent-return detail, resolution and
+time/resource settlement, failure/recovery/replay,
+project-permitted validation methods, reviewer independence, synchronization,
+composition artifact kinds, complete requirement inventory, and finite
+render-only checklist.
+
+The Factory provides only a blank answer sheet. `DRAFT_NOT_ADOPTED`, `TBD`,
+missing, absolute-path, machine-local, Factory-owned, another-project, or
+AI-inferred standards are not active. The active standard must record explicit
+human/project adoption and bind a committed collaboration contract that points
+back to its canonical path. Read
+[`PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md).
 
 ## Production Adapter answers
 
@@ -179,6 +204,7 @@ design/gameplay/
     GAMEPLAY_FACTORY_INIT_RESULT.json
   adapter/
     PROJECT_GAMEPLAY_PROFILE.md
+    PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json
     PRODUCTION_ADAPTER.md
     OBSERVATION_ADAPTER.md
     GAMEPLAY_DESIGN_MODEL.json

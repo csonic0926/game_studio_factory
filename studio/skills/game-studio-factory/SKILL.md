@@ -81,20 +81,27 @@ language. After a new Idea commission compiles and checks, run
   use `gameplay-factory` for the minimum cycle-complete vertical slice. It must
   demonstrate two laps in which lap-one reward/state materially changes the
   lap-two decision. Do not call a result/replay sequence a loop or baseline.
-- At the approval boundary, first require the game-owned, current-scene
+- At the approval boundary, first require the Project Gameplay Profile's
+  active/adopted exact binding to the game-owned Card-authoring standard and
+  every project-defined pre-Card composition artifact it requires. Then
+  require the game-owned, current-scene
   `PLAYER_FACING_INTERACTION_CONTRACT.json` and delegate a fresh
   `studio-player-facing-interaction-reviewer`. The contract must decompose every
   playable beat into visible cause/goal, concrete input and judgment, ordered
   response, persistent change, changed next affordance, readable localization,
   and future capture plan. Design hypotheses remain `TESTABLE_DESIGN`; a
-  falsifiable `reject if` statement is not a passed observation. Then use
-  `gameplay/design_gate.py render-card` and show
+  falsifiable `reject if` statement is not a passed observation. Every v3 Card
+  exact-binds those artifacts and must pass a fresh independent
+  `PASS_PROJECT_CARD_AUTHORING_STANDARD` review that inventories every project
+  requirement and rendered-only requirement before the generic Studio review.
+  Then use `gameplay/design_gate.py render-card` and show
   only an alignment-reviewed, registered pending decision surface. Persist
   reconstruction, research, full specs, and review reports without dumping
   them into the user's verdict request. Before semantic alignment, spawn a
   separate fresh subagent using `studio-gameplay-decision-card-reviewer` to
-  audit the exact pending Card plus all bound authorities against every Factory
-  requirement due at this boundary. Revise privately until
+  audit the exact pending Card plus all bound project/Product/system
+  authorities against every Factory requirement due at this boundary. Revise
+  privately until
   `PASS_CARD_FACTORY_COMPLIANCE`; this whole-result audit does not replace any
   step-local reviewer, and the later semantic-alignment reviewer must be a
   different context. Register with `--factory-compliance-review`; rendering

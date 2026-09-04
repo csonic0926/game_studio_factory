@@ -15,6 +15,7 @@ from gameplay.new_project_bootstrap import (
     NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED,
     PROBE_RELATIVE,
     PROFILE_RELATIVE,
+    PRODUCTION_RELATIVE,
     _historical_pending_card_transition_errors,
     check_new_project,
     compile_new_project,
@@ -26,6 +27,7 @@ from gameplay.prepare import (
     _compile_unit_payload,
     validate_materials,
 )
+from gameplay.tests.project_card_fixture import install_project_standard
 
 
 def write_json(path: Path, value: dict) -> Path:
@@ -52,6 +54,7 @@ class NewProjectBootstrapTests(unittest.TestCase):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        install_project_standard(self.repo, project_id="sample-new-game", profile_kind="turn")
         self.product = write_json(
             self.repo / "design/product/PRODUCT_AUTHORITY_REGISTER.json",
             {"schema_version": "test", "status": "ACTIVE"},
@@ -215,7 +218,8 @@ class NewProjectBootstrapTests(unittest.TestCase):
         self.thesis.write_text("# Product\n\nChanged after probe.\n", encoding="utf-8")
         result = compile_new_project(str(self.repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_BOOTSTRAP_MATERIAL, result.status)
-        self.assertFalse((self.repo / PROFILE_RELATIVE).exists())
+        self.assertTrue((self.repo / PROFILE_RELATIVE).exists())
+        self.assertFalse((self.repo / MODEL_RELATIVE).exists())
         self.assertTrue(any("source bytes changed" in item for item in result.errors))
 
     def test_forged_probe_projection_is_not_trusted_even_with_updated_input_hash(self) -> None:
@@ -229,13 +233,14 @@ class NewProjectBootstrapTests(unittest.TestCase):
         write_json(input_path, payload)
         result = compile_new_project(str(self.repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_BOOTSTRAP_MATERIAL, result.status)
-        self.assertFalse((self.repo / PROFILE_RELATIVE).exists())
+        self.assertTrue((self.repo / PROFILE_RELATIVE).exists())
+        self.assertFalse((self.repo / MODEL_RELATIVE).exists())
         self.assertTrue(any("exact mechanical projection" in item for item in result.errors))
 
     def test_conflicting_factory_state_blocks_all_new_writes(self) -> None:
         self._probe_and_write_input()
-        (self.repo / PROFILE_RELATIVE).parent.mkdir(parents=True, exist_ok=True)
-        (self.repo / PROFILE_RELATIVE).write_text("intentional existing state\n", encoding="utf-8")
+        (self.repo / PRODUCTION_RELATIVE).parent.mkdir(parents=True, exist_ok=True)
+        (self.repo / PRODUCTION_RELATIVE).write_text("intentional existing state\n", encoding="utf-8")
         result = compile_new_project(str(self.repo), INPUT_RELATIVE.as_posix())
         self.assertEqual(BLOCKED_BY_EXISTING_FACTORY_STATE, result.status)
         self.assertFalse((self.repo / MODEL_RELATIVE).exists())

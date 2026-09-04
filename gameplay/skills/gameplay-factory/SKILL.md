@@ -50,6 +50,12 @@ python3 <FACTORY_ROOT>/gameplay/init.py start --game-repo <GAME_REPO>
 
 Continue the returned branch:
 
+- `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED`: run
+  `python3 gameplay/init.py seed-card-standard --game-repo <GAME_REPO>`, then
+  fill and human/project-adopt the game-owned blank,
+  point the committed root collaboration contract to it, and exact-bind its
+  path/version/SHA/`ACTIVE` status from the Project Gameplay Profile. Do not
+  self-activate reconstructed or Factory example rules.
 - `NEW_PROJECT_DEFINITION_REQUIRED`: invoke `idea-factory`; after
   `IDEA_FACTORY_READY`, continue through Studio gameplay-system/Card authority.
   Open/no-fit/multiple-direction Idea states remain in exploration and must not
@@ -85,14 +91,25 @@ through validated persisted production plans into normal code/data/asset/sound
 execution. Stop at plans only when the user explicitly asked for plan-only.
 An objective authored by AI is not design authority until an objective-local
 `GAMEPLAY_DESIGN_VERDICT.json` v2 binds its exact SHA, the compact human-approved
-decision card, and two fresh inverse conformance reviews. For Studio-routed
-work, first author a `PLAYER_FACING_INTERACTION_CONTRACT.json` that makes the
+decision card, and two fresh inverse conformance reviews. Before either route
+authors that Card, load the active project Card authoring standard and create
+every project-required pre-Card composition artifact. Every v3 Card exact-binds
+those artifacts and must pass a fresh
+`PASS_PROJECT_CARD_AUTHORING_STANDARD` review by a context different from all
+composition, Contract, and Card authors. The review inventories every project
+requirement and finite render-only checklist item. Missing/stale project
+authority blocks direct-specialist rendering just as it blocks Studio
+registration; Factory core never fills the project's answers.
+
+For both routes, then author a
+`PLAYER_FACING_INTERACTION_CONTRACT.json` that makes the
 current scene composition, ordered player inputs, in-engine responses,
 persistent state change, and next affordance concrete. A fresh interaction
 reviewer must return `PASS_PLAYER_FACING_INTERACTION_DESIGN`; dialogue,
 instructions, markers, or result text without player work are blockers. The
-Card must bind that contract/review plus the validated cycle-complete Studio
-gameplay-system manifest and pass a separate fresh end-to-end Card
+Card must bind that contract/review. A Studio-routed Card additionally binds
+the validated cycle-complete Studio gameplay-system manifest and passes a
+separate fresh end-to-end Card
 Factory-compliance review before a different fresh semantic-alignment reviewer
 permits presentation. Card hypotheses remain `TESTABLE_DESIGN`; neither a
 design artifact nor its reviewer may claim runtime `PASS`.

@@ -210,6 +210,8 @@ class LinkGameRepoTest(unittest.TestCase):
             self.assertIn("`gameplay-factory` skill", body)
             self.assertIn("`game-studio-factory` skill", body)
             self.assertIn("fresh player-facing interaction", body)
+            self.assertIn("PROJECT_GAMEPLAY_PROFILE.md", body)
+            self.assertIn("fresh project-standard review", body)
             self.assertIn("blind observation", body)
 
     def test_existing_claude_md_is_untouched(self):

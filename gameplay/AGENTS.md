@@ -62,6 +62,7 @@ For ordinary production, read the game-owned adapters/model:
 
 ```text
 <GAMEPLAY_ROOT>/adapter/PROJECT_GAMEPLAY_PROFILE.md
+<GAMEPLAY_ROOT>/adapter/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json
 <GAMEPLAY_ROOT>/adapter/PRODUCTION_ADAPTER.md
 <GAMEPLAY_ROOT>/adapter/OBSERVATION_ADAPTER.md
 <GAMEPLAY_ROOT>/adapter/GAMEPLAY_DESIGN_MODEL.json
@@ -70,6 +71,10 @@ For ordinary production, read the game-owned adapters/model:
 Missing answers route an existing repo through initialization. Differing or
 inconsistent existing factory state blocks for explicit remediation; ordinary
 production never creates or overwrites it implicitly.
+The Profile must exact-path/version/SHA bind an active, human/project-adopted
+Card authoring standard in the game repo. Missing or stale authority returns
+`PROJECT_CARD_AUTHORING_STANDARD_REQUIRED`; use
+`docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`.
 
 ## 2. Route to exactly one workflow
 
@@ -94,6 +99,10 @@ Initialization precedes production routing. Run `init.py start` once. A new
 project routes to game definition; an existing project continues until
 `GAMEPLAY_FACTORY_READY`; an already-ready repo proceeds directly. Do not
 disguise missing adapters as objective authoring.
+`PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` is a real pre-Card state: seed the
+blank with `init.py seed-card-standard`, then let human/project authority fill
+and adopt it and exact-bind it from the Profile. Do not convert the Factory
+questions or reconstructed habits into active project rules.
 
 If a concrete repair gap and a request to advance progression are both active,
 repair the known gap first unless the user explicitly defers it. Do not keep
@@ -240,8 +249,10 @@ stable GAMEPLAY_DESIGN_MODEL.json + small objective frontier input
   -> prepare.py context
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
   -> Studio cycle authority or explicit bounded specialist authority
+  -> active project Card standard + project composition artifact(s)
   -> current-scene Player-Facing Interaction Contract + fresh design review
-  -> compact GAMEPLAY_DECISION_CARD.json -> human verdict
+  -> compact GAMEPLAY_DECISION_CARD.json + fresh project Card review
+  -> route-specific final gates -> human verdict
   -> separate full-spec author
   -> OBJECTIVE_GAMEPLAY.md
   -> fresh CARD_TO_SPEC + SPEC_TO_CARD conformance reviews
@@ -263,6 +274,14 @@ gameplay sufficiency rather than certain clicks/dialogue/task proxies. Then a
 different fresh subagent follows `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`
 for the exact raw input, authority delta, and candidate surface. Registration
 validates both; a missing/stale review or superseded payload cannot render.
+
+Before those Studio-only gates—and before direct-specialist presentation—the
+Card must exact-bind the active game-owned standard, every required project
+composition artifact, and a fresh
+`PASS_PROJECT_CARD_AUTHORING_STANDARD` review. The project reviewer inventories
+every declared requirement and finite render-only checklist item and differs
+from every composition, Contract, and Card author. Generic Factory review does
+not own or infer the project's gameplay grammar.
 
 The primary progression driver answers **what is next**. Gameplay is **how**
 the player reaches it through actions and their consequences/rewards.

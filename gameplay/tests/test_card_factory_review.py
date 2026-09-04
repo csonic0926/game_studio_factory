@@ -23,6 +23,7 @@ from gameplay.design_gate import (
 )
 from studio.tests import test_alignment, test_cycle
 from studio.tests.player_surface_fixture import write_contract_pair
+from gameplay.tests.project_card_fixture import attach_project_review
 
 
 def write_json(path: Path, payload: dict) -> Path:
@@ -70,7 +71,17 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             transition_ids=list(self.system["cycle_path"]),
         )
         self.card = self.make_card()
-        write_json(self.card_path, self.card)
+        (
+            self.project_standard_ref,
+            self.project_composition_refs,
+            self.project_review_ref,
+        ) = attach_project_review(
+            self.repo,
+            self.objective_dir,
+            self.card,
+            interaction_contract_ref=self.interaction_contract_ref,
+            interaction_contract_review_ref=self.interaction_contract_review_ref,
+        )
         self.review = self.make_review()
         write_json(self.review_path, self.review)
 
@@ -95,7 +106,7 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
                 }
             )
         card = {
-            "schema_version": "gameplay_decision_card.v2",
+            "schema_version": "gameplay_decision_card.v3",
             "card_id": "final-card.v1",
             "project_id": "sample",
             "objective_id": "final-card",
@@ -164,7 +175,7 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             for requirement_id in FINAL_CARD_REQUIREMENT_IDS
         }
         return {
-            "schema_version": "gameplay_decision_card_factory_review.v2",
+            "schema_version": "gameplay_decision_card_factory_review.v3",
             "review_id": "final-card.factory-review.v1",
             "review_role": "FINAL_CARD_FACTORY_COMPLIANCE",
             "project_id": "sample",
@@ -179,6 +190,9 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             },
             "product_authority": self.system["product_authority"],
             "studio_gameplay_system": ref(self.repo, self.manifest_path),
+            "project_card_authoring_standard": self.project_standard_ref,
+            "project_composition_artifacts": self.project_composition_refs,
+            "project_card_review": self.project_review_ref,
             "player_facing_interaction_contract": self.interaction_contract_ref,
             "player_facing_interaction_contract_review": self.interaction_contract_review_ref,
             "authority_inventory": {
@@ -291,6 +305,36 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
         self.assertEqual(2, exit_code)
         self.assertIn("player_facing_interaction_contract", stderr.getvalue())
 
+    def test_studio_card_cannot_bypass_project_standard_review(self) -> None:
+        (self.objective_dir / "GAMEPLAY_DECISION_CARD_PROJECT_REVIEW.json").unlink()
+        result = validate_card_factory_review(self.repo, self.card_path, self.review_path)
+        self.assertEqual("BLOCKED", result.status)
+        self.assertTrue(
+            any("project Card review" in item for item in result.errors),
+            result.errors,
+        )
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            exit_code = design_gate_main(
+                [
+                    "register-card",
+                    "--game-repo",
+                    str(self.repo),
+                    "--card",
+                    str(self.card_path),
+                    "--factory-compliance-review",
+                    str(self.review_path),
+                    "--alignment-input",
+                    str(self.objective_dir / "missing-alignment-input.json"),
+                    "--alignment-review",
+                    str(self.objective_dir / "missing-alignment-review.json"),
+                    "--recorded-at",
+                    "2026-09-04T12:00:00Z",
+                ]
+            )
+        self.assertEqual(2, exit_code)
+        self.assertIn("project Card review", stderr.getvalue())
+
     def test_design_stage_hypothesis_cannot_be_marked_pass(self) -> None:
         review = copy.deepcopy(self.review)
         hypothesis = next(
@@ -313,8 +357,12 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
         legacy["studio_gameplay_system"] = {"path": "", "sha256": ""}
         legacy.pop("player_facing_interaction_contract")
         legacy.pop("player_facing_interaction_contract_review")
+        legacy.pop("project_card_authoring_standard")
+        legacy.pop("project_composition_artifacts")
+        legacy.pop("project_card_review")
         for hypothesis in legacy["validation_hypotheses"]:
             hypothesis.pop("status")
+            hypothesis.pop("validation_method_id")
         legacy["decision_payload_sha256"] = decision_payload_sha256(legacy)
         write_json(self.card_path, legacy)
 
@@ -338,6 +386,44 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
             project_id="sample",
             objective_id="final-card",
             factory_revision=historical_revision,
+            context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
+            errors=historical_errors,
+            pre_human_review=True,
+            allow_legacy_historical=True,
+        )
+        self.assertEqual([], historical_errors)
+
+    def test_v2_card_remains_readable_only_for_explicit_historical_check(self) -> None:
+        legacy = copy.deepcopy(self.card)
+        legacy["schema_version"] = "gameplay_decision_card.v2"
+        legacy.pop("project_card_authoring_standard")
+        legacy.pop("project_composition_artifacts")
+        legacy.pop("project_card_review")
+        for hypothesis in legacy["validation_hypotheses"]:
+            hypothesis.pop("validation_method_id")
+        legacy["decision_payload_sha256"] = decision_payload_sha256(legacy)
+        write_json(self.card_path, legacy)
+
+        active_errors: list[str] = []
+        _validate_decision_card(
+            game_repo=self.repo,
+            card_path=self.card_path,
+            project_id="sample",
+            objective_id="final-card",
+            factory_revision=self.revision,
+            context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
+            errors=active_errors,
+            pre_human_review=True,
+        )
+        self.assertTrue(any("historical checks" in item for item in active_errors))
+
+        historical_errors: list[str] = []
+        _validate_decision_card(
+            game_repo=self.repo,
+            card_path=self.card_path,
+            project_id="sample",
+            objective_id="final-card",
+            factory_revision=self.revision,
             context_status=READY_FOR_NEW_GAMEPLAY_DESIGN,
             errors=historical_errors,
             pre_human_review=True,
@@ -384,14 +470,21 @@ class FinalCardFactoryReviewTests(unittest.TestCase):
         )
 
     def test_review_must_be_fresh_from_all_prior_card_system_contexts(self) -> None:
-        review = copy.deepcopy(self.review)
-        review["reviewer_context_id"] = "system-author"
-        write_json(self.review_path, review)
-        result = validate_card_factory_review(
-            self.repo, self.card_path, self.review_path
-        )
-        self.assertEqual("BLOCKED", result.status)
-        self.assertTrue(any("must be fresh" in item for item in result.errors))
+        for prior_context in (
+            "system-author",
+            "project-card-reviewer",
+            "project-composition-author",
+            "surface-contract-author",
+        ):
+            with self.subTest(prior_context=prior_context):
+                review = copy.deepcopy(self.review)
+                review["reviewer_context_id"] = prior_context
+                write_json(self.review_path, review)
+                result = validate_card_factory_review(
+                    self.repo, self.card_path, self.review_path
+                )
+                self.assertEqual("BLOCKED", result.status)
+                self.assertTrue(any("must be fresh" in item for item in result.errors))
 
     def test_authority_inventory_must_cover_every_bound_factory_constraint(self) -> None:
         review = copy.deepcopy(self.review)

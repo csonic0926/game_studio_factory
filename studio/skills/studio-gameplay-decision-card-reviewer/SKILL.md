@@ -18,10 +18,13 @@ subagent/context delegated by `game-studio-factory` for one exact pending
    `<STUDIO_ROOT>/studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`, the Gameplay Factory
    landing/AGENTS, and the exact workflow contracts applicable at this Card
    boundary.
-3. Read the exact pending `GAMEPLAY_DECISION_CARD.json`, its Product authority,
-   Factory constraints, Studio gameplay-system manifest/system, both system
-   reviews, the exact Player-Facing Interaction Contract and fresh design
-   review, and any already-due objective/span authority named by the Card.
+3. Read the exact pending `GAMEPLAY_DECISION_CARD.json`, the Project Gameplay
+   Profile's active Card-standard binding, the exact project standard, every
+   bound project composition artifact, the passed fresh project-standard Card
+   review, its Product authority, Factory constraints, Studio gameplay-system
+   manifest/system, both system reviews, the exact Player-Facing Interaction
+   Contract and fresh design review, and any already-due objective/span
+   authority named by the Card.
 4. Do not rely on the Card author's summary when a bound artifact exists.
 5. Write only the objective-local
    `GAMEPLAY_DECISION_CARD_FACTORY_REVIEW.json` from the Factory template.
@@ -29,8 +32,9 @@ subagent/context delegated by `game-studio-factory` for one exact pending
 ## Independence
 
 - `reviewer_context_id` must differ from the Card author, gameplay-system
-  author, product-fidelity reviewer, cycle-closure reviewer, and the later
-  semantic-alignment reviewer.
+  author, every project composition author, the project-standard reviewer, the
+  Contract author/reviewer, product-fidelity reviewer, cycle-closure reviewer,
+  and the later semantic-alignment reviewer.
 - Do not edit the Card or its authorities. A failure returns privately to the
   author for revision and a new fresh review.
 - Do not issue the human verdict, claim the gameplay is fun, accept a build, or
@@ -66,6 +70,11 @@ a passing label:
 - costs, obligations, failure/recovery, and validation hypotheses are concrete
   and falsifiable at the promised boundary;
 - every Factory gate already due is present, valid, exact-SHA bound, and fresh;
+- the active project standard, required composition artifacts, and passed
+  project review are exact-bound and fresh; every project requirement and
+  finite render-only requirement is inventoried without blockers (the project
+  review owns those project-specific judgments, while this review verifies
+  that gate and audits generic Factory obligations independently);
 - every claimed beat is concretely visible/interactable in the player-facing
   contract rather than explainable only through Card prose, state, popup,
   dialogue, task text, journal, marker, or code;

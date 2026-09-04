@@ -15,6 +15,8 @@ from gameplay.init import (
     INPUT_RELATIVE,
     MODEL_RELATIVE,
     PROFILE_RELATIVE,
+    PROJECT_CARD_AUTHORING_STANDARD_REQUIRED,
+    PROJECT_CARD_STANDARD_RELATIVE,
     PROBE_RELATIVE,
     RESULT_RELATIVE,
     FactoryInitError,
@@ -22,8 +24,10 @@ from gameplay.init import (
     check_init,
     compile_init,
     probe_repository,
+    seed_project_card_standard,
     start_factory_init,
 )
+from gameplay.tests.project_card_fixture import install_project_standard
 
 
 class GameplayFactoryInitTests(unittest.TestCase):
@@ -351,6 +355,18 @@ class GameplayFactoryInitTests(unittest.TestCase):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        with (
+            patch(
+                "gameplay.init.require_active_product_authority",
+                return_value=({"status": "ACTIVE"}, []),
+            ),
+            patch("gameplay.init.probe_new_project") as probe,
+        ):
+            result = start_factory_init(str(blank_repo))
+        self.assertEqual(PROJECT_CARD_AUTHORING_STANDARD_REQUIRED, result.status)
+        probe.assert_not_called()
+
+        install_project_standard(blank_repo, project_id="authorized-new-game")
         expected = FactoryInitResult("NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED")
         with (
             patch(
@@ -362,6 +378,18 @@ class GameplayFactoryInitTests(unittest.TestCase):
             result = start_factory_init(str(blank_repo))
         self.assertIs(expected, result)
         probe.assert_called_once_with(str(blank_repo))
+
+    def test_seed_card_standard_supplies_blanks_without_activation(self) -> None:
+        result = seed_project_card_standard(str(self.game_repo))
+        self.assertEqual(PROJECT_CARD_AUTHORING_STANDARD_REQUIRED, result.status)
+        self.assertTrue((self.game_repo / PROJECT_CARD_STANDARD_RELATIVE).is_file())
+        standard = json.loads(
+            (self.game_repo / PROJECT_CARD_STANDARD_RELATIVE).read_text()
+        )
+        self.assertEqual("DRAFT_NOT_ADOPTED", standard["status"])
+        self.assertIn("<PROJECT_ID>", json.dumps(standard))
+        repeated = seed_project_card_standard(str(self.game_repo))
+        self.assertFalse(repeated.created_paths)
 
     def test_probe_rejects_illegal_output_before_creating_directory(self) -> None:
         outside = Path(self.temporary_directory.name) / "outside" / "probe.json"
@@ -596,10 +624,14 @@ class GameplayFactoryInitTests(unittest.TestCase):
         self.assertEqual(BLOCKED_BY_INIT_MATERIAL, result.status)
         self.assertTrue(any("artifact is missing" in error for error in result.errors))
 
-    def test_probe_recognizes_complete_factory_state(self) -> None:
+    def test_probe_requires_project_card_standard_for_complete_factory_state(self) -> None:
         self._write_input()
         compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         (self.game_repo / PROBE_RELATIVE).unlink()
+        result = probe_repository(str(self.game_repo), PROBE_RELATIVE.as_posix())
+        self.assertEqual(PROJECT_CARD_AUTHORING_STANDARD_REQUIRED, result.status)
+        (self.game_repo / PROBE_RELATIVE).unlink()
+        install_project_standard(self.game_repo, project_id="foreign_game", profile_kind="turn")
         result = probe_repository(str(self.game_repo), PROBE_RELATIVE.as_posix())
         self.assertEqual(GAMEPLAY_FACTORY_ALREADY_READY, result.status)
 
@@ -608,8 +640,11 @@ class GameplayFactoryInitTests(unittest.TestCase):
         compile_init(str(self.game_repo), INPUT_RELATIVE.as_posix())
         (self.game_repo / PROBE_RELATIVE).unlink()
         result = start_factory_init(str(self.game_repo))
-        self.assertEqual(GAMEPLAY_FACTORY_ALREADY_READY, result.status)
+        self.assertEqual(PROJECT_CARD_AUTHORING_STANDARD_REQUIRED, result.status)
         self.assertFalse((self.game_repo / PROBE_RELATIVE).exists())
+        install_project_standard(self.game_repo, project_id="foreign_game", profile_kind="turn")
+        result = start_factory_init(str(self.game_repo))
+        self.assertEqual(GAMEPLAY_FACTORY_ALREADY_READY, result.status)
 
 
 if __name__ == "__main__":

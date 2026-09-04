@@ -1,0 +1,30 @@
+{
+  "project_id": "<PROJECT_ID>",
+  "objective_id": "<OBJECTIVE_ID>",
+  "artifact_id": "<ARTIFACT_ID>",
+  "kind_id": "<KIND_DECLARED_BY_PROJECT_STANDARD>",
+  "author_context_id": "<AUTHOR_CONTEXT_ID>",
+  "playable_span": {
+    "start": "<PLAYER_VISIBLE_START>",
+    "end_or_return": "<PLAYER_VISIBLE_END_OR_RETURN>",
+    "lap_count_and_boundaries": "<PROJECT_DEFINED_LAPS_AND_LOOP_BOUNDARIES>"
+  },
+  "ordered_composition": [
+    "<PROJECT_DEFINED_SCENE_BEAT_INTERACTION_OR_EQUIVALENT_SEQUENCE>"
+  ],
+  "decisions_and_branches": [
+    "<MATERIALLY_DISTINCT_WORK_COST_RESPONSE_AND_PERSISTENT_RESULT>"
+  ],
+  "resolution_and_settlement": [
+    "<IRREVERSIBLE_RESOLUTION_AND_TIME_OR_RESOURCE_SETTLEMENT>"
+  ],
+  "failure_and_recovery": [
+    "<FAILURE_PARTIAL_SUCCESS_AND_CONTINUATION>"
+  ],
+  "persistent_return": [
+    "<VISIBLE_CHANGED_STATE_AND_NEXT_AFFORDANCE>"
+  ],
+  "validation_collection_plan": [
+    "<METHOD_START_OR_ASK_POINT_RECORD_AND_FALSIFICATION_THRESHOLD>"
+  ]
+}

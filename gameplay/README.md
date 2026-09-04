@@ -20,6 +20,7 @@ project reconstructs existing runtime meaning without designing gameplay:
 
 ```text
 init.py start
+  -> project-owned Card standard required before any new Card
   -> new: approved-authority probe + explicit bootstrap input + compile-new
      OR existing: bounded repo probe + evidence input + compile
   -> adapters + GAMEPLAY_DESIGN_MODEL + empty state + initial frontier
@@ -37,7 +38,9 @@ material gaps and AI assumptions, and reuses the production material gate.
 stable game-owned progression/action model + objective frontier
   -> prepare.py context                         # Step 1, mechanical
   -> NEXT_GAMEPLAY_UNIT_CONTEXT.md
-  -> compact decision card                     # Step 2
+  -> active project Card standard + composition artifact(s)
+  -> Interaction Contract + fresh review
+  -> compact decision card + fresh project review # Step 2
   -> Studio: final Card compliance + semantic review
   -> human verdict
   -> separate author -> OBJECTIVE_GAMEPLAY.md  # Step 2.5
@@ -105,6 +108,12 @@ acceptance remain separate downstream concerns.
 
 - `NEW_PROJECT_DEFINITION_REQUIRED` — a blank/genre-only repo routes to
   `idea-factory`; Product definition alone is not gameplay authority.
+- `PROJECT_CARD_AUTHORING_STANDARD_REQUIRED` — the game repo must fill and
+  human/project-adopt the Factory's blank Card-standard answer sheet, point its
+  committed collaboration contract to it, and exact-bind its active
+  path/version/SHA from the Project Gameplay Profile. Run
+  `python3 gameplay/init.py seed-card-standard --game-repo <GAME_REPO>`; the
+  generated draft never self-activates.
 - `NEW_PROJECT_GAMEPLAY_AUTHORITY_REQUIRED` — an active Product still needs a
   validated Studio gameplay system and registered `USER_APPROVED` Card.
 - `NEW_PROJECT_BOOTSTRAP_INPUT_REQUIRED` — the authority probe is ready; author
@@ -139,11 +148,15 @@ acceptance. Any later model with implemented actions must use runtime evidence.
 
 ## Objective production — Steps 2 and 2.5
 
-The human first approves a compact `GAMEPLAY_DECISION_CARD.json`. Studio-routed
-cards bind a validated cycle-complete Studio gameplay-system manifest; direct
-specialist cards bind the user's explicit bounded request. Before presentation,
-a Studio card must pass an additional fresh whole-result Factory-compliance
-review and a different fresh semantic-alignment review. A separate author
+The human first approves a compact v3 `GAMEPLAY_DECISION_CARD.json`. Both routes
+first bind the Profile-selected active project Card standard, its required
+game-owned composition artifact(s), the Interaction Contract/review, and a
+fresh independent project-standard review that inventories the complete rubric
+and finite render-only checklist. Studio-routed cards additionally bind a
+validated cycle-complete Studio gameplay-system manifest; direct specialist
+cards bind the user's explicit bounded request. Before presentation, a Studio
+card must pass an additional fresh whole-result Factory-compliance review and a
+different fresh semantic-alignment review. A separate author
 then writes `OBJECTIVE_GAMEPLAY.md`. Two different fresh reviewers map every
 card claim into the spec and every material spec item back to card claims. The
 pair mappings must be exact inverses before
@@ -242,12 +255,14 @@ fun.
 ```text
 AGENTS.md                              hard caller rules
 docs/GAMEPLAY_FACTORY_INIT_WORKFLOW.md
+docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md
 docs/OBJECTIVE_GAMEPLAY_WORKFLOW.md
 docs/GAMEPLAY_REPAIR_WORKFLOW.md
 init.py                             initialization router/probe/compiler/checker
 prepare.py                             Step 1 context validator/compiler
 plan.py                                Step 3 production-plan validator
 design_gate.py                         exact design review/human verdict gate
+project_card_standard.py               active project standard/composition/review gate
 repair.py                              repair context validator/compiler
 repair_plan.py                         repair production-plan validator
 ui.py                                  UI repo probe/compiler/checker
@@ -259,6 +274,8 @@ schemas/gameplay_factory_init_input.schema.json
 schemas/gameplay_factory_init_result.schema.json
 schemas/production_plan_manifest.schema.json
 schemas/gameplay_decision_card.schema.json
+schemas/project_gameplay_decision_card_standard.schema.json
+schemas/gameplay_decision_card_project_review.schema.json
 schemas/gameplay_design_conformance_review.schema.json
 schemas/gameplay_design_verdict.schema.json
 schemas/gameplay_gap_input.schema.json
@@ -272,6 +289,9 @@ templates/GAMEPLAY_FACTORY_INIT_INPUT.json
 templates/NEXT_GAMEPLAY_UNIT_INPUT.json
 templates/OBJECTIVE_GAMEPLAY.md
 templates/GAMEPLAY_DECISION_CARD.json
+templates/PROJECT_GAMEPLAY_DECISION_CARD_STANDARD.json
+templates/PROJECT_GAMEPLAY_COMPOSITION.json
+templates/GAMEPLAY_DECISION_CARD_PROJECT_REVIEW.json
 templates/GAMEPLAY_DESIGN_CONFORMANCE_REVIEW.json
 templates/GAMEPLAY_DESIGN_VERDICT.json
 templates/PRODUCTION_PLAN_MANIFEST.json

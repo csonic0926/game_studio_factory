@@ -1,0 +1,79 @@
+{
+  "schema_version": "project_gameplay_decision_card_standard.v1",
+  "standard_id": "<PROJECT_ID>.gameplay-card-standard.v1",
+  "project_id": "<PROJECT_ID>",
+  "version": "<PROJECT_STANDARD_VERSION>",
+  "status": "DRAFT_NOT_ADOPTED",
+  "applicable_routings": [
+    "STUDIO_WHOLE_GAME",
+    "DIRECT_SPECIALIST"
+  ],
+  "adoption": {
+    "status": "NOT_ADOPTED",
+    "owner": "<HUMAN_OR_PROJECT_AUTHORITY_OWNER>",
+    "authority_ref": "<COMMITTED_ADOPTION_OR_RULING_REFERENCE>",
+    "adopted_at": "<ISO_8601_DATETIME>"
+  },
+  "collaboration_contract": {
+    "path": "AGENTS.md",
+    "sha256": "<SHA256_AFTER_IT_POINTS_TO_THIS_STANDARD>"
+  },
+  "vocabulary": [
+    {
+      "term_id": "<TERM_ID>",
+      "term": "<PROJECT_TERM>",
+      "definition": "<WHAT_THIS_TERM_MEANS_IN_PLAYER_TIME_FOR_THIS_GAME>"
+    }
+  ],
+  "repeatable_lap": [
+    "<WHAT_COUNTS_AS_ONE_COMPLETE_REPEATABLE_LAP_AND_WHERE_IT_RETURNS>"
+  ],
+  "player_work_boundary": [
+    "<HOW_PLAYER_WORK_DIFFERS_FROM_DIALOGUE_NAVIGATION_UI_ACKNOWLEDGEMENT_OR_PASSIVE_STATE_CHANGE>"
+  ],
+  "granularity_rules": [
+    "<REQUIRED_CARD_CYCLE_SCENE_BEAT_INTERACTION_BRANCH_AND_LAP_GRANULARITY>"
+  ],
+  "interaction_requirements": [
+    "<REQUIRED_CONTROL_INPUT_JUDGMENT_EXECUTION_RESPONSE_AND_PERSISTENT_RETURN_DESCRIPTION>"
+  ],
+  "resolution_boundaries": [
+    "<TIME_ACTION_POINT_TURN_STAMINA_RESOURCE_OR_OTHER_SETTLEMENT_RULE_OR_NOT_APPLICABLE_WITH_RATIONALE>"
+  ],
+  "failure_recovery_replay": [
+    "<FAILURE_PARTIAL_SUCCESS_RECOVERY_AND_REPLAY_CONVENTION>"
+  ],
+  "validation_methods": [
+    {
+      "method_id": "<METHOD_ID>",
+      "use": "<WHEN_THIS_METHOD_IS_ALLOWED>",
+      "observable_evidence": "<WHAT_IS_RECORDED>",
+      "falsification_rule": "<HOW_CLAIMS_INCLUDING_MENTAL_STATE_CLAIMS_ARE_OPERATIONALIZED_AND_REJECTED>"
+    }
+  ],
+  "independence_rules": [
+    "<AUTHOR_REVIEWER_INDEPENDENCE_RULES>"
+  ],
+  "synchronization_rules": [
+    "<GAME_REPO_GIT_AND_MULTI_CODEX_SYNCHRONIZATION_RULES>"
+  ],
+  "composition_artifact_kinds": [
+    {
+      "kind_id": "<COMPOSITION_KIND_ID>",
+      "name": "<PROJECT_OWNED_ARTIFACT_NAME>",
+      "purpose": "<HOW_IT_FREEZES_PLAYABLE_COMPOSITION_BEFORE_CARD_APPROVAL>",
+      "required": true
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "<STABLE_PROJECT_REQUIREMENT_ID>",
+      "rule": "<PROJECT_SPECIFIC_CARD_OR_COMPOSITION_RULE>",
+      "applicability": "<ALWAYS_OR_EXACT_CONDITION>",
+      "evidence_surface": "CARD"
+    }
+  ],
+  "render_only_requirement_ids": [
+    "<FINITE_REQUIREMENT_ID_THAT_MUST_BE_ANSWERABLE_FROM_THE_RENDERED_CARD>"
+  ]
+}
