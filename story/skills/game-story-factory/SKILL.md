@@ -282,6 +282,17 @@ Chapter hard bindings:
   by `LANDING_SPEC.md`, not a second staging pass. When the landing surface is
   a scripted cutscene, STEP 7 uses `core/craft/cutscene-staging.md` only to
   emit the game's cutscene document from the approved staging operations.
+- Final Chinese narrative-text discipline (USER ruling 2026-09-04): when
+  STEP 7 rewrites draft wording into final runtime wording, Chinese
+  player-facing **story text** uses the adverb-restraint rule in
+  `STEP_7_RUNTIME_LANDING.md` at 98/100 strength. This covers character
+  dialogue, narration, descriptive story copy, and narrative wording inside a
+  story choice; it does not cover system, control, tutorial/help, status,
+  error, accessibility, legal/safety, or other functional-instruction text.
+  STEP 8 and the separate spoken-fluency pass must not reintroduce avoidable
+  Chinese adverbs. STEP 7.5, STEP 8.5, and STEP 9 enforce the rule on the
+  latest landed text; this is a strong rewrite default, not an absolute ban or
+  a numeric deletion quota.
 - STEP 8/8.5 workers MUST use `core/craft/quoted-dialogue.md`.
 - STEP 6, STEP 7 locale landing, STEP 8, `dialogue-runway`, and
   `quoted-dialogue` MUST read `<ADAPTER>/GLOSSARY.csv` before producing quoted

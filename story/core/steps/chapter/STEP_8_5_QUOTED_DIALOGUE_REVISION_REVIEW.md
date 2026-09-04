@@ -69,6 +69,17 @@ This step passes when:
 - scene meaning is unchanged
 - no new contradiction is introduced into the landed chapter
 
+### Chinese adverb restraint（中文副詞節制）
+
+For every revised Chinese quoted line, enforce the STEP 7 rule at 98/100
+strength. Fail and route back to STEP 8 when an adverb could be deleted or
+recast without materially changing truth, negation, modality, scope,
+chronology, causal relation, required degree, an upstream-required voice
+marker, or idiomatic Chinese. Emphasis, rhythm, atmosphere, polish, generic
+intensification, and habitual hedging are not valid exceptions. Necessary
+adverbs remain allowed; do not demand clipped, padded, unidiomatic, or
+meaning-changing dialogue.
+
 ### Glossary and term nomination
 
 When the glossary exists, run `scripts/glossary_check.py` on the revised

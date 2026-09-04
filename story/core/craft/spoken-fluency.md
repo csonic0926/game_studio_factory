@@ -102,7 +102,10 @@ DESIGN and belong to the canon gate. Flow:
    the draft lines; each line's job as one plain phrase; hard
    constraints as spoken rules (the glossary-derived protected terms,
    frozen lines verbatim, glossary-derived red-line words,
-   no-acquisition promises); and any world facts the
+   no-acquisition promises, and for Chinese lines the 98/100-strength rule to
+   delete or recast every avoidable adverb while preserving necessary
+   negation, modality, scope, chronology, causal relation, degree, idiom, and
+   required voice); and any world facts the
    lines touch, one plain line each (facts don't contaminate; register
    does). NO craft docs, NO style guides, NO design artifacts, NO
    exemplar prose, NO file access. The worker rewrites the whole passage
@@ -185,6 +188,14 @@ library) takes precedence and may extend these.
    native-speaker grammar intuition — this pass is not a Chinese-only fix.
    A locale must not come out more explanatory or more compressed than
    the others.
+6. **Chinese lines use almost no adverbs.** Treat removal as a 98/100-strength
+   default, not an absolute ban or numeric quota. First delete or recast each
+   adverb. Keep one only when every natural alternative would change the
+   line's truth, negation, modality, scope, chronology, causal relation,
+   required degree, idiom, or upstream-required voice. Emphasis, rhythm,
+   atmosphere, polish, generic intensification, and habitual hedging are not
+   reasons to keep one. Never create clipped or padded Chinese merely to pass
+   this rule.
 
 ## The project exemplar library (the anchor)
 

@@ -113,6 +113,32 @@ Do not add lines just to explain staging. If an operation needs a prompt,
 label, or locale key, write only the player-facing text required by that
 operation's intended meaning.
 
+### Chinese adverb restraint（中文副詞節制）
+
+For Chinese locale values, apply this rule to player-facing **story text**:
+character dialogue, narration, descriptive story copy, and the narrative
+wording inside a story choice. Do not apply it to system, control,
+tutorial/help, status, error, accessibility, legal/safety, or other
+functional-instruction text.
+
+Treat removal of adverbs as a **98/100-strength default**: extremely strong,
+but not an absolute ban and not a numeric deletion quota.
+
+- Assume every adverb is removable. First try deleting it or recasting the
+  sentence without an adverb.
+- Keep an adverb only when every natural adverb-free version would materially
+  change the line's truth, negation, modality, scope, chronology, causal
+  relation, required degree, or an upstream-required character-voice marker.
+- Emphasis, rhythm, atmosphere, polish, generic intensification, and habitual
+  hedging are not sufficient reasons to keep an adverb.
+- Do not obey the rule by making Chinese clipped or unidiomatic, replacing one
+  adverb with a padded paraphrase, changing the beat, or weakening the
+  speaker's pragmatic move. A genuinely necessary adverb is the rare allowed
+  exception.
+
+Before landing, make one explicit pass over every in-scope Chinese value and
+remove or recast all avoidable adverbs.
+
 ## Id and mapping standard
 
 When landing chapter runtime data, follow the id & key grammar defined by the adapter `LANDING_SPEC.md`, and make sure:
@@ -157,6 +183,9 @@ The landed result must satisfy all of these checks:
    artifact; for aligned JSON catalogs, run its repeated
    `--locale LOCALE=PATH` mode and record any pre-existing mismatch separately
    from newly introduced mismatch
+9. every in-scope Chinese story-text value has passed the 98/100-strength
+   adverb-restraint pass; any retained adverb is genuinely necessary under the
+   exception rule above
 
 ## Block definitions
 

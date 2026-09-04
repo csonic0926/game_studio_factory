@@ -146,6 +146,18 @@ When the glossary exists:
   row is likewise USER-only, and every decision records `provenance`. Do not
   create or update a second term list elsewhere.
 
+### 10) Chinese dialogue uses almost no adverbs
+
+For Chinese quoted lines, use adverb restraint at **98/100 strength**. First
+delete or recast every adverb. Keep one only when every natural adverb-free
+version would materially change truth, negation, modality, scope, chronology,
+causal relation, required degree, or an upstream-required character-voice
+marker. Emphasis, rhythm, atmosphere, polish, generic intensification, and
+habitual hedging do not justify keeping one. This is not an absolute ban or a
+numeric quota: a genuinely necessary adverb remains, and the rewrite must not
+become clipped, padded, unidiomatic, meaning-changing, or pragmatically
+weaker.
+
 ## Dialogue design workflow
 
 For each quoted line:
@@ -203,5 +215,7 @@ Rewrite if the line feels like:
 - Do `<PRIMARY_LOCALE>` and all `<SHIPPED_LOCALES>` still perform the same move?
 - Do registered forms, speaker scope, and register still match the glossary,
   with no banned form introduced?
+- In Chinese, did every avoidable adverb disappear without harming meaning,
+  idiom, pragmatic force, or required voice?
 
 If any answer is bad, rewrite the line.

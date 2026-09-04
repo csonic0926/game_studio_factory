@@ -100,6 +100,25 @@ This step passes when:
 - location-description keys frame the present node decision
 - final runtime prose does not leave graph-layer protagonist labels in player-facing text
 
+### Chinese adverb restraint（中文副詞節制）
+
+For Chinese character dialogue, narration, descriptive story copy, and
+narrative wording inside story choices, review every newly landed value
+against STEP 7's 98/100-strength rule:
+
+- the writer first removed or recast every avoidable adverb;
+- a retained adverb is necessary to preserve truth, negation, modality, scope,
+  chronology, causal relation, required degree, an upstream-required voice
+  marker, or idiomatic Chinese;
+- emphasis, rhythm, atmosphere, polish, generic intensification, or habitual
+  hedging is not accepted as necessity;
+- the rewrite did not become clipped, padded, unidiomatic, or meaning-changing.
+
+This check does not apply to system, control, tutorial/help, status, error,
+accessibility, legal/safety, or other functional-instruction text. It is a
+strong default, not an absolute ban or numeric quota. Any avoidable adverb in
+scope is a `STEP 7.5 FAIL` finding and routes back to STEP 7.
+
 ## Required stop condition
 
 - write a short acceptance note that says `STEP 7.5 PASS` or `STEP 7.5 FAIL`

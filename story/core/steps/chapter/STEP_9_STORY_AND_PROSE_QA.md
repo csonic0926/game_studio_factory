@@ -113,6 +113,27 @@ Check chapter-local consistency for:
 - object labels
 - household or shop references
 
+### Final Chinese adverb restraint（最終中文副詞節制）
+
+Audit the latest landed Chinese player-facing story text after all dialogue
+revision and spoken-fluency work. Scope includes character dialogue,
+narration, descriptive story copy, and narrative wording inside story
+choices. Exclude system, control, tutorial/help, status, error, accessibility,
+legal/safety, and other functional-instruction text.
+
+The rule has **98/100 strength**: first delete or recast every adverb, then
+retain only the rare case for which every natural adverb-free version would
+materially change truth, negation, modality, scope, chronology, causal
+relation, required degree, an upstream-required character-voice marker, or
+idiomatic Chinese. Emphasis, rhythm, atmosphere, polish, generic
+intensification, and habitual hedging are not valid exceptions. Do not demand
+clipped, padded, unidiomatic, meaning-changing, or pragmatically weaker prose.
+This is a strong default, not an absolute ban or numeric deletion quota.
+
+Any avoidable in-scope adverb is a prose-QA blocker. Route the affected text
+back to STEP 7 for landed narration/descriptive copy or STEP 8 for quoted
+dialogue, then rerun both QA checks.
+
 ### Emotional acceptance（情感驗收）— whole chapter
 
 Applies whenever the chapter has a beat sheet; without one, state

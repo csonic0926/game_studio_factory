@@ -46,6 +46,9 @@ Keep these invariants fixed:
 - non-quoted narration unless a quoted line cannot work without a minimal adjacent adjustment
 - glossary canon forms marked `dialogue_protected=true`
 - glossary `banned` forms remaining absent
+- the landed Chinese story-text adverb restraint: do not reintroduce an
+  avoidable adverb into Chinese dialogue or an adjacent narrative coherence
+  fix
 
 ## Revision standard
 
@@ -59,12 +62,24 @@ Revise quoted lines so they:
   nomination, never a worker-made canon decision
 - remain compatible with the already-landed scene logic
 
+For Chinese dialogue, reapply STEP 7's **98/100-strength adverb restraint**
+after revising character voice. First delete or recast each adverb. Retain one
+only when every natural adverb-free version would materially change truth,
+negation, modality, scope, chronology, causal relation, required degree, or an
+upstream-required character-voice marker. Emphasis, rhythm, atmosphere,
+polish, generic intensification, and habitual hedging do not justify keeping
+one. This is not an absolute ban: never make the line clipped, padded,
+unidiomatic, meaning-changing, or pragmatically weaker merely to remove an
+adverb.
+
 ## Required checks
 
 - only quoted lines are revised unless a minimal adjacent adjustment is required for coherence
 - no new reveal is introduced earlier than before
 - no route meaning changes
 - no character voice collapses into generic dialogue
+- no avoidable Chinese adverb is introduced or retained in the revised
+  dialogue; genuinely necessary exceptions remain allowed
 - the revision log records which lines were changed and why
 
 ## Spoken-fluency pass (required before STEP 8.5)
