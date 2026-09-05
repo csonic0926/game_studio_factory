@@ -329,6 +329,8 @@ class ShippedSkillContractTest(unittest.TestCase):
         self.assertEqual(
             names,
             [
+                "factory-design-completeness-reviewer",
+                "factory-design-intent-reviewer",
                 "game-story-factory",
                 "game-studio-factory",
                 "gameplay-factory",

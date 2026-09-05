@@ -1,0 +1,578 @@
+{
+  "schema_version": "factory_benchmark_suite.v2",
+  "baseline_revision": "9e35392b954d627a451e010e8b51d8b93f8ff32c",
+  "model": "gpt-6-astra",
+  "reasoning": "high",
+  "permissions": "workspace-write",
+  "rounds": 2,
+  "session_timeout_seconds": 900,
+  "stopping_rule": "Retain every attempt. On semantic FAIL repair in the continuing author session and rerun the affected independent boundary. Stop as incomplete after two repair rounds or unaccounted usage. Human comparison is mandatory.",
+  "cases": [
+    {
+      "id": "gameplay_design",
+      "task": "Design a two-lap depot game unit: the player routes scarce wagons, faces visible damage/time costs, invests earned repair capacity, and returns to a changed second routing decision. Write complete DESIGN.md with six expected-experience fields, full playable table, graph/state ownership, all alternatives, concrete current-scene interaction storyboard, human decision surface, acceptance and regression requirements. Do not implement or claim approval.",
+      "fixtures": {
+        "PROJECT_RULES.md": "No combat, gambling or automatic reward collection. Both routing alternatives must be reachable. Wagon condition persists and changes the next dispatch. Player must perform spatial loading/unloading, not click a dialogue result.\n",
+        "AGENTS.md": "# Synthetic benchmark project\nOnly fixture content is game authority. Follow the supplied version-specific workflow. All author outputs stay here. Never treat a fixture authorization as a real USER verdict. No backup copies or non-main branches.\n",
+        "PROJECT_STANDARD.md": "Adopted synthetic project standard: all visible player decisions need an actionable interaction storyboard, complete state ledger, failure/recovery affordance, and a carried-forward second lap; costs visible before commitment. Human view covers every material statement.\n"
+      },
+      "requirements": [
+        "All required deliverables must be complete, not summaries or TODO placeholders.",
+        "Keep every constraint from the fixture and instructions; state uncertainty without silently approving it.",
+        "No changes outside the fixture, no external providers, no fabricated runtime/human acceptance.",
+        "Prove two materially different laps, not a replay prompt.",
+        "Cost/failure/recovery and player-work -> visible response -> carry-forward must be concrete.",
+        "For this bounded synthetic comparison, the supplied fixed stage list is the adopted test protocol. No actual product/USER approval is issued. Full content requirements from source methods remain binding; unavailable external artifacts must be reported, not invented."
+      ],
+      "sources": {
+        "old": [
+          "studio/AGENTS.md",
+          "gameplay/AGENTS.md"
+        ],
+        "new": [
+          "factory_core/docs/WORKFLOW.md",
+          "studio/docs/WORKFLOW_V2.md",
+          "gameplay/docs/WORKFLOW_V2.md"
+        ]
+      },
+      "old_stages": [
+        {
+          "role": "system_author",
+          "task": "Author SYSTEM.md: complete system graph, objects, causal links and two-lap witness.",
+          "kind": "author"
+        },
+        {
+          "role": "system_intent",
+          "task": "Review SYSTEM.md product/experience fidelity; report findings only.",
+          "kind": "review"
+        },
+        {
+          "role": "system_completeness",
+          "task": "Independently review SYSTEM.md complete causal loop; report findings only.",
+          "kind": "review"
+        },
+        {
+          "role": "card_author",
+          "task": "Author CARD.md, interaction storyboard and composition from the system; complete human decisions.",
+          "kind": "author"
+        },
+        {
+          "role": "project_review",
+          "task": "Review all project-specific Card/composition requirements.",
+          "kind": "review"
+        },
+        {
+          "role": "interaction_review",
+          "task": "Review concrete player-facing interaction and reject proxies.",
+          "kind": "review"
+        },
+        {
+          "role": "factory_review",
+          "task": "Review entire pending Card against all Factory gameplay sufficiency requirements.",
+          "kind": "review"
+        },
+        {
+          "role": "semantic_review",
+          "task": "Review semantic intent and complete human decision surface.",
+          "kind": "review"
+        },
+        {
+          "role": "spec_author",
+          "task": "Produce full DESIGN.md from the Card without expansion; include every requested deliverable.",
+          "kind": "author"
+        },
+        {
+          "role": "card_to_spec",
+          "task": "Review Card -> DESIGN.md completeness.",
+          "kind": "review"
+        },
+        {
+          "role": "spec_to_card",
+          "task": "Review DESIGN.md -> Card non-expansion.",
+          "kind": "review"
+        }
+      ],
+      "new_stages": [
+        {
+          "role": "author",
+          "kind": "author",
+          "task": "Create the complete design and all narrative prose, knowledge ledgers and human decision surface. Do not land or implement runtime outputs yet."
+        },
+        {
+          "role": "intent_experience",
+          "kind": "review",
+          "task": "Independently review intent/experience/causality/voice and every decision against full source artifacts. Do not edit."
+        },
+        {
+          "role": "completeness_project",
+          "kind": "review",
+          "task": "Independently review every project/Factory requirement, implementability and full decision coverage. Do not edit."
+        }
+      ],
+      "outputs": [
+        "DESIGN.md"
+      ],
+      "mutable_fixtures": [],
+      "design_outputs": [
+        "DESIGN.md"
+      ],
+      "design_review_roles": {
+        "new": [
+          "intent_experience",
+          "completeness_project"
+        ],
+        "old": []
+      }
+    },
+    {
+      "id": "authorized_repair",
+      "task": "Repair only the off-by-one carry-forward bug in depot.gd under AUTHORIZATION.md. Add a regression test and VERIFICATION.md. Preserve scope and do not open a new design process.",
+      "fixtures": {
+        "AUTHORIZATION.md": "USER has approved mechanical repair of wagon condition carry-forward: dispatch consumes one condition, condition never negative; next dispatch reads resulting condition. Do not add mechanics. This is a synthetic benchmark authority, not Banner approval.\n",
+        "depot.gd": "extends RefCounted\nvar condition: int = 3\nfunc dispatch() -> int:\n    condition = max(0, condition - 2)\n    return condition\n",
+        "AGENTS.md": "# Synthetic benchmark project\nOnly fixture content is game authority. Follow the supplied version-specific workflow. All author outputs stay here. Never treat a fixture authorization as a real USER verdict. No backup copies or non-main branches.\n"
+      },
+      "requirements": [
+        "All required deliverables must be complete, not summaries or TODO placeholders.",
+        "Keep every constraint from the fixture and instructions; state uncertainty without silently approving it.",
+        "No changes outside the fixture, no external providers, no fabricated runtime/human acceptance.",
+        "Test sequence 3 -> 2 -> 1 -> 0 -> 0 in actual Godot headless execution if available; distinguish not-run from pass.",
+        "Do not change authorized gameplay, create assets, or claim new acceptance.",
+        "For this bounded synthetic comparison, the supplied fixed stage list is the adopted test protocol. No actual product/USER approval is issued. Full content requirements from source methods remain binding; unavailable external artifacts must be reported, not invented."
+      ],
+      "sources": {
+        "old": [
+          "gameplay/AGENTS.md",
+          "gameplay/docs/GAMEPLAY_REPAIR_WORKFLOW.md"
+        ],
+        "new": [
+          "factory_core/docs/WORKFLOW.md",
+          "gameplay/docs/WORKFLOW_V2.md"
+        ]
+      },
+      "old_stages": [
+        {
+          "role": "author",
+          "task": "Inspect scope, perform only authorized fix, run tests and record exact evidence.",
+          "kind": "author"
+        }
+      ],
+      "new_stages": [
+        {
+          "role": "author",
+          "kind": "author",
+          "task": "Perform only the already-authorized fix and test it. No new design review or gameplay approval."
+        }
+      ],
+      "outputs": [
+        "depot.gd",
+        "VERIFICATION.md"
+      ],
+      "mutable_fixtures": [
+        "depot.gd"
+      ],
+      "design_outputs": [],
+      "design_review_roles": {
+        "new": [],
+        "old": []
+      }
+    },
+    {
+      "id": "character_creation",
+      "task": "Create one complete innkeeper character package CHARACTER.md, with world position, voice/behavior, legitimate knowledge, relations, pressure, player introduction and 12 spoken lines in zh-TW and natural English. No new canon facts outside the fixture.",
+      "fixtures": {
+        "CANON.md": "Mara keeps the riverside inn. She knows the bridge toll doubled; she does NOT know why the envoy vanished. She offers concrete household observations, never lore lectures. Her brother owes three nights of repair work. The player is a stranger. The bridge authority is called 石橋會 / Stonebridge Council.\n",
+        "AGENTS.md": "# Synthetic benchmark project\nOnly fixture content is game authority. Follow the supplied version-specific workflow. All author outputs stay here. Never treat a fixture authorization as a real USER verdict. No backup copies or non-main branches.\n",
+        "design/story/adapter/PROJECT_PROFILE.md": "- `<PROJECT_ID>`: fixture\n- `<GAME_REPO>`: current Git root\n- `<STORY_ROOT>`: <GAME_REPO>/design/story\n- `<PRIMARY_LOCALE>`: en\n- `<SHIPPED_LOCALES>`: en, zh-TW\n- `<RUNTIME_SHAPE>`: scenes.json and locale catalogs\n",
+        "design/story/state/WORLD_RULES.md": "Mara keeps the riverside inn. She knows the bridge toll doubled; she does NOT know why the envoy vanished. She offers concrete household observations, never lore lectures. Her brother owes three nights of repair work. The player is a stranger. The bridge authority is called 石橋會 / Stonebridge Council.\n",
+        "design/story/state/NARRATIVE_DELIVERY.md": "Full prose, household voice, meaningful emotional holds and releases; no lore lecture. Quoted lines need clean-room polish then canon-aware back-check. All bilingual outputs preserve pragmatic meaning.\n",
+        "design/story/adapter/STYLE_GUIDE.md": "Natural speech in each locale, no synonymous substitution of the canonical Stonebridge Council / 石橋會.\n",
+        "design/story/adapter/GLOSSARY.csv": "term_id,zh_TW,en,ko,referent,register,variant_of,speaker_scope,dialogue_protected,status,provenance,notes\ncouncil,石橋會,Stonebridge Council,,bridge authority,both,,all,true,canon,synthetic fixture,\n",
+        "design/story/adapter/VISUAL_GRAMMAR.md": "Static illustrated inn view, text advances, ordinary choices and next-morning affordance text. No moving camera or unsupported close-ups.\n",
+        "design/story/adapter/LANDING_SPEC.md": "Character artifact only. Runtime landing NOT_AVAILABLE for this bounded task.\n"
+      },
+      "requirements": [
+        "All required deliverables must be complete, not summaries or TODO placeholders.",
+        "Keep every constraint from the fixture and instructions; state uncertainty without silently approving it.",
+        "No changes outside the fixture, no external providers, no fabricated runtime/human acceptance.",
+        "Preserve the knowledge boundary, household voice, brother obligation and canon term in both locales.",
+        "Provide full package, not a context card. All 12 bilingual spoken lines have clear pragmatic functions.",
+        "For this bounded synthetic comparison, the supplied fixed stage list is the adopted test protocol. No actual product/USER approval is issued. Full content requirements from source methods remain binding; unavailable external artifacts must be reported, not invented."
+      ],
+      "sources": {
+        "old": [
+          "story/skills/game-story-factory/SKILL.md",
+          "story/core/schemas/CHARACTER_SCHEMA.md",
+          "story/docs/PROJECT_PROFILE_CONTRACT.md",
+          "story/core/craft/spoken-fluency.md"
+        ],
+        "new": [
+          "factory_core/docs/WORKFLOW.md",
+          "story/docs/WORKFLOW_V2.md",
+          "story/core/schemas/CHARACTER_SCHEMA.md",
+          "story/docs/PROJECT_PROFILE_CONTRACT.md",
+          "story/core/craft/spoken-fluency.md"
+        ]
+      },
+      "old_stages": [
+        {
+          "role": "character_0",
+          "task": "Write character concept and pressure.",
+          "kind": "author"
+        },
+        {
+          "role": "character_1",
+          "task": "Review concept against canon.",
+          "kind": "review"
+        },
+        {
+          "role": "character_2",
+          "task": "Write world position and household role.",
+          "kind": "author"
+        },
+        {
+          "role": "character_3",
+          "task": "Review world position and causality.",
+          "kind": "review"
+        },
+        {
+          "role": "character_4",
+          "task": "Write behavior and voice with 12 bilingual lines.",
+          "kind": "author"
+        },
+        {
+          "role": "character_5",
+          "task": "Review voice, canon terminology and native language.",
+          "kind": "review"
+        },
+        {
+          "role": "character_6",
+          "task": "Write knowledge/relations with exact boundaries.",
+          "kind": "author"
+        },
+        {
+          "role": "character_7",
+          "task": "Review knowledge and relations.",
+          "kind": "review"
+        },
+        {
+          "role": "character_8",
+          "task": "Package complete CHARACTER.md with all requested content.",
+          "kind": "author"
+        },
+        {
+          "role": "character_9",
+          "task": "Review complete package sufficiency and bilingual quality.",
+          "kind": "review"
+        },
+        {
+          "role": "author_packets",
+          "kind": "author",
+          "task": "Mechanically extract ONLY the frozen emotional beats, quoted lines and protected/banned forms per locale into FLUENCY_en.json and FLUENCY_zh-TW.json. Packet keys: schema_version=story_fluency_packet.v2, locale, beats, protected_forms, banned_forms, lines. No canon explanation or expected reviewer conclusions."
+        },
+        {
+          "role": "cleanroom_en",
+          "kind": "cleanroom",
+          "locale": "en",
+          "task": "Polish only the supplied quoted lines as natural spoken English. Preserve every frozen beat and protected/banned form. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "cleanroom_zh",
+          "kind": "cleanroom",
+          "locale": "zh-TW",
+          "task": "Polish only the supplied quoted lines as natural spoken Traditional Chinese. Preserve frozen beats and protected/banned forms. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "author_integrate",
+          "kind": "author",
+          "task": "Integrate the clean-room revised lines without changing facts, knowledge, beat intent, branch meaning or protected terminology. Preserve full-length bilingual prose."
+        },
+        {
+          "role": "canon_backcheck",
+          "kind": "review",
+          "task": "Canon-aware back-check of exact polished prose against all authorities, original frozen beats, both fluency packets and latest outputs. Reject changed knowledge or terminology."
+        },
+        {
+          "role": "landed_qa",
+          "kind": "review",
+          "task": "Fresh exact-latest-output semantic/prose/locale QA: all delivered text, route meaning, voice, knowledge, emotion, glossary, complete localization and staging fidelity. Not pre-design QA."
+        }
+      ],
+      "new_stages": [
+        {
+          "role": "author",
+          "kind": "author",
+          "task": "Create the complete design and all narrative prose, knowledge ledgers and human decision surface. Do not land or implement runtime outputs yet."
+        },
+        {
+          "role": "author_packets",
+          "kind": "author",
+          "task": "Mechanically extract ONLY the frozen emotional beats, quoted lines and protected/banned forms per locale into FLUENCY_en.json and FLUENCY_zh-TW.json. Packet keys: schema_version=story_fluency_packet.v2, locale, beats, protected_forms, banned_forms, lines. No canon explanation or expected reviewer conclusions."
+        },
+        {
+          "role": "cleanroom_en",
+          "kind": "cleanroom",
+          "locale": "en",
+          "task": "Polish only the supplied quoted lines as natural spoken English. Preserve every frozen beat and protected/banned form. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "cleanroom_zh",
+          "kind": "cleanroom",
+          "locale": "zh-TW",
+          "task": "Polish only the supplied quoted lines as natural spoken Traditional Chinese. Preserve frozen beats and protected/banned forms. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "author_integrate",
+          "kind": "author",
+          "task": "Integrate the clean-room revised lines without changing facts, knowledge, beat intent, branch meaning or protected terminology. Preserve full-length bilingual prose."
+        },
+        {
+          "role": "canon_backcheck",
+          "kind": "review",
+          "task": "Canon-aware back-check of exact polished prose against all authorities, original frozen beats, both fluency packets and latest outputs. Reject changed knowledge or terminology."
+        },
+        {
+          "role": "intent_experience",
+          "kind": "review",
+          "task": "Independently review intent/experience/causality/voice and every decision against full source artifacts. Do not edit."
+        },
+        {
+          "role": "completeness_project",
+          "kind": "review",
+          "task": "Independently review every project/Factory requirement, implementability and full decision coverage. Do not edit."
+        },
+        {
+          "role": "author_production",
+          "kind": "author",
+          "task": "This isolated fixture pre-authorizes production ONLY after both design reviews and canon back-check PASS. Continue as the original author; land runtime files only for chapter, run integrity/style/glossary checks, and record exact evidence. Do not create real USER records or gameplay acceptance."
+        },
+        {
+          "role": "landed_qa",
+          "kind": "review",
+          "task": "Fresh exact-latest-output semantic/prose/locale QA: all delivered text, route meaning, voice, knowledge, emotion, glossary, complete localization and staging fidelity. Not pre-design QA."
+        }
+      ],
+      "outputs": [
+        "CHARACTER.md"
+      ],
+      "mutable_fixtures": [],
+      "design_outputs": [
+        "CHARACTER.md"
+      ],
+      "design_review_roles": {
+        "new": [
+          "intent_experience",
+          "completeness_project"
+        ],
+        "old": []
+      }
+    },
+    {
+      "id": "chapter_production",
+      "task": "Produce complete CHAPTER.md: an evening inn scene in zh-TW with full natural English counterpart, two meaningful branches and their aftereffects, knowledge/voice ledgers, staging/landing specification and acceptance evidence plan. Each locale 700-1000 words-equivalent (Chinese 1200-2000 characters); do not use summaries instead of prose.",
+      "fixtures": {
+        "CANON.md": "Mara knows only the toll doubled, not why the envoy vanished. Brother owes three nights repair. USER beat order: domestic ease -> missing guest noticed -> fragile mutual help. Player may lend a cart or volunteer one repair night; each changes a different next-morning affordance. Do not resolve the envoy mystery. 石橋會 / Stonebridge Council is canonical.\n",
+        "LANDING_SPEC.md": "Synthetic runtime is scenes.json with stable node ids, text_key, next or choices; locale catalogs zh_TW.json and en.json have identical keys. Choices write either cart_lent=true or repair_nights_owed=1, never both. Every branch rejoins at morning with a visible different affordance.\n",
+        "AGENTS.md": "# Synthetic benchmark project\nOnly fixture content is game authority. Follow the supplied version-specific workflow. All author outputs stay here. Never treat a fixture authorization as a real USER verdict. No backup copies or non-main branches.\n",
+        "design/story/adapter/PROJECT_PROFILE.md": "- `<PROJECT_ID>`: fixture\n- `<GAME_REPO>`: current Git root\n- `<STORY_ROOT>`: <GAME_REPO>/design/story\n- `<PRIMARY_LOCALE>`: en\n- `<SHIPPED_LOCALES>`: en, zh-TW\n- `<RUNTIME_SHAPE>`: scenes.json and locale catalogs\n",
+        "design/story/state/WORLD_RULES.md": "Mara knows only the toll doubled, not why the envoy vanished. Brother owes three nights repair. USER beat order: domestic ease -> missing guest noticed -> fragile mutual help. Player may lend a cart or volunteer one repair night; each changes a different next-morning affordance. Do not resolve the envoy mystery. 石橋會 / Stonebridge Council is canonical.\n",
+        "design/story/state/NARRATIVE_DELIVERY.md": "Full prose, household voice, meaningful emotional holds and releases; no lore lecture. Quoted lines need clean-room polish then canon-aware back-check. All bilingual outputs preserve pragmatic meaning.\n",
+        "design/story/adapter/STYLE_GUIDE.md": "Natural speech in each locale, no synonymous substitution of the canonical Stonebridge Council / 石橋會.\n",
+        "design/story/adapter/GLOSSARY.csv": "term_id,zh_TW,en,ko,referent,register,variant_of,speaker_scope,dialogue_protected,status,provenance,notes\ncouncil,石橋會,Stonebridge Council,,bridge authority,both,,all,true,canon,synthetic fixture,\n",
+        "design/story/adapter/VISUAL_GRAMMAR.md": "Static illustrated inn view, text advances, ordinary choices and next-morning affordance text. No moving camera or unsupported close-ups.\n",
+        "design/story/adapter/LANDING_SPEC.md": "Synthetic runtime is scenes.json with stable node ids, text_key, next or choices; locale catalogs zh_TW.json and en.json have identical keys. Choices write either cart_lent=true or repair_nights_owed=1, never both. Every branch rejoins at morning with a visible different affordance.\n"
+      },
+      "requirements": [
+        "All required deliverables must be complete, not summaries or TODO placeholders.",
+        "Keep every constraint from the fixture and instructions; state uncertainty without silently approving it.",
+        "No changes outside the fixture, no external providers, no fabricated runtime/human acceptance.",
+        "Land complete scenes.json, zh_TW.json and en.json and test routing/locale key integrity.",
+        "Preserve emotional holds/releases, character ignorance, distinct branch memory and native dialogue in both locales.",
+        "User semantic quality remains unconfirmed; tests are technical only.",
+        "For this bounded synthetic comparison, the supplied fixed stage list is the adopted test protocol. No actual product/USER approval is issued. Full content requirements from source methods remain binding; unavailable external artifacts must be reported, not invented."
+      ],
+      "sources": {
+        "old": [
+          "story/skills/game-story-factory/SKILL.md",
+          "story/core/steps/chapter/STEP_9_STORY_AND_PROSE_QA.md",
+          "story/docs/PROJECT_PROFILE_CONTRACT.md",
+          "story/core/craft/spoken-fluency.md"
+        ],
+        "new": [
+          "factory_core/docs/WORKFLOW.md",
+          "story/docs/WORKFLOW_V2.md",
+          "story/core/steps/chapter/STEP_9_STORY_AND_PROSE_QA.md",
+          "story/docs/PROJECT_PROFILE_CONTRACT.md",
+          "story/core/craft/spoken-fluency.md"
+        ]
+      },
+      "old_stages": [
+        {
+          "role": "chapter_0",
+          "task": "Write preflight and beat assignment.",
+          "kind": "author"
+        },
+        {
+          "role": "chapter_1",
+          "task": "Review beat/authority prerequisites.",
+          "kind": "review"
+        },
+        {
+          "role": "chapter_2",
+          "task": "Write complete spine, source and event graph.",
+          "kind": "author"
+        },
+        {
+          "role": "chapter_3",
+          "task": "Review graph, branch knowledge and emotional causality.",
+          "kind": "review"
+        },
+        {
+          "role": "chapter_4",
+          "task": "Write full bilingual draft in CHAPTER.md.",
+          "kind": "author"
+        },
+        {
+          "role": "chapter_5",
+          "task": "Review draft voice, knowledge and emotion; do not shorten.",
+          "kind": "review"
+        },
+        {
+          "role": "chapter_6",
+          "task": "Write complete staging/landing specification.",
+          "kind": "author"
+        },
+        {
+          "role": "chapter_7",
+          "task": "Review staging and runtime feasibility.",
+          "kind": "review"
+        },
+        {
+          "role": "chapter_8",
+          "task": "Land scenes.json and locale catalogs, preserving full prose.",
+          "kind": "author"
+        },
+        {
+          "role": "chapter_9",
+          "task": "Review exact landed routing, choices, knowledge and all-locale semantic fidelity.",
+          "kind": "review"
+        },
+        {
+          "role": "chapter_10",
+          "task": "Record tests, ledgers, branch deltas and acceptance evidence plan.",
+          "kind": "author"
+        },
+        {
+          "role": "author_packets",
+          "kind": "author",
+          "task": "Mechanically extract ONLY the frozen emotional beats, quoted lines and protected/banned forms per locale into FLUENCY_en.json and FLUENCY_zh-TW.json. Packet keys: schema_version=story_fluency_packet.v2, locale, beats, protected_forms, banned_forms, lines. No canon explanation or expected reviewer conclusions."
+        },
+        {
+          "role": "cleanroom_en",
+          "kind": "cleanroom",
+          "locale": "en",
+          "task": "Polish only the supplied quoted lines as natural spoken English. Preserve every frozen beat and protected/banned form. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "cleanroom_zh",
+          "kind": "cleanroom",
+          "locale": "zh-TW",
+          "task": "Polish only the supplied quoted lines as natural spoken Traditional Chinese. Preserve frozen beats and protected/banned forms. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "author_integrate",
+          "kind": "author",
+          "task": "Integrate the clean-room revised lines without changing facts, knowledge, beat intent, branch meaning or protected terminology. Preserve full-length bilingual prose."
+        },
+        {
+          "role": "canon_backcheck",
+          "kind": "review",
+          "task": "Canon-aware back-check of exact polished prose against all authorities, original frozen beats, both fluency packets and latest outputs. Reject changed knowledge or terminology."
+        },
+        {
+          "role": "reland_after_polish",
+          "kind": "author",
+          "task": "Re-land the exact final polished bilingual prose, preserve branches and re-run routing/locale integrity. Record verification."
+        },
+        {
+          "role": "landed_qa",
+          "kind": "review",
+          "task": "Fresh exact-latest-output semantic/prose/locale QA: all delivered text, route meaning, voice, knowledge, emotion, glossary, complete localization and staging fidelity. Not pre-design QA."
+        }
+      ],
+      "new_stages": [
+        {
+          "role": "author",
+          "kind": "author",
+          "task": "Create the complete design and all narrative prose, knowledge ledgers and human decision surface. Do not land or implement runtime outputs yet."
+        },
+        {
+          "role": "author_packets",
+          "kind": "author",
+          "task": "Mechanically extract ONLY the frozen emotional beats, quoted lines and protected/banned forms per locale into FLUENCY_en.json and FLUENCY_zh-TW.json. Packet keys: schema_version=story_fluency_packet.v2, locale, beats, protected_forms, banned_forms, lines. No canon explanation or expected reviewer conclusions."
+        },
+        {
+          "role": "cleanroom_en",
+          "kind": "cleanroom",
+          "locale": "en",
+          "task": "Polish only the supplied quoted lines as natural spoken English. Preserve every frozen beat and protected/banned form. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "cleanroom_zh",
+          "kind": "cleanroom",
+          "locale": "zh-TW",
+          "task": "Polish only the supplied quoted lines as natural spoken Traditional Chinese. Preserve frozen beats and protected/banned forms. Return complete revised lines in findings; no other sources."
+        },
+        {
+          "role": "author_integrate",
+          "kind": "author",
+          "task": "Integrate the clean-room revised lines without changing facts, knowledge, beat intent, branch meaning or protected terminology. Preserve full-length bilingual prose."
+        },
+        {
+          "role": "canon_backcheck",
+          "kind": "review",
+          "task": "Canon-aware back-check of exact polished prose against all authorities, original frozen beats, both fluency packets and latest outputs. Reject changed knowledge or terminology."
+        },
+        {
+          "role": "intent_experience",
+          "kind": "review",
+          "task": "Independently review intent/experience/causality/voice and every decision against full source artifacts. Do not edit."
+        },
+        {
+          "role": "completeness_project",
+          "kind": "review",
+          "task": "Independently review every project/Factory requirement, implementability and full decision coverage. Do not edit."
+        },
+        {
+          "role": "author_production",
+          "kind": "author",
+          "task": "This isolated fixture pre-authorizes production ONLY after both design reviews and canon back-check PASS. Continue as the original author; land runtime files only for chapter, run integrity/style/glossary checks, and record exact evidence. Do not create real USER records or gameplay acceptance."
+        },
+        {
+          "role": "landed_qa",
+          "kind": "review",
+          "task": "Fresh exact-latest-output semantic/prose/locale QA: all delivered text, route meaning, voice, knowledge, emotion, glossary, complete localization and staging fidelity. Not pre-design QA."
+        }
+      ],
+      "outputs": [
+        "CHAPTER.md",
+        "scenes.json",
+        "zh_TW.json",
+        "en.json"
+      ],
+      "mutable_fixtures": [],
+      "design_outputs": [
+        "CHAPTER.md"
+      ],
+      "design_review_roles": {
+        "new": [
+          "intent_experience",
+          "completeness_project"
+        ],
+        "old": []
+      }
+    }
+  ],
+  "max_rework_rounds": 2,
+  "protocol": "factory_matched_workflows.v2"
+}

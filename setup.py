@@ -350,6 +350,18 @@ CLAUDE_POINTER = (
 
 
 def link_game_repo(factory_root, game_repo, dry_run=False):
+    """Preserve explicit v2 activation on ordinary relink; v1 remains compatible."""
+    if os.path.exists(os.path.join(game_repo, ".git")) and not dry_run:
+        from pathlib import Path
+        from factory_core.state import project_lock
+        with project_lock(Path(game_repo)):
+            if (Path(game_repo) / "design/factory/.migration.json").exists():
+                raise SystemExit("MIGRATION_RECOVERY_REQUIRED: finish the prepared migration before relinking")
+            return _link_game_repo(factory_root, game_repo, dry_run=dry_run)
+    return _link_game_repo(factory_root, game_repo, dry_run=dry_run)
+
+
+def _link_game_repo(factory_root, game_repo, dry_run=False):
     """Write pointer file, gitignore entry, AGENTS.md block, CLAUDE.md pointer."""
     report = []
     game_repo = os.path.abspath(game_repo)
@@ -378,7 +390,15 @@ def link_game_repo(factory_root, game_repo, dry_run=False):
     if os.path.isfile(agents_path):
         with open(agents_path, "r", encoding="utf-8") as handle:
             existing = handle.read()
-    updated = upsert_marked_block(existing, render_routing_block())
+    version_file = os.path.join(game_repo, "design", "factory", "PROJECT.json")
+    if os.path.isfile(version_file):
+        from pathlib import Path
+        from factory_core.state import project
+        from factory_core.migration import routed
+        project(Path(game_repo))  # fail closed on unsupported/malformed version
+        updated = routed(existing)
+    else:
+        updated = upsert_marked_block(existing, render_routing_block())
     if not dry_run:
         with open(agents_path, "w", encoding="utf-8") as handle:
             handle.write(updated)

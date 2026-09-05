@@ -141,7 +141,11 @@ def _path_hash(
     if SHA256_PATTERN.fullmatch(digest) is None:
         errors.append(f"{label}.sha256 must be 64 lowercase hex characters")
     elif hashlib.sha256(path.read_bytes()).hexdigest() != digest:
-        errors.append(f"{label} hash does not match {path_text}")
+        # v2 routing-only migration is a narrow compatibility proof, not a
+        # rehash of an adopted standard or a renewal of historical reviews.
+        from factory_core.migration import routing_reference_valid
+        if not routing_reference_valid(repo, path_text, digest):
+            errors.append(f"{label} hash does not match {path_text}")
     return normalized, path
 
 

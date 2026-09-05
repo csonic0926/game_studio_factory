@@ -511,6 +511,10 @@ def _runtime_dirty_paths(game_repo: Path) -> list[str]:
         normalized = raw.strip('"')
         if normalized == "design/studio" or normalized.startswith("design/studio/"):
             continue
+        if normalized == "design/factory" or normalized.startswith("design/factory/"):
+            # v2 work checkpoints/evidence references are not runtime content.
+            # They must never be assigned as production output paths.
+            continue
         paths.append(normalized)
     return sorted(set(paths))
 
@@ -886,7 +890,13 @@ def _validate_acceptance_review(
             OLDER_ACCEPTANCE_REVIEW_VERSION,
             PREVIOUS_ACCEPTANCE_REVIEW_VERSION,
         }
-        if historical_version and allow_legacy_historical:
+        v2_content_bound = False
+        if acceptance_input_ref.get("path"):
+            candidate_input = _load_json(game_repo / acceptance_input_ref["path"], "acceptance input version")
+            v2_content_bound = candidate_input.get("schema_version") == "factory_gameplay_acceptance_input.v2"
+        if (historical_version and allow_legacy_historical) or v2_content_bound:
+            # v2's complete content dependency closure is checked by the input
+            # consumer below; the recorded revision remains provenance only.
             bound_factory_revision = recorded_factory_revision
         elif recorded_factory_revision != factory_revision:
             errors.append(
@@ -920,7 +930,7 @@ def _validate_acceptance_review(
         )
         if (
             schema_version == ACCEPTANCE_REVIEW_VERSION
-            and input_binding.get("schema_version") != ACCEPTANCE_INPUT_VERSION
+            and input_binding.get("schema_version") not in {ACCEPTANCE_INPUT_VERSION, "factory_gameplay_acceptance_input.v2"}
         ):
             errors.append(
                 f"acceptance review {unit_id} requires {ACCEPTANCE_INPUT_VERSION}"
@@ -1247,6 +1257,14 @@ def _validate_gameplay_acceptance_input(
         )
     payload = _load_json(path, f"gameplay acceptance input for {unit_id}")
     schema_version = payload.get("schema_version")
+    if schema_version == "factory_gameplay_acceptance_input.v2":
+        from studio.v2 import validate_acceptance_input
+        return validate_acceptance_input(game_repo, payload,
+            project_id=project_id, unit_id=unit_id, game_revision=game_revision,
+            build_id=build_id, factory_revision=factory_revision,
+            authority_ref=authority_ref, product_authority_ref=product_authority_ref,
+            production_context_ids=production_context_ids,
+            acceptance_reviewer_context_id=acceptance_reviewer_context_id, errors=errors)
     required = {
         "schema_version", "acceptance_input_id", "project_id", "unit_id",
         "game_revision", "build_id", "factory_revision", "experience_authority",

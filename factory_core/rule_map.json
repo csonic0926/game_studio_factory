@@ -1,0 +1,1480 @@
+{
+  "schema_version": "factory_rule_map.v2",
+  "baseline_revision": "9e35392b954d627a451e010e8b51d8b93f8ff32c",
+  "rules": [
+    {
+      "id": "gameplay.active_authority_and_scope_preserved",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.minimum_cycle_complete_slice",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.playable_span_sufficiency_not_inflated",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.meaningful_choice_not_certain_click",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.non_gameplay_activity_not_counted",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.player_work_world_response_carry_forward",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.reward_changes_next_decision",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.two_lap_decision_materially_differs",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.declared_alternatives_materially_distinct_and_reachable",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.cost_obligation_failure_and_recovery_are_concrete",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.red_lines_and_hypotheses_are_falsifiable",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.applicable_factory_gates_complete",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.player_facing_interaction_concretely_designed",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "gameplay.downstream_work_not_misrepresented_as_complete",
+      "source": "gameplay/design_gate.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.visible_entry_cause_and_goal",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.concrete_player_input_and_judgment",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.ordered_interaction_not_abstract_verb",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.visible_response_and_persistent_change",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.discoverable_changed_next_affordance",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.text_and_proxy_are_support_only",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.current_scene_visual_sequence_present",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.target_locale_readable",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.runtime_capture_plan_is_falsifiable",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "surface.blind_prior_knowledge_is_deidentified",
+      "source": "studio/player_surface.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.input_delta_complete",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.response_binding_fidelity",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.authority_continuity",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.authority_change_fidelity",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.claim_provenance",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.material_claim_coverage",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.question_necessity",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.semantic_non_substitution",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.routing_and_scope",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.human_boundary",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.surface_proportionality",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "intent.pending_decision_disposition",
+      "source": "studio/schemas/studio_semantic_alignment_review.schema.json",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.full_prose_not_handoff_summary",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.canon_voice_and_knowledge",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.branch_memory_and_causal_order",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.emotion_holds_and_releases",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.all_locale_semantic_fidelity",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.native_spoken_fluency_cleanroom",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.glossary_sovereignty_and_protected_forms",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.style_and_final_narrative_language",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.exact_beat_sheet_delivery_binding",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.staging_and_runtime_feasibility",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.script_and_sovereignty_user_gates",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "story.latest_landed_output_semantic_acceptance",
+      "source": "story/docs/WORKFLOW_V2.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "method.cast.README",
+      "source": "story/core/steps/cast/README.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_0_5_CAST_SCOPE_REVIEW",
+      "source": "story/core/steps/cast/STEP_0_5_CAST_SCOPE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_0_CAST_SCOPE_FRAMING",
+      "source": "story/core/steps/cast/STEP_0_CAST_SCOPE_FRAMING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_1_5_CAST_AUDIT_REVIEW",
+      "source": "story/core/steps/cast/STEP_1_5_CAST_AUDIT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_1_AUDIT_CURRENT_CAST",
+      "source": "story/core/steps/cast/STEP_1_AUDIT_CURRENT_CAST.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_2_5_MISSING_AND_OVERLAP_REVIEW",
+      "source": "story/core/steps/cast/STEP_2_5_MISSING_AND_OVERLAP_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_2_IDENTIFY_MISSING_AND_OVERLAP",
+      "source": "story/core/steps/cast/STEP_2_IDENTIFY_MISSING_AND_OVERLAP.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_3_5_REBALANCE_REVIEW",
+      "source": "story/core/steps/cast/STEP_3_5_REBALANCE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_3_RELATIONSHIP_AND_PRESSURE_REBALANCE",
+      "source": "story/core/steps/cast/STEP_3_RELATIONSHIP_AND_PRESSURE_REBALANCE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_4_5_CAST_ACTION_REQUEST_REVIEW",
+      "source": "story/core/steps/cast/STEP_4_5_CAST_ACTION_REQUEST_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_4_GENERATE_CAST_ACTION_REQUESTS",
+      "source": "story/core/steps/cast/STEP_4_GENERATE_CAST_ACTION_REQUESTS.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_5_5_CAST_BASELINE_REVIEW",
+      "source": "story/core/steps/cast/STEP_5_5_CAST_BASELINE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.cast.STEP_5_CAST_SUFFICIENCY_QA",
+      "source": "story/core/steps/cast/STEP_5_CAST_SUFFICIENCY_QA.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.BRANCH_IMPLEMENTATION_OVERLAY",
+      "source": "story/core/steps/chapter/BRANCH_IMPLEMENTATION_OVERLAY.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_10_5_SYNC_REVIEW",
+      "source": "story/core/steps/chapter/STEP_10_5_SYNC_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_10_SYNC_TWIN_AND_FRAME",
+      "source": "story/core/steps/chapter/STEP_10_SYNC_TWIN_AND_FRAME.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_11_5_HANDOFF_REVIEW",
+      "source": "story/core/steps/chapter/STEP_11_5_HANDOFF_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_11_OUTCOMES_AND_HANDOFF",
+      "source": "story/core/steps/chapter/STEP_11_OUTCOMES_AND_HANDOFF.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_12_5_OPEN_STORY_BRANCH_ACCEPTANCE",
+      "source": "story/core/steps/chapter/STEP_12_5_OPEN_STORY_BRANCH_ACCEPTANCE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_12_OPEN_STORY_BRANCH_EXPANSION",
+      "source": "story/core/steps/chapter/STEP_12_OPEN_STORY_BRANCH_EXPANSION.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_1_5_PREFLIGHT_REVIEW",
+      "source": "story/core/steps/chapter/STEP_1_5_PREFLIGHT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_1_CHAPTER_PREFLIGHT",
+      "source": "story/core/steps/chapter/STEP_1_CHAPTER_PREFLIGHT.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_2_5_STORY_LINE_DISCOVERY_REVIEW",
+      "source": "story/core/steps/chapter/STEP_2_5_STORY_LINE_DISCOVERY_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_2_STORY_LINE_DISCOVERY",
+      "source": "story/core/steps/chapter/STEP_2_STORY_LINE_DISCOVERY.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_3_5_CHAPTER_SPINE_REVIEW",
+      "source": "story/core/steps/chapter/STEP_3_5_CHAPTER_SPINE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_3_CHAPTER_SPINE",
+      "source": "story/core/steps/chapter/STEP_3_CHAPTER_SPINE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_4_5_CHAPTER_SOURCE_REVIEW",
+      "source": "story/core/steps/chapter/STEP_4_5_CHAPTER_SOURCE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_4_SAVE_CHAPTER_SOURCE",
+      "source": "story/core/steps/chapter/STEP_4_SAVE_CHAPTER_SOURCE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_5_5_EVENT_GRAPH_REVIEW",
+      "source": "story/core/steps/chapter/STEP_5_5_EVENT_GRAPH_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_5_EVENT_GRAPH",
+      "source": "story/core/steps/chapter/STEP_5_EVENT_GRAPH.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_6_5_RUNTIME_DRAFT_REVIEW",
+      "source": "story/core/steps/chapter/STEP_6_5_RUNTIME_DRAFT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_6_75_STAGING_REVIEW",
+      "source": "story/core/steps/chapter/STEP_6_75_STAGING_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_6_7_STAGING_REALIZATION",
+      "source": "story/core/steps/chapter/STEP_6_7_STAGING_REALIZATION.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_6_RUNTIME_DRAFT",
+      "source": "story/core/steps/chapter/STEP_6_RUNTIME_DRAFT.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_7_5_LANDING_INTEGRITY_REVIEW",
+      "source": "story/core/steps/chapter/STEP_7_5_LANDING_INTEGRITY_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_7_RUNTIME_LANDING",
+      "source": "story/core/steps/chapter/STEP_7_RUNTIME_LANDING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_8_5_QUOTED_DIALOGUE_REVISION_REVIEW",
+      "source": "story/core/steps/chapter/STEP_8_5_QUOTED_DIALOGUE_REVISION_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_8_QUOTED_DIALOGUE_REVISION",
+      "source": "story/core/steps/chapter/STEP_8_QUOTED_DIALOGUE_REVISION.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_9_5_QA_ACCEPTANCE",
+      "source": "story/core/steps/chapter/STEP_9_5_QA_ACCEPTANCE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.chapter.STEP_9_STORY_AND_PROSE_QA",
+      "source": "story/core/steps/chapter/STEP_9_STORY_AND_PROSE_QA.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.README",
+      "source": "story/core/steps/character/README.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_0_5_CHARACTER_CONCEPT_REVIEW",
+      "source": "story/core/steps/character/STEP_0_5_CHARACTER_CONCEPT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_0_CHARACTER_CONCEPT_FRAMING",
+      "source": "story/core/steps/character/STEP_0_CHARACTER_CONCEPT_FRAMING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_1_5_WORLD_POSITION_REVIEW",
+      "source": "story/core/steps/character/STEP_1_5_WORLD_POSITION_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_1_WORLD_POSITION_AND_DAILY_ROLE",
+      "source": "story/core/steps/character/STEP_1_WORLD_POSITION_AND_DAILY_ROLE.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_2_5_BEHAVIOR_REVIEW",
+      "source": "story/core/steps/character/STEP_2_5_BEHAVIOR_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_2_BEHAVIOR_AND_SPEAKING_PATTERN",
+      "source": "story/core/steps/character/STEP_2_BEHAVIOR_AND_SPEAKING_PATTERN.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_3_5_KNOWLEDGE_AND_RELATIONS_REVIEW",
+      "source": "story/core/steps/character/STEP_3_5_KNOWLEDGE_AND_RELATIONS_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_3_KNOWLEDGE_AND_RELATIONS",
+      "source": "story/core/steps/character/STEP_3_KNOWLEDGE_AND_RELATIONS.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_4_5_CHARACTER_PACKAGING_REVIEW",
+      "source": "story/core/steps/character/STEP_4_5_CHARACTER_PACKAGING_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_4_CHARACTER_PACKAGING",
+      "source": "story/core/steps/character/STEP_4_CHARACTER_PACKAGING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_5_5_CHARACTER_BASELINE_REVIEW",
+      "source": "story/core/steps/character/STEP_5_5_CHARACTER_BASELINE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.character.STEP_5_CHARACTER_CONSISTENCY_QA",
+      "source": "story/core/steps/character/STEP_5_CHARACTER_CONSISTENCY_QA.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.README",
+      "source": "story/core/steps/world/README.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_0_5_WORLD_CONCEPT_REVIEW",
+      "source": "story/core/steps/world/STEP_0_5_WORLD_CONCEPT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_0_WORLD_CONCEPT_FRAMING",
+      "source": "story/core/steps/world/STEP_0_WORLD_CONCEPT_FRAMING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_1_5_WORLD_RULES_REVIEW",
+      "source": "story/core/steps/world/STEP_1_5_WORLD_RULES_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_1_WORLD_RULES_AND_CONSTRAINTS",
+      "source": "story/core/steps/world/STEP_1_WORLD_RULES_AND_CONSTRAINTS.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_2_5_GEOGRAPHY_REVIEW",
+      "source": "story/core/steps/world/STEP_2_5_GEOGRAPHY_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_2_GEOGRAPHY_AND_LOCATIONS",
+      "source": "story/core/steps/world/STEP_2_GEOGRAPHY_AND_LOCATIONS.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_3_5_INSTITUTIONS_REVIEW",
+      "source": "story/core/steps/world/STEP_3_5_INSTITUTIONS_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_3_INSTITUTIONS_AND_DAILY_ORDER",
+      "source": "story/core/steps/world/STEP_3_INSTITUTIONS_AND_DAILY_ORDER.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_4_5_OBJECTS_AND_MOVEMENT_REVIEW",
+      "source": "story/core/steps/world/STEP_4_5_OBJECTS_AND_MOVEMENT_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_4_OBJECTS_AND_MOVEMENT",
+      "source": "story/core/steps/world/STEP_4_OBJECTS_AND_MOVEMENT.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_5_5_DIGITAL_TWIN_PACKAGING_REVIEW",
+      "source": "story/core/steps/world/STEP_5_5_DIGITAL_TWIN_PACKAGING_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_5_DIGITAL_TWIN_PACKAGING",
+      "source": "story/core/steps/world/STEP_5_DIGITAL_TWIN_PACKAGING.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_6_5_WORLD_BASELINE_REVIEW",
+      "source": "story/core/steps/world/STEP_6_5_WORLD_BASELINE_REVIEW.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "method.world.STEP_6_WORLD_CONSISTENCY_QA",
+      "source": "story/core/steps/world/STEP_6_WORLD_CONSISTENCY_QA.md",
+      "capabilities": [
+        "story"
+      ],
+      "reviewers": [],
+      "disposition": "on_demand_method_and_exact_output_acceptance"
+    },
+    {
+      "id": "idea.open_exploration_no_forced_thesis",
+      "source": "idea/docs/PRODUCT_DEFINITION_WORKFLOW.md",
+      "capabilities": [
+        "idea"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "idea.reference_can_be_no_fit",
+      "source": "idea/docs/PRODUCT_DEFINITION_WORKFLOW.md",
+      "capabilities": [
+        "idea"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "idea.explicit_post_frontier_commission",
+      "source": "idea/docs/PRODUCT_DEFINITION_WORKFLOW.md",
+      "capabilities": [
+        "idea"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "idea.authority_provenance_not_hypothesis",
+      "source": "idea/docs/PRODUCT_DEFINITION_WORKFLOW.md",
+      "capabilities": [
+        "idea"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "common.all_project_obligations",
+      "source": "factory_core/docs/WORKFLOW.md",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "common.complete_human_decision_surface",
+      "source": "factory_core/docs/WORKFLOW.md",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "common.no_unapproved_expansion",
+      "source": "factory_core/docs/WORKFLOW.md",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "common.source_and_dependency_integrity",
+      "source": "factory_core/docs/WORKFLOW.md",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "common.execution_not_acceptance",
+      "source": "factory_core/docs/WORKFLOW.md",
+      "capabilities": [
+        "all"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "runtime.blind_information_isolation",
+      "source": "studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "specialist_boundary_not_merged"
+    },
+    {
+      "id": "runtime.human_acceptance_and_predecessor_regression",
+      "source": "studio/docs/BASELINE_ADMISSION_WORKFLOW.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "specialist_boundary_not_merged"
+    },
+    {
+      "id": "ui.project_realization_grammar",
+      "source": "gameplay/docs/UI_PRODUCTION_WORKFLOW.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "specialist_boundary_not_merged"
+    },
+    {
+      "id": "asset.geometry_alpha_cleanup",
+      "source": "asset/docs/AI_CALLER_LANDING.md",
+      "capabilities": [
+        "asset"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "specialist_boundary_not_merged"
+    },
+    {
+      "id": "sound.trim_normalize",
+      "source": "sound/docs/AI_CALLER_LANDING.md",
+      "capabilities": [
+        "sound"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "specialist_boundary_not_merged"
+    },
+    {
+      "id": "cycle.closed_graph",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.coupled_systems_preserved",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.gamification_intent_is_reward_cycle",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.no_proxy_loop",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.product_boundaries_consistent",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.reward_changes_next_decision",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "cycle.second_lap_materially_differs",
+      "source": "studio/cycle.py",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    }
+  ]
+}

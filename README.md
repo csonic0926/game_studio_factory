@@ -17,11 +17,13 @@ completed game.
 ## Architecture
 
 ```text
+factory.py    inspect / context / checkpoint / migrate / benchmark
+factory_core/ versioned state, dependency closure and context views
 studio/       whole-game operator
   Accepted Playable Baseline
   Gameplay Ratchet
   Design Token Research
-  Semantic Input/Output Alignment
+  Independent Complete-Design Boundary Reviews
   Godot Automation and Execution Evidence
   Autonomous Production Loop
 
@@ -75,7 +77,16 @@ Use Story Factory to produce the next chapter.
 
 Start at [`STUDIO_CALLER_LANDING.md`](STUDIO_CALLER_LANDING.md).
 
-## Whole-game production model
+## Explicit workflow versions
+
+`python3 factory.py inspect --game-repo <root>` is read-only. Unmigrated games
+return `MIGRATION_REQUIRED`; `migrate --check` previews an explicit activation,
+then `--apply --expected <digest>` applies only that preflighted transaction.
+Historic approvals, rejections and accepted baselines are not reissued.
+See [the v2 process contract](factory_core/docs/WORKFLOW.md). Older workflow
+references are retained under each department's `docs/*_V1.md` for compatibility.
+
+## Whole-game production model (v2)
 
 Let `B_t` be the current Accepted Playable Baseline:
 
@@ -85,9 +96,10 @@ B_t
 → web research for same-type, cross-genre, and non-game design tokens
 → select one bounded gameplay unit
 → active game-owned Card standard + required pre-Card composition
-→ player-facing interaction contract + fresh design review
-→ compact Card + fresh project-standard review
-→ specialist design/planning/production
+→ one full design + project compositions + player-facing interaction contract
+→ two independent complete-design reviews
+→ checked human decision view + required USER ruling
+→ continuing primary-agent production within the reviewed scope
 → integration
 → exact-build interaction evidence + blind observation/comparison
 → fresh new-gameplay acceptance + regression(B_t)
@@ -218,8 +230,10 @@ the deterministic two-case baseline admission compiler/checker, and a desktop
 Godot automation/evidence platform for bounded runs, frame-bound scenarios,
 live debug sessions, capture, visual regression, and build smoke. The adapter
 still issues technical evidence only; it never supplies gameplay acceptance or
-a human verdict. The persistent autonomous scheduler is not yet implemented or
-real-project proven. The repository name does not waive that boundary.
+a human verdict. Execution stays with the caller’s continuing primary agent; no standalone
+model API executor or persistent scheduler is introduced. Total-token savings
+and equivalent creative quality require the fixed benchmark plus USER review;
+they are not inferred from shorter entry documents.
 
 ## History and compatibility
 

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "factory_project.v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "factory_project.v2"
+    },
+    "workflow_version": {
+      "const": 2
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "factory_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "historical_inventory": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "migration_source_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "workflow_version",
+    "project_id",
+    "factory_revision",
+    "authority_paths",
+    "historical_inventory",
+    "migration_source_digest"
+  ]
+}

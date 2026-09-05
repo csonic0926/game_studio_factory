@@ -2144,6 +2144,35 @@ def validate_objective_design_gate(
 ) -> DesignGateBinding:
     """Validate the exact card, full spec, two-way conformance, and verdict."""
 
+    # Explicit v2 checkpoint dispatch; v1 records keep their old validators.
+    # The same CLI arguments remain valid. No historical hash is refreshed.
+    if isinstance(raw_verdict_ref, dict) and raw_verdict_ref.get("path"):
+        from factory_core.refs import FactoryError, confined, read_json
+        from gameplay.v2 import authorized_objective
+        try:
+            candidate = confined(game_repo, raw_verdict_ref["path"])
+            if candidate.is_file() and read_json(candidate).get("schema_version") == "factory_checkpoint.v2":
+                ref = {"scope": "game", **raw_verdict_ref}
+                record, design = authorized_objective(
+                    {"game": game_repo, "factory": factory_root}, ref,
+                    objective_path_text, objective_sha256)
+                domain = design["gameplay"]
+                from factory_core.state import project
+                if project(game_repo)["project_id"] != project_id:
+                    raise FactoryError("WRONG_PROJECT", "production manifest project differs from adopted project")
+                if not isinstance(manifest_factory_revision, str) or not FACTORY_REVISION_PATTERN.fullmatch(manifest_factory_revision):
+                    raise FactoryError("INVALID_PROVENANCE", "manifest requires a recorded Git revision")
+                if domain["objective_id"] != objective_id:
+                    raise FactoryError("WRONG_OBJECTIVE", "checkpoint objective id differs")
+                return DesignGateBinding(
+                    str(manifest_factory_revision), raw_verdict_ref["path"], raw_verdict_ref["sha256"],
+                    "READY_FOR_HOW_DESIGN", "USER_APPROVED", record["design"]["path"],
+                    record["design"]["sha256"], domain["system"]["path"], domain["system"]["sha256"],
+                    read_json(confined(game_repo, domain["system"]["path"])).get("cycle_id", ""))
+        except FactoryError as error:
+            errors.append(f"{error.code}: {error}")
+            return DesignGateBinding(str(manifest_factory_revision), "", "", "", "")
+
     factory_revision = _require_text(
         manifest_factory_revision, "factory_revision", errors
     )

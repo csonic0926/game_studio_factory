@@ -1,43 +1,16 @@
-# AI Caller Landing — game_story_factory
+# Story Factory ownership
 
-You are an AI agent (Claude Code or Codex) driving story production for a game.
+This department owns reusable story methods, validators, schemas and CLI
+compatibility. Filled game artifacts belong only in the target game repository.
+For current operation use the `game-story-factory` skill.
 
-## Start here
-
-1. Read `docs/PROJECT_PROFILE_CONTRACT.md` — the adapter contract.
-2. Resolve the project's adapter directory, in order: explicit adapter path
-   in the invocation → `adapters/registry.md` (phonebook:
-   `<project_id> → <absolute path>`) → cwd convention
-   `./design/story/adapter/` when working inside a game repo → legacy
-   fallback `adapters/<project_id>/` (unmigrated projects, e.g. rpg-1).
-   Then read `<adapter>/PROJECT_PROFILE.md`.
-   No adapter anywhere? Bootstrap `<STORY_ROOT>` with
-   `scripts/init_story_root.sh` (it seeds `<STORY_ROOT>/adapter/` from
-   `adapters/_template/`) and fill it (ask the user for `<STORY_ROOT>` and
-   locales; do not guess `LANDING_SPEC.md` or `VISUAL_GRAMMAR.md`).
-3. Orchestrate via `skills/game-story-factory/SKILL.md` — it defines the four
-   step machines (world / character / cast / chapter), the step-selection rule,
-   and the worker-handoff rule.
-
-## Hard rules
-
-- One fresh worker per `STEP n` / `STEP n.5`; pass it only the step file path,
-  resolved profile variables, input artifact paths, output path.
-- Never edit the sovereignty files `state/WORLD_RULES.md` /
-  `state/NARRATIVE_DELIVERY.md` (user-authored; legacy projects:
-  `WORKFLOW_CORE_VARIABLES.md`). Only the world-rules-editor module writes
-  them, with explicit USER approval.
-- Never hardcode a game path in `core/` — if a step needs a project path that
-  the contract cannot express, that is a factory bug: fix the contract, not the step.
-- Chapter STEP 6.7 without a usable `VISUAL_GRAMMAR.md` ⇒
-  BLOCKED_BY_PROFILE (stop at the approved STEP 6 draft; tell the user what
-  the grammar must define).
-- Chapter STEP 7 without a usable `LANDING_SPEC.md` ⇒ BLOCKED_BY_PROFILE
-  (stop before runtime landing; tell the user what the spec must define).
-- Review steps output PASS/FAIL + reasons only.
-
-## Cross-repo requests
-
-Factory-side changes (new step, contract extension, new craft doc) belong in
-this repo via normal commits. Game-side artifacts always land under the game
-repo's `<STORY_ROOT>` — never under `core/` or `adapters/`.
+- Resolve the exact target; never scan sibling games or write game output here.
+- `factory.py inspect` selects explicit project version and trustworthy work.
+  Unmigrated projects return MIGRATION_REQUIRED; do not silently apply v2.
+- v2 process authority: `factory_core/docs/WORKFLOW.md`.
+- Capability rules: `story/docs/WORKFLOW_V2.md`.
+- v1 compatibility/detail: `story/docs/WORKFLOW_V1.md`. Its semantic
+  requirements remain available; its per-step authors/review topology does not
+  govern an explicitly migrated v2 project.
+- Preserve USER authority, explicit project standards and accepted history.
+  Execution success and AI review never constitute USER acceptance.

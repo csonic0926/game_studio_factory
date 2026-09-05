@@ -1,0 +1,113 @@
+# AI caller landing — Game Studio Factory
+
+This repository has two layers:
+
+```text
+Game Studio Factory   = autonomous whole-game operator
+Game AI Factories     = specialist capabilities
+```
+
+## Choose the entry by responsibility
+
+| User intent | Entry |
+| --- | --- |
+| “Make/continue this game”, a multi-day autonomous goal, or any request whose success is the whole playable game | skill `game-studio-factory` → `studio/AGENTS.md` |
+| Initialize/link a game repo | skill `init-game-studio-factory` |
+| Decide product direction | skill `idea-factory` → `idea/AGENTS.md` |
+| Produce/repair progression gameplay or inspect gameplay evidence | skill `gameplay-factory` → `gameplay/AGENTS.md` |
+| Produce world/character/chapter narrative | skill `game-story-factory` → `story/AGENTS.md` |
+| Produce visual assets | `asset/docs/AI_CALLER_LANDING.md` |
+| Produce SFX | `sound/docs/AI_CALLER_LANDING.md` |
+
+The Studio is the default for open-ended intent. Direct specialist invocation
+is correct for deliberately bounded expert work.
+
+Studio-managed product authority is additionally governed by
+`design/product/PRODUCT_AUTHORITY_REGISTER.json`. A whole-direction archive
+uses `studio/product.py` plus fresh semantic alignment; old canonical files,
+code, or baselines cannot silently reactivate an archived direction.
+New activation likewise binds the exact compiled Product package through fresh
+semantic alignment, including any prior option selected by a short user reply.
+
+## Whole-game delivery invariant
+
+Game Studio Factory may narrow content, asset fidelity, spatial scale, or the
+requested production horizon. It may not narrow “game” into a runnable
+interactive software demo. Studio delivery requires a runnable **Accepted
+Playable Baseline** with:
+
+- a validated Studio gameplay system whose reward/state changes the next
+  decision, plus an accepted two-lap vertical slice of that cycle;
+- fresh acceptance for newly introduced gameplay, bound to its canonical
+  expected-experience/cycle authority, exact-build player-facing interaction
+  evidence, a sealed blind observation/comparison, and an explicit human
+  playtest verdict;
+- regression evidence for previously accepted gameplay;
+- no blocking known gap;
+- exact build, game-revision, and Factory-revision provenance.
+
+Read [`studio/docs/AI_CALLER_LANDING.md`](studio/docs/AI_CALLER_LANDING.md) for
+the baseline/ratchet/research/production loop and
+[`studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md`](studio/docs/GAMEPLAY_SYSTEM_WORKFLOW.md)
+for the Studio-owned Idea-to-gameplay-system boundary. Material user input and
+material human-facing output additionally require the fresh-subagent semantic
+alignment gate in
+[`studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`](studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md).
+Every new or materially revised Gameplay Decision Card under either route must
+first exact-bind the game repository's active project Card-authoring standard,
+its required pre-Card composition artifacts, the player-facing interaction
+contract/review, and a fresh independent project-standard review. Every
+pending Studio Card additionally requires a different end-to-end generic
+Factory-compliance reviewer before the semantic gate; passing either project
+or step-local reviews alone cannot authorize a thin click/dialogue Card. Read
+[`gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md`](gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md)
+and
+[`studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md`](studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md).
+
+## Specialist capability model
+
+The Game AI Factories remain independently callable and keep their own stable
+contracts:
+
+```text
+idea/       open product exploration + explicit product commission
+story/      world, character, cast, chapter, staged narrative
+gameplay/   progression units, new gameplay, gap repair, UI production,
+            runtime evidence
+asset/      tiles, walls, props, sprites, visual production
+sound/      SFX generation and normalization
+```
+
+Filled product authority, Studio state, designs, plans, evidence, code, data,
+assets, and sound always land in the target game repo. This checkout owns only
+reusable skills, tools, schemas, templates, tests, and contracts.
+
+## Setup and compatibility
+
+One-time after cloning:
+
+```bash
+python3 setup.py install
+```
+
+In a target game repo invoke `init-game-studio-factory`, which runs:
+
+```bash
+python3 <STUDIO_ROOT>/setup.py link --game-repo <GAME_REPO>
+```
+
+New links use the git-ignored `design/STUDIO_FACTORY.local.md`. Existing
+`design/AI_FACTORY.local.md`, `init-game-ai-factory`, old managed-block markers,
+and the old installed-skills manifest remain readable compatibility surfaces.
+
+## Current implementation boundary
+
+The specialist factories are operational at their documented maturity. The
+Studio folder establishes the operator contract, durable state, and two-case
+baseline admission compiler/checker. It also provides an evidence-only desktop
+Godot 4 automation platform for project discovery, bounded import/run/export,
+opt-in debug bridge control, frame-bound scenarios, live sessions, structured
+capture, visual regression, and release smoke. Those technical results cannot
+issue gameplay verdicts or prove a named game repo without a separate pilot. A
+persistent autonomous scheduler remains to be implemented and proven; the
+name/structure must not be mistaken for that proof.

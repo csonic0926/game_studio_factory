@@ -527,6 +527,23 @@ def validate_production_plan(
             errors=errors,
             allow_legacy_historical=allow_legacy_historical,
         )
+    # v2 approved file ownership is an executable constraint, not merely a
+    # paragraph that a production plan may silently expand.
+    verdict_ref = payload.get("design_verdict", {})
+    if isinstance(verdict_ref, dict) and verdict_ref.get("path"):
+        from factory_core.refs import FactoryError, confined, read_json
+        from gameplay.v2 import authorized_objective
+        try:
+            candidate = confined(game_repo, verdict_ref["path"])
+            if candidate.is_file() and read_json(candidate).get("schema_version") == "factory_checkpoint.v2":
+                _, design = authorized_objective({"game": game_repo, "factory": FACTORY_ROOT},
+                    {"scope": "game", **verdict_ref}, objective_path_text, objective_sha256)
+                allowed = {(game_repo / path).resolve() for path in design["production_scope"]}
+                for plan in resolved_plans:
+                    if set(plan.planned_paths) - allowed:
+                        errors.append(f"plan {plan.plan_id} expands the v2 approved production scope")
+        except FactoryError as error:
+            errors.append(f"{error.code}: {error}")
     objective_rows = _extract_objective_rows(objective_text, errors)
 
     plan_ids = {plan.plan_id for plan in resolved_plans}

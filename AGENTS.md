@@ -25,16 +25,14 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
 4. Studio and specialist outputs land in the target game repo, never here.
 5. Reusable workflow/provider/stage/schema changes land in the owning folder
    through normal commits; preserve compatibility surfaces for linked repos.
-6. Material Studio input/output transitions use the fresh-subagent semantic
-   alignment gate in `studio/docs/SEMANTIC_ALIGNMENT_WORKFLOW.md`; ordinary
-   user language must not require Factory-specific prompt boilerplate.
-7. Every pending Studio Gameplay Decision Card first uses a different fresh
-   player-facing interaction reviewer, then a fresh final-Card
-   Factory-compliance subagent that audits the exact whole result and all bound
-   authorities; step-local reviews and semantic alignment do not substitute
-   for these gameplay/workflow sufficiency gates. Runtime acceptance separately
-   requires exact-build interaction evidence plus a blind observation and a
-   fresh authority comparison.
+6. Reusable Factory changes must preserve the explicit state partitions and
+   versioned compatibility rules in `factory_core/docs/WORKFLOW.md`.
+7. On an explicitly migrated v2 project, complete designs receive two fresh
+   independent reviews (intent/experience and completeness/project), each
+   different from the author and without first-pass peer conclusions. Runtime
+   blind observation and informed comparison remain separately isolated.
+   Unmigrated/historical v1 contracts remain readable; never silently convert
+   their approvals, rejections or baselines.
 
 Specialist entry points:
 
