@@ -104,6 +104,27 @@ def design_files(case, work):
     return {name:sha(work/name) for name in case.get('design_outputs',[]) if (work/name).is_file()}
 
 
+def production_receipt(case, variant, round_id, ledger, work):
+    """Author-only state view after independent review, never peer feedback.
+
+    Synthetic stage authorization comes from the fixed fixture, not this
+    receipt. The receipt reports only exact PASS evidence already observed.
+    """
+    roles=list(case.get('design_review_roles',{}).get(variant,[]))
+    if any(s['role']=='canon_backcheck' for s in stages_for(case,variant)):
+        roles.append('canon_backcheck')
+    current=design_files(case,work);reviews=[]
+    for role in roles:
+        matches=[a for a in ledger['attempts'] if a['case']==case['id'] and a['variant']==variant
+                 and a['round']==round_id and a['role']==role and a['kind']=='stage']
+        if not matches or matches[-1]['verdict']!='PASS' or matches[-1]['returncode']!=0 or matches[-1]['design_input']!=current:
+            fail('BENCHMARK_MISMATCH','production lacks exact current review: '+role)
+        a=matches[-1]
+        reviews.append({k:a[k] for k in ('role','jsonl','sha256','session_id','verdict','design_input')})
+    return {'source':'HARNESS_OBSERVED_REVIEW_BOUNDARY','synthetic_fixture_only':True,
+            'real_user_approval':False,'design':current,'reviews':reviews}
+
+
 def summarize(manifest, root, human_quality=None):
     from .refs import confined
     attempts_path=root/'ATTEMPTS.json'
@@ -242,6 +263,7 @@ def run(manifest,factory,output,resume=False):
     if output.exists() and any(output.iterdir()) and not resume:fail('BENCHMARK_OUTPUT_EXISTS','use --resume for the exact existing ledger or an empty isolated test directory')
     if output.resolve().is_relative_to(factory.resolve()):fail('INVALID_BENCHMARK','outputs must stay outside Factory')
     if manifest['model']!='gpt-6-astra' or manifest['rounds']!=2:fail('INVALID_BENCHMARK','Astra and two matched rounds required')
+    harness_digest=sha(Path(__file__))
     bundles=source_bundle(manifest,factory)
     output.mkdir(parents=True,exist_ok=True)
     settings=digest({k:manifest[k] for k in ('model','reasoning','permissions')})
@@ -305,7 +327,7 @@ def run(manifest,factory,output,resume=False):
                     finding=str(exc)+' '+FLUENCY_PACKET_CONTRACT
                     ledger.setdefault('mechanical_events',[]).append(dict(case=case['id'],round=round_id,variant=variant,
                         role=stage['role'],stage_index=index,code='INVALID_CLEANROOM_PACKET',finding=finding,
-                        packet_sha256=sha(packet_path) if packet_path.is_file() else None,harness_sha256=sha(Path(__file__))))
+                        packet_sha256=sha(packet_path) if packet_path.is_file() else None,harness_sha256=harness_digest))
                     save();return 2,{'verdict':'FAIL','findings':[finding]}
                 cwd=output/f'cleanroom-{ordinal:04d}';cwd.mkdir()
                 subprocess.run(['git','init','-q','-b','main',str(cwd)],check=True)
@@ -336,6 +358,9 @@ def run(manifest,factory,output,resume=False):
             if stage['role']=='author_packets':
                 from story.v2 import FLUENCY_PACKET_CONTRACT
                 command[-1]+='\n'+FLUENCY_PACKET_CONTRACT
+            if stage['role']=='author_production':
+                command[-1]+='\nCURRENT VERIFIED REVIEW STATE\n'+json.dumps(
+                    production_receipt(case,variant,round_id,ledger,work),ensure_ascii=False)
             with log.open('wb') as out,(output/(log_name+'.stderr')).open('wb') as err:
                 try:code=subprocess.run(command,stdout=out,stderr=err,cwd=cwd,timeout=manifest['session_timeout_seconds']).returncode
                 except subprocess.TimeoutExpired:code=124
@@ -345,7 +370,7 @@ def run(manifest,factory,output,resume=False):
                 result={'verdict':'BLOCKED','findings':['Independent reviewer illegally changed the candidate.']}
             ledger['attempts'].append(dict(case=case['id'],round=round_id,variant=variant,role=stage['role'],stage_index=index,
                 kind=kind,jsonl=log_name,sha256=sha(log),returncode=code,verdict=result['verdict'],
-                harness_sha256=sha(Path(__file__)),
+                harness_sha256=harness_digest,
                 source_digest=digest(sources),fixture_digest=digest(case['fixtures']),settings_digest=settings,
                 input_files_sha256=digest(before),design_input=design_input,session_id=sid))
             run_record['current_files']=tree_files(work)

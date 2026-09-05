@@ -45,6 +45,25 @@ class BenchmarkTests(unittest.TestCase):
         self.assertFalse(result['accepted'])
         self.assertEqual(result['execution_issues'],self.ledger['execution_issues'])
 
+    def test_production_receipt_reports_only_exact_observed_reviews(self):
+        case=self.suite['cases'][0];case['design_outputs']=['OUT.md']
+        case['design_review_roles']={'new':['intent_experience','completeness_project']}
+        case['new_stages']=[dict(role=r,kind='review') for r in ['intent_experience','completeness_project','canon_backcheck']]
+        work=self.root/'new1';current=benchmark.design_files(case,work)
+        attempts=[]
+        for role in ['intent_experience','completeness_project','canon_backcheck']:
+            a=dict(self.ledger['attempts'][2]);a.update(role=role,session_id=role,design_input=current)
+            attempts.append(a)
+        ledger={'attempts':attempts}
+        receipt=benchmark.production_receipt(case,'new',1,ledger,work)
+        self.assertEqual(receipt['design'],current)
+        self.assertEqual(len(receipt['reviews']),3)
+        self.assertFalse(receipt['real_user_approval'])
+        attempts[-1]['verdict']='FAIL'
+        with self.assertRaises(FactoryError):benchmark.production_receipt(case,'new',1,ledger,work)
+        attempts[-1]['verdict']='PASS';(work/'OUT.md').write_text('Different artifact.')
+        with self.assertRaises(FactoryError):benchmark.production_receipt(case,'new',1,ledger,work)
+
     def test_user_rejection_cannot_confirm_equal_quality(self):
         raw=self.root/'quality-user.json';raw.write_bytes(encoded({'role':'user','content':'These outputs are not equivalent quality.'}))
         self.quality['source']['sha256']=sha(raw);self.quality['raw_verdict_quote']='These outputs are not equivalent quality.'
@@ -195,7 +214,10 @@ class BenchmarkResumeTests(unittest.TestCase):
                 session_timeout_seconds=30,max_rework_rounds=2,baseline_revision='0'*40,
                 cases=[dict(id='synthetic',task='A bounded synthetic result.',requirements=[],fixtures={'AGENTS.md':'Immutable test rules.'},
                     outputs=['OUT.md'],sources={'old':[],'new':[]},old_stages=stages,new_stages=stages)])
-            original=subprocess.run;commands=[]
+            original=subprocess.run;commands=[];original_sha=benchmark.sha
+            def changing_disk_sha(path):
+                if Path(path)==Path(benchmark.__file__):return 'loaded-harness' if not commands else 'later-disk-edit'
+                return original_sha(path)
             def fake(command,**kwargs):
                 if command[0]!='codex':return original(command,**kwargs)
                 commands.append(command);work=Path(kwargs['cwd'])
@@ -208,9 +230,11 @@ class BenchmarkResumeTests(unittest.TestCase):
                         dict(type='turn.completed',usage=dict(input_tokens=10,cached_input_tokens=0,output_tokens=2))]
                 kwargs['stdout'].write(('\n'.join(json.dumps(e) for e in events)+'\n').encode())
                 return SimpleNamespace(returncode=0)
-            with patch.object(benchmark.subprocess,'run',side_effect=fake):
+            with patch.object(benchmark.subprocess,'run',side_effect=fake), patch.object(benchmark,'sha',side_effect=changing_disk_sha):
                 benchmark.run(manifest,factory,output)
             self.assertEqual(sum('resume' in c for c in commands),2)
+            ledger=json.loads((output/'ATTEMPTS.json').read_text())
+            self.assertEqual({a['harness_sha256'] for a in ledger['attempts']},{'loaded-harness'})
 
     def test_resume_retains_unmetered_failure_without_redoing_completed_author(self):
         from unittest.mock import patch
