@@ -7,6 +7,7 @@ Comparison baseline: `main` at
 
 Baseline verification found 25 entry/setup, 144 Studio, 207 Gameplay, 29 Idea,
 and 37 Asset tests passing (442 tests; Asset also reports 11 subtests).
+The current shared-core suite passes 68 tests (510 regular tests in total).
 The v2 suite adds transition/restart, independent-review identity, exact USER
 approval, authority/source closure, routing-only migration, concurrent-source
 and destination conflicts, crash recovery, historical readability, visual
@@ -54,3 +55,20 @@ revalidates exact fixtures/sources before continuing. Output completion,
 equal-quality human judgment, complete metering and lower totals in both rounds
 are separate conditions. No savings percentage or complete-refactor acceptance
 has been established by document length, unit tests or AI review alone.
+
+The live continuation also exposed a missing `--sandbox workspace-write` on
+resumed author invocations. The runner now preserves the explicit sandbox/root
+on both command forms; a regression test verifies both. The affected trial is
+marked with an execution-protocol issue, with all original logs/costs/counters
+retained. Per-trial repair exhaustion no longer suppresses the other fixed
+trials and never receives extra retries from resume.
+
+## Banner integration
+
+Banner's `main` commit `e892540` applies only the managed AGENTS routing block,
+`design/factory/PROJECT.json` and `design/factory/ROUTING_RECEIPT.json`.
+Pre/post content hashes verified that all other existing tracked/untracked
+nonignored files were unchanged, and all 16 historical inventory entries were
+preserved. Repeating migration returns `ALREADY_MIGRATED`; the adopted gameplay
+standard remains valid. This is integration migration, not new game delivery,
+approval, baseline promotion or reinterpretation of historical decisions.

@@ -18,6 +18,19 @@ request without usage remains explicitly unmetered even after successful retry.
 No absent usage is inferred to be zero. Such a run can finish its artifacts but
 cannot establish the complete-cost acceptance condition.
 
+The repair cap belongs to each fixed trial. An exhausted trial is retained as
+`REWORK_LIMIT`, not retried by resume and not accepted; other scheduled trials
+still run. `finished` means the schedule was visited, not that every output
+passed. A process/credit interruption without usage still pauses execution for
+explicit resume. Known token subtotals are distinct from a proven reduction;
+an unmetered member cannot make its pair's `lower` result true.
+
+The initial live trial exposed a missing sandbox option on `exec resume`.
+Both fresh and continuing author invocations now explicitly use the same
+workspace-write policy and root. Affected historical attempts remain intact;
+the trial's additive `execution_issues` record prevents protocol acceptance.
+Future attempts also record the harness content hash for provenance.
+
 `ATTEMPTS.json` binds logs, source/fixture/settings hashes, reviewed-design
 versions and final output hashes. Inspect its runs to find actual full results.
 Technical checks do not replace fresh narrative QA or the human comparison.

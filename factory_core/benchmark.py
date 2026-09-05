@@ -133,6 +133,7 @@ def summarize(manifest, root, human_quality=None):
         if name in seen or sha(path)!=a['sha256']:fail('INVALID_BENCHMARK','duplicate or changed usage log')
         seen.add(name);u=usage(path);all_complete &= u['complete']
         total=totals.setdefault(key,{k:0 for k in ('total_tokens','input_tokens','output_tokens','cached_input_tokens','reasoning_output_tokens','tool_calls','failed_events','attempts','rework_attempts')})
+        total['metering_complete']=total.get('metering_complete',True) and u['complete']
         for k in ('total_tokens','input_tokens','output_tokens','cached_input_tokens','reasoning_output_tokens','tool_calls','failed_events'):total[k]+=u[k]
         total['attempts']+=1;total['rework_attempts']+=a['kind']=='rework'
     runs=ledger.get('runs',{})
@@ -162,7 +163,9 @@ def summarize(manifest, root, human_quality=None):
     for c in cases:
         for r in (1,2):
             old=totals.get((c,'old',r));new=totals.get((c,'new',r))
-            comparisons.append({'case':c,'round':r,'old':old,'new':new,'lower':bool(old and new and new['total_tokens']<old['total_tokens'])})
+            known_lower=bool(old and new and new['total_tokens']<old['total_tokens'])
+            comparisons.append({'case':c,'round':r,'old':old,'new':new,'known_lower':known_lower,
+                'lower':bool(known_lower and old['metering_complete'] and new['metering_complete'])})
     action='CONFIRM_EQUAL_QUALITY '+digest(manifest)+' '+digest(runs)
     quality_ok=False
     if human_quality:
@@ -181,6 +184,7 @@ def summarize(manifest, root, human_quality=None):
             'accepted':passed,'comparisons':comparisons,'usage_complete':bool(all_complete),
             'human_quality_confirmed':quality_ok,'usage_source':USAGE_SOURCE,
             'execution_issues':execution_issues,
+            'stopped_runs':{k:v['stopped_reason'] for k,v in runs.items() if v.get('stopped_reason')},
             'all_attempt_tokens':sum(t['total_tokens'] for t in totals.values()),
             'human_quality_action':action if ledger.get('finished') else None}
 
@@ -267,6 +271,10 @@ def run(manifest,factory,output,resume=False):
                 if current!=expected:fail('BENCHMARK_MISMATCH','interrupted fixture changed outside its checkpoint')
             elif not previous_attempts or previous_attempts[-1].get('input_files_sha256')!=digest(current):
                 fail('BENCHMARK_MISMATCH','legacy interrupted run has no supported exact checkpoint')
+            if run_record.get('stopped_reason'):continue
+            if (run_record.get('repair_rounds',0)>=manifest['max_rework_rounds'] and previous_attempts
+                    and previous_attempts[-1]['verdict']!='PASS'):
+                run_record['stopped_reason']='REWORK_LIMIT';save();continue
             # Reviewer/clean-room reports remain isolated outside the worktree.
             # Only the continuing author's own thread resumes.
             if variant=='new':
@@ -358,13 +366,15 @@ def run(manifest,factory,output,resume=False):
                     code,result=invoke(current,stage_index,feedback=feedback)
                     results.append((code,result))
                 if all(code==0 and result['verdict']=='PASS' for code,result in results):break
-                if total_repairs>=manifest['max_rework_rounds']:return summarize(manifest,output)
+                if total_repairs>=manifest['max_rework_rounds']:
+                    run_record['stopped_reason']='REWORK_LIMIT';break
                 if any(not usage(output/a['jsonl'])['complete'] for a in ledger['attempts'][-len(results):]):return summarize(manifest,output)
                 retries+=1;total_repairs+=1;run_record['repair_rounds']=total_repairs
                 repair={'role':'author_rework','kind':'author','task':'Repair this failed boundary within the same approved scope. Preserve every full deliverable. The entire affected independent boundary will rerun.'}
                 repair_code,repair_result=invoke(repair,index,'rework',[r for _,r in results])
                 if repair_code or repair_result['verdict']!='PASS':
-                    if total_repairs>=manifest['max_rework_rounds']:return summarize(manifest,output)
+                    if total_repairs>=manifest['max_rework_rounds']:
+                        run_record['stopped_reason']='REWORK_LIMIT';break
                 if narrative and index>=packet_index:
                     # A narrative repair may touch spoken output; conservatively
                     # rerun extraction, clean-room, integration, canon and every
@@ -374,10 +384,12 @@ def run(manifest,factory,output,resume=False):
                     run_record['sealed_design']={};language_results=[]
                     index=restart;results=None
                     break
+            if run_record.get('stopped_reason'):break
             if results is None:
                 save();continue
             if run_record['sealed_design'] and design_files(case,work)!=run_record['sealed_design']:
-                if total_repairs>=manifest['max_rework_rounds']:return summarize(manifest,output)
+                if total_repairs>=manifest['max_rework_rounds']:
+                    run_record['stopped_reason']='REWORK_LIMIT';break
                 total_repairs+=1;run_record['repair_rounds']=total_repairs
                 restart=packet_index if narrative and variant=='new' else design_review_index
                 run_record['completed_stages']=list(range(restart));run_record['sealed_design']={};language_results=[]
@@ -387,8 +399,9 @@ def run(manifest,factory,output,resume=False):
             if stage['kind']=='cleanroom':language_results.append({'locale':stage['locale'],'result':results[0][1]})
             run_record['completed_stages'].extend(range(index,end));run_record['language_results']=language_results;save()
             index=end
-        run_record['technical_pass']=technical_check(case,work)
+        if not run_record.get('stopped_reason'):
+            run_record['technical_pass']=technical_check(case,work)
+            if not run_record['technical_pass']:run_record['stopped_reason']='TECHNICAL_CHECK_FAILED'
         run_record['final_files']=tree_files(work);save()
-        if not run_record['technical_pass']:return summarize(manifest,output)
     ledger['finished']=True;save()
     return summarize(manifest,output)
