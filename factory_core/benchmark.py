@@ -116,7 +116,8 @@ def summarize(manifest, root, human_quality=None):
     expected_sources=ledger.get('source_digests',{})
     if set(expected_sources)!={c+':'+v for c in cases for v in ('old','new')}:
         fail('BENCHMARK_MISMATCH','missing frozen source membership')
-    totals={};seen=set();all_complete=ledger.get('finished') is True
+    execution_issues=ledger.get('execution_issues',[])
+    totals={};seen=set();all_complete=ledger.get('finished') is True and not execution_issues
     for a in ledger['attempts']:
         key=(a['case'],a['variant'],a['round'])
         if key not in expected_keys: fail('INVALID_BENCHMARK','unmatched attempt would hide cost')
@@ -179,6 +180,7 @@ def summarize(manifest, root, human_quality=None):
             'HUMAN_QUALITY_REVIEW_REQUIRED' if not quality_ok else 'TOKEN_TARGET_NOT_MET',
             'accepted':passed,'comparisons':comparisons,'usage_complete':bool(all_complete),
             'human_quality_confirmed':quality_ok,'usage_source':USAGE_SOURCE,
+            'execution_issues':execution_issues,
             'all_attempt_tokens':sum(t['total_tokens'] for t in totals.values()),
             'human_quality_action':action if ledger.get('finished') else None}
 
@@ -303,14 +305,18 @@ def run(manifest,factory,output,resume=False):
             if feedback:prompt+='\nREPAIR/INTEGRATION INPUT\n'+json.dumps(feedback,ensure_ascii=False)
             before=tree_files(work)
             design_input=design_files(case,work)
-            common=['codex','exec','--ignore-user-config','--json','--model',manifest['model'],'-c',f'model_reasoning_effort="{manifest["reasoning"]}"']
+            # exec resume does not inherit exec's sandbox default from the
+            # original invocation. Put the same root/options before the
+            # subcommand, or a continuing author silently becomes read-only.
+            common=['codex','exec','--ignore-user-config','--json','--model',manifest['model'],'-c',f'model_reasoning_effort="{manifest["reasoning"]}"',
+                    '--sandbox',manifest['permissions'],'-C',str(cwd)]
             continuing=stage_kind=='author' and variant=='new' and author_session
             if continuing:
                 prompt=('Continue the same fixed benchmark and full authorities already read. Do not repeat or shorten prior full deliverables. '
                         'Do only this stage; final response JSON verdict and findings. CURRENT STAGE: '+stage['task'])
                 if feedback:prompt+='\nREPAIR/INTEGRATION INPUT\n'+json.dumps(feedback,ensure_ascii=False)
                 command=common+['resume',author_session,prompt]
-            else:command=common+['--sandbox',manifest['permissions'],'-C',str(cwd),prompt]
+            else:command=common+[prompt]
             with log.open('wb') as out,(output/(log_name+'.stderr')).open('wb') as err:
                 try:code=subprocess.run(command,stdout=out,stderr=err,cwd=cwd,timeout=manifest['session_timeout_seconds']).returncode
                 except subprocess.TimeoutExpired:code=124
@@ -320,6 +326,7 @@ def run(manifest,factory,output,resume=False):
                 result={'verdict':'BLOCKED','findings':['Independent reviewer illegally changed the candidate.']}
             ledger['attempts'].append(dict(case=case['id'],round=round_id,variant=variant,role=stage['role'],stage_index=index,
                 kind=kind,jsonl=log_name,sha256=sha(log),returncode=code,verdict=result['verdict'],
+                harness_sha256=sha(Path(__file__)),
                 source_digest=digest(sources),fixture_digest=digest(case['fixtures']),settings_digest=settings,
                 input_files_sha256=digest(before),design_input=design_input,session_id=sid))
             run_record['current_files']=tree_files(work)
