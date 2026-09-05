@@ -7,7 +7,7 @@ Comparison baseline: `main` at
 
 Baseline verification found 25 entry/setup, 144 Studio, 207 Gameplay, 29 Idea,
 and 37 Asset tests passing (442 tests; Asset also reports 11 subtests).
-The current shared-core suite passes 72 tests (514 regular tests in total).
+The current shared-core suite passes 74 tests (516 regular tests in total).
 The v2 suite adds transition/restart, independent-review identity, exact USER
 approval, authority/source closure, routing-only migration, concurrent-source
 and destination conflicts, crash recovery, historical readability, visual
@@ -76,6 +76,13 @@ independent reviewers finish; a prior repair's FAIL message is not left as their
 only state view. Receipts are synthetic evidence, not fabricated USER approvals.
 Harness provenance is frozen at invocation start rather than re-reading a
 potentially edited implementation file after each model turn.
+
+The 2026-09-06 USER ruling confirms the kinship wording defect as a semantic
+blocker, not a nonblocking style preference. Regression tests verify that the
+full relationship authority reaches the author and both independent reviewers,
+and that an unresolved locale-semantic finding prevents acceptance despite
+passing technical evidence. These are routing/gate tests, not an automated
+claim to judge native-language meaning. The original trial ledger is unchanged.
 
 ## Banner integration
 

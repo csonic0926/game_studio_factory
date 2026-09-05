@@ -73,6 +73,27 @@ Do not rewrite repeated constraint paragraphs across handoffs; cite the original
 and preserve its full meaning in context. Do not shorten a scene/voice/emotional
 curve to claim lower tokens. Human creative-quality judgments remain USER-owned.
 
+### Player-understood meaning, not lexical overlap
+
+`story.all_locale_semantic_fidelity` checks the relationship, identity,
+obligation and other facts that a native-speaking player actually understands
+in the scene. A dictionary-compatible term is not sufficient if its ordinary
+spoken use loses an intended distinction. Do not downgrade that loss to a
+nonblocking wording preference, or loosen a correct review to reduce rework.
+
+If natural target-language wording requires a distinction that the source has
+not settled, record a design/localization dependency. The primary author may
+resolve it within an existing creative delegation; otherwise obtain the owning
+human decision. Bind the resolved fact to the design and all shipped locales
+before final wording. Neither an ambiguous fallback nor an unapproved invented
+fact resolves the dependency. A clean-room language worker must flag it back to
+the author, not choose new canon; reviewers must preserve the semantic blocker.
+
+The [2026-09-06 kinship ruling](../../factory_core/benchmarks/RESULTS_20260905.md#2026-09-06-user-裁決親屬語意)
+is a scoped example: the player's understanding of a real sibling relationship
+is required meaning, not optional polish. It does not ban every occurrence of
+the same word in unrelated scenes or authorize an unchosen birth order.
+
 ### Machine-checked latest-output records
 
 `story/v2.py` checks `story_output_acceptance.v2` against the actual resolved

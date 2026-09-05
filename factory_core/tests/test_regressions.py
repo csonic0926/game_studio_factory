@@ -110,6 +110,28 @@ class RegressionTests(unittest.TestCase):
         from factory_core.story_profile import resolve
         self.assertEqual(resolve(self.game,extra)['shipped_locales'],['en','zh-TW'])
 
+    def test_story_relationship_meaning_reaches_author_and_both_reviewers(self):
+        from factory_core.context import context
+        from factory_core.state import requirement_ids
+        self.profile()
+        authority='核心是親兄弟；在本場景使用我哥或我弟。長幼待定，不得以含混稱呼代替。'
+        self.write('narrative/state/WORLD_RULES.md',authority)
+        artifact=self.write('narrative/DESIGN.md','The relationship must remain familial.\nBirth order needs a design decision.\n')
+        design=dict(schema_version='factory_design.v2',design_id='kinship',capability='story',task='character',
+            author_context_id='author',intent='Preserve the intended sibling relationship.',artifacts=[artifact],inputs=[],
+            decisions=[dict(id='kinship',source=artifact,excerpt='The relationship must remain familial.',
+                            consequence='Birth order needs a design decision.')],requirements={},
+            production_scope=['narrative/character.md'],acceptance=['Exact relationship meaning in every shipped locale.'])
+        ref=self.write('narrative/PACKAGE.json',design)
+        for role in ('author','intent_experience','completeness_project'):
+            view=context(self.roots,'story','character',role,design=ref)
+            sources={s['reference']['path']:s['text'] for s in view['constraints']}
+            self.assertEqual(sources['narrative/state/WORLD_RULES.md'],authority)
+            self.assertIn('Player-understood meaning, not lexical overlap',sources['story/docs/WORKFLOW_V2.md'])
+            if role!='author':
+                self.assertIn('story.all_locale_semantic_fidelity',requirement_ids(ROOT,design,role))
+                self.assertNotIn('work',view)
+
     def test_visual_input_is_required_reference_not_utf8_or_dropped(self):
         from factory_core.context import context
         d,ref=self.design()

@@ -31,6 +31,16 @@ class StoryProviderTests(unittest.TestCase):
         record,design,report=self.story_report();ref=self.write('acceptance.json',report)
         self.assertFalse(validate_acceptance(self.roots,record,design,ref)['gameplay_accepted'])
 
+    def test_relationship_semantic_failure_blocks_despite_technical_passes(self):
+        record,design,report=self.story_report()
+        report['checks']['all_shipped_locale_semantics'].update(status='FAIL',
+            rationale='Synthetic reviewer: the target-language player cannot identify the required familial relationship.')
+        # Mechanical checks, clean-room records and an overall PASS assertion
+        # cannot overrule an unresolved semantic finding. This test exercises
+        # gate enforcement, not an automatic keyword-based language judgment.
+        with self.assertRaisesRegex(FactoryError,'unresolved finding'):
+            validate_acceptance(self.roots,record,design,self.write('acceptance.json',report))
+
     def test_self_declared_english_only_does_not_override_profile(self):
         record,design,report=self.story_report();report['shipped_locales']=report['locale_coverage']=['en']
         with self.assertRaises(FactoryError):validate_acceptance(self.roots,record,design,self.write('acceptance.json',report))
