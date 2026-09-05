@@ -83,6 +83,13 @@ class BenchmarkTests(unittest.TestCase):
         self.ledger['runs']['one:new:1']['final_files']=benchmark.tree_files(self.root/'new1');self.save()
         with self.assertRaises(FactoryError):benchmark.summarize(self.suite,self.root,self.quality)
 
+    def test_apply_patch_file_change_is_a_tool_operation(self):
+        p=self.root/'patch.jsonl'
+        events=[{'type':'item.completed','item':{'id':'patch-1','type':'file_change','status':'completed','changes':[]}},
+                {'type':'turn.completed','usage':{'input_tokens':10,'cached_input_tokens':0,'output_tokens':5}}]
+        p.write_text('\n'.join(json.dumps(e) for e in events)+'\n')
+        self.assertEqual(benchmark.usage(p)['tool_calls'],1)
+
     def test_missing_usage_stays_incomplete(self):
         p=self.root/'old1.jsonl';p.write_text('{"type":"turn.failed"}\n');self.ledger['attempts'][0]['sha256']=sha(p);self.save()
         self.assertFalse(benchmark.summarize(self.suite,self.root,self.quality)['usage_complete'])

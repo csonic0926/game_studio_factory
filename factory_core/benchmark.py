@@ -49,7 +49,7 @@ def usage(path: Path) -> dict:
             result["failed_events"] += 1
             result["complete"] = False
         item = event.get("item", {})
-        if typ == "item.completed" and item.get("type") in ("command_execution", "mcp_tool_call", "web_search", "collab_agent_tool_call"):
+        if typ == "item.completed" and item.get("type") in ("command_execution", "file_change", "mcp_tool_call", "web_search", "collab_agent_tool_call"):
             key = item.get("id")
             if key not in seen_items:
                 result["tool_calls"] += 1
