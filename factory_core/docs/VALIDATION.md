@@ -7,7 +7,7 @@ Comparison baseline: `main` at
 
 Baseline verification found 25 entry/setup, 144 Studio, 207 Gameplay, 29 Idea,
 and 37 Asset tests passing (442 tests; Asset also reports 11 subtests).
-The current shared-core suite passes 70 tests (512 regular tests in total).
+The current shared-core suite passes 72 tests (514 regular tests in total).
 The v2 suite adds transition/restart, independent-review identity, exact USER
 approval, authority/source closure, routing-only migration, concurrent-source
 and destination conflicts, crash recovery, historical readability, visual
@@ -45,6 +45,11 @@ immutable-fixture and Story applicability defects. This does not substitute for
 human creative-quality evaluation or the complete token experiment.
 
 ## Measurement boundary
+
+The full fixed schedule has now ended: 16 trials, 177 model attempts, 7 completed
+trials and 9 incomplete trials. Known usage totals 34,832,975 tokens, with two
+unmetered attempts. The experiment does **not** meet acceptance conditions.
+See [the complete results and failure record](../benchmarks/RESULTS_20260905.md).
 
 The fixed suite uses Astra/high and the official Codex JSONL usage fields.
 The first live trial encountered `usage_limit_exceeded` after measured author

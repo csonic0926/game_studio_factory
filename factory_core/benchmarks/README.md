@@ -9,6 +9,7 @@ It is not a Banner-content authoring command. See the one process authority:
 python3 factory.py benchmark --run --output-root /absolute/empty/test-area
 python3 factory.py benchmark --resume --output-root /absolute/same/test-area
 python3 factory.py benchmark --output-root /absolute/same/test-area
+python3 factory.py benchmark --output-root /absolute/same/test-area --report
 ```
 
 Resume preserves **every** earlier attempt and supports only the exact same
@@ -34,6 +35,12 @@ Future attempts also record the harness content hash for provenance.
 `ATTEMPTS.json` binds logs, source/fixture/settings hashes, reviewed-design
 versions and final output hashes. Inspect its runs to find actual full results.
 Technical checks do not replace fresh narrative QA or the human comparison.
+`--report` renders the exact full required outputs side by side with A/B labels,
+fixed requirements, source constraints and explicit missing-output notices.
+It writes only rebuildable `QUALITY_REVIEW.html` and `QUALITY_MAPPING.json`
+outside trial workspaces; neither is approval. Do not open the mapping before
+comparison. Content itself may reveal workflow traits, so label anonymization
+does not claim perfect blinding. Incomplete trials remain visibly incomplete.
 After reading the exact anonymously presented outputs, the USER can submit the
 returned `human_quality_action`. A `--human-quality` receipt must bind that raw
 USER message reference, suite, full attempts ledger and output-set hashes;

@@ -9,7 +9,7 @@ class BenchmarkTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name)
         self.suite={'model':'gpt-6-astra','reasoning':'high','permissions':'workspace-write',
-           'cases':[{'id':'one','fixtures':{'SOURCE.md':'same'},'outputs':['OUT.md'],
+           'cases':[{'id':'one','task':'Compare full synthetic outputs.','requirements':[],'fixtures':{'SOURCE.md':'same'},'outputs':['OUT.md'],
                      'old_stages':[{'role':'author','kind':'author'}], 'new_stages':[{'role':'author','kind':'author'}]}]}
         self.ledger={'suite_sha256':digest(self.suite),'finished':True,'source_digests':{'one:old':'a','one:new':'b'},'attempts':[],'runs':{}}
         for variant in ('old','new'):
@@ -36,6 +36,28 @@ class BenchmarkTests(unittest.TestCase):
 
     def test_missing_human_quality_is_never_savings_acceptance(self):
         self.assertEqual(benchmark.summarize(self.suite,self.root)['status'],'HUMAN_QUALITY_REVIEW_REQUIRED')
+
+    def test_anonymous_view_preserves_full_outputs_without_creating_approval(self):
+        from factory_core.benchmark_report import render
+        body='Full original text: <script>alert(1)</script>\n'+'Never truncate this. '*1000
+        (self.root/'new1/OUT.md').write_text(body)
+        self.ledger['runs']['one:new:1']['final_files']=benchmark.tree_files(self.root/'new1');self.save()
+        before=sha(self.root/'ATTEMPTS.json');result=render(self.suite,self.root)
+        html=Path(result['quality_view']).read_text()
+        self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;',html)
+        self.assertEqual(html.count('Never truncate this. '),1000)
+        self.assertNotIn('one:new:1',html)
+        self.assertNotIn('CONFIRM_EQUAL_QUALITY',html)
+        self.assertEqual(sha(self.root/'ATTEMPTS.json'),before)
+        self.assertEqual(benchmark.summarize(self.suite,self.root)['status'],'HUMAN_QUALITY_REVIEW_REQUIRED')
+        self.assertEqual(render(self.suite,self.root),result)
+
+    def test_human_view_rejects_running_or_changed_outputs(self):
+        from factory_core.benchmark_report import render
+        self.ledger['finished']=False;self.save()
+        with self.assertRaises(FactoryError):render(self.suite,self.root)
+        self.ledger['finished']=True;self.save();(self.root/'new1/OUT.md').write_text('Unrecorded edits.')
+        with self.assertRaises(FactoryError):render(self.suite,self.root)
 
     def test_execution_protocol_deviation_cannot_be_accepted(self):
         self.ledger['execution_issues']=[{'code':'RESUME_SANDBOX_MISMATCH','attempts':['new1.jsonl']}]

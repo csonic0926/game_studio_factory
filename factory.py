@@ -43,6 +43,7 @@ def parser():
     modes.add_argument("--run", action="store_true")
     modes.add_argument("--resume", action="store_true", help="resume the exact interrupted trial; retain all failed attempts")
     cmd.add_argument("--human-quality")
+    cmd.add_argument("--report", action="store_true", help="render a full-output anonymous view after the fixed schedule finishes")
     return p
 
 
@@ -55,6 +56,9 @@ def main(argv=None):
             output = Path(args.output_root).expanduser().resolve()
             result = run(suite, ROOT, output, resume=args.resume) if args.run or args.resume else summarize(suite, output,
                 read_json(Path(args.human_quality)) if args.human_quality else None)
+            if args.report:
+                from factory_core.benchmark_report import render
+                result['reports']=render(suite,output)
         else:
             game = game_root(args.game_repo, ROOT)
             roots = {"game": game, "factory": ROOT}
