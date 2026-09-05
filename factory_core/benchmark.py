@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 
-from .refs import digest, encoded, exclusive_json, fail, read_json, sha
+from .refs import FactoryError, digest, encoded, exclusive_json, fail, read_json, sha
 
 USAGE_SOURCE = "https://learn.chatgpt.com/docs/non-interactive-mode#make-output-machine-readable"
 
@@ -185,6 +185,7 @@ def summarize(manifest, root, human_quality=None):
             'human_quality_confirmed':quality_ok,'usage_source':USAGE_SOURCE,
             'execution_issues':execution_issues,
             'stopped_runs':{k:v['stopped_reason'] for k,v in runs.items() if v.get('stopped_reason')},
+            'mechanical_failures':len(ledger.get('mechanical_events',[])),
             'all_attempt_tokens':sum(t['total_tokens'] for t in totals.values()),
             'human_quality_action':action if ledger.get('finished') else None}
 
@@ -294,11 +295,18 @@ def run(manifest,factory,output,resume=False):
             if not authority_intact(case,work):fail('BENCHMARK_MISMATCH','author changed immutable fixture authority')
             stage_kind=stage['kind'];cwd=work;source_text='\n'.join('SOURCE '+x['path']+'\n'+x['text'] for x in sources)
             if stage_kind=='cleanroom':
-                packet=read_json(work/f"FLUENCY_{stage['locale']}.json")
-                from .state import keys,texts
-                keys(packet,{'schema_version','locale','beats','protected_forms','banned_forms','lines'})
-                if packet['schema_version']!='story_fluency_packet.v2' or packet['locale']!=stage['locale']:fail('INVALID_CLEANROOM_PACKET','locale/schema mismatch')
-                for field in ('beats','protected_forms','banned_forms','lines'):texts(packet[field])
+                from story.v2 import validate_fluency_packet, FLUENCY_PACKET_CONTRACT
+                packet_path=work/f"FLUENCY_{stage['locale']}.json"
+                try:packet=validate_fluency_packet(read_json(packet_path),stage['locale'])
+                except (FactoryError,OSError,ValueError) as exc:
+                    # No model has been invoked and no blind context received
+                    # malformed content. Record the mechanical failure, then
+                    # use the same bounded author-repair path as other gates.
+                    finding=str(exc)+' '+FLUENCY_PACKET_CONTRACT
+                    ledger.setdefault('mechanical_events',[]).append(dict(case=case['id'],round=round_id,variant=variant,
+                        role=stage['role'],stage_index=index,code='INVALID_CLEANROOM_PACKET',finding=finding,
+                        packet_sha256=sha(packet_path) if packet_path.is_file() else None,harness_sha256=sha(Path(__file__))))
+                    save();return 2,{'verdict':'FAIL','findings':[finding]}
                 cwd=output/f'cleanroom-{ordinal:04d}';cwd.mkdir()
                 subprocess.run(['git','init','-q','-b','main',str(cwd)],check=True)
                 source_text='SANITIZED SPOKEN-FLUENCY PACKET\n'+json.dumps(packet,ensure_ascii=False)
@@ -325,6 +333,9 @@ def run(manifest,factory,output,resume=False):
                 if feedback:prompt+='\nREPAIR/INTEGRATION INPUT\n'+json.dumps(feedback,ensure_ascii=False)
                 command=common+['resume',author_session,prompt]
             else:command=common+[prompt]
+            if stage['role']=='author_packets':
+                from story.v2 import FLUENCY_PACKET_CONTRACT
+                command[-1]+='\n'+FLUENCY_PACKET_CONTRACT
             with log.open('wb') as out,(output/(log_name+'.stderr')).open('wb') as err:
                 try:code=subprocess.run(command,stdout=out,stderr=err,cwd=cwd,timeout=manifest['session_timeout_seconds']).returncode
                 except subprocess.TimeoutExpired:code=124

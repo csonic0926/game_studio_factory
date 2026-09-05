@@ -110,6 +110,45 @@ class BenchmarkTests(unittest.TestCase):
         self.assertFalse(comparison['new']['metering_complete'])
 
 class BenchmarkResumeTests(unittest.TestCase):
+    def test_malformed_packet_is_repaired_before_any_cleanroom_invocation(self):
+        from unittest.mock import patch
+        import subprocess
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);factory=root/'factory';factory.mkdir();output=root/'run'
+            stages=[dict(role='author_packets',kind='author',task='extract packets'),
+                    dict(role='cleanroom_en',kind='cleanroom',locale='en',task='polish isolated lines')]
+            manifest=dict(model='gpt-6-astra',reasoning='high',permissions='workspace-write',rounds=2,
+                session_timeout_seconds=30,max_rework_rounds=2,baseline_revision='0'*40,
+                cases=[dict(id='synthetic',task='A bounded synthetic result.',requirements=[],fixtures={'AGENTS.md':'Immutable test rules.'},
+                    outputs=['FLUENCY_en.json'],sources={'old':[],'new':[]},old_stages=stages,new_stages=stages)])
+            original=subprocess.run;calls=[]
+            def fake(command,**kwargs):
+                if command[0]!='codex':return original(command,**kwargs)
+                calls.append(command);work=Path(kwargs['cwd'])
+                if work.name.startswith('cleanroom-'):
+                    self.assertIn('SANITIZED SPOKEN-FLUENCY PACKET',command[-1])
+                    self.assertNotIn('bad-object',command[-1])
+                else:
+                    packet=dict(schema_version='story_fluency_packet.v2',locale='en',beats=['Frozen hesitation.'],
+                        protected_forms=[],banned_forms=[],lines=['Good morning.'])
+                    if len(calls)==1:packet['beats']=[{'bad-object':'Not a string.'}]
+                    (work/'FLUENCY_en.json').write_bytes(encoded(packet))
+                events=[dict(type='thread.started',thread_id=f'session-{len(calls)}'),
+                        dict(type='item.completed',item=dict(type='agent_message',text=json.dumps(dict(verdict='PASS',findings=[])))),
+                        dict(type='turn.completed',usage=dict(input_tokens=10,cached_input_tokens=0,output_tokens=2))]
+                kwargs['stdout'].write(('\n'.join(json.dumps(e) for e in events)+'\n').encode())
+                return SimpleNamespace(returncode=0)
+            with patch.object(benchmark.subprocess,'run',side_effect=fake):
+                result=benchmark.run(manifest,factory,output)
+            ledger=json.loads((output/'ATTEMPTS.json').read_text())
+            self.assertTrue(ledger['finished'])
+            self.assertEqual(result['mechanical_failures'],1)
+            self.assertEqual(ledger['runs']['synthetic:old:1']['repair_rounds'],1)
+            self.assertEqual(sum('SANITIZED SPOKEN-FLUENCY PACKET' in c[-1] for c in calls),4)
+            self.assertEqual(result['all_attempt_tokens'],len(calls)*12)
+            self.assertEqual(result['stopped_runs'],{})
+
     def test_exhausted_trial_does_not_skip_other_fixed_trials_or_gain_retries(self):
         from unittest.mock import patch
         import subprocess

@@ -11,6 +11,27 @@ CHECKS = {
     "cleanroom_fluency_backcheck", "twin_and_sync_deltas", "user_gate_preservation",
 }
 
+FLUENCY_PACKET_CONTRACT = (
+    'Exact story_fluency_packet.v2 contract: keys are schema_version, locale, beats, '
+    'protected_forms, banned_forms, lines. schema_version and locale are strings. '
+    'All four other fields are arrays of nonempty strings, never objects. '
+    'beats and lines must contain at least one entry; protected_forms and '
+    'banned_forms may be empty. Include only frozen beats, spoken lines and '
+    'protected/banned forms, never canon explanations or reviewer conclusions.'
+)
+
+
+def validate_fluency_packet(packet, locale):
+    keys(packet,{"schema_version","locale","beats","protected_forms","banned_forms","lines"})
+    if packet["schema_version"] != "story_fluency_packet.v2" or packet["locale"] != locale:
+        fail("INVALID_CLEANROOM_PACKET","cleanroom packet locale/schema differs")
+    for field in ("beats","protected_forms","banned_forms","lines"):
+        if not isinstance(packet[field],list) or any(not isinstance(x,str) or not x.strip() for x in packet[field]):
+            fail("INVALID_CLEANROOM_PACKET",field+': '+FLUENCY_PACKET_CONTRACT)
+    if not packet["beats"] or not packet["lines"]:
+        fail("INVALID_CLEANROOM_PACKET","spoken text and frozen beats required")
+    return packet
+
 
 def validate_acceptance(roots, record, design, ref):
     report = read_json(resolve_ref(roots, ref))
@@ -89,12 +110,7 @@ def validate_acceptance(roots, record, design, ref):
             fail("REVIEW_NOT_INDEPENDENT","cleanroom reads only its sanitized packet in a fresh context")
         contexts.add(identity)
         packet=read_json(resolve_ref(roots,clean["packet"]))
-        keys(packet,{"schema_version","locale","beats","protected_forms","banned_forms","lines"})
-        if packet["schema_version"] != "story_fluency_packet.v2" or packet["locale"] != clean["locale"]:
-            fail("INVALID_CLEANROOM_PACKET","cleanroom packet locale/schema differs")
-        for field in ("beats","protected_forms","banned_forms","lines"): texts(packet[field])
-        if not packet["beats"] or not packet["lines"]:
-            fail("INVALID_CLEANROOM_PACKET","spoken text and frozen beats required")
+        validate_fluency_packet(packet,clean["locale"])
         if clean["verdict"] != "PASS" or not clean["outputs"] or any(r not in report["outputs"] for r in clean["outputs"]):
             fail("EVIDENCE_MISMATCH","cleanroom must bind latest landed outputs, not stale prose")
         back=read_json(resolve_ref(roots,clean["canon_backcheck"]))

@@ -7,7 +7,7 @@ Comparison baseline: `main` at
 
 Baseline verification found 25 entry/setup, 144 Studio, 207 Gameplay, 29 Idea,
 and 37 Asset tests passing (442 tests; Asset also reports 11 subtests).
-The current shared-core suite passes 68 tests (510 regular tests in total).
+The current shared-core suite passes 69 tests (511 regular tests in total).
 The v2 suite adds transition/restart, independent-review identity, exact USER
 approval, authority/source closure, routing-only migration, concurrent-source
 and destination conflicts, crash recovery, historical readability, visual
@@ -62,6 +62,10 @@ on both command forms; a regression test verifies both. The affected trial is
 marked with an execution-protocol issue, with all original logs/costs/counters
 retained. Per-trial repair exhaustion no longer suppresses the other fixed
 trials and never receives extra retries from resume.
+Malformed clean-room packets are rejected before blind context creation and
+recorded as mechanical failures. Their repair consumes the existing trial
+budget; the shared Story-owned packet validator also supplies exact type
+instructions to packet authors, without exposing canon to clean-room workers.
 
 ## Banner integration
 
