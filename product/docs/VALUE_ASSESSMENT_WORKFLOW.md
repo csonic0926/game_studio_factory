@@ -33,9 +33,11 @@ and game-owned raw USER source in offer.adoption and provenance; reviewers must
 judge its actual adoption meaning, not merely find the quoted words. A user saying “what about
 $5?” is PROPOSED_OFFER, even when that quote is genuine. SCENARIO is conditional
 analysis. Neither a proposal nor a scenario becomes the actual offer merely
-because the value case at that price is attractive. If price/audience is unknown,
-record CONTEXT_UNRESOLVED and the smallest decisive question. A released game's
-price is not automatically the redesigned game's selected price.
+because the value case at that price is attractive. Keep unknown actual context
+explicit. When useful, evaluate a clearly declared, evidence-grounded benchmark
+scenario instead of stopping to make the user populate a schema. Ask only when a
+necessary choice belongs to the user. A released game's price is not automatically
+the redesigned game's selected price, but it can be a useful conditional benchmark.
 
 Refresh material storefront/market facts from their authoritative sources before
 making a new current-offer claim. Save URLs, observation dates and relevant facts
@@ -47,6 +49,64 @@ released game just to assess it. Distinguish absent authority from partial/broke
 canonical files and from an explicit NO_ACTIVE_PRODUCT_AUTHORITY register. An
 archived product can be studied historically; it cannot pass as currently active.
 Idea owns commission/reconsideration, and studio/product.py owns its lifecycle.
+
+## State what would be enough, then make the judgment
+
+Before the decisive observation or further repair, make a provisional adequacy
+case visible in the report's ordinary prose. A short paragraph can be enough:
+why this buyer might choose/pay for this whole experience, what experienced
+benefit would justify this offer despite its limits, and what contrary experience
+would defeat that recommendation. Ground the bar in the actual offer, buyer,
+occasion and plausible alternatives, including not buying. A weak self-authored
+promise does not justify a price merely because the software fulfills it.
+
+Alternatives supply context for the buying reason, not a competitor-count quota,
+feature-copy list or demand to beat every nearby game. Research a named comparison
+when a factual claim about it matters; distinguish its advertised offer from
+firsthand comparative experience. When context is uncertain, label the provisional
+buyer/offer instead of inventing adoption or refusing useful conditional judgment.
+
+Keep two questions separate:
+
+- Product sufficiency: does the experienced whole give this buyer a worthwhile
+  reason to choose it at this price, with these deliberate sacrifices? Modest art,
+  short duration or limited replay can fit a convincing whole. A good mechanism
+  or low price does not excuse an experience the buyer must imagine becoming good
+- Evidence sufficiency: have the value-bearing experience and strongest plausible
+  counterexample been encountered enough to make that bounded judgment? This is
+  not exhaustive verification, statistical proof of demand or elimination of all
+  uncertainty. Enough evidence can support either a recommendation or a rejection
+
+For this actual product, say what observed experience would support the value
+case and what would falsify it before requesting the next decisive test. Do not
+turn these anchors into universal pass boxes. If evidence already permits a
+judgment, make it now rather than inventing a study to satisfy this instruction.
+A serious observed failure of the central buying reason can establish VALUE_GAP
+without first investigating every other aspect of the game.
+
+Call an unknown material only when a plausible answer could change the purchase
+recommendation, and explain how. Record ordinary residual limits and confidence
+in the report/evidence limitations. Do not put "no population study" or an unknown
+unpromised long-term retention rate into material_unknowns merely because they
+are unmeasured. conditionality is for actual truth conditions (for example a
+proposed offer), not a synonym for moderate confidence. A qualified model judgment
+is useful; it is neither fabricated human taste nor a forecast of market success.
+
+After the discriminating experience, return to the stated adequacy case. Decide
+SUPPORTED or VALUE_GAP when justified, explaining the whole-product reason,
+confidence and remaining non-blocking limits. Stop adding scope/proof requests
+when that case is met. If genuinely unable to decide, EVIDENCE_INSUFFICIENT must
+name the missing decision-changing observation, the plausible opposing outcomes,
+and the smallest way to distinguish them (or the exact access blocker). Do not
+force a binary verdict when that material gap is real, and do not defer forever
+by appending an unspecific list of pacing/audio/replay concerns.
+
+Actual user/audience evidence or a newly discovered material fact may overturn
+the provisional frame. Explain the new fact and why it changes the bar, preserve
+the earlier reasoning, and make the revision explicit before further evaluation.
+Do not silently move goalposts because the original test passed, narrow the
+commissioned promise to excuse a failure, or mistake the assessor's initial frame
+for user authority. Material direction changes still belong to Idea/USER.
 
 ## Encounter the value-bearing experience
 
@@ -97,12 +157,13 @@ Don't spend/produce/change the product merely to make this assessment pass.
 
 Judgments:
 
-- SUPPORTED: a convincing contextual case supported by representative experience;
-  no unobserved material promise. A proposed/scenario offer remains conditional
+- SUPPORTED: the stated contextual adequacy case is met by sufficient experience;
+  no unresolved decision-changing gap. Explain bounded confidence and residual
+  limits. A proposed/scenario recommendation remains conditional
 - VALUE_GAP: observed shortcomings undermine the whole offer; identify why and
   prioritize the meaningful next choice, rather than add features by default
-- EVIDENCE_INSUFFICIENT: context is intelligible but the material experience has
-  not been encountered sufficiently to decide
+- EVIDENCE_INSUFFICIENT: a named missing observation could change the recommendation;
+  state the decision split and bounded next test or actual blocker
 - CONTEXT_UNRESOLVED: target price or intended audience remains unknown
 
 All four can be useful completed assessments. No outcome grants USER acceptance,
@@ -119,6 +180,12 @@ all sources and assesses the whole case. Neither sees first-pass peer conclusion
 
 Both reviewers must challenge evidence selection, the strongest untested
 material claim, source sufficiency, causal value and consequential omissions.
+They must also judge whether the provisional adequacy bar is fair to the buyer,
+whether its support/falsification anchors were actually addressed, and whether a
+remaining unknown could change the recommendation. Reject both unsupported praise
+and avoidant deferral. If the case is met, do not demand unrelated features, larger
+studies or new standards; accept a justified bounded judgment. Legitimate reframing
+needs an explicit new material reason, not obedience to a permanently fixed bar.
 The roles give complementary emphasis, not permission to ignore half the product.
 AGREE means “this assessment is sound,” including a justified gap or uncertainty;
 REVISE means repair the argument/evidence/conclusion. Never average disagreement
@@ -137,7 +204,10 @@ claim, Studio calls studio/product.py check-value with the actual exact build.
 The gate only supports grounded CURRENT_OFFER/ADOPTED_OFFER judgments without
 material conditionality. It returns exact price/currency/platform/region/date,
 audience and provenance, including on a blocked result. Proposed/scenario support
-cannot be shortened to “the game is worth buying.” New build/context/evidence or
+cannot be shortened to an unconditional current-offer claim. A conditional
+recommendation can still complete the substantive price-value question; refusal
+by this narrower current-offer gate is not a failed scenario judgment or a demand
+for user price reapproval. New build/context/evidence or
 relevant authority requires reassessment, not rewriting old receipt hashes.
 
 Tell the user the scoped judgment, decisive evidence/limit and useful next move.

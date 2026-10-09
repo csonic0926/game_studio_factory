@@ -13,10 +13,20 @@ Operate before recording:
 1. Reconstruct the actual/current or explicitly adopted offer and intended buyer.
    Refresh material external facts; preserve source dates. A genuine proposed
    price remains a proposal, and the released price is not redesign adoption.
+   Use an explicit reasonable benchmark scenario when it can answer usefully;
+   don't require a user price choice merely to finish the schema. Before a decisive
+   observation/repair, state the provisional buying reason, what experience would
+   be enough at this offer, and what would defeat it, in ordinary report prose.
 2. Encounter the whole relevant artifact and the experience carrying its promise.
    Challenge the strongest untested claim and flattering evidence selection.
    Art/audio/comfort/surrounding affordances matter through the coherent purchase.
-3. Judge the whole offer. Explain consequential sacrifices by protected benefit
+3. Judge the whole offer against that contextual adequacy case. Distinguish whether
+   the product is sufficient from whether evidence is sufficient to judge it.
+   Make a bounded subjective recommendation/rejection when justified; only an
+   unknown that could change it warrants further evidence. Explain confidence and
+   non-blocking limits. Explicit new user/audience facts can revise the frame;
+   don't silently move goalposts or expand the proof list after the case is met.
+   Explain consequential sacrifices by protected benefit
    and buyer cost. Identify the weakest causal link and the smallest useful test,
    repair, removal, reconsideration or justified stopping point. No scores, hours
    formula, content quota or default feature expansion.

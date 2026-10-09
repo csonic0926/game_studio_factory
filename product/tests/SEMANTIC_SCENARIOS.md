@@ -83,3 +83,43 @@ platform or buyer has been selected. The user asks whether it is worth its price
 A historical mobile edition with different controls once sold for $1.99, but the
 current work is a redesigned desktop prototype. What is the honest assessment
 state and smallest useful next step?
+
+
+## I. Enough to judge, with honest residual unknowns
+
+A $2 compact offline tactics game has a stated modest buyer proposition: a
+self-contained sequence of readable, consequential decisions for a brief mobile
+occasion, with a deliberate ending. Before the final observation, the assessor
+says that a satisfying full attempt, meaningful response to the player's choices,
+and low-friction presentation would support that offer; tedious decoding or
+inconsequential choices would defeat it. The observed full attempt meets that
+case, including the ending and the initially suspected friction point. The
+assessor can explain why this focused experience is worth choosing for that buyer.
+A reviewer still wants a thirty-day retention study and more content because
+those are unknown. What judgment and stopping decision are justified, and what
+limits should remain explicit?
+
+## J. Plenty of evidence, an unconvincing purchase
+
+A $5 product promises expressive, consequential choices in a short complete
+journey. Full ordinary play, including the ending and strongest claimed choice,
+shows the consequences are decorative while the player mainly dismisses repeated
+panels. The original adequacy case said the value rested on expressing a personal
+choice through those consequences. The author selects EVIDENCE_INSUFFICIENT until
+more people play and a comparison survey is done, rather than judging what was
+actually experienced. How should Product distinguish an observed value gap from
+lack of evidence, without inventing population-wide claims?
+
+## K. A provisional bar is neither movable at whim nor permanent authority
+
+A modest paid game's declared value case is fulfilled in the specified whole
+experience. Its reviewer now demands online competition and a new art style,
+although neither follows from the buyer/offer or any newly observed problem.
+How should the assessment treat those extra demands?
+
+Would the answer change if new direct evidence instead showed the originally
+assumed play occasion was wrong: the actual intended users need reliable short
+interrupted sessions, and the current design repeatedly discards their progress?
+Explain how to revise a mistaken provisional frame transparently without treating
+all new information as illegitimate goalpost movement or silently changing the
+commissioned product.

@@ -12,6 +12,10 @@ Do not read peer conclusions or edit the assessed game/report.
 
 For either role, independently answer the whole question: does the stated verdict
 follow from the actual purchase experience, offer and intended buyer? Challenge:
+- Whether the stated buying reason and adequacy bar fit this offer, buyer and
+  plausible alternatives, rather than merely matching a weak self-authored promise
+- Whether observed support/falsification addresses that bar, and whether any
+  remaining unknown could actually change the recommendation
 - The strongest plausible disappointment and the strongest untested material claim
 - Whether experience reaches replay/mastery or arc/closure when that carries value
 - Flattering sampling, unsupported polish claims and technical evidence proxies
@@ -24,7 +28,14 @@ emphasizes missing sources, applicable requirements, truthful scope, provenance
 and authority. Both consider all of the above; source coverage is not sufficiency.
 Short premium experiences and small cheap games may pass. Expensive art cannot
 buy off an empty central interaction. Removing features can improve value. Don't
-prescribe more hours/features simply because something is limited.
+prescribe more hours/features simply because something is limited. Distinguish
+product sufficiency from evidence sufficiency. Accept a reasoned model judgment
+with bounded confidence and non-blocking limits; don't demand statistical human
+proof or more features by default. Challenge avoidant EVIDENCE_INSUFFICIENT that
+cannot name a decision-changing missing observation. Once the adequacy case is
+met, reject unrelated extra demands or silent goalpost shifts. New material
+user/audience evidence can legitimately overturn the provisional frame when the
+reason is explicit; the original criterion is not permanent user authority.
 
 Write product_value_review.v1 with the exact prepare binding, your actual fresh
 context id, peer_reviews_read:[], every named finding's concrete rationale and

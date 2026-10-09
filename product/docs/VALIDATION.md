@@ -100,3 +100,24 @@ and delivery flags. This demonstrates truthful negative/conditional operation,
 not that SAB is good/bad value or that the framework computes value. Filled
 reports, reviews and receipts remain in the target game, outside Factory source.
 No real game was migrated, relinked, changed or adopted by this exercise.
+
+## Adequacy/stopping refinement verification
+
+The guidance/template refinement is described in ADEQUACY_REFINEMENT.md. Its six
+frozen semantic files had manifest fingerprint
+ad2850a095bdd5577b75cdb0459288d2a349a2d1d380a8ab839a80401450c66a.
+A fresh independent semantic review returned PASS with all six hashes unchanged;
+the full I–K judgments and limits are retained in ADEQUACY_REVIEW_ad2850a.md.
+
+Affected regression was rerun: Product35, entry/setup25 and shared core109 all
+passed (169 tests); whitespace checks passed. No runtime/schema/ledger change was
+made. Earlier wider runtime/Asset environment limits remain as documented above;
+this focused rerun is not a new full-suite or actual-product-value PASS.
+
+The earlier real SAB assessment/report/reviews remain byte-identical and retain
+their historical EVIDENCE_INSUFFICIENT verdict under their exact old contracts.
+The new workflow content changes current dependency validity; old review hashes
+were not refreshed into new approval. An uncoached observer was not given these
+informed criteria. New observations, once sealed, may support either a positive
+or negative reasoned evaluation against the provisional adequacy case, with
+bounded confidence and explicit legitimate reframing if new facts warrant it.
