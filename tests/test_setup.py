@@ -207,6 +207,7 @@ class LinkGameRepoTest(unittest.TestCase):
             self.assertEqual(body.count(factory_setup.BLOCK_BEGIN), 1)
             self.assertIn("# Game rules", body)
             self.assertIn("`idea-factory` skill", body)
+            self.assertIn("`product-factory` skill", body)
             self.assertIn("`gameplay-factory` skill", body)
             self.assertIn("`game-studio-factory` skill", body)
             self.assertIn("fresh player-facing interaction", body)
@@ -315,6 +316,8 @@ class ShippedSkillContractTest(unittest.TestCase):
                 root, "studio", "skills", "studio-player-facing-evidence-comparison-reviewer", "SKILL.md"
             ),
         }
+        expected.update({name: os.path.join(root, "product", "skills", name, "SKILL.md")
+                         for name in ("product-factory", "product-value-reviewer")})
         for name, path in expected.items():
             with self.subTest(skill=name), open(path, encoding="utf-8") as handle:
                 body = handle.read()
@@ -337,6 +340,8 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "idea-factory",
                 "init-game-ai-factory",
                 "init-game-studio-factory",
+                "product-factory",
+                "product-value-reviewer",
                 "studio-blind-player-observer",
                 "studio-gameplay-decision-card-reviewer",
                 "studio-player-facing-evidence-comparison-reviewer",

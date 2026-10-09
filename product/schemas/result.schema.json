@@ -1,0 +1,757 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "product_value_result.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "product_value_result.v1"
+    },
+    "mode": {
+      "const": "standalone_assessment"
+    },
+    "assessment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assessment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "enum": [
+                "game",
+                "factory"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "const": "game_git"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40,64}$"
+            }
+          },
+          "required": [
+            "scope",
+            "path",
+            "sha256",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "reviews": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "enum": [
+                  "game",
+                  "factory"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "scope",
+              "path",
+              "sha256"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "const": "game_git"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40,64}$"
+              }
+            },
+            "required": [
+              "scope",
+              "path",
+              "sha256",
+              "revision"
+            ]
+          }
+        ]
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "scope": {
+                    "enum": [
+                      "game",
+                      "factory"
+                    ]
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "scope",
+                  "path",
+                  "sha256"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "scope": {
+                    "const": "game_git"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "revision": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{40,64}$"
+                  }
+                },
+                "required": [
+                  "scope",
+                  "path",
+                  "sha256",
+                  "revision"
+                ]
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "references",
+        "fingerprint"
+      ]
+    },
+    "mandatory_authority": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "enum": [
+                  "game",
+                  "factory"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "scope",
+              "path",
+              "sha256"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "const": "game_git"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40,64}$"
+              }
+            },
+            "required": [
+              "scope",
+              "path",
+              "sha256",
+              "revision"
+            ]
+          }
+        ]
+      },
+      "minItems": 0
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "register_exists": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "claim_blocked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "register_exists",
+        "errors",
+        "claim_blocked"
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "build": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "scope": {
+                      "enum": [
+                        "game",
+                        "factory"
+                      ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "required": [
+                    "scope",
+                    "path",
+                    "sha256"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "scope": {
+                      "const": "game_git"
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "revision": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40,64}$"
+                    }
+                  },
+                  "required": [
+                    "scope",
+                    "path",
+                    "sha256",
+                    "revision"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "build"
+      ]
+    },
+    "claim_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offer": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "CURRENT_OFFER",
+                "ADOPTED_OFFER",
+                "PROPOSED_OFFER",
+                "SCENARIO",
+                "UNKNOWN"
+              ]
+            },
+            "grounding": {
+              "enum": [
+                "GROUNDED",
+                "HYPOTHESIS",
+                "UNKNOWN"
+              ]
+            },
+            "amount": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d+(?:\\.\\d+)?$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "currency": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "platform": {
+              "type": "string",
+              "minLength": 1
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1
+            },
+            "as_of": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provenance": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "enum": [
+                          "game",
+                          "factory"
+                        ]
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "const": "game_git"
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "revision": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40,64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256",
+                      "revision"
+                    ]
+                  }
+                ]
+              },
+              "minItems": 0
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            },
+            "adoption": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "source": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "scope": {
+                              "enum": [
+                                "game",
+                                "factory"
+                              ]
+                            },
+                            "path": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sha256": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{64}$"
+                            }
+                          },
+                          "required": [
+                            "scope",
+                            "path",
+                            "sha256"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "scope": {
+                              "const": "game_git"
+                            },
+                            "path": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sha256": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{64}$"
+                            },
+                            "revision": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{40,64}$"
+                            }
+                          },
+                          "required": [
+                            "scope",
+                            "path",
+                            "sha256",
+                            "revision"
+                          ]
+                        }
+                      ]
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "quote"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "grounding",
+            "amount",
+            "currency",
+            "platform",
+            "region",
+            "as_of",
+            "provenance",
+            "rationale",
+            "adoption"
+          ]
+        },
+        "audience": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "grounding": {
+              "enum": [
+                "GROUNDED",
+                "HYPOTHESIS",
+                "UNKNOWN"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provenance": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "enum": [
+                          "game",
+                          "factory"
+                        ]
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "const": "game_git"
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "revision": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40,64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256",
+                      "revision"
+                    ]
+                  }
+                ]
+              },
+              "minItems": 0
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "grounding",
+            "description",
+            "provenance",
+            "rationale"
+          ]
+        }
+      },
+      "required": [
+        "offer",
+        "audience"
+      ]
+    },
+    "judgment": {
+      "enum": [
+        "SUPPORTED",
+        "VALUE_GAP",
+        "EVIDENCE_INSUFFICIENT",
+        "CONTEXT_UNRESOLVED"
+      ]
+    },
+    "qualifications": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "next_move": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "what_would_change_judgment": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "action",
+        "owner",
+        "reason",
+        "what_would_change_judgment"
+      ]
+    },
+    "mechanical_status": {
+      "const": "RECORD_VALID"
+    },
+    "value_claim_eligible": {
+      "type": "boolean"
+    },
+    "user_accepted": {
+      "const": false
+    },
+    "delivery_eligible": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "assessment_id",
+    "assessment",
+    "reviews",
+    "dependencies",
+    "mandatory_authority",
+    "authority",
+    "subject",
+    "claim_scope",
+    "judgment",
+    "qualifications",
+    "next_move",
+    "mechanical_status",
+    "value_claim_eligible",
+    "user_accepted",
+    "delivery_eligible"
+  ]
+}

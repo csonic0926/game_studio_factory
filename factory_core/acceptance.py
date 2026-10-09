@@ -8,6 +8,9 @@ def validate(roots, record, design, ref):
     if not ref:
         fail("SPECIALIST_ACCEPTANCE_REQUIRED", "exact specialist acceptance reference required")
     path = resolve_ref(roots, ref)
+    if design["capability"] == "product":
+        from product.value import validate_acceptance
+        return validate_acceptance(roots, record, design, ref)
     if design["capability"] == "story":
         from story.v2 import validate_acceptance
         return validate_acceptance(roots, record, design, ref)

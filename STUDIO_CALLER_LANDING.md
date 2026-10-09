@@ -7,6 +7,7 @@ It is read-only: version, history, current checkpoints, blockers and legal actio
 | Responsibility | Entry | Capability rules |
 |---|---|---|
 | whole playable game | game-studio-factory | studio/docs/WORKFLOW_V2.md |
+| whole-product value / worth its price | product-factory | product/docs/VALUE_ASSESSMENT_WORKFLOW.md |
 | product exploration/commission | idea-factory | idea/docs/PRODUCT_DEFINITION_WORKFLOW.md |
 | gameplay/progression/repair | gameplay-factory | gameplay/docs/WORKFLOW_V2.md |
 | world/character/cast/chapter/branch and narrative tools | game-story-factory | story/docs/WORKFLOW_V2.md |

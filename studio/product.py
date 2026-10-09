@@ -801,7 +801,16 @@ def main(argv: list[str] | None = None) -> int:
     activate.add_argument("--alignment-input", required=True)
     activate.add_argument("--alignment-review", required=True)
     activate.add_argument("--recorded-at", required=True)
+    value_check = sub.add_parser("check-value", help="read-only exact-build Product value-claim gate")
+    value_check.add_argument("--game-repo", required=True)
+    value_check.add_argument("--result", required=True)
+    value_check.add_argument("--build", required=True)
     args = parser.parse_args(argv)
+    if args.command == "check-value":
+        # Lifecycle ownership stays here; judgment and validation belong to the
+        # peer Product Factory. This does not activate/archive/admit anything.
+        from product.product import main as product_main
+        return product_main(["gate", "--game-repo", args.game_repo, "--result", args.result, "--build", args.build])
     try:
         if args.command == "status":
             result = product_authority_status(args.game_repo)

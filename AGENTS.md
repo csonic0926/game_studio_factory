@@ -24,7 +24,7 @@ its specialist **Game AI Factories**.
 
 ```text
 Game Studio Factory   = autonomous whole-game operator
-Game AI Factories     = idea / gameplay / story / asset / sound capabilities
+Game AI Factories     = idea / product / gameplay / story / asset / sound capabilities
 ```
 
 1. Read [`STUDIO_CALLER_LANDING.md`](STUDIO_CALLER_LANDING.md).
@@ -48,6 +48,7 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
 Specialist entry points:
 
 - `idea/` → skill `idea-factory`, `idea/AGENTS.md`
+- `product/` → skill `product-factory`, `product/AGENTS.md`
 - `gameplay/` → skill `gameplay-factory`, `gameplay/AGENTS.md`
 - `story/` → skill `game-story-factory`, `story/AGENTS.md`
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`

@@ -37,3 +37,22 @@ GPT-6 opt-in is explicit: `migrate --workflow gpt6 --check`, then authorized
 `context --method <id>` loads a specific optional technique; selected methods
 belong in the sealed design. Read the selected checkout's skill, not a conflicting
 installed copy. `--project-root` aliases `--game-repo`, including pure Story.
+
+## Whole-product value supervision
+
+Before claiming the integrated game justifies its price, invoke the peer
+`product-factory` and read `product/docs/VALUE_ASSESSMENT_WORKFLOW.md`. Reconstruct
+the current/adopted offer and buyer; encounter the value-bearing experience,
+seek decisive contrary evidence, and use the weakest causal value link to choose
+the next authorized repair or justified stopping point. Art, replay, closure and
+surrounding affordances contribute to one purchase; no additive score or default
+content expansion applies. Refresh external price sources before a new claim.
+
+Consume the reviewed exact-build result with `studio/product.py check-value
+--game-repo <GAME> --result <PRODUCT_RESULT> --build <BUILD_OR_MANIFEST>`. Preserve
+its exact offer/audience/provenance and conditionality in the user-facing answer.
+A proposed/scenario price is not the current/adopted offer. Negative/unknown
+assessment is useful work, not authority to change product direction. Return
+material promise/price/audience changes to Idea/USER and bounded execution to its
+owner. Product does not alter Studio activation/archive, gameplay/human verdicts
+or baseline admission. A playable baseline alone never proves whole-product value.

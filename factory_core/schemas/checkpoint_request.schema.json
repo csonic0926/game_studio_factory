@@ -16,6 +16,7 @@
     "capability": {
       "enum": [
         "idea",
+        "product",
         "studio",
         "gameplay",
         "story",

@@ -1,6 +1,6 @@
 # Product Factory: whole-product value gate
 
-Design for independent review, 2026-10-09. Base: gpt-6-adaptation
+Revised design for independent review, 2026-10-09. Base: gpt-6-adaptation
 b3eb3ae9ec4379e92be687780f92cf0851f1f3e3. No implementation is authorized by
 this document itself. This is reusable Factory work, not a game-owned approval.
 
@@ -79,6 +79,17 @@ assessment with a failed tool execution.
 
 ## 3. User-facing operating behavior
 
+The normal trigger is a producer/author saying the game is done, sufficiently
+polished, or ready to justify its offer, or Studio needing the highest-value next
+improvement. Product actively reconstructs the offer and intended buyer, encounters
+the whole relevant artifact, challenges the strongest material untested claim,
+and identifies the weakest causal link in the purchase case. It is recurring
+producer supervision at meaningful product boundaries, not merely a receipt
+checker after someone else has already decided the verdict. After an authorized
+repair, reassess whether the buyer's experience actually improved; stop expanding
+scope once the coherent promise is credibly delivered. Do not turn every reply or
+minor edit into a new review ritual.
+
 1. Resolve one explicit game. Read its current authority and known intended offer.
    Discover actual target price/platform/region/audience from authoritative
    material; separate current offer, user-proposed offer and AI scenario. Missing
@@ -89,19 +100,31 @@ assessment with a failed tool execution.
    evidence; supplement it where the current value claim is untested. Inspect
    pixels/audio when those qualities matter. A screenshot's existence or
    non-overlapping controls is not aesthetic polish or purchase desirability.
+   Deliberately seek the most decisive contrary experience. If the promise rests
+   on replay/mastery, an excellent opening is insufficient; if it rests on a
+   satisfying authored ending, encounter that arc/closure. The scope of actual
+   experience must reach whatever carries the value thesis, rather than satisfy
+   a fixed session or hour quota. Unobserved central promises remain material
+   unknowns even when the available footage is excellent.
 3. Write one concise but complete value case: why this coherent experience might
    justify this offer, what is actually delivered, its strongest contrary
    evidence, important tradeoffs/omissions, what remains unknown, and the next
    decisive test or recommendation. Use comparisons only when they discriminate
    the real question, with current primary sources and explicit comparability
-   limits. No comparison quota or feature extraction obligation.
+   limits. No comparison quota or feature extraction obligation. A meaningful
+   sacrifice states the protected benefit and its buyer cost, not merely a list
+   of missing features. Removing an expensive or distracting feature can improve
+   value. Prioritize the smallest decisive repair/test of the weakest value link,
+   including preserving strengths, rather than expanding everything at once.
 4. At a concluded assessment boundary, get two fresh independent reviews of the
    same exact assessment/evidence package: intent/experience (does the causal
    value case hold?) and completeness/project (is evidence/authority/scope honest
    and sufficient?). Neither sees the peer's first-pass conclusions. Preserve
    disagreements and revise/review a new version; never average them into PASS.
    Existing sanitized blind observations stay blind; these value reviewers are
-   explicitly informed and cannot be represented as blind players.
+   explicitly informed and cannot be represented as blind players. Both must
+   challenge biased evidence selection and identify the strongest untested
+   material claim; complete source coverage alone is not sufficient experience.
 5. Record a supported, gap, insufficient-evidence or unresolved-context judgment.
    Deliver the useful verdict in ordinary language with price/audience/build
    qualifiers. A gap can recommend better integration, removal, refinement,
@@ -143,19 +166,27 @@ CLI surface:
   authority membership and all review bindings, retaining the semantic verdict.
 - `gate --game-repo --result --build <path>`: additionally require the exact
   build/manifest requested by the consumer, grounded offer context and a
-  supported judgment. Any gap, unknown, hypothetical-only context, stale source
-  or rejected review fails closed. Return a value-claim status only, never a
-  gameplay/baseline/user-acceptance status.
+  supported judgment about a CURRENT_OFFER or explicitly ADOPTED_OFFER, with
+  grounded price/audience and no unresolved material conditionality. PROPOSED_OFFER
+  and SCENARIO assessments can record/check but never pass this current/adopted
+  offer gate, even when their price proposal comes from a real USER source. A
+  USER proposal to try $5 while the live offer remains $20 is not adoption.
+  Any gap, unknown, conditional proposal/scenario, stale source or rejected review
+  fails closed. Return the exact amount/currency/platform/region, audience,
+  offer status and their provenance with the claim, including on a blocked gate.
+  This is value-claim status only, never gameplay/baseline/user-acceptance status.
 
 `product_value_assessment.v1` is a bounded evidence index plus authored prose:
 identity, author context, subject/build ref (nullable if unavailable), offer
-(price amount/currency/platform/region and provenance, current/proposed/scenario
+(price amount/currency/platform/region and provenance, CURRENT_OFFER/ADOPTED_OFFER/PROPOSED_OFFER/SCENARIO
 qualification), audience and provenance, evidence records with exact refs,
 runtime evidence tied to subject build, full value-case report ref, judgment,
 open questions/limitations and next move. Price/audience use explicit grounded,
 hypothesis or unknown states; unknowns cannot yield an unconditional supported
-claim. Proposed offers can be reviewed but remain clearly conditional; a
-scenario cannot silently become the active price. No scores, category weights,
+claim. Proposed offers can be reviewed but remain clearly conditional in the result
+and every consumer response; a grounded proposal is still a proposal. Only a
+current offer or explicit adoption source establishes the actual offer under
+which support can gate. A scenario cannot silently become the active price. No scores, category weights,
 minimum playtime or mandatory replay count.
 
 The full report remains human prose and supplies purchase promise, experiential
@@ -203,6 +234,18 @@ source artifacts before use. Concurrent edits are rechecked before publication.
   ledger task closes only with a checked exact Product result; completion means
   assessment completed, not product supported. Result files must be among that
   task's actual outputs. No generic PASS becomes specialist acceptance.
+  Add a Product-only binding to the shared design: assessment id, expected subject
+  build/manifest reference (nullable when unavailable), exact expected offer and
+  audience objects, expected result path, and nonempty required output paths.
+  These are reviewed in the sealed design and included in dependency closure.
+  Required outputs (at least assessment input, full report and result) must be
+  within approved production_scope. The acceptance adapter compares the result's
+  assessment identity, subject, offer and audience exactly with this binding,
+  requires its result path to match, and verifies each required output's current
+  reference is actually included in the evidence-ready checkpoint artifacts.
+  A valid same-game result for another assessment/offer/build cannot substitute;
+  nor can a missing promised output be excused by a valid result receipt. This
+  binding is irrelevant to existing non-Product designs, which keep their shape.
 - Update root caller index, architecture and setup-generated specialist routing.
   Existing automatic skill discovery finds the new skill. Do not run install,
   relink or migration on any real consumer.
@@ -236,7 +279,10 @@ whether the workflow would make the right contextual judgment:
 5. Unknown target price/audience: remains CONTEXT_UNRESOLVED; cannot infer a price,
    import the released price as redesign adoption, or issue unconditional support.
 6. Hypothetical different price/audience: conditionally reasoned scenario does not
-   overwrite authority or pass the current-offer gate.
+   overwrite authority or pass the current-offer gate. A fully sourced USER
+   proposed $5 price while the current price is $20 also records conditionally
+   but fails that gate; only later explicit adoption/current-offer evidence can
+   establish a newly scoped assessment. All gate outputs retain exact offer scope.
 7. Pure build/QA success, screenshots, time counters or feature totals do not
    substitute for exact experiential evidence or sound reviewer judgment.
 8. Reviewer disagreement, author/self-review, peer contamination, incomplete
@@ -248,6 +294,14 @@ whether the workflow would make the right contextual judgment:
 10. Additive capability routing/context/checkpoint/acceptance works on explicit
     v2/v3 fixtures; legacy standalone assessment needs no migration. Existing
     Studio activate/archive, Idea no-fit/commission and baseline behavior remains.
+11. A polished opening conceals an unobserved central replay/closure promise:
+    reviewers reject unqualified support despite nonempty runtime references.
+12. Removing a costly distracting feature improves a small coherent offer:
+    reviewers permit support based on the preserved benefit and honest buyer cost,
+    without demanding replacement content or higher production spend.
+13. A valid same-game assessment for the wrong sealed assessment id, subject,
+    offer/audience or result path cannot complete a Product ledger task. Omission
+    of any design-required output from actual checkpoint artifacts also blocks it.
 
 Run focused Product tests then full entry/setup, factory_core, Studio, Gameplay,
 Idea suites, plus Asset/Sound regressions affected by shared routing. Separate

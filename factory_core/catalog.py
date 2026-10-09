@@ -4,9 +4,10 @@ from __future__ import annotations
 from pathlib import Path
 from .refs import confined, fail, reference, unique_refs
 
-CAPABILITIES = ("idea", "studio", "gameplay", "story", "asset", "sound")
+CAPABILITIES = ("idea", "product", "studio", "gameplay", "story", "asset", "sound")
 STORY_TASKS = ("world", "character", "cast", "chapter", "branch", "craft", "beat-sheet", "delivery", "twin", "rules")
 DOCS = {
+    "product": ["product/docs/VALUE_ASSESSMENT_WORKFLOW.md"],
     "idea": ["idea/docs/PRODUCT_DEFINITION_WORKFLOW.md"],
     "studio": ["studio/docs/WORKFLOW_V2.md", "studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md",
                "studio/docs/BASELINE_ADMISSION_WORKFLOW.md", "studio/docs/PRODUCT_AUTHORITY_LIFECYCLE.md"],
@@ -68,6 +69,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
         for subdir in ("pipeline", "scripts", "godot_engine", "blender"):
             paths.update(p.relative_to(factory).as_posix() for p in (factory / dept / subdir).rglob("*")
                          if p.is_file() and p.suffix in (".py", ".gd", ".json", ".gdshader") and "__pycache__" not in p.parts)
+    if capability == "product":
+        paths.update(("studio/product.py", "studio/alignment.py"))
     # Domain sources in the mapped rule registry are part of validity, even
     # when a specialist method loads them only at the relevant boundary.
     from .refs import read_json

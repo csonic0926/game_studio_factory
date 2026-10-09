@@ -28,6 +28,7 @@ studio/       whole-game operator
   Autonomous Production Loop
 
 idea/         product direction capability
+product/      whole-product value judgment / exact-offer claim gate
 gameplay/     progression/new-system/repair/UI/evidence capability
 story/        narrative capability
 asset/        visual-asset capability
@@ -70,6 +71,7 @@ callable:
 
 ```text
 Use Idea Factory to decide what product this should become.
+Use Product Factory to judge whether this whole game earns its price.
 Use Gameplay Factory to continue the next objective.
 Use Gameplay Factory to repair this broken gameplay step.
 Use Story Factory to produce the next chapter.

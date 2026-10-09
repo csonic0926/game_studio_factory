@@ -14,6 +14,7 @@
     "capability": {
       "enum": [
         "idea",
+        "product",
         "studio",
         "gameplay",
         "story",
@@ -371,6 +372,410 @@
         "spoken_output_paths",
         "scope_evidence"
       ]
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assessment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "build": {
+              "anyOf": [
+                {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "scope": {
+                          "enum": [
+                            "game",
+                            "factory"
+                          ]
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      },
+                      "required": [
+                        "scope",
+                        "path",
+                        "sha256"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "scope": {
+                          "const": "game_git"
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{40,64}$"
+                        }
+                      },
+                      "required": [
+                        "scope",
+                        "path",
+                        "sha256",
+                        "revision"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "title",
+            "build"
+          ]
+        },
+        "offer": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "CURRENT_OFFER",
+                "ADOPTED_OFFER",
+                "PROPOSED_OFFER",
+                "SCENARIO",
+                "UNKNOWN"
+              ]
+            },
+            "grounding": {
+              "enum": [
+                "GROUNDED",
+                "HYPOTHESIS",
+                "UNKNOWN"
+              ]
+            },
+            "amount": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d+(?:\\.\\d+)?$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "currency": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "platform": {
+              "type": "string",
+              "minLength": 1
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1
+            },
+            "as_of": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provenance": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "enum": [
+                          "game",
+                          "factory"
+                        ]
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "const": "game_git"
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "revision": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40,64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256",
+                      "revision"
+                    ]
+                  }
+                ]
+              },
+              "minItems": 0
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            },
+            "adoption": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "source": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "scope": {
+                              "enum": [
+                                "game",
+                                "factory"
+                              ]
+                            },
+                            "path": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sha256": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{64}$"
+                            }
+                          },
+                          "required": [
+                            "scope",
+                            "path",
+                            "sha256"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "scope": {
+                              "const": "game_git"
+                            },
+                            "path": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sha256": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{64}$"
+                            },
+                            "revision": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{40,64}$"
+                            }
+                          },
+                          "required": [
+                            "scope",
+                            "path",
+                            "sha256",
+                            "revision"
+                          ]
+                        }
+                      ]
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "quote"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "grounding",
+            "amount",
+            "currency",
+            "platform",
+            "region",
+            "as_of",
+            "provenance",
+            "rationale",
+            "adoption"
+          ]
+        },
+        "audience": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "grounding": {
+              "enum": [
+                "GROUNDED",
+                "HYPOTHESIS",
+                "UNKNOWN"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provenance": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "enum": [
+                          "game",
+                          "factory"
+                        ]
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "const": "game_git"
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "revision": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{40,64}$"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "path",
+                      "sha256",
+                      "revision"
+                    ]
+                  }
+                ]
+              },
+              "minItems": 0
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "grounding",
+            "description",
+            "provenance",
+            "rationale"
+          ]
+        },
+        "result_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_output_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 3,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "assessment_id",
+        "subject",
+        "offer",
+        "audience",
+        "result_path",
+        "required_output_paths"
+      ]
     }
   },
   "required": [
@@ -386,5 +791,28 @@
     "requirements",
     "production_scope",
     "acceptance"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "capability": {
+            "const": "product"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "product"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "product"
+          ]
+        }
+      }
+    }
   ]
 }

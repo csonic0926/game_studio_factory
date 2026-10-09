@@ -124,7 +124,7 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
     keys(d, {"schema_version", "design_id", "capability", "task", "author_context_id", "intent",
-             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "methods", "decision_sections"})
+             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections"})
     version = project(roots["game"])["workflow_version"]
     if version == 3 and d['schema_version'] == 'factory_design.v2':
         fail('HISTORICAL_WORKFLOW_REQUIRED', 'v2 work is historical; continue with a new v3 task/design, not rewritten approval')
@@ -202,6 +202,9 @@ def load_design(roots: dict, ref: dict) -> dict:
                 fail('INVALID_DESIGN', 'standalone Story cannot claim engine output; adopt an explicit game adapter first')
     elif version == 3 and d['capability'] == 'story':
         fail('INVALID_DESIGN', 'v3 Story requires explicit spoken/runtime applicability and scope evidence')
+    if "product" in d or d["capability"] == "product":
+        from product.value import validate_design_binding
+        validate_design_binding(roots, d)
     if d["capability"] in ("studio", "gameplay"):
         from gameplay.v2 import validate_design
         validate_design(roots, d)

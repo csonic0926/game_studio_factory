@@ -121,6 +121,9 @@ def context(roots: dict, capability: str, task: str, role="author", task_id=None
         contracts[0] = 'design_v3.schema.json'
         if capability == 'story': contracts[-1] = 'story_output_acceptance_v3.schema.json'
     result["contracts"]=[reference(factory,"factory_core/schemas/"+name,"factory") for name in contracts]
+    if capability == "product":
+        result["contracts"] += [reference(factory, "product/schemas/" + name, "factory") for name in
+            ("assessment.schema.json", "review.schema.json", "result.schema.json")]
     refs = authority_refs(game, capability, p["authority_paths"])
     refs += [reference(factory, name, "factory") for name in ([WORKFLOW, *docs(capability)] if native else ["factory_core/docs/WORKFLOW.md", *DOCS[capability]])]
     for ref in unique_refs(refs):

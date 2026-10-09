@@ -1,0 +1,44 @@
+{
+  "schema_version": "product_value_assessment.v1",
+  "assessment_id": "assessment-id",
+  "author_context_id": "actual-author-context",
+  "subject": {
+    "title": "Exact game under assessment",
+    "build": null
+  },
+  "offer": {
+    "status": "UNKNOWN",
+    "grounding": "UNKNOWN",
+    "amount": null,
+    "currency": null,
+    "platform": "Unresolved",
+    "region": "Unresolved",
+    "as_of": "Not established",
+    "provenance": [],
+    "rationale": "Target offer has not been established",
+    "adoption": null
+  },
+  "audience": {
+    "grounding": "UNKNOWN",
+    "description": "Intended buyer is unresolved",
+    "provenance": [],
+    "rationale": "Do not invent an audience to fill the schema"
+  },
+  "report": {
+    "scope": "game",
+    "path": "design/product_value/assessment-id/PRODUCT_VALUE_REPORT.md",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "evidence": [],
+  "judgment": "CONTEXT_UNRESOLVED",
+  "material_unknowns": [
+    "Target offer and intended buyer"
+  ],
+  "conditionality": [],
+  "next_move": {
+    "action": "Resolve the smallest decisive context question",
+    "owner": "USER/Idea",
+    "reason": "The purchase proposition is not yet grounded",
+    "what_would_change_judgment": "Exact offer and buyer context plus relevant experience"
+  }
+}

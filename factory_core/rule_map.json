@@ -1475,6 +1475,42 @@
         "completeness_project"
       ],
       "disposition": "boundary_review"
+    },
+    {
+      "id": "product.whole_experience_earns_offer",
+      "source": "product/docs/VALUE_ASSESSMENT_WORKFLOW.md",
+      "capabilities": [
+        "product"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "product.contrary_experience_and_sacrifices",
+      "source": "product/docs/VALUE_ASSESSMENT_WORKFLOW.md",
+      "capabilities": [
+        "product"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "product.authority_and_uncertainty_preserved",
+      "source": "product/docs/VALUE_ASSESSMENT_WORKFLOW.md",
+      "capabilities": [
+        "product"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
     }
   ]
 }
