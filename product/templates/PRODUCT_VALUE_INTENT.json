@@ -1,0 +1,33 @@
+{
+  "schema_version": "product_value_intent.v1",
+  "state": "OPEN",
+  "source_refs": [],
+  "offer": {
+    "status": "UNKNOWN",
+    "grounding": "UNKNOWN",
+    "amount": null,
+    "currency": null,
+    "platform": "Unresolved",
+    "region": "Unresolved",
+    "as_of": "Not established",
+    "provenance": [],
+    "rationale": "Target offer has not been established",
+    "adoption": null
+  },
+  "audience": {
+    "grounding": "UNKNOWN",
+    "description": "Intended buyer is unresolved",
+    "provenance": [],
+    "rationale": "Do not invent an audience to fill the schema"
+  },
+  "buying_reason": null,
+  "adequacy_case": null,
+  "value_hypotheses": [],
+  "material_unknowns": [
+    "The intended whole purchase and its decisive value hypothesis have not yet been authored"
+  ],
+  "next_move": "Read linked Idea sources and current authority; articulate the provisional whole-value reason and smallest useful test. Preserve unknowns; do not wait for a finished build.",
+  "current_build_assessment": "NOT_ASSESSED",
+  "value_claim_eligible": false,
+  "authority_granted": false
+}

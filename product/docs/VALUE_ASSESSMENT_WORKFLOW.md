@@ -1,5 +1,16 @@
 # Product Factory: judge the coherent purchase
 
+## Start before there is a build
+
+Game initialization establishes both Idea work and a separate nonbinding
+Product value intent through `setup.py init`. Read
+[PROJECT_INITIALIZATION_WORKFLOW.md](PROJECT_INITIALIZATION_WORKFLOW.md).
+Author the provisional whole buying reason, contextual adequacy case, hypotheses
+and smallest useful next observation from current sources and delegated scope.
+An empty seed is not that analysis. Unknowns and scenario prices are legitimate;
+no build, invented play, current-offer PASS or new price-adoption gate is required
+for early learning. Intent cannot replace Idea commission or later assessment.
+
 ## The job
 
 When a producer says “done,” “polished enough,” or “worth its price,” reconstruct

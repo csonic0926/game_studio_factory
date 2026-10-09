@@ -42,6 +42,13 @@ Factory workflow clauses in project sync/authoring documents; all their project
 quality obligations and exact pending/historical rulings remain intact.
 Card views project one design. Existing authorized repairs do not reopen design.
 
+
+Game initialization uses setup.py init, establishing both Idea and Product intent.
+Read design/product_value/PRODUCT_VALUE_INTENT.json as nonbinding planning context;
+product-factory owns this early value target and later whole-product assessment.
+Reconcile changed Idea sources and bind used intent as an explicit design input.
+It never replaces commission, production approval or actual-build value evidence.
+
 Product adoption, material design approval and exact-build human playtest remain
 USER-owned. Idea exploration may remain open or no-fit. Root/project rules,
 product lifecycle, gameplay standards and story sovereignty still bind.

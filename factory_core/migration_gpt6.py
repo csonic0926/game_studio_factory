@@ -39,6 +39,13 @@ One complete design receives two fresh independent reviews of the same version.
 The human decision view projects that design, not another author/spec.
 Continue fixing FAILs within authority; material changes return for USER ruling.
 
+
+Game initialization uses setup.py init, establishing both Idea and Product intent.
+Read design/product_value/PRODUCT_VALUE_INTENT.json as nonbinding planning context;
+product-factory owns this early value target and later whole-product assessment.
+Reconcile changed Idea sources and bind used intent as an explicit design input.
+It never replaces commission, production approval or actual-build value evidence.
+
 Product adoption, material design approval and gameplay acceptance remain USER
 owned. Blind runtime observation and informed comparison remain isolated.
 Technical success is not gameplay acceptance. Only new gameplay acceptance,

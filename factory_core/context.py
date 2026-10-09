@@ -84,6 +84,8 @@ def inspect(roots: dict, task_id: str | None = None) -> dict:
     except FactoryError as exc:
         result["status"] = exc.code
         result["blockers"].append({"code": exc.code, "message": str(exc)})
+    from product import intent
+    result["product_intent"] = intent.inspect(roots)
     return result
 
 
@@ -129,6 +131,9 @@ def context(roots: dict, capability: str, task: str, role="author", task_id=None
     for ref in unique_refs(refs):
         result["constraints"].append(source_view(roots,ref))
     if role == "author":
+        if capability in ("idea", "studio", "gameplay", "product"):
+            from product import intent
+            result["product_intent"] = intent.inspect(roots)
         result["work"] = ({k: record[k] for k in ("stage", "summary", "unresolved", "artifacts")} if record else None)
         result["previous"] = previous
         if native:

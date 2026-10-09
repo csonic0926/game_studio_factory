@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Game Studio Factory setup — skill installation and game-repo routing link.
 
-Dependency-free. Two public subcommands:
+Dependency-free. Public subcommands:
 
   install  Install/refresh factory-provided skills into agent-harness skill
            directories. Symlink-first: with symlinks, `git pull` on this
@@ -10,6 +10,9 @@ Dependency-free. Two public subcommands:
            copied skills are tracked in a per-target manifest and re-running
            `install` refreshes them. Only entries owned by this factory are
            ever touched. `sync` remains a compatibility alias.
+
+  init   Establish routing plus Idea exploration and nonbinding Product value intent.
+         Safe to resume; never commissions, migrates or accepts the game.
 
   link   Write the harness-agnostic Game Studio Factory routing block into a
          game repo: a git-ignored local pointer file with this machine's
@@ -286,6 +289,9 @@ def render_routing_block():
         "  justifies its price, or to identify the most decisive value repair.\n"
         "  A playable baseline is not a paid-value verdict; Product cannot\n"
         "  change commission, price, audience or USER acceptance.\n"
+        "  At initialization run `setup.py init`; read the nonbinding\n"
+        "  `design/product_value/PRODUCT_VALUE_INTENT.json` before material planning.\n"
+        "  Bind it as an explicit design input when used; it never supplies acceptance.\n"
         "- **story** — narrative premises, world/character/chapter text, staged\n"
         "  scenes, dialogue keys. Use the `game-story-factory` skill if your\n"
         "  harness has it installed; otherwise read\n"
@@ -434,6 +440,45 @@ def _link_game_repo(factory_root, game_repo, dry_run=False):
     return report
 
 
+
+def initialize_game_repo(factory_root, game_repo, dry_run=False):
+    """Establish both planning owners; preserve all existing author/authority work."""
+    from pathlib import Path
+    from factory_core.refs import game_root, reference
+    from factory_core.state import project_lock
+    from product import intent
+    from idea.idea import start_idea_factory, IdeaFactoryError
+    roots = {"game": game_root(game_repo, Path(factory_root)), "factory": Path(factory_root).resolve()}
+    # First preflight has no writer lock side effect; repeat under the lock.
+    intent.preflight(roots, routing=True)
+
+    def run():
+        intent.preflight(roots, routing=True)
+        routing = _link_game_repo(str(roots["factory"]), str(roots["game"]), dry_run=dry_run)
+        existing = intent.source_refs(roots)
+        if existing:
+            idea = {"status": "EXISTING_IDEA_WORK_PRESERVED", "artifacts": existing,
+                    "meaning": "Presence only, not revalidation or commission; continue Idea's normal checks"}
+        elif dry_run:
+            idea = {"status": "IDEA_INITIALIZATION_PLANNED", "artifacts": [],
+                    "planned_paths": [intent.IDEA_PATHS[0]]}
+        else:
+            result = start_idea_factory(str(roots["game"]))
+            if result.errors:
+                raise IdeaFactoryError("; ".join(result.errors))
+            idea = {"status": result.status, "artifacts": intent.source_refs(roots)}
+        product = intent.seed(roots, dry_run=dry_run)
+        return {"status": "PROJECT_INITIALIZATION_PLANNED" if dry_run else "PROJECT_INITIALIZED",
+                "routing": routing, "idea": idea, "product": product, "dry_run": dry_run,
+                "authority_granted": False, "value_claim_eligible": False,
+                "next_action": "Continue Idea exploration and author Product intent; preserve unknowns and existing authority"}
+
+    if dry_run:
+        return run()
+    with project_lock(roots["game"]):
+        return run()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -452,7 +497,21 @@ def main(argv=None):
     link_parser.add_argument("--game-repo", "--project-root", dest="game_repo", required=True)
     link_parser.add_argument("--dry-run", action="store_true")
 
+    init_parser = sub.add_parser("init", help="initialize Idea plus nonbinding Product value intent")
+    init_parser.add_argument("--game-repo", "--project-root", dest="game_repo", required=True)
+    init_parser.add_argument("--dry-run", action="store_true")
+
     args = parser.parse_args(argv)
+    if args.command == "init":
+        from factory_core.refs import FactoryError
+        from idea.idea import IdeaFactoryError
+        try:
+            result = initialize_game_repo(FACTORY_ROOT, args.game_repo, dry_run=args.dry_run)
+            print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+            return 0
+        except (FactoryError, IdeaFactoryError, OSError, ValueError, KeyError, TypeError) as exc:
+            print(json.dumps({"status": getattr(exc, "code", "INITIALIZATION_BLOCKED"), "message": str(exc)}))
+            return 2
     if args.command in {"install", "sync"}:
         targets = args.target if args.target else DEFAULT_SKILL_TARGETS
         lines = sync_skills(FACTORY_ROOT, targets, copy=args.copy, dry_run=args.dry_run)

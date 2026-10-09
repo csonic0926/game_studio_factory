@@ -1,13 +1,58 @@
 ---
 name: product-factory
-description: Judge whether the experienced whole game earns its actual price for its intended buyer. Challenge done/polished claims, seek decisive contrary experience, prioritize coherent value improvements and preserve honest unknowns. Not a feature score or release checklist.
+description: Form nonbinding whole-offer value intent from project initialization, then judge whether the experienced game earns its offer for its buyer. Preserve hypotheses and unknowns, challenge done/polished claims and choose bounded value improvements. Not a feature score or release checklist.
 ---
 
 Resolve the explicit game and selected Factory source; never scan sibling games.
-Read product/AGENTS.md and product/docs/VALUE_ASSESSMENT_WORKFLOW.md. Run
-product/product.py inspect --game-repo <GAME>. On explicitly versioned work, also
-use factory.py inspect/context --capability product --task assessment with the
-selected checkout. A legacy standalone assessment needs no migration or relink.
+Read product/AGENTS.md, product/docs/PROJECT_INITIALIZATION_WORKFLOW.md and
+product/docs/VALUE_ASSESSMENT_WORKFLOW.md. Run product/product.py inspect
+--game-repo <GAME>. On explicitly versioned work, also use factory.py
+inspect/context --capability product with the actual task (assessment for an
+assessment) and selected checkout. Unversioned standalone intent/exploration and
+historical assessments need no migration, relink or new commission. Missing intent
+does not invalidate an otherwise valid legacy assessment.
+
+## Early intent and bounded learning
+
+For new-game initialization use setup.py init; for additive intent in an existing
+Idea-only game use product/product.py start --game-repo <GAME>. These preserve
+existing authored work. Continue beyond seed creation:
+
+1. Read the exact Idea sources and live lifecycle surfaced by inspection. Separate
+   canonical authority from nonbinding exploration and Product intent. A partial
+   or archived direction is not currently active merely because files exist.
+2. Author design/product_value/PRODUCT_VALUE_INTENT.json with a provisional buying
+   reason, adequacy case, identified value hypotheses, material unknowns and the
+   smallest useful next test. Explain why the coherent whole could matter to its
+   buyer, what observed benefit would be enough and what would defeat the case.
+   Art, replay and supporting functions matter through that promise, not a quota.
+3. Preserve honest UNKNOWN/null context or use an explicit conditional offer/buyer
+   scenario within delegated scope. Every value_hypotheses entry remains a
+   hypothesis. OPEN or DRAFTED is not approval. Do not ask USER to adopt a price or
+   audience just to fill fields, and do not demand a build/actual play to author
+   intent. Keep NOT_ASSESSED/false claim eligibility/false authority fixed for this
+   planning artifact even when separate assessments exist.
+4. Reinspect after authoring. RECONCILIATION_REQUIRED means actually read the
+   changed/new/missing Idea sources, reconsider the hypotheses and unknowns, then
+   deliberately update exact references. Never silently reset an authored intent
+   or rehash old reviews/rulings. Bind used intent as an explicit exact input to
+   any material design, not an authority path or experience evidence.
+5. Report the useful hypothesis/frontier and next development experiment, and
+   continue already authorized learning/production. File creation alone is not
+   value analysis. A meaningful build alone introduces no whole-product report,
+   independent-assessment-review or claim gate. No fixed staged-call protocol.
+
+Idea retains post-frontier commission; Studio retains activation/archive and
+baseline admission. An intent cannot serve as an assessment result, prove an
+unbuilt game's value or change an adopted promise. Real material decisions still
+follow their existing authority/review boundary.
+
+## Assess actual whole-product value
+
+At the existing whole-product stopping/price-value boundaries, or for a requested
+assessment, follow the experience-based workflow. Before a paid-value claim use
+the existing exact-build current/adopted-offer gate. A failed/inapplicable gate
+never blocks authorized scenario learning or production.
 
 Operate before recording:
 1. Reconstruct the actual/current or explicitly adopted offer and intended buyer.

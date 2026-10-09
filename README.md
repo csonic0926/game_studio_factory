@@ -28,7 +28,7 @@ studio/       whole-game operator
   Autonomous Production Loop
 
 idea/         product direction capability
-product/      whole-product value judgment / exact-offer claim gate
+product/      early whole-value intent / experienced value judgment / claim gate
 gameplay/     progression/new-system/repair/UI/evidence capability
 story/        narrative capability
 asset/        visual-asset capability
@@ -54,10 +54,15 @@ Then open a target game repo and say:
 Init Game Studio Factory in this repo.
 ```
 
-The installed `init-game-studio-factory` skill writes a git-ignored local
-checkout pointer and one managed routing block while preserving existing agent
-instructions. The old `init-game-ai-factory` name remains a compatibility
-alias.
+The installed `init-game-studio-factory` skill runs `setup.py init`: it writes a
+git-ignored local checkout pointer and managed routing block, establishes missing
+Idea work, and seeds nonbinding Product value intent while preserving existing
+instructions and authored work. It then continues into bounded Idea exploration
+and real whole-offer value hypotheses, unknowns and a useful next experiment.
+Unknown buyer/price and explicit scenarios are legal; initialization grants no
+commission, acceptance or production authority. The old `init-game-ai-factory`
+name remains a compatibility alias. See
+[the initialization workflow](product/docs/PROJECT_INITIALIZATION_WORKFLOW.md).
 
 For whole-game production:
 
@@ -71,6 +76,7 @@ callable:
 
 ```text
 Use Idea Factory to decide what product this should become.
+Use Product Factory to establish the early whole-value hypotheses.
 Use Product Factory to judge whether this whole game earns its price.
 Use Gameplay Factory to continue the next objective.
 Use Gameplay Factory to repair this broken gameplay step.
@@ -82,8 +88,10 @@ Start at [`STUDIO_CALLER_LANDING.md`](STUDIO_CALLER_LANDING.md).
 ## Explicit workflow versions
 
 `python3 factory.py inspect --game-repo <root>` is read-only. Unmigrated games
-return `MIGRATION_REQUIRED`; `migrate --check` previews an explicit activation,
-then `--apply --expected <digest>` applies only that preflighted transaction.
+return `MIGRATION_REQUIRED`; standalone nonbinding Idea exploration and Product
+intent can continue without migration. `migrate --check` previews an explicit
+activation, then `--apply --expected <digest>` applies only that preflighted
+transaction.
 Historic approvals, rejections and accepted baselines are not reissued.
 See [the v2 process contract](factory_core/docs/WORKFLOW.md). Older workflow
 references are retained under each department's `docs/*_V1.md` for compatibility.
@@ -164,6 +172,7 @@ Both preserve the minimum accepted-gameplay floor.
 | Capability | Entry |
 | --- | --- |
 | Product exploration and explicit commission | `idea-factory` |
+| Nonbinding whole-value intent and experienced purchase judgment | `product-factory` |
 | Progression gameplay, new systems, repair, UI production, runtime evidence | `gameplay-factory` |
 | World, character, cast, chapter, staged narrative | `game-story-factory` |
 | Tiles, walls, props, sprites | `asset/docs/AI_CALLER_LANDING.md` |
@@ -173,20 +182,34 @@ Specialist maturity and detailed workflows remain documented in their own
 folders. Passing production tests is never automatically a final gameplay
 experience verdict.
 
-## Install and game-repo linking
+## Install, initialize and relink
 
 ```bash
 python3 setup.py install
-python3 setup.py link --game-repo <GAME_REPO>
+python3 setup.py init --game-repo <GAME_REPO>
 ```
 
-New links write:
+Use the exact existing game Git root outside Factory; an empty Git history is
+valid. `--project-root` aliases `--game-repo`; `init --dry-run` validates and
+previews without creating files. Existing authored Idea/Product material is
+preserved on rerun. Neither initialization nor relinking changes workflow version.
+For an explicit routing-only relink use `setup.py link --game-repo <GAME_REPO>`;
+install/sync remains unchanged.
+
+Routing writes:
 
 ```text
 design/STUDIO_FACTORY.local.md   # git-ignored, machine-specific
 AGENTS.md                        # one managed Studio routing block
 CLAUDE.md                        # pointer only when the repo had none
 ```
+
+Initialization also creates the normal Idea repo probe only when Idea work is
+absent, plus `design/product_value/PRODUCT_VALUE_INTENT.json` only when absent.
+`product/product.py start --game-repo <GAME_REPO>` is the additive intent-only
+entry for an existing Idea game. Inspect and reconcile changed sources before
+using the intent; bind it as an exact input when a material design relies on it.
+It never becomes canonical product authority or current-build value evidence.
 
 Compatibility is fail-soft:
 
@@ -201,7 +224,7 @@ Compatibility is fail-soft:
 STUDIO_CALLER_LANDING.md       canonical root entry
 AI_CALLER_LANDING.md           compatibility entry
 skills/
-  init-game-studio-factory     canonical linker
+  init-game-studio-factory     joint Idea/Product initializer
   init-game-ai-factory         compatibility alias
 studio/
   alignment.py
@@ -214,11 +237,12 @@ studio/
   templates/
   tests/
 idea/                           specialist Game AI Factory
+product/                        specialist Game AI Factory
 gameplay/                       specialist Game AI Factory
 story/                          specialist Game AI Factory
 asset/                          specialist Game AI Factory
 sound/                          specialist Game AI Factory
-setup.py                        install/link migration-safe tooling
+setup.py                        install/init/link migration-safe tooling
 ```
 
 All filled Studio/factory artifacts land in the game repo. This checkout owns

@@ -11,15 +11,19 @@ installed manifest or this skill's real source path. If unlinked, invoke
 `init-game-studio-factory`. Never hardcode a developer path or scan sibling games.
 
 1. Run `python3 $STUDIO_ROOT/factory.py inspect --game-repo $GAME_REPO`.
-2. MIGRATION_REQUIRED: preview `migrate --check --project-id <id>`; apply only
-   an explicitly authorized migration with its exact source digest. No automatic
-   approval/history conversion. Legacy CLI calls/parameters remain supported.
+2. MIGRATION_REQUIRED does not require migration for nonbinding initialization,
+   Idea exploration or Product intent. Continue that work with standalone
+   Idea/Product commands. If shared versioned work is requested, preview
+   `migrate --check --project-id <id>` and apply only an explicitly authorized
+   exact source digest. No automatic approval/history conversion; historical
+   CLI calls/parameters retain their meaning.
 3. For an explicitly versioned project run `factory.py context --game-repo $GAME_REPO --capability studio
    --task objective` with the actual task kind and current task id when known.
 4. Use the inspected version: v2 follows `$STUDIO_ROOT/factory_core/docs/WORKFLOW.md`;
    v3 follows `$STUDIO_ROOT/factory_core/docs/WORKFLOW_GPT6.md` and the returned
    capability rules. Never infer upgrade from the model name. Continue in this primary agent; load task methods only as needed.
-   Freeze one full design, run the two independent reviews on its exact hash,
+   For material designs, freeze one full design and run the two independent
+   reviews on its exact hash,
    repair FAILs continuously within authority, obtain required USER rulings,
    produce within scope, then exact-output
    evidence and specialist acceptance. Ordinary replies do not create reviews.
@@ -37,6 +41,30 @@ GPT-6 opt-in is explicit: `migrate --workflow gpt6 --check`, then authorized
 `context --method <id>` loads a specific optional technique; selected methods
 belong in the sealed design. Read the selected checkout's skill, not a conflicting
 installed copy. `--project-root` aliases `--game-repo`, including pure Story.
+
+## Use early whole-value intent
+
+New-game initialization uses `setup.py init` to establish routing, missing Idea
+work and `design/product_value/PRODUCT_VALUE_INTENT.json`. Read
+`product/docs/PROJECT_INITIALIZATION_WORKFLOW.md` and inspect Product intent before
+material planning. The empty seed needs bounded Idea exploration and real
+`product-factory` authorship of buying reason, adequacy case, value hypotheses,
+material unknowns and next experiment; do not stop at file creation.
+
+Compare already authorized production options against this provisional whole-offer
+target, keeping hypotheses separate from current commission, constraints and live
+activation/archive state. Unknowns and explicit price/buyer scenarios need no new
+USER gate merely to investigate them. `RECONCILIATION_REQUIRED` means read the
+changed/new/missing Idea sources and deliberately revise the intent, not silently
+rehash it or revive old authority. Material direction conflicts return to Idea.
+A material design that uses intent binds its exact artifact as an explicit input,
+never an authority path; later intent edits stale that design's dependency.
+
+Update intent and observations proportionately at development boundaries. A
+meaningful build alone adds no whole-product assessment/review or paid-value gate.
+A scenario experiment may guide the next authorized step without commercial PASS,
+price adoption or completed gameplay. Actual-play acceptance and whole-product
+stopping/value claims still follow their existing boundaries below.
 
 ## Whole-product value supervision
 

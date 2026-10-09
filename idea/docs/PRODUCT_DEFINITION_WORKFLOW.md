@@ -25,6 +25,22 @@ idea.py start [--reopen]
 
 No-fit and non-convergence are valid work, not incomplete Product Theses.
 
+## Joint initialization and early value intent
+
+`setup.py init` creates the routing, this department's missing repo probe, and
+`design/product_value/PRODUCT_VALUE_INTENT.json`. Then continue the exploration
+and author Product's provisional whole-offer value target together; see
+`product/docs/PROJECT_INITIALIZATION_WORKFLOW.md`. The intent is nonbinding,
+separate from the commission and not a REPO_COMMITMENT. Its exact path is
+excluded from the generated-planning snapshot so authoring it does not invalidate
+Idea's probe; actual game-source changes still do. Existing Idea work is preserved,
+not silently reopened. Standalone exploration/intent needs no workflow migration.
+
+Read Product intent as planning context, reconcile changed Idea source refs,
+and bind it as an explicit input when a material design uses it. Product's
+questions about whole-offer value can inform exploration without forcing a
+direction, adopting a price, or treating an unbuilt game as assessed.
+
 ## Phase A1 — mechanical boundary
 
 `start` binds Git revision, dirty paths, and dirty-content fingerprint and

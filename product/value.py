@@ -40,15 +40,28 @@ def _enum(value, choices, label):
         fail("INVALID_PRODUCT_ASSESSMENT", f"{label} must be one of {choices}")
 
 
-def _refs(roots, values, *, allow_empty=False):
+def _refs(roots, values, *, allow_empty=False, resolve_sources=True):
     if not isinstance(values, list) or (not allow_empty and not values):
         fail("INVALID_PRODUCT_ASSESSMENT", "exact source references required")
+    # Finish shape/confinement checks before freshness. A stale source must not
+    # mask malformed planning context when init preserves it for reconciliation.
     for ref in values:
         if not isinstance(ref, dict) or ref.get("scope") not in ("game", "game_git"):
             fail("INVALID_PRODUCT_ASSESSMENT", "assessment sources must be game-owned")
-        resolve_ref(roots, ref)
+        required = {"scope", "path", "sha256"}
+        if ref["scope"] == "game_git":
+            required.add("revision")
+            if not isinstance(ref.get("revision"), str) or not re.fullmatch(r"[0-9a-f]{40,64}", ref["revision"]):
+                fail("INVALID_REFERENCE", "historical source needs a full Git revision")
+        keys(ref, required)
+        confined(roots["game"], ref["path"])
+        if not isinstance(ref["sha256"], str) or not re.fullmatch(r"[0-9a-f]{64}", ref["sha256"]):
+            fail("INVALID_REFERENCE", "source needs a SHA-256")
     if len(unique_refs(values)) != len(values):
         fail("INVALID_PRODUCT_ASSESSMENT", "duplicate source reference")
+    if resolve_sources:
+        for ref in values:
+            resolve_ref(roots, ref)
     return values
 
 
@@ -69,16 +82,14 @@ def validate_context(roots, offer, audience):
     if offer["currency"] is not None and (not isinstance(offer["currency"], str) or not re.fullmatch(r"[A-Z]{3}", offer["currency"])):
         fail("INVALID_PRODUCT_ASSESSMENT", "currency must be an explicit three-letter code")
     grounded = offer["grounding"] == "GROUNDED"
-    _refs(roots, offer["provenance"], allow_empty=not grounded)
+    _refs(roots, offer["provenance"], allow_empty=not grounded, resolve_sources=False)
     if grounded and (offer["amount"] is None or offer["currency"] is None or offer["status"] == "UNKNOWN"):
         fail("INVALID_PRODUCT_ASSESSMENT", "grounded offer needs explicit price, currency and status")
     adoption = offer["adoption"]
     if offer["status"] == "ADOPTED_OFFER":
         keys(adoption, {"source", "quote"})
-        _refs(roots, [adoption["source"]])
-        source = read_json(resolve_ref(roots, adoption["source"]))
-        if source.get("role") != "user" or text(adoption["quote"]) not in source.get("content", ""):
-            fail("PRODUCT_ADOPTION_SOURCE_REQUIRED", "adopted offer requires its exact quote in a raw USER source; reviewers judge adoption meaning")
+        text(adoption["quote"])
+        _refs(roots, [adoption["source"]], resolve_sources=False)
         if adoption["source"] not in offer["provenance"]:
             fail("PRODUCT_ADOPTION_SOURCE_REQUIRED", "adoption must be part of the declared offer provenance")
     elif adoption is not None:
@@ -87,7 +98,13 @@ def validate_context(roots, offer, audience):
     _enum(audience["grounding"], GROUNDINGS, "audience grounding")
     text(audience["description"])
     text(audience["rationale"])
-    _refs(roots, audience["provenance"], allow_empty=audience["grounding"] != "GROUNDED")
+    _refs(roots, audience["provenance"], allow_empty=audience["grounding"] != "GROUNDED", resolve_sources=False)
+    for ref in [*offer["provenance"], *audience["provenance"]]:
+        resolve_ref(roots, ref)
+    if adoption is not None:
+        source = read_json(resolve_ref(roots, adoption["source"]))
+        if source.get("role") != "user" or adoption["quote"] not in source.get("content", ""):
+            fail("PRODUCT_ADOPTION_SOURCE_REQUIRED", "adopted offer requires its exact quote in a raw USER source; reviewers judge adoption meaning")
 
 
 def _authority(roots):
@@ -300,13 +317,14 @@ def gate(roots, result_path, build_path):
 
 
 def inspect(roots):
+    from product import intent
     reports = []
     for path in sorted(confined(roots["game"], BASE).glob("*/PRODUCT_VALUE_RESULT.json")):
         relative = path.relative_to(roots["game"]).as_posix()
         reports.append(reference(roots["game"], relative))
     return {"status": "PRODUCT_ASSESSMENT_AVAILABLE", "authority": _authority(roots), "results": reports,
             "next_action": "Reconstruct the actual offer and buyer; encounter the experience carrying the promise",
-            "authority_granted": False}
+            "authority_granted": False, "product_intent": intent.inspect(roots)}
 
 
 def validate_design_binding(roots, design):

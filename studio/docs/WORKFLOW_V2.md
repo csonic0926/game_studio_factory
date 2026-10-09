@@ -64,3 +64,15 @@ or baseline admission. A playable baseline alone never proves whole-product valu
 Routine prototype, accepted-slice and checkpoint claims keep their explicitly
 bounded scope and do not require a whole-product review. Do not review every edit
 or block learning work; the Product gate guards the whole-product stopping claim.
+
+## Joint Idea / Product initialization
+
+For a new game, use `setup.py init --game-repo <GAME>` and continue into Idea
+exploration plus Product intent authoring. For existing Idea-only work,
+`product/product.py start` adds the nonbinding intent without relinking or
+migrating. Read `product/docs/PROJECT_INITIALIZATION_WORKFLOW.md` and the
+`product_intent` inspect/author-context view before material planning. Reconcile
+changed sources and bind used intent as an exact design input. It guides the
+whole-offer value target while Idea retains commission. A scenario-priced
+learning experiment needs no commercial PASS; the existing whole-product
+stopping/value-claim boundaries remain unchanged.

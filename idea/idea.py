@@ -52,7 +52,10 @@ RESULT_RELATIVE = WORKSPACE_RELATIVE / "IDEA_FACTORY_RESULT.json"
 THESIS_RELATIVE = Path("design/product/PRODUCT_THESIS.md")
 CONSTRAINTS_RELATIVE = Path("design/product/FACTORY_CONSTRAINTS.json")
 
+PRODUCT_INTENT_RELATIVE = Path("design/product_value/PRODUCT_VALUE_INTENT.json")
+
 GENERATED_RELATIVES = {
+    PRODUCT_INTENT_RELATIVE,
     PROBE_RELATIVE,
     EXPLORATION_RELATIVE,
     EXPLORATION_MD_RELATIVE,
@@ -1179,6 +1182,16 @@ def _validate_payload(
                 game_repo, evidence_refs, f"{label}.evidence_refs", errors, allow_empty=True
             )
         elif authority == "REPO_COMMITMENT":
+            if isinstance(evidence_refs, list):
+                for ref in evidence_refs:
+                    if not isinstance(ref, dict):
+                        continue  # Normal evidence validation reports the shape.
+                    try:
+                        source_path = _resolve_persisted_path(game_repo, ref.get("path"))
+                    except IdeaFactoryError:
+                        continue  # Normal evidence validation reports the path.
+                    if source_path == (game_repo / PRODUCT_INTENT_RELATIVE).resolve():
+                        errors.append(f"{label}: nonbinding Product intent cannot establish REPO_COMMITMENT")
             if source_quote:
                 errors.append(f"{label}.source_quote must be empty for REPO_COMMITMENT")
             _validate_evidence_refs(
