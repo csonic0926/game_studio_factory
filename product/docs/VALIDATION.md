@@ -81,3 +81,22 @@ avoiding per-edit reviews. This is faithful to the reviewed design, not a new
 release checklist. All six unittest suites above were rerun after these repairs;
 the same two windowed Studio environment cases remain blocked. Asset code and
 its prior stated limitations are unchanged.
+
+## Final independent verification and real protocol exercise
+
+A fresh verifier gave a bounded PASS for 1eefd615. It independently ran 297 tests
+(Product35, entry25, core109, targeted Studio99, Idea29) and 26 additional
+mutation/substitution probes, all passing/rejecting as intended. Its complete
+scope and judgment limits are retained in IMPLEMENTATION_VERIFICATION_1eefd615.md.
+The separate eight-scenario qualitative exercise and its original trigger finding
+are retained in SEMANTIC_EXERCISE_9ba6009.md; the trigger was repaired afterward.
+
+The real SAB candidate exercise then used the repaired tool, two fresh actual
+independent informed reviews, source-bound candidate evidence and refreshed public
+price context. Both reviewers agreed with the qualified EVIDENCE_INSUFFICIENT
+assessment. Record/check succeeded; the exact-build current-offer gate correctly
+blocked the conditional scenario with exit2 and retained false USER-acceptance
+and delivery flags. This demonstrates truthful negative/conditional operation,
+not that SAB is good/bad value or that the framework computes value. Filled
+reports, reviews and receipts remain in the target game, outside Factory source.
+No real game was migrated, relinked, changed or adopted by this exercise.
