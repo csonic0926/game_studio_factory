@@ -1,5 +1,5 @@
 {
-  "schema_version": "product_value_assessment.v1",
+  "schema_version": "product_value_assessment.v2",
   "assessment_id": "assessment-id",
   "author_context_id": "actual-author-context",
   "subject": {
@@ -40,5 +40,27 @@
     "owner": "USER/Idea",
     "reason": "The purchase proposition is not yet grounded",
     "what_would_change_judgment": "Exact offer and buyer context plus relevant experience"
+  },
+  "deliberation": {
+    "case": {
+      "scope": "game",
+      "path": "design/product_value/assessment-id/judgment/CASE.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "frame": {
+      "scope": "game",
+      "path": "design/product_value/assessment-id/judgment/frame.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "evidence": {
+      "scope": "game",
+      "path": "design/product_value/assessment-id/judgment/evidence.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "decision": {
+      "scope": "game",
+      "path": "design/product_value/assessment-id/judgment/decision.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
   }
 }

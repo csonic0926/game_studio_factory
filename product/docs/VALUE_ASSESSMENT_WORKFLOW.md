@@ -11,6 +11,16 @@ An empty seed is not that analysis. Unknowns and scenario prices are legitimate;
 no build, invented play, current-offer PASS or new price-adoption gate is required
 for early learning. Intent cannot replace Idea commission or later assessment.
 
+## Required call ownership for new assessments
+
+Follow [JUDGMENT_PIPELINE.md](JUDGMENT_PIPELINE.md). Its separate frame, evidence,
+decision and two pre-verdict independent-review contexts are operative, not optional
+headings. Use judgment-packet/judgment-seal and assessment/review v2. The original
+question and every compound condition survive the chain. Evidence, source scope,
+assumptions and verdict remain distinct. New premises or changed conditions reopen
+upstream work; an unresolved whole-purchase inference cannot become an accepted
+limit inside the final author. Historical v1 work is not silently upgraded.
+
 ## The job
 
 When a producer says “done,” “polished enough,” or “worth its price,” reconstruct
@@ -64,7 +74,7 @@ Idea owns commission/reconsideration, and studio/product.py owns its lifecycle.
 ## State what would be enough, then make the judgment
 
 Before the decisive observation or further repair, make a provisional adequacy
-case visible in the report's ordinary prose. A short paragraph can be enough:
+case visible in the separately sealed frame before the decision call. A short paragraph can be enough:
 why this buyer might choose/pay for this whole experience, what experienced
 benefit would justify this offer despite its limits, and what contrary experience
 would defeat that recommendation. Ground the bar in the actual offer, buyer,
@@ -219,15 +229,19 @@ Judgments:
   prioritize the meaningful next choice, rather than add features by default
 - EVIDENCE_INSUFFICIENT: a named missing observation could change the recommendation;
   state the decision split and bounded next test or actual blocker
+- JUDGMENT_UNRESOLVED: the decisive whole-purchase inference remains unsupported;
+  repair the argument or frame without inventing a missing observation
 - CONTEXT_UNRESOLVED: target price or intended audience remains unknown
 
-All four can be useful completed assessments. No outcome grants USER acceptance,
+All five can be useful completed assessments. No outcome grants USER acceptance,
 changes a thesis, promises market success or replaces gameplay/baseline admission.
 
 ## Independent boundary judgment
 
-Prepare the exact package with product.py prepare. Send the same assessment,
-report and full relevant evidence closure to two fresh contexts using
+First seal each reviewer's independent condition findings from raw evidence and frame,
+without a proposed verdict, under JUDGMENT_PIPELINE.md. Then prepare the exact package
+with product.py prepare. Return the same assessment,
+report and full relevant evidence closure to the two original independent contexts using
 product-value-reviewer: intent_experience and completeness_project. They are
 informed reviewers and cannot be described as blind players. Any blind runtime
 observation remains a separately sanitized existing Studio artifact. Each sees

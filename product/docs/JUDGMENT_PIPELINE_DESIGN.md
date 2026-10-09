@@ -42,7 +42,8 @@ New assessments use an explicit v2 contract and separate fresh contexts for:
    weaken a condition, or reclassify an unresolved premise as an accepted cost.
    A new premise or framing change reopens its owning stage and invalidates the
    dependent outputs. A qualified subjective judgment is permitted; an essential
-   ungrounded preference stays an explicit truth condition of the recommendation.
+   ungrounded evaluative preference stays unresolved. Only independently specified
+   external context, such as a scenario offer, can qualify a grounded recommendation.
 4. **Two independent reviewers, each in two passes**: first receive raw sources,
    case and frame only, and seal their own condition-level findings before seeing
    evidence-stage interpretation, decision or final report. Then compare the
@@ -69,7 +70,8 @@ repeats condition IDs and literal original text; it cannot drop or rename one.
 A condition with an unresolved material experiential premise cannot become MET.
 Factual findings distinguish supported, contradicted and unresolved. Decision
 findings distinguish MET, NOT_MET, UNRESOLVED and CONDITIONAL, without pretending
-these enum labels prove meaning. Essential conditional premises propagate to the
+these enum labels prove meaning. Circular taste conditions cannot establish an evaluative obligation. Independently
+specified external conditions propagate to the
 assessment's conditionality and block an unconditional current-offer claim.
 
 Every condition gets an explicit disposition and dependency explanation, including

@@ -1,11 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "product_value_review.v1",
+  "title": "Product review versions; new work uses v2",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "product_value_review.v1"
+      "enum": [
+        "product_value_review.v1",
+        "product_value_review.v2"
+      ]
     },
     "role": {
       "enum": [
@@ -556,6 +559,119 @@
       },
       "minItems": 0,
       "uniqueItems": true
+    },
+    "independent_first_pass": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "enum": [
+                "game",
+                "factory"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "const": "game_git"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40,64}$"
+            }
+          },
+          "required": [
+            "scope",
+            "path",
+            "sha256",
+            "revision"
+          ]
+        }
+      ]
+    },
+    "condition_comparison": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "original_meaning_preserved": {
+            "type": "boolean"
+          },
+          "independent_disposition": {
+            "enum": [
+              "MET",
+              "NOT_MET",
+              "UNRESOLVED",
+              "CONDITIONAL"
+            ]
+          },
+          "decision_disposition": {
+            "enum": [
+              "MET",
+              "NOT_MET",
+              "UNRESOLVED",
+              "CONDITIONAL"
+            ]
+          },
+          "resolution": {
+            "enum": [
+              "SAME_FINDING",
+              "JUSTIFIED_CHANGE",
+              "UNRESOLVED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "reason",
+          "original_meaning_preserved",
+          "independent_disposition",
+          "decision_disposition",
+          "resolution"
+        ]
+      }
     }
   },
   "required": [
@@ -569,5 +685,38 @@
     "verdict",
     "findings",
     "source_coverage"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "product_value_review.v2"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "independent_first_pass",
+          "condition_comparison"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "independent_first_pass"
+              ]
+            },
+            {
+              "required": [
+                "condition_comparison"
+              ]
+            }
+          ]
+        }
+      }
+    }
   ]
 }

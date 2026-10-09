@@ -74,7 +74,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
                       "product/templates/PRODUCT_VALUE_INTENT.json",
                       "product/docs/PROJECT_INITIALIZATION_WORKFLOW.md"))
     if capability == "product":
-        paths.update(("studio/product.py", "studio/alignment.py"))
+        paths.update(("studio/product.py", "studio/alignment.py",
+                      "product/docs/JUDGMENT_PIPELINE.md", "product/skills/product-value-reviewer/SKILL.md"))
     # Domain sources in the mapped rule registry are part of validity, even
     # when a specialist method loads them only at the relevant boundary.
     from .refs import read_json

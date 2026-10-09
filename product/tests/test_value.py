@@ -8,9 +8,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from factory_core.refs import FactoryError, digest, encoded, read_json, reference
+from factory_core.refs import FactoryError, encoded, read_json, reference
 from factory_core.state import checkpoint, latest, load_design, requirement_ids, approval_action
 from product import value
+from product.tests.judgment_fixtures import seal_assessment, reviews as staged_reviews
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -26,7 +27,7 @@ class ProductTests(unittest.TestCase):
         self.write('AGENTS.md', '# User requirements\nA focused complete experience.\n')
         self.build = self.write('build.bin', 'Exact synthetic runnable artifact.\n')
         self.source = self.write('offer.md', 'Synthetic current $1.99 USD US desktop offer, observed 2026-10-09.\n')
-        self.player = self.write('experience.md', 'Synthetic observation: actual action, response and satisfying conclusion.\n')
+        self.player = self.write('experience.md', 'Synthetic observation: consequential choices continue throughout a complete finite sequence and connect to the ending. This local benefit does not itself settle the whole purchase.\n')
 
     def write(self, path, body):
         dest = self.game / path
@@ -36,8 +37,15 @@ class ProductTests(unittest.TestCase):
 
     def assessment(self, identity='offer-one', judgment='SUPPORTED', offer='CURRENT_OFFER', amount='1.99'):
         owned = value.paths(identity)
-        report = self.write(owned['report'], 'Synthetic reasoned case: the small coherent experience fulfills this buyer promise.\n')
-        a = dict(schema_version='product_value_assessment.v1', assessment_id=identity, author_context_id='author',
+        report_text = {
+            'SUPPORTED': 'The synthetic finite sequence and payoff justify this offer for the declared buyer despite its limits.',
+            'VALUE_GAP': 'Real choices and a finite ending provide a local benefit, but the whole experience does not justify this buyer cost.',
+            'EVIDENCE_INSUFFICIENT': 'The value-bearing final sequence has not been established; observing it could support or defeat the purchase case.',
+            'JUDGMENT_UNRESOLVED': 'The experience is available, but the inference from local choices to whole-purchase sufficiency remains unresolved.',
+            'CONTEXT_UNRESOLVED': 'The offer or buyer context is unresolved; no whole-purchase recommendation is asserted.',
+        }[judgment]
+        report = self.write(owned['report'], 'Synthetic contract fixture: ' + report_text + '\n')
+        a = dict(schema_version='product_value_assessment.v2', assessment_id=identity, author_context_id='author', deliberation={},
                  subject=dict(title='Synthetic game', build=self.build),
                  offer=dict(status=offer, grounding='GROUNDED', amount=amount, currency='USD', platform='desktop', region='US',
                             as_of='2026-10-09', provenance=[self.source], adoption=None, rationale='Synthetic source establishes this scoped offer.'),
@@ -48,6 +56,15 @@ class ProductTests(unittest.TestCase):
                  judgment=judgment, material_unknowns=[], conditionality=[],
                  next_move=dict(action='Preserve the focused experience', owner='Studio', reason='No material value gap in this fixture',
                                 what_would_change_judgment='Contrary representative play evidence'))
+        if judgment != 'SUPPORTED':
+            a['next_move'].update(action='Address the named value, evidence or context gap',
+                                  reason='This diagnostic fixture does not establish whole-purchase support')
+        if judgment == 'EVIDENCE_INSUFFICIENT':
+            partial = self.write(f'design/product_value/{identity}/synthetic-partial-experience.md',
+                                 'Synthetic partial observation: the opening offers a consequential choice. The ending and later consequence are not observed.\n')
+            a['evidence'][0].update(reference=partial, observation='Only the opening value-bearing sequence is observed.',
+                                    limitations='The ending could reward or erase the opening choice; it is not observed.')
+            a['material_unknowns'] = ['The ending may reward prior choices or erase them; observe the exact final sequence to distinguish these outcomes.']
         if offer == 'ADOPTED_OFFER':
             quote='Set the actual product price to '+amount+' USD for the US desktop offer.'
             source=self.write('adopted-offer.json',dict(role='user',content=quote))
@@ -58,18 +75,11 @@ class ProductTests(unittest.TestCase):
     def save(self, a):
         return self.write(value.paths(a['assessment_id'])['input'], a)
 
-    def reviews(self, a):
-        p = value.prepare(self.roots, value.paths(a['assessment_id'])['input'])
-        result = []
-        for role in value.ROLES:
-            r = dict(schema_version='product_value_review.v1', role=role, reviewer_context_id=role, fresh=True, peer_reviews_read=[],
-                     assessment=p['assessment'], dependency_fingerprint=p['dependencies']['fingerprint'], verdict='AGREE',
-                     findings={k:dict(rationale='Synthetic contract finding, not a real value review.', evidence=[a['report']]) for k in value.FINDINGS},
-                     source_coverage=[digest(ref) for ref in p['dependencies']['references'] if ref['scope'] != 'factory'])
-            path = f"design/product_value/{a['assessment_id']}/reviews/{role}.json"
-            self.write(path, r)
-            result.append(path)
-        return result
+    def reviews(self, a, *, reviewer_contexts=None):
+        # Legitimate setup mutations happen before sealing. Never refresh an
+        # existing stage or bypass the live validator to bless stale evidence.
+        seal_assessment(self.roots, a, reviewer_contexts=reviewer_contexts)
+        return staged_reviews(self.roots, a)
 
     def record(self, a=None):
         a = a or self.assessment()
@@ -163,7 +173,7 @@ class ProductTests(unittest.TestCase):
     def test_new_mandatory_authority_stales_reviews(self):
         a, out = self.record()
         self.write('nested/AGENTS.md', 'New material user boundary')
-        with self.assertRaisesRegex(FactoryError,'exact current assessment'):
+        with self.assertRaisesRegex(FactoryError,'mandatory authority|exact current assessment'):
             value.check(self.roots, out['result']['path'])
 
     def test_unrelated_file_and_git_commit_do_not_stale_frozen_build(self):
@@ -181,15 +191,18 @@ class ProductTests(unittest.TestCase):
             with self.assertRaises(FactoryError): value.record(self.roots,value.paths(a['assessment_id'])['input'],reviews)
             self.assertFalse((self.game/value.paths(a['assessment_id'])['result']).exists())
         a=self.assessment(); reviews=self.reviews(a); r=read_json(self.game/reviews[1]); r['reviewer_context_id']=value.ROLES[0]; self.write(reviews[1],r)
-        with self.assertRaisesRegex(FactoryError,'distinct required roles'): value.record(self.roots,value.paths(a['assessment_id'])['input'],reviews)
+        with self.assertRaisesRegex(FactoryError,'own previously sealed independent first pass|distinct required roles'): value.record(self.roots,value.paths(a['assessment_id'])['input'],reviews)
 
     def test_idempotent_and_immutable_result(self):
         a, out = self.record(); before=(self.game/out['result']['path']).read_bytes()
         value.record(self.roots,value.paths(a['assessment_id'])['input'],self.reviews(a))
         self.assertEqual(before,(self.game/out['result']['path']).read_bytes())
-        a['judgment']='VALUE_GAP'; self.save(a)
+        reviews = self.reviews(a)
+        changed = read_json(self.game / reviews[0])
+        changed['findings']['whole_value_case']['rationale'] = 'A second valid synthetic review of the unchanged assessment.'
+        self.write(reviews[0], changed)
         with self.assertRaisesRegex(FactoryError,'existing result differs'):
-            value.record(self.roots,value.paths(a['assessment_id'])['input'],self.reviews(a))
+            value.record(self.roots,value.paths(a['assessment_id'])['input'],reviews)
         self.assertEqual(before,(self.game/out['result']['path']).read_bytes())
 
     def test_symlink_path_escape_and_factory_output_are_rejected(self):
@@ -232,13 +245,13 @@ class ProductTests(unittest.TestCase):
         jsonschema.validate(read_json(self.game/out['result']['path']),read_json(ROOT/'product/schemas/result.schema.json'))
         for ref in out['reviews']:jsonschema.validate(read_json(self.game/ref['path']),read_json(ROOT/'product/schemas/review.schema.json'))
 
-    def shared(self, workflow=2):
+    def shared(self, workflow=2, judgment='SUPPORTED'):
         if workflow==2:
             from factory_core.migration import preview, apply
         else:
             from factory_core.migration_gpt6 import preview, apply
         p=preview(self.game,ROOT,'fixture');apply(self.game,ROOT,'fixture',p['source_digest'])
-        a=self.assessment(); owned=value.paths(a['assessment_id'])
+        a=self.assessment(judgment=judgment); owned=value.paths(a['assessment_id'])
         artifact=self.write('design/value-plan.md','Assess this exact buyer offer.\nDo not change the product to pass.\n')
         d=dict(schema_version=f'factory_design.v{workflow}',design_id='value-plan',capability='product',task='assessment',author_context_id='plan-author',intent='Assess the exact whole product',artifacts=[artifact],inputs=[self.build],decisions=[dict(id='scope',source=artifact,excerpt='Assess this exact buyer offer.',consequence='Do not change the product to pass.')],requirements={},production_scope=list(owned.values()),acceptance=['Complete the exact assessment, not product acceptance'],product=dict(assessment_id=a['assessment_id'],subject=a['subject'],offer=a['offer'],audience=a['audience'],result_path=owned['result'],required_output_paths=list(owned.values())))
         if workflow==3:d.update(methods=[],decision_sections=[dict(id='scope',source=artifact,text='Assess this exact buyer offer.\nDo not change the product to pass.\n',decision_ids=['scope'])])
@@ -257,9 +270,8 @@ class ProductTests(unittest.TestCase):
         ruling=self.write('design/synthetic-ruling.json',dict(schema_version='factory_ruling.v2',owner='USER',decision='APPROVE',design=ref,dependency_fingerprint=binding['fingerprint'],source=source,quote=action))
         for stage in ('AUTHORIZED','PRODUCING'):
             req.update(previous=out['checkpoint']['sha256'],stage=stage,ruling=ruling);out=checkpoint(self.roots,req)
-        value_reviews=self.reviews(a)
-        if value_reviewer_context:
-            r=read_json(self.game/value_reviews[0]);r['reviewer_context_id']=value_reviewer_context;self.write(value_reviews[0],r)
+        contexts = {value.ROLES[0]: value_reviewer_context} if value_reviewer_context else None
+        value_reviews=self.reviews(a, reviewer_contexts=contexts)
         result=value.record(self.roots,value.paths(a['assessment_id'])['input'],value_reviews)
         artifacts=[reference(self.game,p) for p in d['product']['required_output_paths']]
         req.update(previous=out['checkpoint']['sha256'],stage='EVIDENCE_READY',artifacts=[r for r in artifacts if r['path'] not in omitted]);out=checkpoint(self.roots,req)
@@ -273,7 +285,7 @@ class ProductTests(unittest.TestCase):
 
     def test_full_v3_negative_product_completion_and_context(self):
         from factory_core.context import context
-        a,d,ref=self.shared(3);a['judgment']='VALUE_GAP';self.save(a)
+        a,d,ref=self.shared(3, judgment='VALUE_GAP')
         req,result=self.advance(a,d,ref)
         self.assertEqual(checkpoint(self.roots,req)['stage'],'COMPLETE')
         self.assertFalse(result['value_claim_eligible'])
@@ -390,11 +402,13 @@ class ProductTests(unittest.TestCase):
 
     def test_legacy_canonical_input_and_result_symlinks_fail_closed(self):
         self.canonical_authority()
-        for path in ('design/product/idea/PRODUCT_THESIS_INPUT.json','design/product/idea/IDEA_FACTORY_RESULT.json'):
+        for index,path in enumerate(('design/product/idea/PRODUCT_THESIS_INPUT.json','design/product/idea/IDEA_FACTORY_RESULT.json')):
             with self.subTest(path=path):
+                a=self.assessment('canonical-symlink-'+str(index))
+                seal_assessment(self.roots, a)
                 original=(self.game/path).read_bytes();(self.game/path).unlink();(self.game/path).symlink_to(self.game/'offer.md')
-                a=self.assessment()
-                with self.assertRaises(FactoryError):value.prepare(self.roots,value.paths(a['assessment_id'])['input'])
+                with self.assertRaisesRegex(FactoryError, 'symlink component'):
+                    value.prepare(self.roots,value.paths(a['assessment_id'])['input'])
                 (self.game/path).unlink();(self.game/path).write_bytes(original)
 
 if __name__=='__main__':unittest.main()

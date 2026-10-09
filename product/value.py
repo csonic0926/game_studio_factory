@@ -20,7 +20,7 @@ from studio.product import (ACTIVE, LEGACY_ACTIVE, NO_ACTIVE, BLOCKED,
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "design/product_value"
 ROLES = ("intent_experience", "completeness_project")
-JUDGMENTS = ("SUPPORTED", "VALUE_GAP", "EVIDENCE_INSUFFICIENT", "CONTEXT_UNRESOLVED")
+JUDGMENTS = ("SUPPORTED", "VALUE_GAP", "EVIDENCE_INSUFFICIENT", "JUDGMENT_UNRESOLVED", "CONTEXT_UNRESOLVED")
 GROUNDINGS = ("GROUNDED", "HYPOTHESIS", "UNKNOWN")
 OFFERS = ("CURRENT_OFFER", "ADOPTED_OFFER", "PROPOSED_OFFER", "SCENARIO", "UNKNOWN")
 KINDS = ("EXPERIENCE", "VISUAL", "AUDIO", "SOURCE", "TEST")
@@ -136,9 +136,12 @@ def validate_assessment(roots, ref):
     if ref.get("scope") != "game":
         fail("INVALID_PRODUCT_ASSESSMENT", "assessment must be game-owned")
     a = read_json(resolve_ref(roots, ref))
-    keys(a, {"schema_version", "assessment_id", "author_context_id", "subject", "offer", "audience", "report", "evidence",
-             "judgment", "material_unknowns", "conditionality", "next_move"})
-    if a["schema_version"] != "product_value_assessment.v1":
+    version = a.get("schema_version")
+    required = {"schema_version", "assessment_id", "author_context_id", "subject", "offer", "audience", "report", "evidence",
+             "judgment", "material_unknowns", "conditionality", "next_move"}
+    if version == "product_value_assessment.v2": required.add("deliberation")
+    keys(a, required)
+    if version not in ("product_value_assessment.v1", "product_value_assessment.v2"):
         fail("INVALID_PRODUCT_ASSESSMENT", "unsupported assessment schema")
     owned = paths(a["assessment_id"])
     if ref["path"] != owned["input"]:
@@ -192,12 +195,17 @@ def validate_assessment(roots, ref):
             fail("UNRESOLVED_PRODUCT_CONTEXT", "untested material promises cannot yield SUPPORTED")
         if a["offer"]["amount"] is None or a["offer"]["currency"] is None:
             fail("UNRESOLVED_PRODUCT_CONTEXT", "support needs an explicit scoped price")
+    if version == "product_value_assessment.v2":
+        from product import judgment
+        judgment.validate_assessment(roots, a)
     return a
 
 
-def prepare(roots, input_path):
+def prepare(roots, input_path, *, historical=False):
     ref = reference(roots["game"], input_path)
     a = validate_assessment(roots, ref)
+    if a["schema_version"] != "product_value_assessment.v2" and not historical:
+        fail("PRODUCT_STAGED_JUDGMENT_REQUIRED", "new assessments require v2 separated judgment calls; preserve historical v1 receipts")
     mandatory = _mandatory(roots)
     refs = expand_references(roots, unique_refs([ref, *mandatory, *factory_dependencies(roots["factory"], "product", "assessment", 2)]))
     # This receipt uses its independent v1 contract on any legacy/v2/v3 game;
@@ -212,9 +220,12 @@ def _review(roots, ref, package, a):
     if ref.get("scope") != "game" or not ref["path"].startswith(f"{BASE}/{a['assessment_id']}/reviews/"):
         fail("INVALID_PRODUCT_REVIEW", "review must belong to the assessment's review directory")
     r = read_json(resolve_ref(roots, ref))
-    keys(r, {"schema_version", "role", "reviewer_context_id", "fresh", "peer_reviews_read", "assessment", "dependency_fingerprint",
-             "verdict", "findings", "source_coverage"})
-    if r["schema_version"] != "product_value_review.v1":
+    required = {"schema_version", "role", "reviewer_context_id", "fresh", "peer_reviews_read", "assessment", "dependency_fingerprint",
+                "verdict", "findings", "source_coverage"}
+    staged = a["schema_version"] == "product_value_assessment.v2"
+    if staged: required |= {"independent_first_pass", "condition_comparison"}
+    keys(r, required)
+    if r["schema_version"] != ("product_value_review.v2" if staged else "product_value_review.v1"):
         fail("INVALID_PRODUCT_REVIEW", "unsupported review schema")
     _enum(r["role"], ROLES, "review role")
     text(r["reviewer_context_id"])
@@ -235,6 +246,9 @@ def _review(roots, ref, package, a):
     supplied = texts(r["source_coverage"])
     if len(supplied) != len(set(supplied)) or set(supplied) != expected:
         fail("INCOMPLETE_PRODUCT_REVIEW", "review must cover every exact non-Factory source, including historical revisions")
+    if staged:
+        from product import judgment
+        judgment.validate_review(roots, a, r)
     return r
 
 
@@ -251,8 +265,8 @@ def _qualifications(a, authority):
     return reasons
 
 
-def _expected(roots, input_path, review_refs):
-    p = prepare(roots, input_path)
+def _expected(roots, input_path, review_refs, *, historical=False):
+    p = prepare(roots, input_path, historical=historical)
     a = validate_assessment(roots, p["assessment"])
     if len(review_refs) != 2:
         fail("PRODUCT_REVIEWS_REQUIRED", "two independent whole-assessment reviews required")
@@ -260,7 +274,8 @@ def _expected(roots, input_path, review_refs):
     if len({r["role"] for r in reviews}) != 2 or len({r["reviewer_context_id"] for r in reviews}) != 2:
         fail("REVIEW_NOT_INDEPENDENT", "distinct required roles and reviewer contexts required")
     conditions = _qualifications(a, p["authority"])
-    return {"schema_version": "product_value_result.v1", "mode": "standalone_assessment",
+    return {**({"judgment_protocol": "separated_calls.v1", "semantic_success_proven": False} if a["schema_version"] == "product_value_assessment.v2" else {}),
+            "schema_version": "product_value_result.v1", "mode": "standalone_assessment",
             "assessment_id": a["assessment_id"], "assessment": p["assessment"], "reviews": unique_refs(review_refs),
             "dependencies": p["dependencies"], "mandatory_authority": p["mandatory_authority"], "authority": p["authority"],
             "subject": a["subject"], "claim_scope": {"offer": a["offer"], "audience": a["audience"]},
@@ -294,7 +309,7 @@ def check(roots, result_path):
         fail("INVALID_PRODUCT_RESULT", "exact Product result required; arbitrary PASS is not acceptance")
     if result_path != paths(result.get("assessment_id"))["result"]:
         fail("INVALID_PRODUCT_RESULT", "result path does not match assessment identity")
-    expected = _expected(roots, result["assessment"]["path"], result["reviews"])
+    expected = _expected(roots, result["assessment"]["path"], result["reviews"], historical=True)
     if result != expected:
         fail("STALE_PRODUCT_RESULT", "current source/authority closure differs; never rehash old reviews")
     return {"status": "PRODUCT_ASSESSMENT_CHECKED", "result": ref, **result}
@@ -304,6 +319,8 @@ def gate(roots, result_path, build_path):
     result = check(roots, result_path)
     requested = reference(roots["game"], build_path)
     reasons = list(result["qualifications"])
+    if result.get("judgment_protocol") != "separated_calls.v1":
+        reasons.append("Historical assessment has not passed the current separated judgment pipeline")
     if result["subject"]["build"] != requested:
         reasons.append("Requested build differs from the exact assessed build")
     if result["judgment"] != "SUPPORTED":

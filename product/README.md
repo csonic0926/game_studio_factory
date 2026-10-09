@@ -22,5 +22,12 @@ Intent is not authority, actual experience or a value result. Existing commissio
 activation/archive, design approval, actual-play and baseline gates retain their
 meaning. Mandatory whole-product review remains at existing stopping/value-claim
 boundaries; early learning and authorized production need no commercial PASS.
-There are no points, feature quotas, minimum hours, mandatory replay loops, fixed
-staged-call protocol or automatic commercial PASSes.
+New assessments use [separated judgment calls](docs/JUDGMENT_PIPELINE.md):
+frame, evidence and decision ownership, with independent pre-verdict findings
+and final comparisons. Early intent does not require those assessment calls.
+There are no points, feature quotas, minimum hours, mandatory replay loops or
+automatic commercial PASSes.
+
+Historical v1 artifacts remain inspectable and are never rehashed or upgraded.
+They do not satisfy the repaired current value-claim gate; a new current claim
+uses a new v2 assessment with the actual separated calls.

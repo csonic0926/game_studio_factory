@@ -39,6 +39,12 @@ evidence. Initialization does not install an experimental staged-call protocol.
 
 ## Assess and check a claim
 
+New assessments require the separate calls and seals in
+[JUDGMENT_PIPELINE.md](JUDGMENT_PIPELINE.md), using assessment/review v2.
+Begin with judgment-packet and judgment-seal for frame, evidence, independent
+first passes and decision; then use the commands below. Final reviewers compare
+against their own sealed pre-verdict findings without peer conclusions.
+
 Standalone commands (game-owned paths are relative to the explicit game root):
 
 ```sh
@@ -59,7 +65,7 @@ Whole-product stopping/value-claim boundaries keep the applicable actual-experie
 assessment/report/two-review flow and exact-build paid-value gate. A meaningful
 build alone adds no commercial gate; learning and authorized production can
 continue without a Product PASS. Product can honestly conclude VALUE_GAP,
-EVIDENCE_INSUFFICIENT or CONTEXT_UNRESOLVED, and a scenario judgment retains its
+EVIDENCE_INSUFFICIENT, JUDGMENT_UNRESOLVED or CONTEXT_UNRESOLVED, and a scenario judgment retains its
 conditionality. Legacy standalone assessments need no intent or migration.
 
 Product commands do not migrate, commission, activate, archive, change game

@@ -8,15 +8,20 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from factory_core.refs import FactoryError, game_root
-from product import intent, value
+from product import intent, value, judgment
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
-    for name in ("start", "inspect", "prepare", "record", "check", "gate"):
+    for name in ("start", "inspect", "prepare", "record", "check", "gate", "judgment-packet", "judgment-seal"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--game-repo", "--project-root", dest="game_repo", required=True)
+        if name.startswith("judgment-"):
+            cmd.add_argument("--case", required=True)
+            cmd.add_argument("--stage", choices=judgment.STAGES, required=True)
+        if name == "judgment-seal":
+            cmd.add_argument("--input", required=True)
         if name == "start":
             cmd.add_argument("--dry-run", action="store_true")
         if name in ("prepare", "record"):
@@ -30,7 +35,11 @@ def main(argv=None):
     args = p.parse_args(argv)
     try:
         roots = {"game": game_root(args.game_repo, value.ROOT), "factory": value.ROOT}
-        if args.command == "start":
+        if args.command == "judgment-packet":
+            out = judgment.packet(roots, args.case, args.stage)
+        elif args.command == "judgment-seal":
+            out = judgment.seal(roots, args.case, args.stage, args.input)
+        elif args.command == "start":
             out = intent.start(roots, dry_run=args.dry_run)
         elif args.command == "inspect":
             out = value.inspect(roots)

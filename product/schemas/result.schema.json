@@ -683,7 +683,8 @@
         "SUPPORTED",
         "VALUE_GAP",
         "EVIDENCE_INSUFFICIENT",
-        "CONTEXT_UNRESOLVED"
+        "CONTEXT_UNRESOLVED",
+        "JUDGMENT_UNRESOLVED"
       ]
     },
     "qualifications": {
@@ -732,6 +733,12 @@
       "const": false
     },
     "delivery_eligible": {
+      "const": false
+    },
+    "judgment_protocol": {
+      "const": "separated_calls.v1"
+    },
+    "semantic_success_proven": {
       "const": false
     }
   },

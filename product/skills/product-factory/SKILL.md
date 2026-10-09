@@ -54,6 +54,12 @@ assessment, follow the experience-based workflow. Before a paid-value claim use
 the existing exact-build current/adopted-offer gate. A failed/inapplicable gate
 never blocks authorized scenario learning or production.
 
+Use the mandatory separately called protocol in product/docs/JUDGMENT_PIPELINE.md.
+Frame, evidence, independent first-pass findings and decision are separate sealed
+work products. Use assessment v2; the final author cannot downgrade upstream
+unknowns or replace the original condition. The two independent reviewers form
+condition-level judgments before seeing the proposed verdict, then compare it.
+
 Operate before recording:
 1. Reconstruct the actual/current or explicitly adopted offer and intended buyer.
    Refresh material external facts; preserve source dates. A genuine proposed
@@ -61,7 +67,7 @@ Operate before recording:
    Use an explicit reasonable benchmark scenario when it can answer usefully;
    don't require a user price choice merely to finish the schema. Before a decisive
    observation/repair, state the provisional buying reason, what experience would
-   be enough at this offer, and what would defeat it, in ordinary report prose.
+   be enough at this offer, and what would defeat it, in the sealed frame artifact.
 2. Encounter the whole relevant artifact and the experience carrying its promise.
    Challenge the strongest untested claim and flattering evidence selection.
    Art/audio/comfort/surrounding affordances matter through the coherent purchase.
@@ -83,7 +89,8 @@ Operate before recording:
    formula, content quota or default feature expansion.
 4. Write the complete human-readable report plus a small exact evidence index.
    Unknown context/insufficient experience are valid conclusions. Use prepare;
-   get two fresh independent whole-assessment reviews without peer conclusions.
+   return to the two independent first-pass reviewers for exact whole-assessment
+   comparison without peer conclusions.
    Preserve REVISE reports and review the exact new version after revision.
 5. Record/check the result, and use the exact-build gate before a paid-value claim.
    Report the useful judgment and scope, not only “record valid.” Send bounded
