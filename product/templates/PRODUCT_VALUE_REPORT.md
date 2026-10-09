@@ -8,8 +8,14 @@ and what contrary experience would defeat the recommendation. Ground this in
 credible alternatives/occasion without a competitor or feature quota.
 
 Then judge the experienced whole against that provisional case. Separate product
-adequacy from evidence adequacy. Explain the strongest counterevidence,
-consequential sacrifices, confidence and non-blocking limits. Recommend or reject
+adequacy from evidence adequacy. Explain the strongest counterevidence
+and, when serious competing explanations matter, what each predicts and which
+exact observations both explain versus which distinguish them. Resolve the
+disputed factual causal claim under the same build/buyer/offer; distinguish the
+remaining buyer-value tradeoff. Do not turn a rebutted objection into positive
+purchase support or invent a debate when the evidence is already decisive.
+Explain consequential sacrifices, confidence and non-blocking limits. Recommend or
+reject
 when justified. If genuinely undecidable, name the missing observation that could
 change the decision, its opposing outcomes and the smallest test or exact blocker.
 Do not request more proof just because uncertainty exists. Explain any new

@@ -138,6 +138,50 @@ A nonempty runtime ref is only a floor; sufficiency is qualitative judgment.
 
 ## Make the value case, including difficult choices
 
+### Resolve competing explanations when they matter
+
+When the same experience plausibly supports opposing purchase recommendations,
+or a material factual claim is disputed, do this causal comparison before choosing
+the verdict. Keep the exact build, buyer, offer and observed scope fixed. Do not
+manufacture an opposing case for an already decisive, uncomplicated observation.
+
+1. State the strongest serious explanations of the experience, not merely
+   "worth it" versus "not worth it." Connect what the player does and what changes
+   to a benefit or cost this buyer has reason to value. Each explanation must fit
+   the strongest inconvenient observations; do not defeat a weaker substitute.
+2. Identify the observations both explanations can account for. Those observations
+   are not discriminators just because one account retells them persuasively.
+   Then identify the concrete claim on which the explanations differ and the
+   observed state/choice/consequence, inspected media or contextual fact that
+   supports one over the other. Cite the exact source location. State what each
+   explanation would lead you to expect there. If the existing evidence settles
+   the claim, resolve it now; do not request another report or playthrough by habit.
+3. Separate factual disagreement from buyer-value weighting. Whether a choice
+   changes later options is a factual causal claim; whether that kind of control
+   outweighs repetition or modest presentation at this offer is a reasoned value
+   tradeoff. Resolve the former against evidence. For the latter, state the
+   protected benefit, buyer cost and why that balance warrants the recommendation
+   for this same buyer. Do not disguise a taste disagreement as a missing fact or
+   silently recruit a different audience. Model-observer reactions are evidence
+   of that observer's experience, not population preference or objective quality.
+4. Return to the provisional adequacy case. Explain what positive purchase case
+   survives the strongest objection, or what observed shortcoming defeats it.
+   Refuting a weak negative rationale only removes that objection; it is not
+   affirmative support for buying. Conversely, a working or unusual mechanism
+   establishes neither worthwhile interaction nor whole-product value by itself.
+   If an unresolved factual distinction could reverse the judgment, give its
+   opposing outcomes and the smallest discriminating observation. Otherwise make
+   the bounded tradeoff and stop, retaining confidence and non-blocking limits.
+
+Make this intermediate reasoning inspectable in ordinary prose at the depth the
+dispute needs. Labels such as "meaningful," "polished," "adequate" or "strongest
+counterevidence" do not perform it. Neither reviewer agreement nor more fluent
+argument can replace the missing causal link. This is not a new scorecard, fixed
+number of alternatives, debate ritual, feature quota or requirement for paired
+price reports. A changed price may alter the weight of the same delivered benefit;
+it cannot change what happened in the build. Retain negative experience as well as
+positive evidence, and preserve genuine decision-changing unknowns.
+
 Write PRODUCT_VALUE_REPORT.md as one coherent reasoned account, at the depth the
 actual question needs. Explain the purchase promise, delivered experience,
 price/audience relationship, causal fit among parts, strongest counterevidence,
@@ -183,7 +227,11 @@ material claim, source sufficiency, causal value and consequential omissions.
 They must also judge whether the provisional adequacy bar is fair to the buyer,
 whether its support/falsification anchors were actually addressed, and whether a
 remaining unknown could change the recommendation. Reject both unsupported praise
-and avoidant deferral. If the case is met, do not demand unrelated features, larger
+and avoidant deferral. For a material competing explanation, check the actual
+disputed causal claim against its cited observation: does the alleged discriminator
+really distinguish the accounts, or do both predict it? Separate any remaining
+value-weight disagreement from factual error. A rebutted objection alone cannot
+support AGREE with a positive purchase verdict. If the case is met, do not demand unrelated features, larger
 studies or new standards; accept a justified bounded judgment. Legitimate reframing
 needs an explicit new material reason, not obedience to a permanently fixed bar.
 The roles give complementary emphasis, not permission to ignore half the product.

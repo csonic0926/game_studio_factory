@@ -7,6 +7,14 @@ skill/workflow to each case, give a scoped judgment or uncertainty, explain the
 causal reason, and select the smallest useful next move. Do not add hidden player
 observations, invent an adopted price, or prescribe extra features by default.
 
+These stipulated cases check boundary behavior, not whether the assessor can
+infer value from ambiguous experience: several premises already characterize the
+experience as satisfying or empty. Also use the separate raw-experience packet
+in `AMBIGUOUS_EXPERIENCE_PACKET.md` with its coordinator-only
+`AMBIGUOUS_EXPERIENCE_PROTOCOL.md`. Do not give the coordinator's checks or another
+assessor's conclusions to the fresh assessor. Neither exercise has a known true
+price or demonstrates population-level purchase accuracy.
+
 ## A. A genuinely good mechanism in a weak purchase
 
 A $14.99 desktop tactics game targets players who enjoy adapting compact builds.

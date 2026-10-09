@@ -17,6 +17,11 @@ follow from the actual purchase experience, offer and intended buyer? Challenge:
 - Whether observed support/falsification addresses that bar, and whether any
   remaining unknown could actually change the recommendation
 - The strongest plausible disappointment and the strongest untested material claim
+- For a material dispute, the strongest competing causal explanations under the
+  same build/buyer/offer, evidence both explain, and the cited observation that
+  actually distinguishes them; resolve factual claims rather than count arguments
+- Whether buyer-value weights are explicit and bounded, and whether positive
+  purchase support remains after an objection is rebutted
 - Whether experience reaches replay/mastery or arc/closure when that carries value
 - Flattering sampling, unsupported polish claims and technical evidence proxies
 - How art/audio/interface/surrounding affordances compose with the central pleasure

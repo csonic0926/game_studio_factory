@@ -121,3 +121,23 @@ were not refreshed into new approval. An uncoached observer was not given these
 informed criteria. New observations, once sealed, may support either a positive
 or negative reasoned evaluation against the provisional adequacy case, with
 bounded confidence and explicit legitimate reframing if new facts warrant it.
+
+
+## Causal discrimination refinement verification
+
+The bounded guidance change is described in CAUSAL_DISCRIMINATION_REFINEMENT.md.
+The caller, reviewer, workflow and report template now require concrete factual
+resolution when serious competing value explanations matter, then a bounded
+buyer-value tradeoff. No runtime/schema/ledger or game changes were made.
+
+Affected regression on 2026-10-09: Product35, entry/setup25 and shared core109 all
+passed (169 tests), and git diff --check passed. These are contract/integration
+checks, not semantic efficacy or purchase-accuracy evidence. Previous wider-suite
+environment limitations are unchanged; this is not a new full-suite PASS.
+
+AMBIGUOUS_EXPERIENCE_PACKET.md adds three fictional raw-experience cases, with a
+separate coordinator-only protocol. The old stipulated boundary cases remain.
+Independent semantic execution/review is pending at this freeze; no outcome from
+that pending work, real-game price assessment, sales forecast or USER acceptance
+is claimed here. Earlier filled real-game assessments and their receipts are not
+rewritten by the correction.

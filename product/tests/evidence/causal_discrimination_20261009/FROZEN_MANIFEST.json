@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-09T03:34:28.202987+00:00",
+  "root": "/workspace/scratch/dc7e80ad5d42/product_factory_worktree_20261009",
+  "base_commit": "e1436961484e2c9be7a5283cd62613296619b561",
+  "branch": "",
+  "files": {
+    "product/docs/CAUSAL_DISCRIMINATION_REFINEMENT.md": "cb72dba427d0ba3475de0ad25f2a6aadd56be0e03c7885a00b8d4ffcf36ede39",
+    "product/docs/VALIDATION.md": "a09ad3e03b51fc40e7daf7535b2e0e462603a2c51927177dd4ebf474c0db77e3",
+    "product/docs/VALUE_ASSESSMENT_WORKFLOW.md": "5974c8ec204c36fd1566e9e424ff9249326b82aa012d1181d902c9813f08117b",
+    "product/skills/product-factory/SKILL.md": "7169ee7f844702463d43a69b6273ce15a26ed042dd6ab6f7bf320738ee5b6163",
+    "product/skills/product-value-reviewer/SKILL.md": "b06393f41478e2081463d9491ab6b1fe7f5019974592824b5f8f4be751250ec4",
+    "product/templates/PRODUCT_VALUE_REPORT.md": "a482c6e1b8c276daad5e321e732c693312e86bff62b2185ac2074de5850098de",
+    "product/tests/AMBIGUOUS_EXPERIENCE_PACKET.md": "f824246d5eb25f9be95c779d74aaf39955f457e90a99adc9f5d28d88714a5f3a",
+    "product/tests/AMBIGUOUS_EXPERIENCE_PROTOCOL.md": "b3d6085d3f85dc1d57b908d98f5eb3d9939dee77f11036f9dc8f497a1eda8176",
+    "product/tests/SEMANTIC_SCENARIOS.md": "32543f831e84dbeb8ecdaf209f7aded18ab965672dbb71228f2ba058685473dd"
+  },
+  "fingerprint": "bb81100abe75e68beb507e1e1bcfa35b67fc9adfb4c719a4d95927e76deeb7dd",
+  "test_results": {
+    "product": 35,
+    "entry_setup": 25,
+    "factory_core": 109,
+    "all_passed": true,
+    "diff_check": "passed"
+  },
+  "independent_review": "pending",
+  "publication": "held; no commit or push of this correction performed",
+  "no_game_edits": true
+}

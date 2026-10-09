@@ -22,6 +22,12 @@ Operate before recording:
    Art/audio/comfort/surrounding affordances matter through the coherent purchase.
 3. Judge the whole offer against that contextual adequacy case. Distinguish whether
    the product is sufficient from whether evidence is sufficient to judge it.
+   When serious competing explanations could change the verdict, hold build,
+   buyer and offer fixed; distinguish evidence both explain from a concrete
+   state/choice/consequence or observation that separates them. Resolve disputed
+   factual causal claims, then make the buyer-value tradeoff. Removing an objection
+   is not itself positive purchase support. Use the workflow's causal comparison;
+   do not manufacture a debate or additional observation for a decisive case.
    Make a bounded subjective recommendation/rejection when justified; only an
    unknown that could change it warrants further evidence. Explain confidence and
    non-blocking limits. Explicit new user/audience facts can revise the frame;
