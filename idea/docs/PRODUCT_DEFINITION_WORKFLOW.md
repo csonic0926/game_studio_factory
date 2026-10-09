@@ -25,6 +25,80 @@ idea.py start [--reopen]
 
 No-fit and non-convergence are valid work, not incomplete Product Theses.
 
+## Every idea receives substantive inquiry
+
+Use the `idea-factory` skill for every proposed game-design idea before relying
+on it as a premise, not only for the initial pitch or a change of whole direction.
+This includes AI-generated mechanisms, later iterations, and existing implemented
+ideas whose rationale has never been examined. Identify each idea being relied on
+so none disappears inside an umbrella direction or a feature list. Reading these
+instructions, calling `inspect`, or obtaining a technical PASS is not the inquiry.
+
+For each idea, reason concretely about the player situation: why the player would
+care or choose, how the proposed mechanism produces its consequence, and what
+real cost, sacrificed possibility or tension it creates. Consider alternatives
+or counterexamples that could change the choice. Distinguish evidence from
+inference and unresolved assumptions; implementation is evidence of existence,
+not evidence that the premise works. Preserve the resulting judgment and reasons,
+including why an idea stays open or is rejected.
+
+These are connected questions, not equally weighted checklist scores. Scale the
+inquiry to its consequence and uncertainty; a brief answer can suffice, but
+“small idea” is no exemption for an unexamined load-bearing premise. No fixed idea
+count, mandatory A/B test, separate accepted Thesis for each mechanism or forced
+convergence applies. Reuse reasoning that still holds; materially changed ideas
+or contrary evidence reopen the affected assumptions, not every settled decision.
+Operational technical repairs do not restart Idea unless they change player-facing
+design. Other factories still own their detailed design, production and evidence.
+
+Also reason about the coupled whole game: one idea's benefit may consume another's
+attention, scarcity, reward or room for choice. Fifteen individually plausible
+ideas do not establish a coherent experience. Product Factory separately asks
+whether that complete offer earns its price; it cannot substitute for Idea's
+premise/mechanism inquiry, and Idea cannot substitute for Product assessment.
+
+### Run it and keep a small durable record
+
+Follow the skill's target/version resolution, read actual relevant sources and
+perform the inquiry, then preserve per-idea conclusions, reasons and open
+questions in the game repo. Several related ideas may share one session/record;
+each must remain identifiable, with their interactions considered together.
+
+- During mutable, uncommissioned exploration, use the existing
+  `idea/templates/IDEA_EXPLORATION.json` shape and the Phase A2 `explore` /
+  `check-exploration` commands below. Name ideas and their reasoning in
+  `frontier_summary` or the relevant direction's `proposition`, `why_live` and
+  `tensions`; retain uncertainties in `open_questions` and the useful next move.
+  Mechanisms need not be invented as separate product directions. Put AI-proposed
+  or inferred premises in `anchors` with `authority: AI_HYPOTHESIS`; preserve actual
+  USER/source anchors with their correct authority. Never label self-authored
+  reasoning `USER`, and keep the schema's reserved `ai_assumptions` array empty.
+- For later inquiries, preserve any exploration/input already bound by commission,
+  reviews or accepted history. Keep an additive, clearly nonbinding game-owned
+  inquiry note (for example `design/product/idea/inquiries/<topic>.md`) rather than
+  overwriting that proof. Use the Idea skill to do the same substantive work in
+  this note. On v2/v3, bind it to an Idea `DRAFT` through the existing
+  `factory.py context --capability idea --task exploration` and `checkpoint`
+  workflow; a DRAFT needs no complete design or new commission. On an unversioned
+  project, retain the note as standalone Idea work; do not claim the canonical
+  `explore` CLI validated this separate note or invent an alternate input path.
+
+The record should make visible what was actually considered and what would change
+the judgment, not just “Idea checked” or a list of proposed features. `OPEN`,
+`REFERENCE_NO_FIT`, live alternatives and rejected ideas remain useful outcomes.
+No formal commission and `MIGRATION_REQUIRED` are not reasons to skip this work.
+An actual authority/provenance blocker must be reported precisely; it is not
+permission to replace history, silently migrate or commission a hypothesis.
+`--reopen` is for an explicitly reopened exploration, not a routine per-idea or
+initialization shortcut. Material changes to adopted product promises retain the
+existing commission and Studio lifecycle boundaries.
+
+Allowed: question a proposed unit-copying reward by examining what choice it
+creates, what scarcity it removes, and when keeping a damaged unit might be the
+better alternative; record the uncertainty and its interaction with progression.
+Not allowed: “copying already works in code, so it is a good reward,” followed by
+a whole-game pitch or Product assessment with no inquiry into that premise.
+
 ## Joint initialization and early value intent
 
 `setup.py init` creates the routing, this department's missing repo probe, and

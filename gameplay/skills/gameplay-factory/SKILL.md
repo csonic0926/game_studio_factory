@@ -11,7 +11,8 @@ installed manifest or this skill's real source path. If unlinked, invoke
 `init-game-studio-factory`. Never hardcode a developer path or scan sibling games.
 
 1. Run `python3 $STUDIO_ROOT/factory.py inspect --game-repo $GAME_REPO`.
-2. MIGRATION_REQUIRED: preview `migrate --check --project-id <id>`; apply only
+2. MIGRATION_REQUIRED does not block standalone nonbinding Idea inquiry. For
+   shared versioned work, preview `migrate --check --project-id <id>`; apply only
    an explicitly authorized migration with its exact source digest. No automatic
    approval/history conversion. Legacy CLI calls/parameters remain supported.
 3. For an explicitly versioned project run `factory.py context --game-repo $GAME_REPO --capability gameplay
@@ -28,6 +29,14 @@ installed manifest or this skill's real source path. If unlinked, invoke
    authority or whole-game delivery.
 
 Initialize missing adapters before production; repair an evidenced known gap before advancing unless USER defers it. Preserve adopted project gameplay standards, UI grammar and full causal cycles.
+
+Before relying on each proposed game-design idea, invoke `idea-factory` under
+`idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry`.
+AI-generated mechanisms and later iterations need identifiable inquiry, reasons,
+judgments and open questions, including coupled whole-game consequences. Settled
+direction, implemented code or a whole-direction review is not per-idea coverage.
+Gameplay retains detailed design/production ownership; unchanged-design technical
+repairs do not restart Idea, and nonbinding inquiry needs no new commission.
 
 v1 reference (read only for historical interpretation or domain detail):
 `$STUDIO_ROOT/gameplay/docs/ORCHESTRATION_V1.md`.

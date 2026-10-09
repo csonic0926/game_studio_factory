@@ -42,6 +42,13 @@ Factory workflow clauses in project sync/authoring documents; all their project
 quality obligations and exact pending/historical rulings remain intact.
 Card views project one design. Existing authorized repairs do not reopen design.
 
+Use idea-factory for substantive inquiry into every proposed game-design idea,
+including AI-generated mechanisms and later iterations, even with settled direction.
+Follow $STUDIO_ROOT/idea/docs/PRODUCT_DEFINITION_WORKFLOW.md; retain per-idea
+reasons, judgments and open questions and consider coupled whole-game consequences.
+Reading docs or one whole-direction review is not coverage. Missing commission
+or MIGRATION_REQUIRED does not block standalone nonbinding inquiry; preserve
+commission-bound history. Unchanged-design technical repairs do not restart it.
 
 Game initialization uses setup.py init, establishing both Idea and Product intent.
 Read design/product_value/PRODUCT_VALUE_INTENT.json as nonbinding planning context;

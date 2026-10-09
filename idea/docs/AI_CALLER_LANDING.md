@@ -3,8 +3,14 @@
 Read [`../AGENTS.md`](../AGENTS.md) first. The installed `idea-factory` skill
 is the normal entry.
 
-Use Idea Factory when the product question is open or product-level authority
-is missing/contradictory, regardless of how much code exists. Typical triggers:
+Use Idea Factory to question every proposed game-design idea, including
+AI-generated mechanisms and later iterations, even when direction is settled or
+the idea already exists in code. Follow
+[the per-idea workflow](PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry)
+and preserve substantive reasoning, judgment and open questions.
+
+Also use it when the product question is open or product-level authority is
+missing/contradictory, regardless of how much code exists. Typical triggers:
 
 - only a genre or loose idea exists;
 - an early repo implements mechanics but has no stable commercial/experiential
@@ -15,15 +21,16 @@ is missing/contradictory, regardless of how much code exists. Typical triggers:
 - the user supplies another game as a possible reference whose relationship to
   this project has not yet been established.
 
-Do not use it for one concrete objective, a known gameplay gap, chapter prose,
-asset production, or sound generation after product direction is already
-adequate. Route those to their owning factories.
+Concrete objective execution, chapter prose, asset and sound production stay with
+their owning factories. Any new or materially changed game-design premise within
+that work still needs the bounded Idea inquiry above; an unchanged-design
+technical repair does not require a full Idea restart.
 
 Internal CLI:
 
 ```bash
 python3 idea/idea.py start --game-repo <GAME_REPO>
-# add --reopen only for an explicit reconsider/rerun request
+# --reopen only for explicit exploration/direction reconsideration, not routine idea iterations
 python3 idea/idea.py explore --game-repo <GAME_REPO> \
   --input design/product/idea/IDEA_EXPLORATION.json
 python3 idea/idea.py check-exploration --game-repo <GAME_REPO> \

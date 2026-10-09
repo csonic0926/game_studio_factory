@@ -33,6 +33,14 @@ installed manifest or this skill's real source path. If unlinked, invoke
 
 Whole-game delivery still requires new gameplay acceptance, exact-build USER playtest, predecessor regression and no blocking gap.
 
+Before relying on each proposed game-design idea, invoke `idea-factory` for
+substantive inquiry, including AI-generated mechanisms and later iterations.
+Follow `idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry`:
+retain per-idea reasons/judgments/unknowns and examine their coupled whole-game
+consequences. One whole-direction review, existing code or Product assessment
+cannot replace it. Missing commission or `MIGRATION_REQUIRED` does not excuse
+skipping nonbinding inquiry; unchanged-design technical repairs do not restart it.
+
 v1 reference (read only for historical interpretation or domain detail):
 `$STUDIO_ROOT/studio/docs/ORCHESTRATION_V1.md`.
 

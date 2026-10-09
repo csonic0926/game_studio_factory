@@ -5,6 +5,16 @@ description: Create or continue idea work with continuous primary-agent authorsh
 
 # Idea Factory operation
 
+Run substantive inquiry for every proposed game-design idea, including your own
+mechanisms, unexamined implemented ideas and later iterations. Read and follow
+`idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry`:
+actually question player reason/mechanism/consequence, costs, decision-changing
+alternatives and known/inferred/unresolved premises; preserve each judgment and
+open question in the supported exploration record or additive inquiry note.
+Evaluate coupled whole-game consequences as well. A document read, whole-direction
+review or Product assessment is not completion. This is nonbinding inquiry, not
+a per-idea Thesis/commission gate or a restart for unchanged-design bug fixes.
+
 Resolve GAME_REPO from explicit path or current Git root. Resolve STUDIO_ROOT
 from `design/STUDIO_FACTORY.local.md`, legacy `design/AI_FACTORY.local.md`,
 installed manifest or this skill's real source path. If unlinked, invoke

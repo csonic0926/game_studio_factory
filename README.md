@@ -14,6 +14,32 @@ coordination, integration, regression, and delivery qualification. It may
 reduce scope or fidelity. It may not present an interactive software demo as a
 completed game.
 
+## Required: run every idea through Idea Factory
+
+Use `idea-factory` to substantively question **every proposed game-design idea**,
+including AI-generated mechanics, ideas already implemented but never examined,
+and later additions or material revisions. Do this before treating the idea as a
+design premise. Reading Factory docs, a one-time whole-direction review, existing
+code, and a Product value assessment do not count as this inquiry.
+
+For each idea, explain the concrete player reason, mechanism and consequence;
+the real cost or sacrifice; alternatives or counterexamples that could change the
+choice; and what is known, inferred or unresolved. Preserve its judgment, reasons
+and open questions in a small game-owned record through the
+[Idea inquiry workflow](idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry).
+Then examine how the ideas depend on, reinforce or undermine each other in the
+whole game. Fifteen individually plausible features do not prove a good game.
+
+Depth is proportional to the decision; “just a small idea” cannot excuse an
+unexamined critical premise. Reuse still-applicable reasoning, reopen assumptions
+when an idea materially changes, and keep `OPEN`, no-fit and rejection as valid
+outcomes. No per-idea Thesis, fixed test quota or compulsory convergence is needed.
+Technical repairs that preserve player-facing design do not restart discovery.
+`MIGRATION_REQUIRED` and no formal commission do not excuse skipping nonbinding
+inquiry. Product judges the whole offer and price; it does not replace Idea's
+causal questioning. Neither an AI hypothesis nor a validator PASS grants USER
+authority or proves the idea is good.
+
 ## Architecture
 
 ```text
@@ -27,7 +53,7 @@ studio/       whole-game operator
   Godot Automation and Execution Evidence
   Autonomous Production Loop
 
-idea/         product direction capability
+idea/         per-idea causal inquiry / product direction and commission
 product/      early whole-value intent / experienced value judgment / claim gate
 gameplay/     progression/new-system/repair/UI/evidence capability
 story/        narrative capability

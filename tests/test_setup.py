@@ -183,6 +183,24 @@ class MarkedBlockTest(unittest.TestCase):
 
 
 class LinkGameRepoTest(unittest.TestCase):
+    def test_all_routing_versions_require_substantive_per_idea_inquiry(self):
+        from factory_core.migration import routing_block as v2_routing
+        from factory_core.migration_gpt6 import routing_block as v3_routing
+
+        for name, render in (("standalone", factory_setup.render_routing_block),
+                             ("v2", v2_routing), ("v3", v3_routing)):
+            with self.subTest(version=name):
+                body = " ".join(render().replace("`", "").split())
+                self.assertIn("substantive inquiry into every proposed game-design idea", body)
+                self.assertIn("AI-generated mechanisms and later iterations", body)
+                self.assertIn("idea/docs/PRODUCT_DEFINITION_WORKFLOW.md", body)
+                self.assertIn("per-idea reasons, judgments and open questions", body)
+                self.assertIn("coupled whole-game consequences", body)
+                self.assertIn("one whole-direction review is not coverage", body)
+                self.assertIn("commission-bound history", body)
+                self.assertIn("technical repairs do not restart it", body)
+                self.assertNotIn("when product direction is missing or contradictory; otherwise", body)
+
     def test_link_writes_all_surfaces_idempotently(self):
         with tempfile.TemporaryDirectory() as root:
             factory = make_factory(os.path.join(root, "factory"))

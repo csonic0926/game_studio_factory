@@ -67,7 +67,12 @@ call, at the depth the user's request and actual sources support:
    current authority register if present. Candidate paths are study hints. Do not
    infer commitment from filesystem presence or treat an archived direction as
    active. Preserve existing work and use Idea's normal checks to continue it.
-2. Explore the actual question. Record sourced anchors separately from AI
+2. Explore the actual question through `idea-factory`, substantively questioning
+   every proposed idea, including AI-generated mechanisms. Keep identifiable
+   per-idea reasons, judgments and open questions, plus their coupled whole-game
+   consequences; one whole-direction review is not coverage. Follow
+   [the per-idea workflow](../../idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry)
+   for the supported record and later iterations. Record sourced anchors separately from AI
    hypotheses, the reference relationships, open/live/no-fit frontier and useful
    next move under `idea/docs/PRODUCT_DEFINITION_WORKFLOW.md`. No forced direction
    or complete commercial brief is needed. Idea's post-frontier commission remains

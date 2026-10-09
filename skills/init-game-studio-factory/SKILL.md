@@ -36,7 +36,11 @@ routing only and does not initialize Idea or Product. Install/sync is unchanged.
    - rerunning preserves authored files; no backup artifacts, migration,
      commission, activation, archive or acceptance was created
 5. Continue beyond the empty seed in the same call. Read the available Idea probe and actual
-   relevant sources, follow `idea-factory` into bounded exploration, then use
+   relevant sources, follow `idea-factory` into bounded exploration with
+   substantive inquiry and recorded reasons/open questions for every proposed
+   idea, including AI-generated mechanisms. Follow the per-idea workflow in
+   `idea/docs/PRODUCT_DEFINITION_WORKFLOW.md`; one whole-direction pass is not
+   coverage, and the obligation continues for later iterations. Then use
    `product-factory` to author a provisional whole-offer buying reason, adequacy
    case, value hypotheses, material unknowns and smallest useful next test in the
    intent. Reconcile the exact Idea sources after exploration changes them. An

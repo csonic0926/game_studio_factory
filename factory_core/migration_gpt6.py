@@ -19,8 +19,9 @@ def routing_block():
 Resolve STUDIO_ROOT from design/STUDIO_FACTORY.local.md (legacy
  design/AI_FACTORY.local.md is a v1/v2 fallback only). Use that checkout's
 factory.py inspect --project-root . first. Version 3 explicitly selects GPT-6;
-MIGRATION_REQUIRED, MIGRATION_RECOVERY_REQUIRED and FACTORY_SOURCE_MISMATCH
-block new work. Never silently downgrade or reinterpret historical rulings.
+MIGRATION_REQUIRED blocks new versioned work, not standalone nonbinding inquiry.
+MIGRATION_RECOVERY_REQUIRED and FACTORY_SOURCE_MISMATCH must be resolved before
+new work. Never silently downgrade or reinterpret historical rulings.
 
 Read $STUDIO_ROOT/{WORKFLOW}, then the owning skill from that same root:
 whole game: studio/skills/game-studio-factory/SKILL.md;
@@ -39,6 +40,13 @@ One complete design receives two fresh independent reviews of the same version.
 The human decision view projects that design, not another author/spec.
 Continue fixing FAILs within authority; material changes return for USER ruling.
 
+Use idea-factory for substantive inquiry into every proposed game-design idea,
+including AI-generated mechanisms and later iterations, even with settled direction.
+Follow $STUDIO_ROOT/idea/docs/PRODUCT_DEFINITION_WORKFLOW.md; retain per-idea
+reasons, judgments and open questions and consider coupled whole-game consequences.
+Reading docs or one whole-direction review is not coverage. Missing commission
+does not block nonbinding inquiry; preserve commission-bound history.
+Unchanged-design technical repairs do not restart it.
 
 Game initialization uses setup.py init, establishing both Idea and Product intent.
 Read design/product_value/PRODUCT_VALUE_INTENT.json as nonbinding planning context;

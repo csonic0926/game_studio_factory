@@ -32,6 +32,10 @@ Game AI Factories     = idea / product / gameplay / story / asset / sound capabi
    [`studio/AGENTS.md`](studio/AGENTS.md).
 3. A deliberately bounded specialist request routes directly to the owning
    factory and obeys its local `AGENTS.md` / landing / calling contract.
+   Every proposed game-design idea still requires substantive `idea-factory`
+   inquiry, including AI-generated mechanisms and later iterations. Follow
+   [the per-idea workflow](idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry);
+   reading docs or reviewing the whole direction once does not satisfy it.
 4. Studio and specialist outputs land in the target game repo, never here.
 5. Reusable workflow/provider/stage/schema changes land in the owning folder
    through normal commits; preserve compatibility surfaces for linked repos.

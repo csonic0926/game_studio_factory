@@ -11,6 +11,15 @@ Read the separately exposed nonbinding Product intent before material planning.
 `MIGRATION_REQUIRED` never means silently apply new approval rules or require a
 migration just to continue standalone Idea exploration/Product intent.
 
+Before using any proposed game-design idea as a premise, invoke `idea-factory`
+for substantive per-idea inquiry, including AI-generated mechanisms and later
+iterations. Preserve each judgment/reason/open question and examine their coupled
+whole-game consequences under
+[the Idea workflow](idea/docs/PRODUCT_DEFINITION_WORKFLOW.md#every-idea-receives-substantive-inquiry).
+Reading docs, reviewing the whole direction once, or passing Product assessment
+does not substitute. Missing commission does not block nonbinding inquiry;
+unchanged-design technical repairs do not require a discovery restart.
+
 | Responsibility | Entry | Capability rules |
 |---|---|---|
 | whole playable game | game-studio-factory | studio/docs/WORKFLOW_V2.md |
