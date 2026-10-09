@@ -40,8 +40,10 @@ installed copy. `--project-root` aliases `--game-repo`, including pure Story.
 
 ## Whole-product value supervision
 
-Before claiming the integrated game justifies its price, invoke the peer
-`product-factory` and read `product/docs/VALUE_ASSESSMENT_WORKFLOW.md`. Reconstruct
+At a whole-product stopping boundary ("done", "polished", final product handoff,
+or completion of the original whole-game request), invoke the peer
+`product-factory` even if the statement does not explicitly mention price.
+Also invoke it before claiming the integrated game justifies its price. Read `product/docs/VALUE_ASSESSMENT_WORKFLOW.md`. Reconstruct
 the current/adopted offer and buyer; encounter the value-bearing experience,
 seek decisive contrary evidence, and use the weakest causal value link to choose
 the next authorized repair or justified stopping point. Art, replay, closure and
@@ -56,3 +58,6 @@ assessment is useful work, not authority to change product direction. Return
 material promise/price/audience changes to Idea/USER and bounded execution to its
 owner. Product does not alter Studio activation/archive, gameplay/human verdicts
 or baseline admission. A playable baseline alone never proves whole-product value.
+Routine prototype, accepted-slice and checkpoint claims keep their explicitly
+bounded scope and do not require a whole-product review. Do not review every edit
+or block learning work; the Product gate guards the whole-product stopping claim.

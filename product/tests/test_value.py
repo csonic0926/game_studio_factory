@@ -361,4 +361,40 @@ class ProductTests(unittest.TestCase):
         with self.assertRaisesRegex(FactoryError,'exact quote'):value.prepare(self.roots,value.paths(a['assessment_id'])['input'])
 
 
+    def test_legacy_canonical_input_and_result_changes_invalidate_claim(self):
+        self.canonical_authority()
+        _,out=self.record(self.assessment('legacy-canonical-closure'))
+        canonical=('design/product/idea/PRODUCT_THESIS_INPUT.json','design/product/idea/IDEA_FACTORY_RESULT.json')
+        bound={ref['path'] for ref in out['dependencies']['references'] if ref['scope']=='game'}
+        self.assertTrue(set(canonical).issubset(bound))
+        for path in canonical:
+            with self.subTest(path=path):
+                original=(self.game/path).read_bytes()
+                self.write(path,dict(schema_version='synthetic-authority-fixture',note='Changed adopted authority provenance'))
+                with self.assertRaises(FactoryError):value.gate(self.roots,out['result']['path'],'build.bin')
+                (self.game/path).write_bytes(original)
+        self.assertTrue(value.gate(self.roots,out['result']['path'],'build.bin')['ok'])
+
+    def test_legacy_canonical_removal_or_new_presence_invalidates_claim(self):
+        canonical=('design/product/idea/PRODUCT_THESIS_INPUT.json','design/product/idea/IDEA_FACTORY_RESULT.json')
+        self.canonical_authority()
+        for index,path in enumerate(canonical):
+            with self.subTest(path=path):
+                _,out=self.record(self.assessment('before-remove-'+str(index)))
+                old=(self.game/path).read_bytes();(self.game/path).unlink()
+                with self.assertRaises(FactoryError):value.gate(self.roots,out['result']['path'],'build.bin')
+                _,partial=self.record(self.assessment('partial-'+str(index)))
+                self.assertFalse(partial['value_claim_eligible'])
+                (self.game/path).write_bytes(old)
+                with self.assertRaises(FactoryError):value.gate(self.roots,partial['result']['path'],'build.bin')
+
+    def test_legacy_canonical_input_and_result_symlinks_fail_closed(self):
+        self.canonical_authority()
+        for path in ('design/product/idea/PRODUCT_THESIS_INPUT.json','design/product/idea/IDEA_FACTORY_RESULT.json'):
+            with self.subTest(path=path):
+                original=(self.game/path).read_bytes();(self.game/path).unlink();(self.game/path).symlink_to(self.game/'offer.md')
+                a=self.assessment()
+                with self.assertRaises(FactoryError):value.prepare(self.roots,value.paths(a['assessment_id'])['input'])
+                (self.game/path).unlink();(self.game/path).write_bytes(original)
+
 if __name__=='__main__':unittest.main()

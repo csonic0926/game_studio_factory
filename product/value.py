@@ -15,7 +15,7 @@ from factory_core.refs import (confined, digest, encoded, exclusive_json, expand
                                fail, read_json, reference, resolve_ref, unique_refs)
 from factory_core.state import identifier, keys, latest, project_lock, text, texts, verify_record
 from studio.product import (ACTIVE, LEGACY_ACTIVE, NO_ACTIVE, BLOCKED,
-                            REGISTER_PATH, product_authority_status)
+                            REGISTER_PATH, REQUIRED_CANONICAL, product_authority_status)
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "design/product_value"
@@ -108,6 +108,10 @@ def _mandatory(roots):
         payload = read_json(metadata)
         extra = texts(payload.get("authority_paths", []))
         extra.append("design/factory/PROJECT.json")
+    # In legacy-active projects no register expands the four canonical files.
+    # Bind them directly: Idea's source_input_path/source_input_sha256 fields
+    # are provenance fields, not generic typed refs understood by expansion.
+    extra.extend(path.as_posix() for path in REQUIRED_CANONICAL if confined(game, path.as_posix()).is_file())
     return authority_refs(game, "product", extra)
 
 

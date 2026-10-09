@@ -7,7 +7,7 @@ see DESIGN_REVIEW_HISTORY.md. Original failed findings remain preserved.
 
 ## Executed checks
 
-- Product contract/integration: 32 passed, including full v2 and v3 ledger paths,
+- Product contract/integration: 35 passed, including full v2 and v3 ledger paths,
   source/offer/build invalidation, actual prior evidence-ready output binding,
   authority lifecycle distinctions and negative assessment completion
 - Entry/setup: 25 passed, including both new public skills and routing
@@ -21,7 +21,7 @@ see DESIGN_REVIEW_HISTORY.md. Original failed findings remain preserved.
   generated PNG reference assets
 - Python compilation and git diff whitespace check passed
 
-544 passing regular tests before the additional 32 passing Asset methods.
+547 passing regular tests before the additional 32 passing Asset methods.
 This is not a full-suite PASS. No existing expectation was loosened. The public
 skill inventory expectation was updated for the deliberately added skills.
 
@@ -63,3 +63,21 @@ fixtures deliberately label their judgments/reviews as synthetic contract data.
 No real game was migrated/relinked or given new approval. The running E&U Factory
 checkout remains clean at b3eb3ae. Publication, current real-product assessment,
 and independent implementation/qualitative exercise results are separate checks.
+
+## Repair after the first implementation audit
+
+The independent audit of 9ba6009 reproduced a legacy-authority closure hole:
+canonical PRODUCT_THESIS_INPUT.json and IDEA_FACTORY_RESULT.json were omitted
+without an active register. The full REVISE report is retained in
+IMPLEMENTATION_REVIEW_9ba6009.md. Product now directly binds all existing canonical
+commission artifacts, including partial states, without migration. Added mutation,
+removal/new-presence and symlink regressions for both omitted artifacts pass.
+
+The independent qualitative exercise found sensible judgments for all eight
+stipulated scenarios but caught a caller trigger gap. Studio's current skill and
+v2/v3 workflows now invoke Product at whole-product done/polished/final-handoff
+stopping claims, while exempting bounded prototype/slice/checkpoint claims and
+avoiding per-edit reviews. This is faithful to the reviewed design, not a new
+release checklist. All six unittest suites above were rerun after these repairs;
+the same two windowed Studio environment cases remain blocked. Asset code and
+its prior stated limitations are unchanged.
