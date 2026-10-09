@@ -1,0 +1,28 @@
+Stage B: support decisions
+
+Time limit: S1–S3 are undated. Claims below concern the recorded statements and three logged comparisons; none establishes a current or ongoing state.
+
+- B1 — A particular competitive advantage had been adopted at the time of S1: contradicted. Anchors: A2. Scope: the proposed service’s advantage-selection decision when the brief was written. S1 expressly records no adopted advantage
+
+- B2 — Higher buyback pricing is a proposed advantage: supported. Anchors: A3. Scope: the unnamed colleague’s suggestion in S2. The suggestion establishes a candidate action, not decision authority, adoption, implementation or effectiveness
+
+- B3 — Merchant B had a realized seller-choice advantage over our offer in the three logged comparisons: supported. Anchors: A4–A8. Scope: S3’s three sellers and their respective devices. B quoted $40 more in each comparison; all three sellers chose B and completed their selected sales. This establishes an observed advantage in those choices, not a population conversion rate
+
+- B4 — Those three sellers attributed their choices to the additional $40: supported. Anchors: A5–A8. Scope: the reasons recorded for S3’s three completed choices. The stated reasons connect the higher quotes to actual behavior, giving the pricing hypothesis more support than a planning suggestion alone
+
+- B5 — The higher quoted amount was the sole causal difference responsible for those choices: unresolved. Anchors: A4–A8. Scope: S3’s comparisons. Device, inspection conditions and payment timing were matched within each comparison, but other offer attributes are unspecified. Seller-attributed reasons support a price explanation without establishing exclusive causation
+
+- B6 — S3 establishes that Merchant B actually paid each seller $40 more than our quoted amount: unresolved. Anchors: A5–A8. Scope: the three completed sales. Completion is recorded, but final paid amounts are not. This gap limits claims about realized payouts; it does not erase the recorded choices between quotes
+
+- B7 — Raising our buyback price would give our proposed service a competitive advantage: unresolved. Anchors: A3–A8. Scope: the unspecified proposed change to our offer. S3 supports higher quotes as a consequential choice factor in those cases, but does not observe our changed offer. Neither the proposed increase nor its relationship to a competitor’s offer is specified
+
+- B8 — Our proposed increase would deliver profitable, repeatable or durable advantage across the intended market: unresolved. Anchors: A1, A3–A8. Scope: the proposed service beyond S3’s three comparisons. The records provide no representative sampling, costs, margins, repeat observations or competitor-response evidence. S1’s “crowded market” description supplies context, not independent market validation
+
+- B9 — The supplied evidence establishes B7 or B8: contradicted. Anchors: A3–A8. Scope: the evidentiary reach of this packet. It establishes the bounded observed and seller-attributed findings in B3–B4, not the proposed service’s unobserved outcomes. This assessment of evidentiary sufficiency does not establish that the proposed change would fail
+
+Dependencies and gaps
+
+- B3–B6 depend on one log, S3; its three entries are not independent corroborating sources
+- S2’s tentative hypothesis and S3’s bounded behavioral evidence do not conflict. Neither establishes adoption; current adoption or implementation remains unresolved
+- Resolving B7 requires a defined proposed price and comparator, plus evidence about outcomes under our changed offer. Resolving B8 additionally requires economic, broader-population and persistence evidence
+- Stage A accurately represents the supplied records; no correction is needed. New evidence would need anchoring at Stage A before reopening the affected Stage B claims

@@ -1,0 +1,25 @@
+Stage D: decision frontier
+
+Mode: retrospective. Evidence already seen: raw S1–S3 and sealed outputs A–C. All raw records are undated; conclusions concern those records and S3’s three comparisons, not a current or ongoing market state. Conditions below are not preregistered.
+
+What can already be decided
+- The packet is sufficient to treat higher quoted prices as a behavior-grounded candidate for testing. In S3, Merchant B’s $40-higher quotes won three completed seller choices under matched device, inspection and payment-timing conditions; each seller attributed their choice to that difference
+- The packet is insufficient to establish competitive advantage from our proposed change. S2 specifies neither an increase nor a comparator, and S3 does not observe our changed offer. Whether our change would succeed remains unresolved; whether these records establish that success can already be answered negatively
+- Neither matching B nor adding $40 is an established winning offer. Those actions would change our relative position differently, and S3 observes neither
+
+Unresolved distinctions that could change the downstream decision
+- Seller response: Would a defined higher quote from us improve completed-sale wins against an unchanged offer in a specified seller/device population and period?
+- Commercial tradeoff: Would additional completed purchases justify paying more, including on purchases that would have happened at the original quote? More wins and worthwhile economic advantage are separate outcomes
+- Alternative offer: An unchanged quote is the necessary baseline. C2’s attribute change or combination remains a proposal; investigating unspecified attributes is unnecessary unless a concrete difference compromises the price comparison or becomes an actual alternative under consideration
+
+Evidence sufficient for a bounded decision
+- For a claim about improved seller choice, an informative controlled comparison of our specified higher and unchanged quotes, with other offer terms held constant, could establish a local effect on completed sales. Contemporaneous competitor offers would define the competitive setting; Merchant B’s suitability must be established for that setting
+- For a claim that the improvement is commercially worthwhile, the comparison must also capture actual payouts, downstream proceeds and relevant costs across both groups. The acceptable gain and sacrifice are unspecified, so no numerical decision threshold follows from this packet
+- Evidence meeting those conditions would support only the tested offer, population and period. Broader repeatability or durability would require additional evidence only if the intended decision depends on those stronger claims
+
+Smallest useful new observation
+- None is needed to judge the supplied evidence insufficient for an established advantage from our change
+- To resolve the next seller-response distinction, the minimum useful evidence is a comparative result under our defined changed and unchanged offers. A single additional changed-offer sale would show feasibility, not incremental effect; the packet does not determine an adequate sample size
+
+Dependency
+- Reopen Stage B’s B6 before using it for payout or economic conclusions: its named evidence-sufficiency proposition must be separated from the unresolved actual-payment outcome. S3 supplies no final payout amounts; Stage A preserves that omission correctly. This repair does not block conclusions based on recorded quotes and completed choices

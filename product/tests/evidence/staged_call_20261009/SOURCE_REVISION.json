@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-09T05:41:56.941786+00:00",
+  "source_version_from": "X",
+  "source_version_to": "Y",
+  "source_sha256_from": "702b8c1461e38794d37e17a14e7d5af5827a2252373c157646db88792f0bf545",
+  "source_sha256_to": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+  "changed_sources": [
+    "S3 added"
+  ],
+  "reopen_from": "A",
+  "stale_for_new_source_version": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "historical_outputs": "X remains immutable and scoped to its original sources",
+  "new_contexts_receive_prior_arm_outputs": false
+}

@@ -1,0 +1,32 @@
+Stage C: live explanations and directions
+
+All three hypotheses below are compatible with S1–S3. They differ in whether Merchant B’s observed price advantage transfers to our offers and yields a worthwhile business outcome. None is an adopted decision.
+
+C1 — A transferable, economically worthwhile price effect
+- Dependencies: B3–B4 support price’s relevance in the logged sales; B5–B8 leave causal isolation, transfer, generalization and viability unresolved
+- Hypothesis: A defined increase that makes our offer competitive could win additional completed sales with positive incremental contribution
+- Proposed change: Test specified quote levels against current pricing, recording contemporaneous competing offers and inspection/payment terms
+- Possible benefit/cost: More acquired devices and contribution; higher acquisition payments, including on devices we might have acquired at the original price
+- Incompatible observations: For a defined tested setting, credible evidence of no incremental completed sales, or non-positive incremental contribution, would contradict the corresponding part of this hypothesis. Neither is observed in the supplied records
+- Observable distinction: Completed-sale lift and total incremental contribution, compared with the unchanged-price baseline. Higher volume alone would not establish this direction
+
+C2 — A price-driven sales gain without a profitable or durable advantage
+- Dependencies: B3–B4 support the acquisition mechanism; B6 and B8 remain unresolved
+- Hypothesis: Higher quotes could attract sellers while added payouts consume the benefit, or competitors could match the increase and remove its relative advantage
+- Proposed action: Assess acquisition economics alongside any price test; record competitor quotes over time before treating an initial gain as persistent
+- Possible benefit/cost: Identifies whether a volume gain merits expansion; measurement takes effort, and a pilot may incur losses. Selective pricing could preserve viable opportunities but requires evidence identifying them
+- Incompatible observations: Sustained positive incremental contribution despite observed competitive responses would challenge this concern within the measured scope. No such evidence, or evidence of matching or losses, is supplied
+- Observable distinction: Positive conversion lift accompanied by weak incremental contribution, or an initial lift that declines as competitors match. Needed sources include actual payouts, realized resale proceeds, relevant costs and repeated competitor observations
+
+C3 — Limited transfer from Merchant B’s observed advantage to our changed offer
+- Dependencies: B4 supports local price relevance; B5–B7 leave other attributes, intervention effects and broader applicability unresolved
+- Hypothesis: Raising our quote might have a smaller or inconsistent effect because the resulting relative price, unrecorded offer attributes or seller/device mix differs from those three comparisons
+- Proposed action: Specify the relative offer being tested and record other material terms; examine completed choices across additional sellers and devices
+- Possible benefit/cost: Establishes where a price change works and avoids assuming universal response; broader testing costs time and acquisition spend
+- Incompatible observations: Repeated, credible completed-sale gains attributable to our higher quotes across the intended operating scope would challenge limited transfer. This hypothesis does not deny the three sellers’ recorded reasons
+- Observable distinction: Whether response follows our relative quote advantage consistently, or varies materially with seller/device groups or other offer attributes
+
+Dependencies and boundaries
+- These are alternative outcome paths, not additional corroborating evidence; all empirical support still comes from S3
+- The records cannot yet select among them. A successful limited test would still leave market-wide generalization and durability separate
+- No material earlier-stage error is evident. Resolving these directions requires new intervention, economics and competitive-response sources; the unresolved B6–B8 claims would then need reassessment

@@ -1,0 +1,37 @@
+Stage D — current decision frontier
+
+Mode: Retrospective. Evidence already seen: S1 project brief; S2 planning-meeting statement; sealed Stage A, Stage B and Stage C outputs. The conditions below are formulated after seeing that material, not preregistered.
+
+What can already be decided
+- The supplied records do not establish a competitive-advantage case. S2’s “could give us an advantage” records a tentative expectation, without comparative results or economic evidence
+- This evidentiary finding does not establish that a higher buyback price would fail
+- S1 records non-adoption at its reference point. S2 does not establish adoption or authority; current decision status remains unresolved
+
+Unresolved distinction that could change the assessment
+Whether a specified higher offer produces a meaningful competitive benefit and acceptable incremental economics, compared with a defined alternative, within a stated scope. This separates C1 from C2, consistent with B5’s unresolved status.
+
+The comparison needs to identify:
+- The offer: price increase, baseline, comparable devices and other offer conditions
+- The purpose: what measurable outcome counts as an advantage, and over what scope and period
+- The trade-off: the service pays more to acquire devices. Any benefit must justify the additional payout and relevant incremental costs, including higher payments on transactions that would have occurred at the comparison price
+
+The operative alternative is the defined comparison offer. The records establish neither an existing price to retain nor another strategy to prefer.
+
+Evidence sufficient for a bounded decision
+A sufficiently informative, credible comparison of the specified offers could distinguish:
+- Meaningful improvement meeting the economic requirement: support for the higher offer within the evaluated scope
+- No meaningful improvement, or improvement failing the economic requirement: evidence against that particular increase within the evaluated scope
+- Results too uncertain to distinguish those outcomes: the substantive frontier remains unresolved
+
+Observed transaction volume alone would not resolve the economic trade-off. A short, narrow comparison would not establish durable or market-wide advantage.
+
+Smallest useful new observation
+None is needed to determine that the current packet is insufficient. To resolve the substantive distinction, the smallest useful addition is one credible offer comparison reporting both the defined competitive outcome and incremental economics, with enough precision for the bounded decision. A single transaction or another expression of enthusiasm would not suffice.
+
+Dependencies
+- Define the comparator, increase, scope and success criteria before interpreting new results; these definitions are not themselves evidence of effectiveness
+- New comparison evidence enters at Stage A and requires reassessment of B5–B6 and the relevant Stage C hypotheses
+- A dated authorization record is a separate dependency if implementation is contemplated. It cannot establish competitive merit
+- No earlier-stage error requiring reopening is apparent from S1–S2
+
+No final recommendation is issued at this stage

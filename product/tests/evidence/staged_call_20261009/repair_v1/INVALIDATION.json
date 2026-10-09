@@ -1,0 +1,57 @@
+{
+  "repair_id": "premise_scope_v1",
+  "created_at": "2026-10-09T06:08:01.017873+00:00",
+  "earliest_reopened_stage": "Y.B",
+  "reused": [
+    {
+      "artifact": "Y/SOURCES.txt",
+      "sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e"
+    },
+    {
+      "artifact": "Y/A/OUTPUT.txt",
+      "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4"
+    }
+  ],
+  "invalidated_for_new_generation": [
+    {
+      "stage": "Y.B",
+      "original_output_sha256": "4637f977c2636fcbb0fb4a55fd6b16a7652b38dbb1b57296f5e76cf0cb2189a4"
+    },
+    {
+      "stage": "Y.C",
+      "original_output_sha256": "8b2b1fe500def862e90a10c266cc3605f3e6919a7cfb31df577666f13312da54"
+    },
+    {
+      "stage": "Y.D",
+      "original_output_sha256": "30f086bd95410f20ff0d9125cde21c69afc3abc79d5bfd447051541929499d34"
+    },
+    {
+      "stage": "Y.E",
+      "original_output_sha256": "459f056d1eb48743c1d99e6fdf22117d66ffeb8a2d93d32ac6d704a9da1100b0"
+    },
+    {
+      "stage": "Y.F",
+      "original_output_sha256": "b12e8218d213b0cdea01c3c990998c0fd63558c2dabbc426314bf0759bb5caa0"
+    }
+  ],
+  "preserved_originals": true,
+  "recompute_order": [
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "unaffected": [
+    "X.A",
+    "X.B",
+    "X.C",
+    "X.D",
+    "X.E",
+    "X.F",
+    "Y.A",
+    "Candidate Q examination"
+  ],
+  "contract_patch_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+  "status": "design_ready_not_executed"
+}

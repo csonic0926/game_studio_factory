@@ -1,0 +1,27 @@
+Stage D: current decision frontier
+
+Mode: retrospective. Evidence already seen: S1’s project and decision status; S2’s tentative higher-price proposal; S3’s three completed comparisons ($100/$140, $120/$160 and $80/$120), matched inspection/payment terms, and each seller’s stated reason, “the extra $40”; sealed outputs A–C. A–C add analysis, not independent evidence. These conditions are not preregistered.
+
+What can already be decided
+- Higher quoted prices have demonstrated competitive relevance in these three transactions: Merchant B, the competing device buyer, won every completed sale with a $40 higher quote
+- That supports an evidence-backed pricing hypothesis. It does not establish that increasing our quotes would create an advantage for our service, nor establish profitability or persistence
+- Matching B would remove the recorded price deficit; the records do not establish that matching would win, that exceeding B is necessary, or that $40 is a general response threshold
+- No particular advantage has been adopted. Adoption remains separate from evidentiary support
+
+Decision-changing distinction
+The frontier is whether a specified change to our offer produces additional completed acquisitions worth its additional cost in a defined operating scope. Transferable, economically worthwhile gains would support a different pricing decision from gains consumed by higher payouts, or little transfer from B’s experience.
+
+The relevant sacrifice includes paying more for devices we would already have acquired. Keeping current quotes preserves those acquisition margins but can lose price-sensitive sellers, as S3 illustrates. Matching and exceeding competing quotes are different interventions. The records cannot rank pricing against unspecified alternative differentiators.
+
+Evidence enough for a bounded decision
+- To recognize price as a credible candidate for further consideration: the supplied records already suffice; another observation is unnecessary
+- To choose a defined higher-price policy over current pricing within a particular seller/device segment: a credible comparison must show completed-sale outcomes and total incremental contribution for comparable opportunities under both policies. It must identify our quote change, contemporaneous competing offers, material offer terms, actual payouts, resale proceeds and relevant costs
+- The comparison must count increased payouts on existing acquisitions as well as gains from additional acquisitions. Higher volume or positive margin on acquired devices alone would not settle the choice
+- Evidence adequate for that local decision need not establish market-wide or enduring superiority. A durability claim would additionally require outcomes over a relevant period with competitive responses observed
+- No acceptable exposure, required return or decision horizon is supplied, so a numerical acceptance threshold cannot be assigned
+
+Smallest necessary next evidence, if advancing beyond candidate status
+A scoped comparison of our specified changed offer against current pricing, linking completed acquisitions to incremental economics. One isolated successful higher-price sale would not establish incremental gain.
+
+Dependencies
+No material earlier-stage error requires reopening. New comparative evidence would address B6 and B8 and distinguish C1–C3; B7 requires reassessment only if the intended claim extends beyond the measured scope.

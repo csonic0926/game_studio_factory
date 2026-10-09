@@ -1,0 +1,11 @@
+{
+  "context_id": "/root/audit_factory_call_dependencies/audit_trial_evidence",
+  "status": "completed_with_findings",
+  "completed_at": "2026-10-09T06:04:38.384171+00:00",
+  "output_sha256": "3f01e03a4cd624f6167ef899e32d84dae33879fc51a4acbee29e8c714a9d98c1",
+  "output_bytes": 15916,
+  "first_response_preserved": true,
+  "semantic_output_repairs": 0,
+  "reported_packet_read": "sha and size verified; initial display truncated; complete same-file contiguous reads before audit; no other sources/tools afterward",
+  "claim_limit": "child self-report; no provider-level trace available"
+}

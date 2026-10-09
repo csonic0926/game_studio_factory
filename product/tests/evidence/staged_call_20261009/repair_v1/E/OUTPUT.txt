@@ -1,0 +1,27 @@
+Stage E: explanation and decision-condition resolution
+
+Scope: S1–S3 are undated. No observation occurred after D. Findings concern the recorded proposal and S3’s three completed choices, not current market conditions.
+
+Explanation dispositions
+- C1 remains live; effectiveness of our price change is unresolved. S3 records our/B quotes of $100/$140, $120/$160 and $80/$120 for Sellers 01–03. Each selected B and gave “the extra $40” as the reason; “Each selected sale was completed.” This supports price as a consequential choice factor in those comparisons, without demonstrating an effect from changing our offer
+- C2 remains a compatible possibility, without affirmative evidence that another attribute mattered. S3 records “same devices” and “the same inspection conditions and payment timing,” but does not describe other attributes. Missing attributes do not establish their influence
+- S3 is shared evidence compatible with both explanations, not a discriminator between them. C1 and C2 can also both hold. No supplied observation separates a price-only effect from an effect conditioned by a specific other attribute; neither explanation is refuted
+
+Claim dispositions retained
+- B1 remains refuted within S1’s historical scope: “No decision on a particular advantage has been adopted.” Current adoption is unknown
+- B2 remains supported as a proposal only: S2 asks, “What if we offered a higher buyback price?” and says it “could give us an advantage”
+- B3–B4 remain supported for S3’s three comparisons: Merchant B won the recorded completed choices with $40-higher quotes, and those sellers attributed their choices to the difference. These are findings from one log, not market-wide estimates
+- B5 remains unresolved: matching the three recorded conditions and recording sellers’ reasons does not establish price as the sole causal difference
+- B7–B8 remain unresolved: S2 defines no increase or comparator; S3 observes no changed offer from us and supplies no costs, broader sample or persistence evidence
+- B9 remains refuted as an evidence-sufficiency proposition. The packet does not establish B7 or B8; that does not refute the proposed change’s possible success
+
+Dependency requiring repair
+- B6 cannot be carried forward unchanged. Reopen Stage B, the earliest defective stage: its named proposition concerns what S3 establishes, while its disposition addresses the unknown actual-payment outcome. Separate and assess those propositions. S3’s “Each selected sale was completed” provides no final payout figures; A8 correctly preserves that omission. This stage does not replace B6’s support decision, and payout-dependent conclusions remain unavailable
+
+Decision conditions still open
+- Seller response: No comparative outcome under our defined higher and unchanged quotes is supplied. The price amount, competitive position, target population and test period remain unspecified
+- Commercial outcome: No actual payouts, downstream proceeds, relevant costs or acceptable economic tradeoff are supplied. Recorded completed choices cannot resolve commercial worth
+- Explanation discrimination: A specific other attribute and evidence separating its effect or interaction with price would be needed if that distinction affects the decision. Merely collecting another completed sale would not distinguish the explanations
+- Generalization: Repeatability and durability remain unestablished. They become additional decision requirements only if the intended claim extends beyond a tested offer, population and period
+
+No supplied evidence satisfies D’s proposed new-evidence conditions. The final value tradeoff remains outside this stage.

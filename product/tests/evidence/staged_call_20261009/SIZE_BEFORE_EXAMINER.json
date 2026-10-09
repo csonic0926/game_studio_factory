@@ -1,0 +1,8 @@
+{
+  "semantic_stage_calls": 12,
+  "stage_input_bytes": 110221,
+  "stage_output_bytes": 37745,
+  "examiner_input_bytes": 158582,
+  "unique_raw_source_bytes": 748,
+  "host_reported_tokens": null
+}

@@ -1,0 +1,22 @@
+Stage F: bounded recommendation
+
+The proposed price increase does not have an established competitive-advantage case. That conclusion concerns the evidence supplied, not whether the change would succeed [F1].
+
+Recommend defining a bounded comparison with our unchanged offer before endorsing implementation. The three recorded losses justify investigating price, but do not identify a winning increase or establish commercial value [F2, F5].
+
+The decision-changing uncertainty is whether a specified increase generates enough additional completed purchases to justify its acquisition costs, including higher payments on purchases we would otherwise have won. More purchases alone would not resolve that tradeoff [F3, F5].
+
+Before launching a comparison, specify the increase, competitive setting, seller/device population and period, and have the decision-maker set acceptable economic gains and losses. Measure completed purchases, actual payouts, downstream proceeds and relevant costs across both offers. No numerical threshold or adequate sample size follows from this packet [F5]. A specific non-price alternative merits comparison if it becomes a genuine decision option or compromises the price comparison; unspecified alternatives do not justify expanding the test [F4, F6].
+
+Material claims used
+
+- F1 — established_fact, B9 and E’s retained B7–B9 dispositions: S1–S3 do not establish advantage from our unspecified proposed increase. Success, profitability and persistence remain unresolved. All records are undated
+- F2 — established_fact, B3–B4 and E: In S3’s three same-device comparisons, with matched inspection conditions and payment timing, Merchant B quoted $40 more; all three sellers chose B, completed their sales and attributed their choices to the difference. This is one log’s bounded behavioral evidence
+- F3 — conditional_hypothesis, C1: A defined higher quote from us could increase completed purchases while increasing acquisition expenditure and reducing contribution per device. Neither the incremental purchases nor the net economic result is established for our changed offer
+- F4 — conditional_hypothesis, C2: A specific other attribute could condition the price effect. S3 supplies no affirmative evidence that such an attribute influenced its three sellers
+- F5 — value_judgment, dependencies F1–F3 and D/E’s open seller-response and commercial conditions: Preparing a scoped comparison is justified; endorsing implementation on an established-advantage rationale is not. Whether conducting the comparison is worth its own cost requires an acceptable budget
+- F6 — value_judgment, dependencies F4 and D/E’s explanation conditions: Keep investigation focused unless a concrete attribute distinction could change the decision
+
+Required upstream work
+
+Reopen Stage B’s B6 before using it for payout-dependent conclusions: separately assess the actual-payment proposition and the proposition that S3 establishes it. Stage A correctly records the missing final payout amounts. This repair does not block the recommendation above, which relies on recorded quotes and completed choices, not established payouts. Anchor any new comparative evidence at Stage A before reassessing the affected claims and recommendation.

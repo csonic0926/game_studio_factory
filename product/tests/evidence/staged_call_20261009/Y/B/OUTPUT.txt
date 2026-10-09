@@ -1,0 +1,25 @@
+Stage B: material claims
+
+- B1 — The service is under consideration in a market described as crowded. Status: supported. Anchors: A1 / S1. Scope: project context. The brief records this characterization; it does not independently establish market conditions
+
+- B2 — Higher buyback pricing is a colleague’s tentative proposal, and no particular competitive advantage has been adopted. Status: supported. Anchors: A2–A3 / S1–S2. Scope: recorded proposal and decision status. Empirical support for the idea would not itself constitute adoption
+
+- B3 — Merchant B quoted exactly $40 more in each of the three comparisons and secured all three completed sales. Status: supported. Anchors: A4–A8 / S3. Scope: these three comparisons only. The devices, inspection conditions and payment timing were matched as recorded
+
+- B4 — Higher quoted price has observed competitive relevance in these cases. Status: supported. Anchors: A5–A8 / S3. Scope: Merchant B’s advantage in the logged choices. Completed selections provide behavioral evidence, and every seller identified “the extra $40” as the reason. This is stronger than a hypothetical preference statement
+
+- B5 — Price was experimentally isolated as the sole cause of those choices. Status: unresolved. Anchors: A4–A8 / S3. Scope: causal attribution. Seller explanations support price’s role, but the log does not establish equivalence on all other attributes or provide an experimental counterfactual
+
+- B6 — A specified increase in our buyback quotes would win additional completed sales. Status: unresolved. Anchors: A3–A8 / S2–S3. Scope: the proposed intervention. The observations support its underlying mechanism, but our changed offer was not tested; the increase, resulting competitive position and rivals’ responses are unspecified
+
+- B7 — These results establish a market-wide competitive advantage. Status: unresolved. Anchors: A1, A4–A8 / S1, S3. Scope: generalization. Three comparisons in one log establish a bounded finding; sample selection, representativeness and broader outcomes are unknown
+
+- B8 — Higher pricing would produce a profitable, durable advantage for our service. Status: unresolved. Anchors: A1–A8 / S1–S3. Scope: business viability and persistence. No acquisition economics, resale proceeds, operating costs, long-term outcomes or evidence of resistance to competitor matching is supplied
+
+Conflicts, gaps and dependencies
+
+- No source conflict or material Stage A misrepresentation is evident
+- B3–B5 depend on the same log; three entries are not three independently corroborated sources
+- B6 depends on transferring the observed advantage from Merchant B’s offers to an unspecified change in ours. Resolving it requires defined offer terms and evidence of outcomes under that change
+- B7 requires broader sampling evidence; B8 requires economics and evidence about competitive persistence
+- The records establish local competitive relevance of higher quoted prices. Adoption, causal isolation, generalization and business viability remain separate questions; none follows automatically from that finding

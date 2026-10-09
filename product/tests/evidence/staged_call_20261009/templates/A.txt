@@ -1,0 +1,6 @@
+Preserve the material source anchors. Give each an ID, its source/location, a
+short exact excerpt or event, attribution, applicable scope and any ambiguity.
+Distinguish recorded statements, recorded observations, proposals and adopted
+decisions where the records allow it. Report missing distinctions as unknown.
+Do not decide whether the source assertions establish the proposed outcome,
+develop explanations or make the final recommendation.

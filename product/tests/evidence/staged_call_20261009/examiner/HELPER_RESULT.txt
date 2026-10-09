@@ -1,0 +1,9 @@
+No child was launched.
+
+The complete file was read programmatically and verified:
+- UTF-8 bytes: 158582
+- SHA-256: 54d16b72d9ec1855236602902100cd488372c59b6ffd07482aa68ba3d91a38aa
+
+The returned prompt text was truncated. Its roughly 39,600-token payload also exceeds my available response budget for an unchanged inline spawn call. I cannot guarantee the required exact transmission, so I stopped without attempting a launch.
+
+No host size rejection occurred. No invocation identity, launch record or child output exists from this helper.

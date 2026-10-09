@@ -1,0 +1,24 @@
+Stage C — live hypotheses and conditional directions
+
+Neither explanation is established by S1–S2. These are testable hypotheses, not adopted decisions or a final recommendation.
+
+C1 — A higher offer creates a worthwhile competitive benefit
+- B-claim dependencies: B2 establishes the proposal; B5 leaves its effect unresolved; B6 rules out treating the packet as substantiation
+- Hypothesis: Increasing the offer attracts enough additional or more valuable buybacks to justify the additional payout
+- Proposed change: Evaluate a specified increase against a defined comparison offer for comparable devices and conditions
+- Possible benefit/cost: More completed buybacks or another agreed competitive outcome; higher acquisition spending and evaluation costs
+- Incompatible observations: A sufficiently informative comparison finds no improvement in the defined competitive outcome, or gains fail the agreed economic requirement, within the tested scope
+- Observable distinction: Measure customer response and economic results together. Increased transaction volume alone would not establish this explanation
+
+C2 — A higher offer provides no worthwhile advantage within the tested scope
+- B-claim dependencies: B2 supplies the proposed intervention; B5 explicitly leaves failure as well as success unresolved; B6 concerns missing evidence, not proof of failure
+- Hypothesis: Customer response is insufficient, or any response is outweighed by the higher payout
+- Conditional direction: If substantiated, retain the comparison price rather than expand the tested increase. Different increases or segments would remain separate hypotheses
+- Possible benefit/cost: Avoid uneconomic payout increases; potentially forgo gains outside the evaluated scope
+- Incompatible observations: A credible comparison demonstrates the defined competitive benefit while meeting the agreed economic requirement
+- Observable distinction: Separate “little customer response” from “positive response with inadequate economics”; those findings imply different reasons the tested proposal falls short
+
+Shared dependencies
+- Define “higher,” “advantage,” the proposed scope, and economic success criteria before distinguishing C1 from C2
+- B3–B4 leave current adoption unresolved. A dated decision record could establish authorization, but would not establish merit
+- No earlier-stage correction is indicated. New comparison evidence would enter at Stage A, then require reassessment of B5–B6 in Stage B

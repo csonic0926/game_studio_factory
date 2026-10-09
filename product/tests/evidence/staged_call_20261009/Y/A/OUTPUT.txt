@@ -1,0 +1,17 @@
+Stage A: source anchors
+
+- A1 — S1, project brief, context. Exact excerpt: “considering a used-device buyback service in a crowded market.” Attribution: project brief; author unspecified. Type: recorded description. Scope: proposed service and market characterization; supporting market evidence is not supplied
+- A2 — S1, project brief, decision status. Exact excerpt: “No decision on a particular advantage has been adopted.” Type: recorded decision-status statement. Scope: choice of competitive advantage; it does not establish the status of other project decisions
+- A3 — S2, planning meeting, colleague’s suggestion. Exact excerpt: “What if we offered a higher buyback price? That could give us an advantage.” Attribution: unnamed colleague. Type: proposal and tentative assertion, not an adopted decision. Scope: unspecified higher-price offer; amount, reference price and implementation are unknown
+- A4 — S3, completed-choice log, comparison conditions. Exact excerpt: “same devices” and “Both offers used the same inspection conditions and payment timing.” Attribution: log; recorder unspecified. Type: recorded comparison conditions. Scope: the three logged comparisons; equivalence on other attributes is not recorded
+- A5 — S3, Seller 01 entry. Recorded event: ours quoted $100; Merchant B quoted $140; seller selected B. Exact stated reason: “the extra $40.” Type: recorded choice and seller-attributed statement. Scope: Seller 01’s comparison
+- A6 — S3, Seller 02 entry. Recorded event: ours quoted $120; Merchant B quoted $160; seller selected B. Exact stated reason: “the extra $40.” Type: recorded choice and seller-attributed statement. Scope: Seller 02’s comparison
+- A7 — S3, Seller 03 entry. Recorded event: ours quoted $80; Merchant B quoted $120; seller selected B. Exact stated reason: “the extra $40.” Type: recorded choice and seller-attributed statement. Scope: Seller 03’s comparison
+- A8 — S3, completion and coverage. Exact excerpts: “Each selected sale was completed” and “This log covers those three comparisons.” Attribution: log. Type: recorded completion and scope statements. Scope: those three sales; final amounts actually paid, dates and sample-selection method are unspecified
+
+Dependencies and missing distinctions
+
+- A5–A7 share the conditions and coverage recorded in A4 and A8; they are entries in one log, not independently corroborated sources
+- The sellers’ reasons are recorded statements; completed choices are recorded events. Both are available only through S3
+- No sealed earlier outputs or prior-stage dependencies were supplied
+- Establishing a specific adopted or implemented price change would require a pricing decision or implementation record; neither is supplied

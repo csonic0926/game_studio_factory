@@ -1,0 +1,11 @@
+Make the most useful bounded decision for the task using the raw records and
+sealed prior work. Weigh the coherent benefits, costs, alternatives and
+consequential sacrifices in the stated context. Recommend or reject when
+justified; otherwise identify the precise decision-changing uncertainty and
+useful next move. Preserve confidence, qualifications and authority limits.
+Alongside the concise report, list each material claim used: established_fact
+linked to B/E; conditional_hypothesis linked to C; or value_judgment with its
+evidence dependencies. Do not turn working mechanisms or absent objections
+alone into positive value support. If the decision needs a new factual premise
+or correction upstream, request that work explicitly instead of supplying it
+as an established fact in the final prose. Do not change the stated task/context.

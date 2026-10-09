@@ -1,0 +1,26 @@
+Stage C: live hypotheses and test directions
+
+Scope: S1–S3 are undated. S3 concerns three completed choices involving Merchant B; it does not observe our proposed price change. Directions below are proposals, not adopted actions or established advantages.
+
+C1 — A price-only change could improve our completed-sale wins
+- Dependencies: B2–B5, B7–B9; S2’s suggestion and S3’s three comparisons
+- Hypothesis: A defined increase in our quoted amount could change seller choices while our other offer attributes remain unchanged. S3’s recorded choices and seller-attributed reasons motivate this hypothesis but do not establish its transfer to our changed offer
+- Proposed change: Compare an unchanged-quote offer with a specified higher-quote offer for a defined seller/device population. Record the contemporaneous competitor quote and comparable inspection and payment conditions. Merchant B is a candidate comparator because it appears in S3; its suitability for a new test is unestablished
+- Possible benefit/cost: More completed purchases; potentially higher acquisition expenditure and lower contribution per device. The net effect is unknown
+- Incompatible observation: A sufficiently informative controlled comparison showing no improvement, or worse results, would reject the claim that the tested increase improves completed-sale wins in that population and period
+- Observable distinction: Incremental completed sales attributable to our changed quote. Neither matching Merchant B nor adding $40 is established as sufficient by S3
+
+C2 — Other offer attributes could condition whether a higher quote works
+- Dependencies: B4–B5, B7–B9; S3 matches devices, inspection conditions and payment timing but leaves other attributes unspecified
+- Hypothesis: Price could influence choices while another offer attribute determines whether increasing our quote changes behavior. This is a live possibility, not evidence that another attribute influenced the three logged sellers
+- Proposed change: Document other relevant offer differences, then identify a specific feasible attribute and compare its change, the price change, and their combination against an unchanged offer
+- Possible benefit/cost: Identify a combination that increases completed sales or avoids an ineffective price increase; additional service costs and greater testing complexity are possible
+- Incompatible observation: For a specified attribute and population, sufficiently precise evidence of neither an attribute effect nor an interaction with price would undermine that particular explanation. It would not eliminate every unspecified alternative
+- Observable distinction: Whether the same price increase produces different outcomes depending on that attribute. C1 and C2 remain compatible if price helps on its own and the attribute also changes its effect
+
+Shared boundary
+- Dependencies: B8–B9
+- Either direction could improve seller choice without establishing profitable, repeatable or durable advantage. Distinguishing those outcomes requires actual payouts, downstream proceeds and costs, broader/repeated observations, and competitor-response evidence. Any new evidence must be anchored at Stage A before affected Stage B claims are reassessed
+
+Dependency requiring reopening
+- Reopen B6 at Stage B: its named proposition concerns whether S3 establishes higher actual payments, while its “unresolved” assessment concerns the payment outcome itself. S3 supplies no final payout amounts; A8 correctly preserves that omission. Those two propositions need separate treatment. Neither candidate above relies on actual higher payments having been established

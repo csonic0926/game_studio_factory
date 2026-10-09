@@ -1,0 +1,8 @@
+Resolve what the supplied evidence establishes about the live explanations and
+decision conditions. Distinguish observations shared by competing explanations
+from actual discriminators when applicable. Give explanation dispositions,
+retained/refuted/unresolved claim IDs, exact evidence citations, observed scope
+and remaining decision-changing unknowns. No additional observation occurred
+after D in this packet. If an earlier support decision is wrong, identify the
+earliest stage and correction needed. Do not replace that decision yourself or
+make the final value/recommendation tradeoff.

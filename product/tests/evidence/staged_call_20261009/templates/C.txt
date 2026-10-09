@@ -1,0 +1,7 @@
+Develop the live explanations or directions consistent with the records and
+support decisions. Give each an ID, its B-claim dependencies, the proposed
+action/change and possible benefit/cost, incompatible observations and any
+observable distinction that matters. New creative hypotheses are welcome but
+must be identified as hypotheses. Use only as many alternatives as the actual
+ambiguity warrants; no-fit is valid. Do not issue the final recommendation or
+upgrade a factual claim without source support.

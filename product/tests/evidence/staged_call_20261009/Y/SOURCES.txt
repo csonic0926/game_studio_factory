@@ -1,0 +1,6 @@
+S1 / project brief: "We are considering a used-device buyback service in a crowded market. No decision on a particular advantage has been adopted."
+
+S2 / planning meeting: "Colleague: What if we offered a higher buyback price? That could give us an advantage."
+
+S3 / completed-choice log:
+"Three sellers compared our quoted buyback amount with Merchant B's quote for their same devices. Both offers used the same inspection conditions and payment timing. Seller 01: ours $100, B $140; selected B; stated reason 'the extra $40'. Seller 02: ours $120, B $160; selected B; stated reason 'the extra $40'. Seller 03: ours $80, B $120; selected B; stated reason 'the extra $40'. Each selected sale was completed. This log covers those three comparisons."

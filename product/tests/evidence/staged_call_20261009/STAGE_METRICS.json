@@ -1,0 +1,95 @@
+{
+  "rows": [
+    {
+      "arm": "X",
+      "stage": "A",
+      "input_bytes": 1589,
+      "output_bytes": 1632,
+      "operator_launch_to_seal_seconds": 31.481
+    },
+    {
+      "arm": "X",
+      "stage": "B",
+      "input_bytes": 3290,
+      "output_bytes": 2628,
+      "operator_launch_to_seal_seconds": 37.263
+    },
+    {
+      "arm": "X",
+      "stage": "C",
+      "input_bytes": 5942,
+      "output_bytes": 2505,
+      "operator_launch_to_seal_seconds": 62.278
+    },
+    {
+      "arm": "X",
+      "stage": "D",
+      "input_bytes": 8604,
+      "output_bytes": 3189,
+      "operator_launch_to_seal_seconds": 50.579
+    },
+    {
+      "arm": "X",
+      "stage": "E",
+      "input_bytes": 11758,
+      "output_bytes": 3707,
+      "operator_launch_to_seal_seconds": 49.92
+    },
+    {
+      "arm": "X",
+      "stage": "F",
+      "input_bytes": 15733,
+      "output_bytes": 3514,
+      "operator_launch_to_seal_seconds": 65.896
+    },
+    {
+      "arm": "Y",
+      "stage": "A",
+      "input_bytes": 2077,
+      "output_bytes": 2792,
+      "operator_launch_to_seal_seconds": 43.341
+    },
+    {
+      "arm": "Y",
+      "stage": "B",
+      "input_bytes": 4938,
+      "output_bytes": 3138,
+      "operator_launch_to_seal_seconds": 53.149
+    },
+    {
+      "arm": "Y",
+      "stage": "C",
+      "input_bytes": 8100,
+      "output_bytes": 4202,
+      "operator_launch_to_seal_seconds": 80.257
+    },
+    {
+      "arm": "Y",
+      "stage": "D",
+      "input_bytes": 12459,
+      "output_bytes": 3448,
+      "operator_launch_to_seal_seconds": 71.215
+    },
+    {
+      "arm": "Y",
+      "stage": "E",
+      "input_bytes": 15872,
+      "output_bytes": 3719,
+      "operator_launch_to_seal_seconds": 53.483
+    },
+    {
+      "arm": "Y",
+      "stage": "F",
+      "input_bytes": 19859,
+      "output_bytes": 3271,
+      "operator_launch_to_seal_seconds": 56.722
+    }
+  ],
+  "semantic_stage_calls": 12,
+  "stage_input_bytes": 110221,
+  "stage_output_bytes": 37745,
+  "stage_operator_wall_seconds": 1097.898,
+  "examiner_input_bytes": 158582,
+  "token_usage": null,
+  "timing_limit": "Includes manual coordinator delays; not model-only latency"
+}

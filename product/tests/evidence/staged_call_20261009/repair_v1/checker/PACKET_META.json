@@ -1,0 +1,10 @@
+{
+  "packet_sha256": "104abdf2615ab392076a735df69e88c519e83063e16a538d60347dbf0bc948b2",
+  "packet_bytes": 39530,
+  "status": "prepared",
+  "context_id": null,
+  "prepared_at": "2026-10-09T06:20:03.924317+00:00",
+  "answer_key_included": false,
+  "old_outputs_or_diagnosis_included": false,
+  "delivery": "explicit read of exact checker-only file; shared filesystem; no inherited history"
+}

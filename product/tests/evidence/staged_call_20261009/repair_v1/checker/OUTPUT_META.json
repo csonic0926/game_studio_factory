@@ -1,0 +1,21 @@
+{
+  "packet_sha256": "104abdf2615ab392076a735df69e88c519e83063e16a538d60347dbf0bc948b2",
+  "packet_bytes": 39530,
+  "status": "sealed_with_findings",
+  "context_id": "/root/audit_factory_call_dependencies/check_scoped_decision",
+  "prepared_at": "2026-10-09T06:20:03.924317+00:00",
+  "answer_key_included": false,
+  "old_outputs_or_diagnosis_included": false,
+  "delivery": "explicit read of exact checker-only file; shared filesystem; no inherited history",
+  "launch_at": "2026-10-09T06:20:23.115448+00:00",
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning": "xhigh",
+  "fork_turns": "none",
+  "wrapper_sha256": "de0ea3355ec58ce60e6600c502a61a4ff22f77e52281fcbf206f9efd68899ff3",
+  "completed_at": "2026-10-09T06:22:46.818753+00:00",
+  "output_sha256": "7ad162e121fc8404ce0ca9ff7e72577dae4b46de6b34e4b65dc2378c6295af9a",
+  "output_bytes": 4176,
+  "first_response_preserved": true,
+  "reported_packet_read": "Complete packet size/hash verified; no further tools or outside sources used",
+  "semantic_verdict": "bounded final recommendation supported; B6 and D defects remain; no chain-wide PASS"
+}

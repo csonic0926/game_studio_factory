@@ -1,0 +1,625 @@
+{
+  "status": "completed_with_findings_under_declared_examiner_delivery_revision",
+  "created_at": "2026-10-09T05:33:31.469310+00:00",
+  "source_contracts": {
+    "/workspace/scratch/dc7e80ad5d42/product_factory_worktree_20261009/product/docs/STAGED_CALL_PROTOCOL_DESIGN.md": "033801f69aff31eed93ffd7ceea526b942621a039c60e2a9bc7bcf7177ba20fc",
+    "/workspace/scratch/dc7e80ad5d42/product_factory_worktree_20261009/product/tests/STAGED_CALL_EXPERIMENT_PROTOCOL.md": "15bb678e60896af45c597617e0e832dc4f1fbad86c889f7cf6c33f51acefcd89"
+  },
+  "frozen_inputs": {
+    "CANDIDATE_Q.txt": "6a6c8accbe4460b5bea952de32be18df58cef4a67eed306d15a7fe513f937b99",
+    "TASK.txt": "8baa78320d8e21a1287a3e7d33a845b4638a4734e090a358f341890dd4213d0c",
+    "X/SOURCES.txt": "702b8c1461e38794d37e17a14e7d5af5827a2252373c157646db88792f0bf545",
+    "templates/E.txt": "7382eb65d29521ea5c494c3a66d750bdb5a2f82d8fe00a1fa31789c812921e41",
+    "templates/D.txt": "6a42bdd889de40b74c127b4b04a68429b409459f53d1d81984de4c93ade077ab",
+    "templates/C.txt": "3929d630aae274a1ed0d804caf441359fc477f0c3adc41d9a3fb2efd266dd2d5",
+    "templates/A.txt": "df9efa2f3e7eb24d27c5597b6c787563b37ad9f416c21b1fc15839c6cfd54b32",
+    "templates/COMMON.txt": "6173228d13ab6d65e964058ee1b2584738c9b4a4b3268fbf26bee45b9449326f",
+    "templates/EXAMINER.txt": "af3d7ad97a68be592b99abfb943eb5ab657dfe228e51fb4842859b03ddad512d",
+    "templates/F.txt": "972d3bb581531119af816f092dccc4ead3401f4be753acdcf529d79f785d931c",
+    "templates/B.txt": "984b9e18df5b2de321b0df40556e7b6692425289d29ccd4db9862984b220d8ec",
+    "Y/SOURCES.txt": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e"
+  },
+  "settings": {
+    "model_requested": "gpt-6-astra",
+    "reasoning_requested": "xhigh",
+    "fork_turns": "none",
+    "max_concurrent_trial_workers": 2
+  },
+  "context_assurance": "operator_enforced_shared_fs",
+  "execution_records": [
+    {
+      "arm": "X",
+      "stage": "A",
+      "context_id": "/root/audit_factory_call_dependencies/extract_trial_x_sources",
+      "task_name": "/root/audit_factory_call_dependencies/extract_trial_x_sources",
+      "input_sha256": "df9f31c5e8d4f98498dda66d844cedeb7f62fff4fd9db83ff1e09e13d083cf4e",
+      "output_sha256": "e640c5bd4945241090cd411ccc7425ec5bed5b42c8d3de210832af683ca219a2",
+      "prepared_at": "2026-10-09T05:33:31.493527+00:00",
+      "launch_order": 1,
+      "launch_at": "2026-10-09T05:33:47.245131+00:00",
+      "completed_at": "2026-10-09T05:34:18.726159+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "X",
+      "stage": "B",
+      "context_id": "/root/audit_factory_call_dependencies/judge_trial_x_support",
+      "task_name": "/root/audit_factory_call_dependencies/judge_trial_x_support",
+      "input_sha256": "66f2e61b635ee3f3f3b07dbf143443a44aabb6754a489f56644ff95de7a1b832",
+      "output_sha256": "9de24e076c8e38c61199b10cfe996a17be4893968cd693a94f649cf3f3b46be5",
+      "prepared_at": "2026-10-09T05:34:18.757536+00:00",
+      "launch_order": 2,
+      "launch_at": "2026-10-09T05:34:51.754752+00:00",
+      "completed_at": "2026-10-09T05:35:29.018139+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "X",
+      "stage": "C",
+      "context_id": "/root/audit_factory_call_dependencies/develop_trial_x_explanations",
+      "task_name": "/root/audit_factory_call_dependencies/develop_trial_x_explanations",
+      "input_sha256": "130928f84acf4493dffdb97b36853ad8d55eefebcc29c979f8efbaafff7524ef",
+      "output_sha256": "f1e2fc9f2b2eafbda0aa1cd7334ff94e0bd146dead966b6298ef88d0495630e1",
+      "prepared_at": "2026-10-09T05:35:29.043101+00:00",
+      "launch_order": 3,
+      "launch_at": "2026-10-09T05:35:56.407710+00:00",
+      "completed_at": "2026-10-09T05:36:58.685841+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "X",
+      "stage": "D",
+      "context_id": "/root/audit_factory_call_dependencies/identify_trial_x_frontier",
+      "task_name": "/root/audit_factory_call_dependencies/identify_trial_x_frontier",
+      "input_sha256": "3eefc9a84e12dc5ebe85241841631911374e6419f97fe5a0497901286f157325",
+      "output_sha256": "f00803214eae19526bbbbce0a5746e60d196e6f4c2c55fa33eac7b1fdd130f4b",
+      "prepared_at": "2026-10-09T05:36:58.711323+00:00",
+      "launch_order": 4,
+      "launch_at": "2026-10-09T05:37:32.172636+00:00",
+      "completed_at": "2026-10-09T05:38:22.751868+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "X",
+      "stage": "E",
+      "context_id": "/root/audit_factory_call_dependencies/resolve_trial_x_evidence",
+      "task_name": "/root/audit_factory_call_dependencies/resolve_trial_x_evidence",
+      "input_sha256": "cd284cdf42f0e696cff821b32dc4e59f63b3d544a23d4657782d7a1ca3de3cee",
+      "output_sha256": "9b8fda2f1b52e16e2c990e3cb84a33f73062b319c55dc794ffc005515459c948",
+      "prepared_at": "2026-10-09T05:38:22.776481+00:00",
+      "launch_order": 5,
+      "launch_at": "2026-10-09T05:39:05.990596+00:00",
+      "completed_at": "2026-10-09T05:39:55.910175+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "X",
+      "stage": "F",
+      "context_id": "/root/audit_factory_call_dependencies/decide_trial_x_case",
+      "task_name": "/root/audit_factory_call_dependencies/decide_trial_x_case",
+      "input_sha256": "981092833268529178eef3b057387c11bd83e11f814a0f99feb61c4790540905",
+      "output_sha256": "bdfccfa3dd369dc39474103d7f85f059f332cc447391df6af3c6e9d5311e651b",
+      "prepared_at": "2026-10-09T05:39:55.934720+00:00",
+      "launch_order": 6,
+      "launch_at": "2026-10-09T05:40:51.021231+00:00",
+      "completed_at": "2026-10-09T05:41:56.917479+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "A",
+      "context_id": "/root/audit_factory_call_dependencies/extract_trial_y_sources",
+      "task_name": "/root/audit_factory_call_dependencies/extract_trial_y_sources",
+      "input_sha256": "bb9b754a682b42f900781dcaef092b479346138b25d9342cd5b63b45ecf44c8c",
+      "output_sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+      "prepared_at": "2026-10-09T05:41:56.970400+00:00",
+      "launch_order": 7,
+      "launch_at": "2026-10-09T05:42:13.155442+00:00",
+      "completed_at": "2026-10-09T05:42:56.496218+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "B",
+      "context_id": "/root/audit_factory_call_dependencies/judge_trial_y_support",
+      "task_name": "/root/audit_factory_call_dependencies/judge_trial_y_support",
+      "input_sha256": "de9b42ef5b2c0250683decf321c9d18c2ff9975047467bab3c2bfbb7872700d6",
+      "output_sha256": "4637f977c2636fcbb0fb4a55fd6b16a7652b38dbb1b57296f5e76cf0cb2189a4",
+      "prepared_at": "2026-10-09T05:42:56.525443+00:00",
+      "launch_order": 8,
+      "launch_at": "2026-10-09T05:43:20.906808+00:00",
+      "completed_at": "2026-10-09T05:44:14.055759+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "C",
+      "context_id": "/root/audit_factory_call_dependencies/develop_trial_y_explanations",
+      "task_name": "/root/audit_factory_call_dependencies/develop_trial_y_explanations",
+      "input_sha256": "c2c5035282b2c873fed8137bf7c1a065ecef36ff8b48bcfac9eb9ca6722584f9",
+      "output_sha256": "8b2b1fe500def862e90a10c266cc3605f3e6919a7cfb31df577666f13312da54",
+      "prepared_at": "2026-10-09T05:44:14.080777+00:00",
+      "launch_order": 9,
+      "launch_at": "2026-10-09T05:44:50.070977+00:00",
+      "completed_at": "2026-10-09T05:46:10.327679+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "D",
+      "context_id": "/root/audit_factory_call_dependencies/identify_trial_y_frontier",
+      "task_name": "/root/audit_factory_call_dependencies/identify_trial_y_frontier",
+      "input_sha256": "2c9d5d5a6766c5e53eeb9c4e270abfa847c40563a5d944816284e866ed53e16e",
+      "output_sha256": "30f086bd95410f20ff0d9125cde21c69afc3abc79d5bfd447051541929499d34",
+      "prepared_at": "2026-10-09T05:46:10.356954+00:00",
+      "launch_order": 10,
+      "launch_at": "2026-10-09T05:46:57.032472+00:00",
+      "completed_at": "2026-10-09T05:48:08.247726+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "E",
+      "context_id": "/root/audit_factory_call_dependencies/resolve_trial_y_evidence",
+      "task_name": "/root/audit_factory_call_dependencies/resolve_trial_y_evidence",
+      "input_sha256": "eeedc91741236fa4f35f38b8f9393b8f0b31d8a6f96002530f5a666381778cb2",
+      "output_sha256": "459f056d1eb48743c1d99e6fdf22117d66ffeb8a2d93d32ac6d704a9da1100b0",
+      "prepared_at": "2026-10-09T05:48:08.278461+00:00",
+      "launch_order": 11,
+      "launch_at": "2026-10-09T05:49:06.522642+00:00",
+      "completed_at": "2026-10-09T05:50:00.006136+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    },
+    {
+      "arm": "Y",
+      "stage": "F",
+      "context_id": "/root/audit_factory_call_dependencies/decide_trial_y_case",
+      "task_name": "/root/audit_factory_call_dependencies/decide_trial_y_case",
+      "input_sha256": "12b41f39963d3236b9c12af389b38c2d95fd87b4b5b7c2e6c8f3a95b5cbde2ee",
+      "output_sha256": "b12e8218d213b0cdea01c3c990998c0fd63558c2dabbc426314bf0759bb5caa0",
+      "prepared_at": "2026-10-09T05:50:00.033674+00:00",
+      "launch_order": 12,
+      "launch_at": "2026-10-09T05:51:08.421134+00:00",
+      "completed_at": "2026-10-09T05:52:05.143020+00:00",
+      "status": "sealed",
+      "observed_tool_events": [],
+      "extra_exposure": "none observed; not access-controlled"
+    }
+  ],
+  "next_action": "STOP synthetic expansion; hand off sealed findings, publication manifest and canonical SAB evidence",
+  "deviations": [],
+  "usage": "not exposed by native collaboration response; retain unknown unless available later",
+  "updated_at": "2026-10-09T06:22:46.818753+00:00",
+  "timestamp_semantics": "Operator UTC timestamps recorded after observing preparation, host launch response, or delivered final output; not provider latency telemetry.",
+  "identity_semantics": "Native host exposes canonical task path, used as context identifier; no separate opaque conversation ID returned.",
+  "tool_observation_limit": "No child tool transcript API exposed in parent; observed_tool_events records only events actually delivered to coordinator, not proof of zero unseen calls.",
+  "source_revision_events": [
+    {
+      "observed_at": "2026-10-09T05:41:56.941786+00:00",
+      "source_version_from": "X",
+      "source_version_to": "Y",
+      "source_sha256_from": "702b8c1461e38794d37e17a14e7d5af5827a2252373c157646db88792f0bf545",
+      "source_sha256_to": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+      "changed_sources": [
+        "S3 added"
+      ],
+      "reopen_from": "A",
+      "stale_for_new_source_version": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "historical_outputs": "X remains immutable and scoped to its original sources",
+      "new_contexts_receive_prior_arm_outputs": false
+    }
+  ],
+  "examiner": {
+    "status": "not_launched",
+    "input_sha256": "54d16b72d9ec1855236602902100cd488372c59b6ffd07482aa68ba3d91a38aa",
+    "input_bytes": 158582,
+    "input_characters": 156962,
+    "context_id": null,
+    "prepared_at": "2026-10-09T05:52:05.171200+00:00",
+    "context_assurance": "operator_enforced_shared_fs",
+    "key_included": false,
+    "semantic_verdict_provided": false,
+    "blocker": "Complete inline payload could not be faithfully transmitted within helper tool-output and response budget; no host rejection or spawn attempt",
+    "blocker_observed_at": "2026-10-09T05:54:35.793784+00:00"
+  },
+  "coordination_helpers": [
+    {
+      "context_id": "/root/audit_factory_call_dependencies/launch_trial_examiner",
+      "role": "mechanical exact-payload launch; no judgment",
+      "launched_at": "2026-10-09T05:52:43.948802+00:00",
+      "status": "stopped_without_examiner_launch",
+      "model_requested": "gpt-6-astra",
+      "reasoning_requested": "xhigh",
+      "fork_turns": "none",
+      "not_a_semantic_trial_stage": true,
+      "completed_at": "2026-10-09T05:54:35.793784+00:00",
+      "result_sha256": "fe5de246748cb739a77f7f41f076965e43f0b1baa1727b522163024d26654fd5"
+    }
+  ],
+  "output_serialization": "Visible first final responses preserved as UTF-8 plain text with LF terminal newline in stored output files; hashes bind that representation, not unavailable provider raw response bytes.",
+  "examiner_revision_1": {
+    "revision_id": "examiner_delivery_v2",
+    "created_at": "2026-10-09T05:56:00.189502+00:00",
+    "original_packet_preserved": {
+      "path": "examiner/PROMPT.txt",
+      "sha256": "54d16b72d9ec1855236602902100cd488372c59b6ffd07482aa68ba3d91a38aa",
+      "status": "not_launched"
+    },
+    "packet_sha256": "93845fdb7cd7c0197cba1e6fd1852608830a62b159a6dd2428fa0e773a451f72",
+    "packet_bytes": 61780,
+    "reconstructed_stage_prompts": 12,
+    "exact_output_hashes_preserved": true,
+    "semantic_calls_repeated": 0,
+    "answer_key_included": false,
+    "input_access": "Explicit read of one examiner-only packet file; no inherited history; no other trial files permitted",
+    "status": "completed_with_findings",
+    "context_id": "/root/audit_factory_call_dependencies/audit_trial_evidence",
+    "launch_at": "2026-10-09T05:59:51.843735+00:00",
+    "wrapper_sha256": "1fe974260b499bbde99653d589481f87c59d09023d11746d61fd18280963daa2",
+    "requested_model": "gpt-6-astra",
+    "requested_reasoning": "xhigh",
+    "fork_turns": "none",
+    "access": "explicit read of this exact packet file only; operator-enforced shared filesystem",
+    "original_inline_examiner_launched": false,
+    "completed_at": "2026-10-09T06:04:38.384171+00:00",
+    "output_sha256": "3f01e03a4cd624f6167ef899e32d84dae33879fc51a4acbee29e8c714a9d98c1",
+    "output_bytes": 15916,
+    "first_response_preserved": true,
+    "semantic_output_repairs": 0,
+    "reported_packet_read": "sha and size verified; initial display truncated; complete same-file contiguous reads before audit; no other sources/tools afterward",
+    "claim_limit": "child self-report; no provider-level trace available"
+  },
+  "coordination_reviews": [
+    {
+      "context_id": "/root/audit_factory_call_dependencies/review_trial_packet_delivery",
+      "role": "fresh execution-only review of examiner delivery amendment",
+      "status": "PASS",
+      "launched_at": "2026-10-09T05:57:07.811800+00:00",
+      "not_a_semantic_trial_stage": true,
+      "completed_at": "2026-10-09T05:59:31.856179+00:00",
+      "review_sha256": "2caa92b2d1032ede78f5117c49a34d7741b603ee06a3dfb1fd102922e60e2f0a"
+    }
+  ],
+  "actual_call_counts": {
+    "semantic_stages": 12,
+    "revised_independent_examiner": 1,
+    "mechanical_launch_helper": 1,
+    "delivery_execution_reviewer": 1,
+    "total_native_calls_this_trial": 15
+  },
+  "first_report": {
+    "path": "TRIAL_REPORT.md",
+    "sha256": "b69e1ce12c9c0d9e7afb5e3f2446553135758997af33426a697390dfa2c0cc2f",
+    "sealed_at": "2026-10-09T06:06:11.800836+00:00"
+  },
+  "repair_v1": {
+    "repair_id": "premise_scope_v1",
+    "created_at": "2026-10-09T06:08:01.017873+00:00",
+    "earliest_reopened_stage": "Y.B",
+    "reused": [
+      {
+        "artifact": "Y/SOURCES.txt",
+        "sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e"
+      },
+      {
+        "artifact": "Y/A/OUTPUT.txt",
+        "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4"
+      }
+    ],
+    "invalidated_for_new_generation": [
+      {
+        "stage": "Y.B",
+        "original_output_sha256": "4637f977c2636fcbb0fb4a55fd6b16a7652b38dbb1b57296f5e76cf0cb2189a4"
+      },
+      {
+        "stage": "Y.C",
+        "original_output_sha256": "8b2b1fe500def862e90a10c266cc3605f3e6919a7cfb31df577666f13312da54"
+      },
+      {
+        "stage": "Y.D",
+        "original_output_sha256": "30f086bd95410f20ff0d9125cde21c69afc3abc79d5bfd447051541929499d34"
+      },
+      {
+        "stage": "Y.E",
+        "original_output_sha256": "459f056d1eb48743c1d99e6fdf22117d66ffeb8a2d93d32ac6d704a9da1100b0"
+      },
+      {
+        "stage": "Y.F",
+        "original_output_sha256": "b12e8218d213b0cdea01c3c990998c0fd63558c2dabbc426314bf0759bb5caa0"
+      }
+    ],
+    "preserved_originals": true,
+    "recompute_order": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "unaffected": [
+      "X.A",
+      "X.B",
+      "X.C",
+      "X.D",
+      "X.E",
+      "X.F",
+      "Y.A",
+      "Candidate Q examination"
+    ],
+    "contract_patch_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+    "status": "stopped_after_bounded_repair_with_residual_defects",
+    "execution_records": [
+      {
+        "stage": "B",
+        "context_id": "/root/audit_factory_call_dependencies/judge_scope_support",
+        "packet_sha256": "ccb4e47ccba502e1e53def52db68a22fd61be72031823826e8821afbaa0e6173",
+        "packet_bytes": 5454,
+        "dependencies": [
+          {
+            "stage": "A",
+            "path": "Y/A/OUTPUT.txt",
+            "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+            "reuse": true
+          }
+        ],
+        "status": "sealed",
+        "prepared_at": "2026-10-09T06:09:26.919902+00:00",
+        "source_sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+        "guard_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+        "launch_at": "2026-10-09T06:09:41.784142+00:00",
+        "requested_model": "gpt-6-astra",
+        "requested_reasoning": "xhigh",
+        "fork_turns": "none",
+        "input_access": "explicit packet-file read only; operator-enforced shared filesystem",
+        "output_sha256": "c2ec62aaadc70144c5c57a190d5daa564ffa38f3820a5ef6e6203c80122e088a",
+        "output_bytes": 3888,
+        "completed_at": "2026-10-09T06:11:13.241600+00:00",
+        "wrapper_sha256": "a26bdf6dda790bbebdb87be6a74d2d39fc5a363f5649ec70e291ceac39ecbfa6"
+      },
+      {
+        "stage": "C",
+        "context_id": "/root/audit_factory_call_dependencies/develop_scoped_explanations",
+        "packet_sha256": "b913a60c1601f4e47629fe87eff43f9b5573b0c314468671a95ebdb07f637777",
+        "packet_bytes": 9366,
+        "dependencies": [
+          {
+            "stage": "A",
+            "path": "Y/A/OUTPUT.txt",
+            "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+            "reuse": true
+          },
+          {
+            "stage": "B",
+            "path": "repair_v1/B/OUTPUT.txt",
+            "sha256": "c2ec62aaadc70144c5c57a190d5daa564ffa38f3820a5ef6e6203c80122e088a",
+            "reuse": false
+          }
+        ],
+        "status": "sealed",
+        "prepared_at": "2026-10-09T06:11:13.264431+00:00",
+        "source_sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+        "guard_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+        "launch_at": "2026-10-09T06:11:31.072148+00:00",
+        "requested_model": "gpt-6-astra",
+        "requested_reasoning": "xhigh",
+        "fork_turns": "none",
+        "input_access": "explicit packet-file read only; operator-enforced shared filesystem",
+        "wrapper_sha256": "23886c6e7fbb341e25a27ba26c072c0fa041bbf929c75abc569e05080c5ac889",
+        "output_sha256": "b901c39ba32204d8063c1511b675ab8fdce60ef92276466d5d3b03c2d80d3abb",
+        "output_bytes": 3661,
+        "completed_at": "2026-10-09T06:13:48.075726+00:00"
+      },
+      {
+        "stage": "D",
+        "context_id": "/root/audit_factory_call_dependencies/identify_scoped_frontier",
+        "packet_sha256": "63675bed5e5b7cf033ff32b60e5db03ab216b931afa6c06efd3897400e7a9b2f",
+        "packet_bytes": 13184,
+        "dependencies": [
+          {
+            "stage": "A",
+            "path": "Y/A/OUTPUT.txt",
+            "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+            "reuse": true
+          },
+          {
+            "stage": "B",
+            "path": "repair_v1/B/OUTPUT.txt",
+            "sha256": "c2ec62aaadc70144c5c57a190d5daa564ffa38f3820a5ef6e6203c80122e088a",
+            "reuse": false
+          },
+          {
+            "stage": "C",
+            "path": "repair_v1/C/OUTPUT.txt",
+            "sha256": "b901c39ba32204d8063c1511b675ab8fdce60ef92276466d5d3b03c2d80d3abb",
+            "reuse": false
+          }
+        ],
+        "status": "sealed",
+        "prepared_at": "2026-10-09T06:13:48.122325+00:00",
+        "source_sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+        "guard_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+        "launch_at": "2026-10-09T06:14:02.377535+00:00",
+        "requested_model": "gpt-6-astra",
+        "requested_reasoning": "xhigh",
+        "fork_turns": "none",
+        "input_access": "explicit packet-file read only; operator-enforced shared filesystem",
+        "output_sha256": "cf402502559ff15da6b17afeb8635c68d6c4fbc487500c0a5a6f1906e1c3c934",
+        "output_bytes": 3518,
+        "completed_at": "2026-10-09T06:17:05.963990+00:00",
+        "wrapper_sha256": "ad41bdfa72c05631526342fb758598794105cb396f15c634cfb57ab7516fb9ce"
+      },
+      {
+        "stage": "E",
+        "context_id": "/root/audit_factory_call_dependencies/resolve_scoped_evidence",
+        "packet_sha256": "6378e963b8c6a6fc39e5844c0243fbbddf5a4dfd15e0a2f6d44c7cd549c84e87",
+        "packet_bytes": 16667,
+        "dependencies": [
+          {
+            "stage": "A",
+            "path": "Y/A/OUTPUT.txt",
+            "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+            "reuse": true
+          },
+          {
+            "stage": "B",
+            "path": "repair_v1/B/OUTPUT.txt",
+            "sha256": "c2ec62aaadc70144c5c57a190d5daa564ffa38f3820a5ef6e6203c80122e088a",
+            "reuse": false
+          },
+          {
+            "stage": "C",
+            "path": "repair_v1/C/OUTPUT.txt",
+            "sha256": "b901c39ba32204d8063c1511b675ab8fdce60ef92276466d5d3b03c2d80d3abb",
+            "reuse": false
+          },
+          {
+            "stage": "D",
+            "path": "repair_v1/D/OUTPUT.txt",
+            "sha256": "cf402502559ff15da6b17afeb8635c68d6c4fbc487500c0a5a6f1906e1c3c934",
+            "reuse": false
+          }
+        ],
+        "status": "sealed",
+        "prepared_at": "2026-10-09T06:17:05.992915+00:00",
+        "source_sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+        "guard_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+        "launch_at": "2026-10-09T06:17:26.274898+00:00",
+        "requested_model": "gpt-6-astra",
+        "requested_reasoning": "xhigh",
+        "fork_turns": "none",
+        "input_access": "explicit packet-file read only; operator-enforced shared filesystem",
+        "wrapper_sha256": "d3828b79ac4a24f9676e6a58e2e0a2acc04e6ddf69cc8bfe506bc595dd9210ff",
+        "output_sha256": "ac278063b03cfba5c78575e573bfaa77b0a98171039c8453dcc385c811d596c6",
+        "output_bytes": 3710,
+        "completed_at": "2026-10-09T06:18:38.939816+00:00"
+      },
+      {
+        "stage": "F",
+        "context_id": "/root/audit_factory_call_dependencies/decide_scoped_case",
+        "packet_sha256": "0b34e4119f08f4b3248f4c0f5c307b4bdb1d733fa4ec90e77566d4049f4e0370",
+        "packet_bytes": 20645,
+        "dependencies": [
+          {
+            "stage": "A",
+            "path": "Y/A/OUTPUT.txt",
+            "sha256": "e42167e89739663fac6e3944906a7ad8d40aa9df41d102cac0021021595e8cf4",
+            "reuse": true
+          },
+          {
+            "stage": "B",
+            "path": "repair_v1/B/OUTPUT.txt",
+            "sha256": "c2ec62aaadc70144c5c57a190d5daa564ffa38f3820a5ef6e6203c80122e088a",
+            "reuse": false
+          },
+          {
+            "stage": "C",
+            "path": "repair_v1/C/OUTPUT.txt",
+            "sha256": "b901c39ba32204d8063c1511b675ab8fdce60ef92276466d5d3b03c2d80d3abb",
+            "reuse": false
+          },
+          {
+            "stage": "D",
+            "path": "repair_v1/D/OUTPUT.txt",
+            "sha256": "cf402502559ff15da6b17afeb8635c68d6c4fbc487500c0a5a6f1906e1c3c934",
+            "reuse": false
+          },
+          {
+            "stage": "E",
+            "path": "repair_v1/E/OUTPUT.txt",
+            "sha256": "ac278063b03cfba5c78575e573bfaa77b0a98171039c8453dcc385c811d596c6",
+            "reuse": false
+          }
+        ],
+        "status": "sealed",
+        "prepared_at": "2026-10-09T06:18:38.971276+00:00",
+        "source_sha256": "68c97e50fb39ecf53da87c7106fb340050ed5349fb6a7a41e21465e4ce2f980e",
+        "guard_sha256": "1a40761074356a927777a48112d97061540c3c6309e87bbfa179f30dfe45bbd7",
+        "launch_at": "2026-10-09T06:18:54.704181+00:00",
+        "requested_model": "gpt-6-astra",
+        "requested_reasoning": "xhigh",
+        "fork_turns": "none",
+        "input_access": "explicit packet-file read only; operator-enforced shared filesystem",
+        "wrapper_sha256": "350420fec9fe3a1863cc8051d436f1483246d3735659f2159a07c95774dc4d3c",
+        "output_sha256": "21a3b04b6fd8e64901cb5f50473adec728f3cfe58f9535e4cd2fb93375407e4f",
+        "output_bytes": 3278,
+        "completed_at": "2026-10-09T06:20:03.896047+00:00"
+      }
+    ],
+    "open_corrections": [
+      {
+        "reported_by": "C first output",
+        "upstream_stage": "B",
+        "claim": "B6",
+        "issue": "evidence-establishes proposition uses world-outcome unresolved status",
+        "requested_action": "reopen claim at B",
+        "dependent_scope": "C explicitly excludes this claim from both candidate dependencies",
+        "additional_B_call_executed": false,
+        "status": "unresolved; preserved for remaining-stage/checker assessment",
+        "confirmed_by": "fresh checker"
+      },
+      {
+        "upstream_stage": "D",
+        "location": "What can already be decided, third bullet",
+        "issue": "matching B and adding $40 stated to change relative position differently although recorded gap is exactly $40; future gap unspecified",
+        "reported_by": "fresh checker",
+        "status": "unresolved; preserved; F does not depend on it"
+      }
+    ],
+    "checker": {
+      "packet_sha256": "104abdf2615ab392076a735df69e88c519e83063e16a538d60347dbf0bc948b2",
+      "packet_bytes": 39530,
+      "status": "sealed_with_findings",
+      "context_id": "/root/audit_factory_call_dependencies/check_scoped_decision",
+      "prepared_at": "2026-10-09T06:20:03.924317+00:00",
+      "answer_key_included": false,
+      "old_outputs_or_diagnosis_included": false,
+      "delivery": "explicit read of exact checker-only file; shared filesystem; no inherited history",
+      "launch_at": "2026-10-09T06:20:23.115448+00:00",
+      "requested_model": "gpt-6-astra",
+      "requested_reasoning": "xhigh",
+      "fork_turns": "none",
+      "wrapper_sha256": "de0ea3355ec58ce60e6600c502a61a4ff22f77e52281fcbf206f9efd68899ff3",
+      "completed_at": "2026-10-09T06:22:46.818753+00:00",
+      "output_sha256": "7ad162e121fc8404ce0ca9ff7e72577dae4b46de6b34e4b65dc2378c6295af9a",
+      "output_bytes": 4176,
+      "first_response_preserved": true,
+      "reported_packet_read": "Complete packet size/hash verified; no further tools or outside sources used",
+      "semantic_verdict": "bounded final recommendation supported; B6 and D defects remain; no chain-wide PASS"
+    },
+    "actual_call_counts": {
+      "semantic_recomputations": 5,
+      "fresh_checker": 1,
+      "mechanical_launch_helpers": 0,
+      "total_new_native_contexts": 6
+    }
+  }
+}

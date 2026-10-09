@@ -1,0 +1,17 @@
+{
+  "stage_calls": 5,
+  "checker_calls": 1,
+  "additional_helpers": 0,
+  "reused_sources_and_A": true,
+  "stage_input_bytes": 65316,
+  "stage_output_bytes": 18055,
+  "stage_wrapper_bytes": 3611,
+  "original_Y_B_F_input_bytes": 61228,
+  "checker_packet_bytes": 39530,
+  "checker_output_bytes": 4176,
+  "stage_operator_wall_seconds": 622.111905,
+  "sum_launch_to_seal_intervals_seconds": 553.904275,
+  "checker_operator_launch_to_seal_seconds": 143.703305,
+  "provider_tokens_or_compute": "unavailable",
+  "timestamp_limit": "operator-recorded timestamps include manual coordination and serialization; not model-only latency"
+}

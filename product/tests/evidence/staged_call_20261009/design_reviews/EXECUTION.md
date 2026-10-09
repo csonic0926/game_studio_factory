@@ -1,0 +1,28 @@
+# Execution completeness and test validity review
+
+**Verdict: REVISE the experiment handoff specification before execution.** The staged architecture is feasible and genuinely calls for dependent fresh model executions. Two small instruction-boundary repairs are needed to make the proposed evidence persuasive. This is a design review, not an executed experiment or implementation approval.
+
+Reviewed 2026-10-09:
+- `product/docs/STAGED_CALL_PROTOCOL_DESIGN.md`, SHA-256 `43e52d2472c84b1112737540217e8488e249cf9d69ce1603bd4524257b9a8569`
+- `product/tests/STAGED_CALL_EXPERIMENT_PROTOCOL.md`, SHA-256 `7045274f333e91a0c7e812ca5dc0861b646b681e4fe24608c3fe0914b6a22bed`
+
+## Blocking repairs
+
+1. **Specify a neutral stage-prompt extraction boundary.** Experiment lines 49–57 say to give each worker “its stage instructions,” but the available B section includes the fixture-specific example “raise buyback prices” and the exact customer-dissatisfaction inference under test (design lines 69–70). An operator copying the whole B section would cue the tested distinction even though the examiner rubric itself was withheld. This does not prescribe a final verdict, but it compromises an uncoached demonstration of premise handling. Freeze the actual neutral stage templates before either chain; explicitly exclude coordinator explanations, fixture-specific “Why separate” examples, examiner guidance, and the other arm. General support/attribution rules should remain. Retaining exact packets makes this check auditable; merely hashing an unspecified recipe does not resolve the ambiguity.
+
+2. **Separate the adversarial examiner prompt from its answer key.** Experiment lines 71–73 give the examiner “the checks below”; lines 127–132 then disclose that the citation does not entail pain and that an unsupported premise must be identified. If the examiner receives that section, its correct response cannot demonstrate independent detection of the planted defect. Supply the candidate rationale, base sources, B/E outputs, and a neutral request to audit every material assertion; keep the expected diagnosis coordinator-only until the examiner response is frozen. The coordinator can then compare the result with the oracle. Alternatively, label this part an explicitly coached application of the review rule and remove the detection-test interpretation. The legitimate source-grounded mutation rubric need not be removed or demand a verdict flip.
+
+## What is complete and sound
+
+- **Real semantic dependency:** A preserves sources; B adjudicates support; C develops hypotheses; D identifies the frontier; E resolves evidence; F weighs the bounded decision. Fresh `fork_turns: "none"` contexts and sealing before the next launch distinguish these from one author populating many fields. These are recognizable Idea-level judgment units, not arbitrary paragraph splits.
+- **Feasible manual host procedure:** Inline packets and sequential launches need no new runner. Shared filesystem/tool access remains possible, and the design explicitly labels assurance operator-enforced rather than hard isolation. Record observed tool/exposure deviations and invalidate contaminated attempts. Real host-returned context IDs, hashes, and order are useful provenance; they are not authenticated proof of unseen context or semantic correctness.
+- **Correction and invalidation:** The design reopens the earliest affected stage, preserves attempts, and invalidates descendants. Adding S3 requires a new A–F chain, without feeding the base verdict into the mutation arm. This exercises source-version replacement. A downstream-discovered premise error and partial dependency reuse remain untested paths, not grounds to reject this deliberately small first trial.
+- **Honest criteria timing:** D is explicitly retrospective in both arms. No prospective observation occurs, so this cannot validate preregistration or blind runtime observation. The general design correctly reserves prospective status for conditions sealed before genuinely new evidence and preserves prior exposure.
+- **Meaningful mutation outcome:** S3 supports a limited price-related choice signal for three completed comparisons, not adoption, profitability, persistent advantage, population demand, or a clean causal estimate of an isolated price intervention. Comparing changed B/E support and F's actual use of that support is a valid target even if F remains conditional. A forced recommendation flip would be invalid, and the specification correctly rejects it.
+- **Authority and scope:** The documents remain proposals; a selected-process exception is explicitly deferred before integration. No consumer migration, stable Factory change, E&U change, fabricated USER ruling, or refreshed historical proof follows from this review or trial.
+
+## Reporting limits after a repaired trial
+
+Report the actual 12 stage calls and examiner call, retries, received packets, outputs, costs available from the host, and the concrete changed or unchanged factual claims. An unchanged verdict can pass premise-sensitivity checks; unchanged “no customer evidence” after S3 cannot. Even a clean run establishes only this functional example, not superiority over a single-author workflow, general resistance to premise laundering, successful prospective criteria, or whole-game value judgment.
+
+Read root/Product instructions, the caller landing, Product skill/workflow, Idea exploration workflow, shared v2/v3 process clauses, and the cited historical review-practice document. No current peer review was opened. No experiment, source edit, publication, consumer mutation, or stable Factory/E&U action was performed; only this review artifact was written.

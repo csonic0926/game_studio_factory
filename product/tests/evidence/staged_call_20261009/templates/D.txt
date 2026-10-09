@@ -1,0 +1,9 @@
+Identify the current decision frontier. State what can already be decided,
+what unresolved distinction could change the recommendation, and what evidence
+would be enough for the bounded decision in this context. Relate conditions to
+the stated purpose, buyer/offer where applicable, alternatives and sacrifices.
+Name the smallest useful new observation only if one is necessary. All supplied
+records were available before this call; mark the mode retrospective and list
+the evidence already seen. Do not call these conditions preregistered. Do not
+invent missing context, request research merely to fill a slot, or give the
+final recommendation.

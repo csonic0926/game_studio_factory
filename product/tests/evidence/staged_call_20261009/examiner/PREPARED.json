@@ -1,0 +1,11 @@
+{
+  "status": "prepared",
+  "input_sha256": "54d16b72d9ec1855236602902100cd488372c59b6ffd07482aa68ba3d91a38aa",
+  "input_bytes": 158582,
+  "input_characters": 156962,
+  "context_id": null,
+  "prepared_at": "2026-10-09T05:52:05.171200+00:00",
+  "context_assurance": "operator_enforced_shared_fs",
+  "key_included": false,
+  "semantic_verdict_provided": false
+}

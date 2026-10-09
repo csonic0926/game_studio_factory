@@ -1,0 +1,24 @@
+A1 — Service and market context
+- Source/location: S1, project brief, first sentence
+- Exact excerpt: “We are considering a used-device buyback service in a crowded market.”
+- Attribution: Project brief; author unidentified
+- Type: Recorded statement of contemplated activity and asserted market context
+- Scope/ambiguity: Used-device buyback service under consideration. “Crowded” is not defined or supported by recorded market observations
+
+A2 — Decision status
+- Source/location: S1, project brief, second sentence
+- Exact excerpt: “No decision on a particular advantage has been adopted.”
+- Attribution: Project brief; author unidentified
+- Type: Recorded statement about decision status
+- Scope/ambiguity: No particular advantage has been adopted. The relative timing of this statement and S2 is unknown
+
+A3 — Higher-price proposal and anticipated benefit
+- Source/location: S2, planning meeting, colleague’s statement
+- Exact excerpt: “What if we offered a higher buyback price? That could give us an advantage.”
+- Attribution: Unnamed colleague
+- Type: Proposal to offer a higher price, accompanied by a tentative expectation of advantage
+- Scope/ambiguity: The price comparison baseline, size of increase, meaning of “advantage,” and supporting basis are unspecified. This statement records neither an observed result nor an adopted decision
+
+Record limits
+- No supporting research, measured outcomes, or subsequent adoption decision is supplied
+- Establishing later decision status would require a dated decision record; resolving “higher” would require the proposal’s comparison baseline

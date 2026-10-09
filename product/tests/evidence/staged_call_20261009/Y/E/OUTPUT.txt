@@ -1,0 +1,35 @@
+Stage E: evidence resolution
+
+No observation was added after D. Outputs A–D supply analysis, not independent evidence.
+
+Evidence and retained claims
+- B1 retained: S1 describes a proposed service “in a crowded market.” Market conditions are not independently verified
+- B2 retained: S2 proposes, “What if we offered a higher buyback price?” S1 states, “No decision on a particular advantage has been adopted.” Evidence of effectiveness would not establish adoption
+- B3–B4 retained: S3 records quotes of $100/$140, $120/$160 and $80/$120, with Merchant B selected each time. Every seller stated “the extra $40”; “Each selected sale was completed.” This establishes observed competitive relevance of B’s higher quoted prices in those three transactions, beyond a hypothetical preference
+
+Unresolved claims
+- B5: Sole-cause experimental attribution remains unresolved. S3 matches devices, inspection conditions and payment timing, but does not establish an experiment or equivalence on other material attributes
+- B6: Additional completed acquisitions from changing our quotes remain unresolved. S2 specifies neither the increase nor the resulting relative offer; S3 contains no test of our changed policy
+- B7: Market-wide advantage remains unresolved. S3 expressly limits coverage: “This log covers those three comparisons.” Representativeness is unknown
+- B8: Profitable, durable advantage remains unresolved. S1–S3 provide no incremental economics, longitudinal outcomes or competitor-response evidence
+
+No B claim is refuted by the packet.
+
+Explanation dispositions
+- C1 remains live, unestablished: S3 supports the price-choice mechanism, but neither transfer to our changed offer nor positive incremental contribution has been observed
+- C2 remains live, unestablished: S3 is compatible with acquisition gains whose costs or competitive responses eliminate their business benefit. Neither losses nor competitor matching are observed
+- C3 remains live, unestablished: Our intervention and its broader applicability are untested. This does not negate the three sellers’ recorded price reasons
+
+Shared observations versus discriminators
+S3’s higher competing quotes, completed choices and stated reasons are compatible with all three explanations. They support price’s local relevance but do not discriminate among the proposed intervention’s outcome paths. No supplied observation measures our incremental acquisition gain, its economic value or its persistence.
+
+Decision-condition status
+- Met: recognizing higher pricing as an evidence-backed candidate
+- Unmet: establishing that a specified higher-price policy improves our completed acquisitions and total incremental contribution within a defined scope
+- Unmet: establishing broader applicability or durability
+- Separate and unchanged: no particular advantage has been adopted
+
+Remaining decision-changing unknowns and dependencies
+Resolving B6 and B8, and distinguishing C1–C3, requires comparative outcomes under our specified changed and current offers, contemporaneous competing terms, actual payouts, resale proceeds and relevant costs. Economics must include extra payouts on acquisitions that would have occurred anyway. Broader scope requires sampling evidence for B7; durability requires outcomes over time with competitive responses observed. Acceptable exposure, required return and decision horizon also remain unspecified.
+
+No material earlier-stage support error requires reopening. New evidence would require reassessing B6–B8 and the dependent C explanations and D conditions. The packet establishes a local price advantage for Merchant B; it leaves the advantage of our proposed change unresolved.
