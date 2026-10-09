@@ -59,6 +59,11 @@ Frame, evidence, independent first-pass findings and decision are separate seale
 work products. Use assessment v2; the final author cannot downgrade upstream
 unknowns or replace the original condition. The two independent reviewers form
 condition-level judgments before seeing the proposed verdict, then compare it.
+Decision conditionality is a list of strings: copy the condition values from
+frame.external_conditions in order, retaining source/basis objects in the frame.
+Per-condition assumptions likewise contain only those strings, never the objects.
+A failed draft may receive format-only feedback in its own context; preserve the
+original and record the exact correction without changing semantic findings.
 
 Operate before recording:
 1. Reconstruct the actual/current or explicitly adopted offer and intended buyer.

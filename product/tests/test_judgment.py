@@ -353,6 +353,26 @@ class JudgmentTests(unittest.TestCase):
         draft['findings']['conditionality'] = []
         self.rejected('CHANGED_JUDGMENT_QUESTION', f.seal, 'decision', draft)
 
+    def test_met_under_fixed_scenario_may_repeat_only_frame_owned_conditions(self):
+        f = self.fixture(offer='SCENARIO')
+        external = ['Only at the explicitly stipulated offer and buyer scenario.']
+        f.set_external_conditions(external)
+        f.seal('frame'); f.seal('evidence')
+        for stage in judgment.STAGES[2:]:
+            draft = f.draft(stage)
+            draft['findings']['conditions'][0]['disposition'] = 'MET'
+            self.assertEqual(draft['findings']['conditions'][0]['assumptions'], external)
+            self.assertEqual(draft['findings']['conditions'][0]['material_unknowns'], [])
+            f.seal(stage, draft)
+        f.bind()
+        result = value.record(self.roots, value.paths(f.identity)['input'], reviews(self.roots, f.assessment))
+        self.assertEqual(result['qualifications'][0], external[0])
+        self.assertFalse(result['value_claim_eligible'])
+        other = self.fixture().seal_through('frame')
+        draft = other.draft('independent_intent_experience')
+        draft['findings']['conditions'][0]['assumptions'] = ['A new unframed buyer preference.']
+        self.rejected('CHANGED_JUDGMENT_QUESTION', other.seal, 'independent_intent_experience', draft)
+
     def test_valid_external_scenario_conditionality_is_preserved_and_claim_blocked(self):
         f = self.fixture(offer='SCENARIO')
         f.set_external_conditions(['Only at the explicitly hypothetical 1.99 USD scenario offer.'])

@@ -206,8 +206,8 @@ def validate_stage(roots, case_path, stage, record):
             for field in ('positive_case', 'strongest_objection', 'sufficiency_reason'): text(item[field])
             texts(item['assumptions']); texts(item['material_unknowns'])
             _citations(roots, item['evidence'], sources)
-            if item['disposition'] == 'MET' and (item['assumptions'] or item['material_unknowns']):
-                fail('UNRESOLVED_JUDGMENT_CONDITION', 'MET cannot hide essential assumptions or material unknowns')
+            if item['disposition'] == 'MET' and item['material_unknowns']:
+                fail('UNRESOLVED_JUDGMENT_CONDITION', 'MET cannot hide material unknowns')
             if item['disposition'] == 'CONDITIONAL' and not item['assumptions']:
                 fail('INVALID_JUDGMENT_STAGE', 'CONDITIONAL needs its actual truth condition')
     if stage.startswith('independent_'):
