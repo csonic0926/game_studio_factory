@@ -62,6 +62,9 @@ condition-level judgments before seeing the proposed verdict, then compare it.
 Decision conditionality is a list of strings: copy the condition values from
 frame.external_conditions in order, retaining source/basis objects in the frame.
 Per-condition assumptions likewise contain only those strings, never the objects.
+Stage condition evidence cites raw case sources; upstream stage bindings are
+already in the packet. Final-review finding evidence uses the prepared closure;
+its own first pass is bound separately in independent_first_pass.
 A failed draft may receive format-only feedback in its own context; preserve the
 original and record the exact correction without changing semantic findings.
 
