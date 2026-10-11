@@ -4,12 +4,15 @@
 
 USER authorized a separate GPT-6 adaptation branch on 2026-09-06. This replaces
 the former main-only policy; do not delete the adaptation branch under that old
-rule.
+rule. On 2026-10-11 the USER renamed it from `gpt-6-adaptation` to `frontier`;
+older documents that say `gpt-6-adaptation` mean `frontier`.
 
 - `main` is the stable shared line for existing partners and installed skills.
-- `gpt-6-adaptation` is the opt-in line for model-adapted Factory research,
-  planning, implementation, and validation. Commit and push its work there;
-  do not merge it into `main` without explicit USER approval.
+  It runs the guided v2 workflow (more scaffolding, for less capable models).
+- `frontier` is the opt-in line for frontier-capability models (explicit v3 /
+  `WORKFLOW_GPT6.md`) and its Factory research, planning, implementation, and
+  validation. Its worktree is `game_ai_factory_frontier`. Commit and push its
+  work there; do not merge it into `main` without explicit USER approval.
 - Keep the existing shared checkout on `main`. Develop the adaptation in its
   own Git worktree, not by switching the checkout targeted by installed skill
   symlinks or existing project pointers.
