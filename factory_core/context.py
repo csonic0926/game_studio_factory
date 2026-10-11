@@ -114,7 +114,8 @@ def context(roots: dict, capability: str, task: str, role="author", task_id=None
               "constraints": [], "methods": method_paths(factory, capability, task) if not native else []}
     if native:
         from .astra import WORKFLOW, catalog, docs, rule_source, selected_methods
-        result.update(schema_version='factory_context.v3', workflow_version=3,
+        from .authorship import mode
+        result.update(schema_version='factory_context.v3', workflow_version=3, authorship_mode=mode(roots),
                       methods=catalog(factory, capability, task),
                       selected_methods=[source_view(roots, r) for r in selected_methods(factory, capability, task, list(methods))])
     contracts=["design.schema.json","checkpoint_request.schema.json","review.schema.json","ruling.schema.json"]
@@ -169,7 +170,8 @@ def context(roots: dict, capability: str, task: str, role="author", task_id=None
                 fail('METHOD_NOT_BOUND', 'selected method changes the sealed design; record it in a new draft before review')
             result['selected_methods'] = [source_view(roots, r) for r in selected_methods(factory, capability, task, d.get('methods', []))]
         if role in ROLES:
-            result["review_requirements"] = sorted(requirement_ids(factory, d, role))
+            from .authorship import mode
+            result["review_requirements"] = sorted(requirement_ids(factory, d, role, mode(roots) if native else "COLLABORATIVE"))
             rules = read_json(factory / "factory_core/rule_map.json")["rules"]
             source_paths = sorted({rule_source(r) if native else r["source"] for r in rules if r["id"] in result["review_requirements"]})
             result["review_sources"] = [reference(factory, p, "factory") for p in source_paths]

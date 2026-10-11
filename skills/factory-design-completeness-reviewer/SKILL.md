@@ -18,3 +18,8 @@ package/fingerprint and actual independent context id. Missing coverage is FAIL.
 For an explicitly migrated v3 project, review `factory_design.v3`, including
 full `decision_sections` and selected methods. The review record remains
 `factory_review.v2`; do not invent a new record format or old step-review ids.
+
+Under the AUTONOMOUS authorship mode the context lists
+`idea.per_idea_inquiry_substantive`. Read every bound idea_inquiry.v1 record:
+FAIL thin or circular reasoning, a material mechanism labelled not_a_design_idea,
+missing coupled consequences, or an open question disposed of without substance.

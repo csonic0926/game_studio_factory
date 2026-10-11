@@ -83,6 +83,16 @@ each must remain identifiable, with their interactions considered together.
   project, retain the note as standalone Idea work; do not claim the canonical
   `explore` CLI validated this separate note or invent an alternate input path.
 
+Per-idea records that a design relies on use `idea_inquiry.v1`
+(`idea/schemas/idea_inquiry.schema.json`, checked by `idea.py check-inquiry`):
+each idea has a player situation, mechanism, cost or tension, alternatives,
+evidence and assumptions, a judgment (ADOPT / REJECT / OPEN) and reasons; the
+record names coupled consequences and keeps open questions with a disposition.
+In the USER-selected AUTONOMOUS authorship mode, a studio/gameplay design must bind
+these records and classify every decision; relied-on ideas must be ADOPT and no
+question may stay OPEN (see `factory_core/docs/WORKFLOW_GPT6.md`, Authorship modes).
+In COLLABORATIVE mode the same record is recommended and OPEN items may travel.
+
 The record should make visible what was actually considered and what would change
 the judgment, not just “Idea checked” or a list of proposed features. `OPEN`,
 `REFERENCE_NO_FIT`, live alternatives and rejected ideas remain useful outcomes.

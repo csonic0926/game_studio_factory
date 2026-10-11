@@ -70,7 +70,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
             paths.update(p.relative_to(factory).as_posix() for p in (factory / dept / subdir).rglob("*")
                          if p.is_file() and p.suffix in (".py", ".gd", ".json", ".gdshader") and "__pycache__" not in p.parts)
     if capability in ("idea", "studio", "gameplay", "product"):
-        paths.update(("product/intent.py", "product/value.py", "product/schemas/intent.schema.json",
+        paths.update(("idea/inquiry.py", "idea/schemas/idea_inquiry.schema.json",
+                      "product/intent.py", "product/value.py", "product/schemas/intent.schema.json",
                       "product/templates/PRODUCT_VALUE_INTENT.json",
                       "product/docs/PROJECT_INITIALIZATION_WORKFLOW.md"))
     if capability == "product":

@@ -1511,6 +1511,22 @@
         "completeness_project"
       ],
       "disposition": "boundary_review"
+    },
+    {
+      "id": "idea.per_idea_inquiry_substantive",
+      "source": "idea/docs/PRODUCT_DEFINITION_WORKFLOW.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review",
+      "modes": [
+        "AUTONOMOUS"
+      ]
     }
   ]
 }

@@ -1653,7 +1653,7 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="open non-binding exploration beside existing product authority",
     )
-    for command in ("explore", "check-exploration", "compile", "check"):
+    for command in ("explore", "check-exploration", "compile", "check", "check-inquiry"):
         command_parser = subparsers.add_parser(command)
         command_parser.add_argument("--game-repo", required=True)
         command_parser.add_argument("--input", required=True)
@@ -1674,8 +1674,36 @@ def _print_result(result: IdeaFactoryResult) -> None:
         print(f"ERROR: {error}", file=sys.stderr)
 
 
+def _check_inquiry(game_repo: str, input_path: str) -> int:
+    """Validate one per-idea inquiry record (idea/inquiry.py); report OPEN questions."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from factory_core.refs import FactoryError
+    import importlib.util
+    # Load by path: as a script, the name "idea" resolves to this module.
+    spec = importlib.util.spec_from_file_location("idea_inquiry", Path(__file__).with_name("inquiry.py"))
+    inquiry = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(inquiry)
+    validate_inquiry = inquiry.validate_inquiry
+    path = (Path(game_repo).resolve() / input_path).resolve()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        ideas = validate_inquiry(data, input_path)
+    except (FactoryError, OSError, ValueError) as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
+    print("IDEA_INQUIRY_VALID")
+    for identity, idea in ideas.items():
+        print(f"IDEA: {identity} {idea['judgment']}")
+    for question in data["open_questions"]:
+        if question["disposition"] == "OPEN":
+            print(f"OPEN_QUESTION: {question['id']} (blocks AUTONOMOUS designs until dispositioned)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
+    if args.command == "check-inquiry":
+        return _check_inquiry(args.game_repo, args.input)
     try:
         if args.command == "start":
             result = start_idea_factory(

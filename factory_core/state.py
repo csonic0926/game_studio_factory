@@ -124,13 +124,13 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
     keys(d, {"schema_version", "design_id", "capability", "task", "author_context_id", "intent",
-             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections"})
+             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage"})
     version = project(roots["game"])["workflow_version"]
     if version == 3 and d['schema_version'] == 'factory_design.v2':
         fail('HISTORICAL_WORKFLOW_REQUIRED', 'v2 work is historical; continue with a new v3 task/design, not rewritten approval')
     if d["schema_version"] != f"factory_design.v{version}" or d["capability"] not in CAPABILITIES:
         fail("INVALID_DESIGN", "unsupported design type/capability")
-    if version == 2 and ("methods" in d or "decision_sections" in d):
+    if version == 2 and ("methods" in d or "decision_sections" in d or "idea_coverage" in d):
         fail("INVALID_DESIGN", "GPT-6 fields require an explicitly migrated v3 project")
     if version == 3:
         from .astra import selected_methods, validate_sections
@@ -208,6 +208,10 @@ def load_design(roots: dict, ref: dict) -> dict:
     if d["capability"] in ("studio", "gameplay"):
         from gameplay.v2 import validate_design
         validate_design(roots, d)
+    if version == 3:
+        from idea.inquiry import validate_coverage
+        from .authorship import mode
+        validate_coverage(roots, d, mode(roots))
     return d
 
 
@@ -217,6 +221,9 @@ def dependencies(roots: dict, design_ref: dict, d: dict) -> dict:
     refs += d["inputs"] + d["artifacts"]
     refs += [r["source"] for r in d["requirements"].values()]
     refs += authority_refs(roots["game"], d["capability"], p["authority_paths"])
+    if p["workflow_version"] == 3:
+        from .authorship import mode_reference
+        refs += [ref for ref in [mode_reference(roots["game"])] if ref]
     refs += factory_dependencies(roots["factory"], d["capability"], d["task"], p["workflow_version"], d.get("methods", []))
     refs = expand_references(roots, unique_refs(refs))
     for ref in refs:
@@ -224,10 +231,12 @@ def dependencies(roots: dict, design_ref: dict, d: dict) -> dict:
     return {"algorithm": "sha256-content-closure.v2", "references": refs, "fingerprint": digest(refs)}
 
 
-def requirement_ids(factory: Path, d: dict, role: str) -> set[str]:
+def requirement_ids(factory: Path, d: dict, role: str, mode: str = "COLLABORATIVE") -> set[str]:
+    """Mode-scoped rules (e.g. AUTONOMOUS per-idea inquiry) apply only in their mode."""
     rule_map = read_json(factory / "factory_core/rule_map.json")
     return {r["id"] for r in rule_map["rules"] if role in r["reviewers"] and
-            ("all" in r["capabilities"] or d["capability"] in r["capabilities"])} | set(d["requirements"])
+            ("all" in r["capabilities"] or d["capability"] in r["capabilities"]) and
+            mode in r.get("modes", (mode,))} | set(d["requirements"])
 
 
 def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: list):
@@ -235,6 +244,8 @@ def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: l
         fail("REVIEW_REQUIRED", "exactly two independent first-pass boundary reviews required")
     contexts = {d["author_context_id"]}
     roles = set()
+    from .authorship import mode
+    current_mode = mode(roots) if project(roots["game"])["workflow_version"] == 3 else "COLLABORATIVE"
     for ref in refs:
         review = read_json(resolve_ref(roots, ref))
         keys(review, {"schema_version", "role", "reviewer_context_id", "fresh", "peer_reviews_read",
@@ -252,7 +263,7 @@ def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: l
         if review["verdict"] != "PASS":
             fail("DESIGN_REJECTED", f"{role} requires revision")
         findings = review["findings"]
-        required = requirement_ids(roots["factory"], d, role)
+        required = requirement_ids(roots["factory"], d, role, current_mode)
         if not isinstance(findings, dict) or set(findings) != required:
             fail("INCOMPLETE_REVIEW", f"{role}: cover exactly {sorted(required)}")
         for finding in findings.values():

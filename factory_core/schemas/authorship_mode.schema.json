@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "factory_authorship_mode.v1",
+  "description": "USER-selected authorship mode at design/factory/AUTHORSHIP_MODE.json. Absent means COLLABORATIVE.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mode",
+    "owner",
+    "source",
+    "quote"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "factory_authorship_mode.v1"
+    },
+    "mode": {
+      "enum": [
+        "COLLABORATIVE",
+        "AUTONOMOUS"
+      ]
+    },
+    "owner": {
+      "const": "USER"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ]
+    },
+    "quote": {
+      "type": "string",
+      "minLength": 1
+    },
+    "previous": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ]
+    }
+  }
+}

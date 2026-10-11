@@ -851,6 +851,80 @@
         "result_path",
         "required_output_paths"
       ]
+    },
+    "idea_coverage": {
+      "description": "Per-idea Idea inquiry bound to this design. Optional in COLLABORATIVE mode; required and complete for studio/gameplay in AUTONOMOUS mode (every decision classified, relied-on ideas ADOPTed, no OPEN question).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inquiries",
+        "decisions"
+      ],
+      "properties": {
+        "inquiries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "const": "game"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "scope",
+              "path",
+              "sha256"
+            ]
+          }
+        },
+        "decisions": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ideas"
+                ],
+                "properties": {
+                  "ideas": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "not_a_design_idea"
+                ],
+                "properties": {
+                  "not_a_design_idea": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   },
   "required": [

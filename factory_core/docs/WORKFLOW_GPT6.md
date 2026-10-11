@@ -58,6 +58,30 @@ verbatim approval action emitted by context --role human, bound to raw USER role
 and content. An operator cannot invent the action's USER submission or reinterpret
 rejection, quoted approval, exploration or this context view as authorization.
 
+## Authorship modes (USER-selected)
+
+A v3 project runs in one of two modes, recorded at design/factory/AUTHORSHIP_MODE.json
+(factory_authorship_mode.v1). Absent means COLLABORATIVE. Only a raw USER message
+selects or changes it (`factory.py mode --set ... --source ... --quote ...`); never
+infer it from a model name or switch it on your own.
+
+- COLLABORATIVE (human + AI): the current process. Per-idea Idea inquiry remains
+  required guidance; the present USER is its check. idea_coverage is optional and,
+  when recorded, only its shape is validated; OPEN judgments/questions may travel.
+- AUTONOMOUS (AI with full delegation): skipping Idea is not allowed. A studio or
+  gameplay design must carry idea_coverage: game-owned idea_inquiry.v1 records bound
+  as design inputs, and every decision id classified as relying on inquired ideas or
+  as not a design idea (with a reason). Relied-on ideas must be ADOPT. Every open
+  question needs a disposition: ANSWERED (answer), HYPOTHESIS (falsification and
+  test stage) or DEFERRED (reason and revisit point). Both reviewers additionally
+  judge `idea.per_idea_inquiry_substantive`: that the inquiry is real reasoning,
+  that no material mechanism hides behind a not_a_design_idea label, and that
+  coupled whole-game consequences were considered.
+
+The mode file joins every design closure, so switching modes invalidates earlier
+reviews; continue through a new draft. Neither mode changes USER ownership of
+commission, material design approval or playtest verdicts.
+
 ## Persistent state and production
 
 The existing factory_checkpoint.v2 / factory_review.v2 / factory_ruling.v2 record

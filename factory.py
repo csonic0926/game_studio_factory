@@ -38,6 +38,11 @@ def parser():
             cmd.add_argument("--expected", help="exact preview source digest; required for --apply")
             cmd.add_argument("--authority", action="append", default=[], help="additional adopted authority path, repeatable")
             cmd.add_argument("--workflow", choices=("v2", "gpt6"), default="v2", help="explicit contract selection; never inferred from model name")
+    cmd = sub.add_parser("mode", help="show or set the USER-selected authorship mode (v3 only)")
+    cmd.add_argument("--game-repo", "--project-root", dest="game_repo", default=".")
+    cmd.add_argument("--set", choices=("collaborative", "autonomous"), help="requires --source and --quote from a raw USER message")
+    cmd.add_argument("--source", help="game-owned JSON of the raw USER message: {\"role\": \"user\", \"content\": ...}")
+    cmd.add_argument("--quote", help="exact USER words selecting the mode")
     cmd = sub.add_parser("benchmark")
     cmd.add_argument("--suite", default=str(ROOT / "factory_core/benchmarks/suite.json"))
     cmd.add_argument("--output-root", required=True)
@@ -71,6 +76,17 @@ def main(argv=None):
                 from factory_core.context import context
                 result = context(roots, args.capability, args.task, args.role, args.task_id,
                                  reference(game, args.design) if args.design else None, methods=args.method)
+            elif args.command == "mode":
+                from factory_core.authorship import mode, set_mode
+                from factory_core.state import project
+                if project(game)["workflow_version"] != 3:
+                    raise FactoryError("MIGRATION_REQUIRED", "authorship modes belong to the explicit v3 workflow")
+                if args.set:
+                    if not args.source or not args.quote:
+                        raise FactoryError("HUMAN_RULING_REQUIRED", "--set needs the raw USER message (--source) and exact --quote")
+                    result = set_mode(roots, args.set, args.source, args.quote)
+                else:
+                    result = {"status": "MODE", "mode": mode(roots)}
             elif args.command == "checkpoint":
                 from factory_core.state import checkpoint
                 result = checkpoint(roots, read_json(Path(args.input)))
