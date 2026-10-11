@@ -11,7 +11,11 @@ model plus a command that exercises it, and records the command's report:
   exceeded, currency never negative, a legal action always exists ...), each with
   the number of states/cases actually checked and the violations found;
 - examples: every worked example the design relies on, replayed through the
-  model and judged CONSISTENT or INCONSISTENT with the stated rules.
+  model and judged CONSISTENT or INCONSISTENT with the stated rules;
+- balance_targets: the design's OWN measurable balance targets (bounds it chose,
+  e.g. win-rate ranges per difficulty or each color's share of winners), each with
+  the value measured in several independent runs. A target is MET only when every
+  run lies inside its bounds, so a single favourable seed cannot pass it.
 
 The Factory never decides which invariants a game needs or whether it is fun or
 balanced; it checks that the evidence exists, is bound to the exact model, and
@@ -37,6 +41,8 @@ if __package__ in (None, ""):
 from factory_core.refs import FactoryError, confined, encoded, fail, read_json, reference, resolve_ref
 
 REPORT_VERSION = "gameplay_rules_report.v1"
+# Procedural, not a balance threshold: one seed's reading has misled before.
+MINIMUM_AUTONOMOUS_RUNS = 3
 RECORD_VERSION = "gameplay_rules_check.v1"
 EXAMPLE_STATUSES = ("CONSISTENT", "INCONSISTENT")
 COVERED_CAPABILITIES = ("studio", "gameplay")
@@ -95,7 +101,36 @@ def validate_report(report: dict, where: str = "report") -> dict:
         _text(item["detail"], f"{place}.detail")
         if item["status"] not in EXAMPLE_STATUSES:
             fail("INVALID_RULES_REPORT", f"{place}.status must be one of {EXAMPLE_STATUSES}")
+    targets = report.get("balance_targets", [])
+    if not isinstance(targets, list):
+        fail("INVALID_RULES_REPORT", f"{where}.balance_targets must be a list")
+    seen = set()
+    for index, item in enumerate(targets):
+        place = f"{where}.balance_targets[{index}]"
+        _shape(item, {"id", "statement", "metric", "bounds", "runs", "method"}, (), place)
+        identity = _text(item["id"], f"{place}.id")
+        if identity in seen:
+            fail("INVALID_RULES_REPORT", f"{where}: duplicate balance target {identity}")
+        seen.add(identity)
+        for field in ("statement", "metric", "method"):
+            _text(item[field], f"{place}.{field}")
+        bounds = item["bounds"]
+        if (not isinstance(bounds, dict) or not bounds or set(bounds) - {"min", "max"}
+                or not all(_number(value) for value in bounds.values())
+                or ("min" in bounds and "max" in bounds and bounds["min"] > bounds["max"])):
+            fail("INVALID_RULES_REPORT", f"{place}.bounds: give min and/or max as numbers, min <= max")
+        if not isinstance(item["runs"], list) or not item["runs"] or not all(_number(value) for value in item["runs"]):
+            fail("INVALID_RULES_REPORT", f"{place}.runs: list each independent run's measured value")
     return report
+
+
+def _number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def target_met(target: dict) -> bool:
+    low, high = target["bounds"].get("min"), target["bounds"].get("max")
+    return all((low is None or value >= low) and (high is None or value <= high) for value in target["runs"])
 
 
 def run(game_repo: str, model: str, command: list[str], output: str) -> dict:
@@ -125,7 +160,8 @@ def summary(report: dict) -> dict:
     return {"invariants": len(report["invariants"]),
             "violations": sum(item["violations"] for item in report["invariants"]),
             "examples": len(report["examples"]),
-            "inconsistent_examples": [item["id"] for item in report["examples"] if item["status"] != "CONSISTENT"]}
+            "inconsistent_examples": [item["id"] for item in report["examples"] if item["status"] != "CONSISTENT"],
+            "unmet_balance_targets": [item["id"] for item in report.get("balance_targets", []) if not target_met(item)]}
 
 
 def validate_design(roots: dict, design: dict, mode: str) -> None:
@@ -160,6 +196,15 @@ def validate_design(roots: dict, design: dict, mode: str) -> None:
         fail("RULES_EXAMPLE_INCONSISTENT", f"worked examples contradict the rules: {counts['inconsistent_examples']}")
     if autonomous and not report["examples"]:
         fail("RULES_EXAMPLES_REQUIRED", "AUTONOMOUS mode: replay every worked example the design relies on")
+    if counts["unmet_balance_targets"]:
+        fail("BALANCE_TARGET_NOT_MET", f"every run must lie inside the design's own bounds; retune or revise in a new draft: {counts['unmet_balance_targets']}")
+    if autonomous:
+        targets = report.get("balance_targets", [])
+        if not targets:
+            fail("BALANCE_TARGETS_REQUIRED", "AUTONOMOUS mode: declare the design's own measurable balance targets with measured runs")
+        thin = [item["id"] for item in targets if len(item["runs"]) < MINIMUM_AUTONOMOUS_RUNS]
+        if thin:
+            fail("BALANCE_RUNS_INSUFFICIENT", f"AUTONOMOUS mode: measure each target in at least {MINIMUM_AUTONOMOUS_RUNS} independent runs: {thin}")
 
 
 def main(argv=None) -> int:
@@ -178,7 +223,7 @@ def main(argv=None) -> int:
         print(json.dumps({"status": getattr(error, "code", "RULES_COMMAND_FAILED"), "message": str(error)}, ensure_ascii=False))
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0 if not result["violations"] and not result["inconsistent_examples"] else 2
+    return 0 if not (result["violations"] or result["inconsistent_examples"] or result["unmet_balance_targets"]) else 2
 
 
 if __name__ == "__main__":

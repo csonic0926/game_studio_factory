@@ -1543,6 +1543,22 @@
       "modes": [
         "AUTONOMOUS"
       ]
+    },
+    {
+      "id": "gameplay.balance_targets_declared_and_measured",
+      "source": "gameplay/docs/WORKFLOW_GPT6.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review",
+      "modes": [
+        "AUTONOMOUS"
+      ]
     }
   ]
 }

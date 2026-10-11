@@ -53,3 +53,16 @@ the invariants cover the design's capacities, resources and legal-action states,
 every worked example (laps, witnesses, mock frames) is replayed, and the model
 states the same rules as the prose.
 
+## Balance targets (declared by the design, not by the Factory)
+
+Balance has no general rule, so the Factory supplies only a procedure. The same
+report may carry `balance_targets`: each is the design's own measurable target
+(metric, min/max bounds, how it was measured) and the value from each independent
+run. A target is MET only when every run lies inside its bounds; an unmet target
+blocks the design until it is retuned or the target itself is revised in a new
+draft that reviewers see. In AUTONOMOUS mode at least one target is required and
+each needs at least three independent runs (one seed's reading has misled before).
+Both reviewers then judge `gameplay.balance_targets_declared_and_measured`: the
+targets trace to the product promise and hypotheses, cover the design's main
+levers (difficulty, dominant options, economy pacing) and use honest methods.
+

@@ -73,6 +73,32 @@ class RulesCheckTests(unittest.TestCase):
         self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
         self.assertIn('"violations": 1', out.stdout)
 
+    def test_balance_target_met_only_when_every_run_is_inside(self):
+        self.go_autonomous()
+        target = dict(id="color-share", statement="No color dominates winners.", metric="largest color share of winners",
+                      bounds=dict(max=0.35), runs=[0.27, 0.43, 0.25], method="60 tournaments per run, distinct seeds")
+        with self.assertRaisesRegex(FactoryError, "retune or revise.*color-share"):
+            load_design(self.roots, self.covered(self.inquiry(), rules=self.rules_model(balance=[target]))[1])
+        single = dict(target, runs=[0.27])
+        with self.assertRaisesRegex(FactoryError, "at least 3 independent runs"):
+            load_design(self.roots, self.covered(self.inquiry(), rules=self.rules_model(balance=[single]))[1])
+        with self.assertRaisesRegex(FactoryError, "declare the design's own measurable balance targets"):
+            load_design(self.roots, self.covered(self.inquiry(), rules=self.rules_model(balance=[]))[1])
+        design, design_ref = self.covered(self.inquiry(), rules=self.rules_model(balance=[dict(target, runs=[0.27, 0.31, 0.25])]))
+        load_design(self.roots, design_ref)
+        self.assertIn("gameplay.balance_targets_declared_and_measured", requirement_ids(ROOT, design, "completeness_project", "AUTONOMOUS"))
+
+    def test_collaborative_allows_single_run_but_still_rejects_unmet(self):
+        target = dict(id="hard-win-rate", statement="Hard stays hard.", metric="player win rate at three stars",
+                      bounds=dict(max=0.3), runs=[0.1], method="one exploratory run")
+        load_design(self.roots, self.covered(self.inquiry(), rules=self.rules_model(balance=[target]))[1])
+        with self.assertRaisesRegex(FactoryError, "hard-win-rate"):
+            load_design(self.roots, self.covered(self.inquiry(), rules=self.rules_model(balance=[dict(target, runs=[0.4])]))[1])
+        bad = dict(target, bounds=dict(min=0.5, max=0.2))
+        from gameplay.rules_check import run
+        with self.assertRaisesRegex(FactoryError, "min <= max"):
+            self.rules_model(balance=[bad])
+
 
 if __name__ == "__main__":
     unittest.main()

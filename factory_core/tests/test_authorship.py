@@ -44,11 +44,13 @@ class AuthorshipModeTests(unittest.TestCase):
                       ideas=ideas or [idea("lane-guard")], open_questions=questions or [])
         return self.write("design/product/idea/inquiries/lanes.json", record)
 
-    def rules_model(self, invariants=None, examples=None):
+    def rules_model(self, invariants=None, examples=None, balance=None):
         """A tiny game-owned rules model whose command prints its report."""
         report = dict(schema_version="gameplay_rules_report.v1",
                       invariants=invariants or [dict(id="board-capacity", statement="Deployed units never exceed level + 2.", checked_cases=500, violations=0)],
-                      examples=[dict(id="lap-two", statement="Lap two's Bow reaches the back row.", status="CONSISTENT", detail="Replayed.")] if examples is None else examples)
+                      examples=[dict(id="lap-two", statement="Lap two's Bow reaches the back row.", status="CONSISTENT", detail="Replayed.")] if examples is None else examples,
+                      balance_targets=[dict(id="easy-win-rate", statement="A reading player wins most easy tournaments.", metric="player win rate at one star",
+                                            bounds=dict(min=0.5), runs=[0.97, 0.95, 0.98], method="60 simulated tournaments per run, distinct seeds")] if balance is None else balance)
         model = self.write("rules/model.py", "import json\nprint(json.dumps(%r))\n" % report)
         from gameplay.rules_check import run
         run(str(self.game), "rules/model.py", [sys.executable, "rules/model.py"], "design/gameplay/RULES_CHECK.json")
