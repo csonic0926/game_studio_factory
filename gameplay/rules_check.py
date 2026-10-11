@@ -133,13 +133,13 @@ def target_met(target: dict) -> bool:
     return all((low is None or value >= low) and (high is None or value <= high) for value in target["runs"])
 
 
-def run(game_repo: str, model: str, command: list[str], output: str) -> dict:
+def run(game_repo: str, model: str, command: list[str], output: str, timeout: int = TIMEOUT_SECONDS) -> dict:
     """Execute the game-owned command and publish a record bound to the exact model."""
     game = Path(game_repo).resolve()
     if not command:
         fail("INVALID_RULES_COMMAND", "give the command after --")
     model_ref = reference(game, model)
-    completed = subprocess.run(command, cwd=game, text=True, capture_output=True, timeout=TIMEOUT_SECONDS)
+    completed = subprocess.run(command, cwd=game, text=True, capture_output=True, timeout=timeout)
     if completed.returncode:
         fail("RULES_COMMAND_FAILED", f"exit {completed.returncode}: {completed.stderr.strip()[-2000:]}")
     try:
@@ -214,11 +214,12 @@ def main(argv=None) -> int:
     cmd.add_argument("--game-repo", required=True)
     cmd.add_argument("--model", required=True, help="game-relative path of the executable rules model")
     cmd.add_argument("--output", required=True, help="game-relative path of the record to publish")
+    cmd.add_argument("--timeout", type=int, default=TIMEOUT_SECONDS, help="seconds the command may run (long balance runs need more)")
     cmd.add_argument("command", nargs=argparse.REMAINDER, help="-- then the command that prints the report")
     args = parser.parse_args(argv)
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     try:
-        result = run(args.game_repo, args.model, command, args.output)
+        result = run(args.game_repo, args.model, command, args.output, args.timeout)
     except (FactoryError, OSError, subprocess.TimeoutExpired) as error:
         print(json.dumps({"status": getattr(error, "code", "RULES_COMMAND_FAILED"), "message": str(error)}, ensure_ascii=False))
         return 2
