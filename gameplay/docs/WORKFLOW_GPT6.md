@@ -29,7 +29,7 @@ composition requirements. Scene drawings must make current controls, distances,
 obstacles, affordances and work visible; schematic boxes are not automatically
 usable storyboards. Clock/phase and late-path work must agree with actual inputs.
 
-UI production still follows UI_PRODUCTION_WORKFLOW.md, including scene/input/
+UI production still follows ui/docs/UI_PRODUCTION_WORKFLOW.md (UI Factory), including scene/input/
 logic boundaries, lifecycle, theme, locale and screenshots. Runtime still follows
 RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md and isolated blind/comparison
 protocols. Produce within the reviewed paths; implementation completion is not

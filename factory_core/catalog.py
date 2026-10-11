@@ -12,7 +12,10 @@ DOCS = {
     "studio": ["studio/docs/WORKFLOW_V2.md", "studio/docs/PLAYER_FACING_GAMEPLAY_EVIDENCE_GATE.md",
                "studio/docs/BASELINE_ADMISSION_WORKFLOW.md", "studio/docs/PRODUCT_AUTHORITY_LIFECYCLE.md"],
     "gameplay": ["gameplay/docs/WORKFLOW_V2.md", "gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md",
-                 "gameplay/docs/UI_PRODUCTION_WORKFLOW.md", "gameplay/docs/RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md"],
+                 "ui/docs/UI_PRODUCTION_WORKFLOW.md", "gameplay/docs/RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md"],
+    # UI Factory department: not a separate design capability yet; Gameplay and
+    # Studio designs still bind its production preflight.
+    "ui": ["ui/docs/UI_PRODUCTION_WORKFLOW.md"],
     "story": ["story/docs/WORKFLOW_V2.md", "story/docs/PROJECT_PROFILE_CONTRACT.md", "story/core/NARRATIVE_FOUNDATIONS.md"],
     "asset": ["asset/docs/AI_CALLER_LANDING.md"],
     "sound": ["sound/docs/AI_CALLER_LANDING.md"],
@@ -30,7 +33,7 @@ METHODS = {
 def departments(capability: str) -> list[str]:
     if capability not in CAPABILITIES:
         fail("UNKNOWN_CAPABILITY", capability)
-    return ["studio", "gameplay", "idea"] if capability in ("studio", "gameplay") else [capability]
+    return ["studio", "gameplay", "idea", "ui"] if capability in ("studio", "gameplay") else [capability]
 
 
 def method_paths(factory: Path, capability: str, task: str) -> list[str]:

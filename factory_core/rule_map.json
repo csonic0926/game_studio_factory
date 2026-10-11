@@ -1350,7 +1350,7 @@
     },
     {
       "id": "ui.project_realization_grammar",
-      "source": "gameplay/docs/UI_PRODUCTION_WORKFLOW.md",
+      "source": "ui/docs/UI_PRODUCTION_WORKFLOW.md",
       "capabilities": [
         "studio",
         "gameplay"

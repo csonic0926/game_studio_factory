@@ -210,7 +210,7 @@ must persist the same contract:
 Before planning, classify UI impact. If the repair touches a visible scene,
 HUD, menu/modal/overlay, responsive composition, localization fit, or UI state
 refresh, complete
-[`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md). The symptom may be
+[`UI_PRODUCTION_WORKFLOW.md`](../../ui/docs/UI_PRODUCTION_WORKFLOW.md). The symptom may be
 visual while the cause is state ownership or scene integration; the repair
 planner may not guess or patch around those repo conventions.
 

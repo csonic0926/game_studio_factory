@@ -69,7 +69,8 @@ exact existing OBJECTIVE_GAMEPLAY.md + one evidenced gap
 When both a concrete known gap and forward progression are active, repair the
 gap first unless the user explicitly defers it.
 
-**UI production preflight** runs only when an objective or repair will change
+**UI production preflight** (owned by the UI Factory in `../ui/` since
+2026-10-11; Gameplay still invokes it) runs only when an objective or repair will change
 UI. It reconstructs this repo's working UI construction grammar once and binds
 it into the production plan:
 
@@ -92,7 +93,7 @@ This separates feature intent from UI realization. It prevents the production
 model from guessing container/anchor structure, duplicating state/refresh
 logic, breaking node paths/lifecycle/input/layers, or validating only one
 viewport/locale/happy state. See
-[`docs/UI_PRODUCTION_WORKFLOW.md`](docs/UI_PRODUCTION_WORKFLOW.md).
+[`ui/docs/UI_PRODUCTION_WORKFLOW.md`](../ui/docs/UI_PRODUCTION_WORKFLOW.md).
 
 The previous quant-first chain remains present for existing pilot artifacts:
 
@@ -265,8 +266,7 @@ design_gate.py                         exact design review/human verdict gate
 project_card_standard.py               active project standard/composition/review gate
 repair.py                              repair context validator/compiler
 repair_plan.py                         repair production-plan validator
-ui.py                                  UI repo probe/compiler/checker
-ui_binding.py                          shared plan-to-UI-adapter validator
+ui.py, ui_binding.py                   compatibility entries; moved to ../ui/ (UI Factory)
 schemas/next_gameplay_unit_input.schema.json
 schemas/gameplay_design_model.schema.json
 schemas/gameplay_factory_repo_probe.schema.json

@@ -15,7 +15,7 @@ entries, and a just-in-time UI production preflight:
 - [`GAMEPLAY_REPAIR_WORKFLOW.md`](GAMEPLAY_REPAIR_WORKFLOW.md)
   closes one concrete gameplay gap inside an existing objective without
   rewriting that objective.
-- [`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md) reconstructs the
+- [`UI_PRODUCTION_WORKFLOW.md`](../../ui/docs/UI_PRODUCTION_WORKFLOW.md) reconstructs the
   current repo's UI construction grammar before a UI-changing plan.
 
 If a concrete known gap and a request to advance progression coexist, repair
@@ -218,7 +218,7 @@ one plan per objective row. Validate before execution:
 Before the planner writes a UI-changing plan, run:
 
 ```bash
-python3 gameplay/ui.py start --game-repo <GAME_REPO>
+python3 ui/ui.py start --game-repo <GAME_REPO>
 ```
 
 If it returns `UI_PRODUCTION_ADAPTER_INPUT_REQUIRED`, follow

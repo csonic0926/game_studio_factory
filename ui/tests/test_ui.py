@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from gameplay.ui import (
+from ui.ui import (
     ADAPTER_JSON_RELATIVE,
     ADAPTER_MD_RELATIVE,
     BLOCKED_BY_EXISTING_UI_STATE,

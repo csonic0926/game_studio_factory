@@ -283,7 +283,7 @@ the planning model and protocol:
 
 First classify the intended work types. If any change touches UI, scene UI,
 HUD, menu/modal/overlay, responsive composition, or localization fit, complete
-[`UI_PRODUCTION_WORKFLOW.md`](UI_PRODUCTION_WORKFLOW.md) before authoring the
+[`UI_PRODUCTION_WORKFLOW.md`](../../ui/docs/UI_PRODUCTION_WORKFLOW.md) before authoring the
 plans. This is a bounded reusable repo-convention preflight, not a new creative
 review. It prevents the planner/coding model from inventing a generic scene,
 layout, state-refresh, input/layer architecture, or visual identity from the

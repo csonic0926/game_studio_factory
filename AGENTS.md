@@ -57,6 +57,7 @@ Specialist entry points:
 - `idea/` → skill `idea-factory`, `idea/AGENTS.md`
 - `product/` → skill `product-factory`, `product/AGENTS.md`
 - `gameplay/` → skill `gameplay-factory`, `gameplay/AGENTS.md`
+- `ui/` → `ui/AGENTS.md` (UI Production Adapter; invoked by Gameplay/Studio)
 - `story/` → skill `game-story-factory`, `story/AGENTS.md`
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`
 - `sound/` → `sound/docs/AI_CALLER_LANDING.md`, `sound/sfx.py`

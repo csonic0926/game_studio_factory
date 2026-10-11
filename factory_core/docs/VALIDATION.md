@@ -21,6 +21,7 @@ python3 -m unittest discover -s tests
 python3 -m unittest discover -s factory_core/tests
 python3 -m unittest discover -s studio/tests
 python3 -m unittest discover -s gameplay/tests
+python3 -m unittest discover -s ui/tests
 python3 -m unittest discover -s idea/tests
 PYTHONPATH=asset python3 -m pytest asset/tests -q
 ```

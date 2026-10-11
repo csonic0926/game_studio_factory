@@ -74,7 +74,7 @@ kernel that the Observation Adapter cannot support produces
 `BLOCKED_BY_OBSERVABILITY` before packet production.
 
 The optional UI adapter is not required to author gameplay. It is a hard gate
-before a UI-changing production plan. Run `UI_PRODUCTION_WORKFLOW.md` to create
+before a UI-changing production plan. Run `ui/docs/UI_PRODUCTION_WORKFLOW.md` to create
 or refresh it; do not inflate existing-project initialization by reconstructing
 UI when the next production change does not touch UI.
 

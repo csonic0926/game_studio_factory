@@ -84,7 +84,7 @@ Missing required hooks mean production is not complete.
 
 This general adapter does not authorize a production model to invent the
 project's UI construction grammar. Before a UI-changing objective or repair
-plan, run `docs/UI_PRODUCTION_WORKFLOW.md` and bind the checked game-owned:
+plan, run `ui/docs/UI_PRODUCTION_WORKFLOW.md` and bind the checked game-owned:
 
 ```text
 design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json

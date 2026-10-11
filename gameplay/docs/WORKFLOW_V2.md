@@ -27,7 +27,7 @@ requires the current authorized checkpoint and exact objective hash, checks
 content dependency freshness and invokes graph, project-standard/composition
 and interaction validators. It never fabricates separate legacy reviewer ids.
 
-UI changes still require `UI_PRODUCTION_WORKFLOW.md`: repo layout grammar,
+UI changes still require `ui/docs/UI_PRODUCTION_WORKFLOW.md`: repo layout grammar,
 state refresh, scene/lifecycle, input/layers, theme/fonts/localization and
 accepted visual grammar. Runtime observations still use
 `RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md`; keep designed, implemented,

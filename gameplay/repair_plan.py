@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 try:  # Package import in tests; script import for direct CLI use.
-    from gameplay.ui_binding import (
+    from ui.ui_binding import (
         UiImpactBinding,
         markdown_ui_contract,
         validate_ui_impact,
