@@ -1527,6 +1527,22 @@
       "modes": [
         "AUTONOMOUS"
       ]
+    },
+    {
+      "id": "gameplay.rules_model_covers_design",
+      "source": "gameplay/docs/WORKFLOW_GPT6.md",
+      "capabilities": [
+        "studio",
+        "gameplay"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review",
+      "modes": [
+        "AUTONOMOUS"
+      ]
     }
   ]
 }

@@ -44,9 +44,25 @@ class AuthorshipModeTests(unittest.TestCase):
                       ideas=ideas or [idea("lane-guard")], open_questions=questions or [])
         return self.write("design/product/idea/inquiries/lanes.json", record)
 
-    def covered(self, ref, decisions=None):
+    def rules_model(self, invariants=None, examples=None):
+        """A tiny game-owned rules model whose command prints its report."""
+        report = dict(schema_version="gameplay_rules_report.v1",
+                      invariants=invariants or [dict(id="board-capacity", statement="Deployed units never exceed level + 2.", checked_cases=500, violations=0)],
+                      examples=[dict(id="lap-two", statement="Lap two's Bow reaches the back row.", status="CONSISTENT", detail="Replayed.")] if examples is None else examples)
+        model = self.write("rules/model.py", "import json\nprint(json.dumps(%r))\n" % report)
+        from gameplay.rules_check import run
+        run(str(self.game), "rules/model.py", [sys.executable, "rules/model.py"], "design/gameplay/RULES_CHECK.json")
+        return self.game_ref("rules/model.py"), self.game_ref("design/gameplay/RULES_CHECK.json")
+
+    def game_ref(self, path):
+        from factory_core.refs import reference
+        return reference(self.game, path)
+
+    def covered(self, ref, decisions=None, rules=None):
         design = copy.deepcopy(self.design)
-        design["inputs"] = design["inputs"] + [ref]
+        model, record = rules or self.rules_model()
+        design["inputs"] = design["inputs"] + [ref, model, record]
+        design["rules_check"] = record
         design["idea_coverage"] = dict(inquiries=[ref], decisions=decisions or {
             identity: dict(ideas=["lane-guard"]) if index == 0 else dict(not_a_design_idea="Layout bookkeeping, no player-facing mechanism.")
             for index, identity in enumerate(self.decision_ids)})

@@ -925,6 +925,29 @@
           }
         }
       }
+    },
+    "rules_check": {
+      "description": "gameplay_rules_check.v1 record published by gameplay/rules_check.py run: an executable rules model's invariants and worked-example replays. Required for studio/gameplay in AUTONOMOUS mode; must be a design input.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
     }
   },
   "required": [

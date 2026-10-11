@@ -34,3 +34,22 @@ logic boundaries, lifecycle, theme, locale and screenshots. Runtime still follow
 RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md and isolated blind/comparison
 protocols. Produce within the reviewed paths; implementation completion is not
 accepted gameplay. A failing test permits repair, not an invented design approval.
+
+## Rules correctness (executable model)
+
+Prose rules and worked examples drift apart. A design can bind an executable
+rules model and a gameplay_rules_check.v1 record published by
+`gameplay/rules_check.py run` (design field `rules_check`, also a design input).
+The game-owned command prints a gameplay_rules_report.v1: invariants that must
+hold in every reachable state, each with checked cases and violations, and every
+worked example replayed as CONSISTENT or INCONSISTENT. The gate rejects a stale
+model, any violation and any inconsistent example. It decides nothing about fun
+or balance and never supplies game-specific invariants.
+
+Required for studio/gameplay designs in the AUTONOMOUS authorship mode, with at
+least one replayed example; optional and validated when present in COLLABORATIVE
+mode. In AUTONOMOUS mode both reviewers judge `gameplay.rules_model_covers_design`:
+the invariants cover the design's capacities, resources and legal-action states,
+every worked example (laps, witnesses, mock frames) is replayed, and the model
+states the same rules as the prose.
+

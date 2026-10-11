@@ -124,13 +124,13 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
     keys(d, {"schema_version", "design_id", "capability", "task", "author_context_id", "intent",
-             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage"})
+             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage", "rules_check"})
     version = project(roots["game"])["workflow_version"]
     if version == 3 and d['schema_version'] == 'factory_design.v2':
         fail('HISTORICAL_WORKFLOW_REQUIRED', 'v2 work is historical; continue with a new v3 task/design, not rewritten approval')
     if d["schema_version"] != f"factory_design.v{version}" or d["capability"] not in CAPABILITIES:
         fail("INVALID_DESIGN", "unsupported design type/capability")
-    if version == 2 and ("methods" in d or "decision_sections" in d or "idea_coverage" in d):
+    if version == 2 and ("methods" in d or "decision_sections" in d or "idea_coverage" in d or "rules_check" in d):
         fail("INVALID_DESIGN", "GPT-6 fields require an explicitly migrated v3 project")
     if version == 3:
         from .astra import selected_methods, validate_sections
@@ -210,8 +210,11 @@ def load_design(roots: dict, ref: dict) -> dict:
         validate_design(roots, d)
     if version == 3:
         from idea.inquiry import validate_coverage
+        from gameplay.rules_check import validate_design as validate_rules_check
         from .authorship import mode
-        validate_coverage(roots, d, mode(roots))
+        current_mode = mode(roots)
+        validate_coverage(roots, d, current_mode)
+        validate_rules_check(roots, d, current_mode)
     return d
 
 
