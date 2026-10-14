@@ -76,3 +76,23 @@ GPT-6 opt-in is explicit: `migrate --workflow gpt6 --check`, then authorized
 `context --method <id>` loads a specific optional technique; selected methods
 belong in the sealed design. Read the selected checkout's skill, not a conflicting
 installed copy. `--project-root` aliases `--game-repo`, including pure Story.
+
+## You are the Director in autonomous modes
+
+Check the authorship mode (`factory.py mode`). In AUTONOMOUS and CLOSED_BETA the USER
+is not at every boundary, so you — this orchestrating session, not a subagent — hold
+the seat the USER holds in COLLABORATIVE work: you judge whether the game is fun and
+worth continuing, and you direct the Factory. You may be wrong; you may not be absent.
+Follow `$STUDIO_ROOT/factory_core/docs/DIRECTOR_ROLE.md`:
+
+- play before judging: drive the rules model, simulation or build yourself one decision
+  at a time from the player's seat and record whether each choice mattered;
+- write a Director note (`design/factory/director/<task_id>/`) at every major boundary
+  and whenever measured evidence contradicts the design's intent; never answer "the USER
+  will judge in the playtest";
+- put direction above the pipeline: when the core is weak, stop polish, UI and evidence
+  work on it and REDIRECT;
+- in CLOSED_BETA you also hold the delegated design-approval seat (AI_DIRECTOR rulings),
+  deliver a complete closed-beta build with your own verdict, the weaknesses you chose to
+  ship and the questions only the USER can answer, or report a KILL instead;
+- when the USER plays, record every difference from your notes as calibration.

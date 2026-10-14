@@ -299,6 +299,11 @@ def approval_action(design_ref, binding):
 
 def check_ruling(roots, ref, design_ref, binding):
     ruling = read_json(resolve_ref(roots, ref))
+    if isinstance(ruling, dict) and ruling.get("owner") == "AI_DIRECTOR":
+        # CLOSED_BETA: the Director holds the USER's delegated approval seat.
+        from .director import check_director_ruling
+        check_director_ruling(roots, ruling, design_ref, binding)
+        return
     keys(ruling, {"schema_version", "owner", "decision", "design", "dependency_fingerprint", "source", "quote"})
     if (ruling["schema_version"] != "factory_ruling.v2" or ruling["owner"] != "USER"
             or ruling["design"] != design_ref or ruling["dependency_fingerprint"] != binding["fingerprint"]):
@@ -335,6 +340,11 @@ def verify_record(roots: dict, record: dict):
         check_reviews(roots, record["design"], d, current, record["reviews"])
     if STAGES.index(record["stage"]) >= STAGES.index("AUTHORIZED"):
         check_ruling(roots, record["ruling"], record["design"], current)
+    if project(roots["game"])["workflow_version"] == 3:
+        # The Director's judgment must exist at major boundaries in autonomous modes.
+        from .authorship import mode
+        from .director import check_checkpoint
+        check_checkpoint(roots, record, mode(roots))
     for ref in record["artifacts"]:
         resolve_ref(roots, ref)
     if record["stage"] == "COMPLETE":
@@ -345,7 +355,7 @@ def verify_record(roots: dict, record: dict):
 
 def checkpoint(roots: dict, request: dict) -> dict:
     keys(request, {"task_id", "previous", "capability", "task", "stage", "summary", "unresolved", "artifacts"},
-         {"design", "reviews", "ruling", "acceptance"})
+         {"design", "reviews", "ruling", "acceptance", "director_note"})
     task_id = identifier(request["task_id"])
     stage = request["stage"]
     if stage not in STAGES or request["capability"] not in CAPABILITIES:
@@ -372,6 +382,8 @@ def checkpoint(roots: dict, request: dict) -> dict:
                   "factory_revision": revision(roots["factory"]), "dependencies": None,
                   "design": request.get("design"), "reviews": request.get("reviews", []),
                   "ruling": request.get("ruling"), "acceptance": request.get("acceptance")}
+        if record.get("director_note") is None:
+            record.pop("director_note", None)
         if stage != "DRAFT" and not record["design"]:
             fail("DESIGN_REQUIRED", "complete design reference required")
         if record["design"]:

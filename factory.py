@@ -40,7 +40,9 @@ def parser():
             cmd.add_argument("--workflow", choices=("v2", "gpt6"), default="v2", help="explicit contract selection; never inferred from model name")
     cmd = sub.add_parser("mode", help="show or set the USER-selected authorship mode (v3 only)")
     cmd.add_argument("--game-repo", "--project-root", dest="game_repo", default=".")
-    cmd.add_argument("--set", choices=("collaborative", "autonomous"), help="requires --source and --quote from a raw USER message")
+    cmd.add_argument("--set", choices=("collaborative", "autonomous", "closed_beta"), help="requires --source and --quote from a raw USER message")
+    cmd.add_argument("--product", help="closed_beta: the product the USER delegates to the closed beta")
+    cmd.add_argument("--seat", action="append", default=[], help="closed_beta: delegated seat (DESIGN_APPROVAL, INTERNAL_PLAYTEST_VERDICT); default both")
     cmd.add_argument("--source", help="game-owned JSON of the raw USER message: {\"role\": \"user\", \"content\": ...}")
     cmd.add_argument("--quote", help="exact USER words selecting the mode")
     cmd = sub.add_parser("benchmark")
@@ -84,7 +86,7 @@ def main(argv=None):
                 if args.set:
                     if not args.source or not args.quote:
                         raise FactoryError("HUMAN_RULING_REQUIRED", "--set needs the raw USER message (--source) and exact --quote")
-                    result = set_mode(roots, args.set, args.source, args.quote)
+                    result = set_mode(roots, args.set, args.source, args.quote, args.product, args.seat or None)
                 else:
                     result = {"status": "MODE", "mode": mode(roots)}
             elif args.command == "checkpoint":

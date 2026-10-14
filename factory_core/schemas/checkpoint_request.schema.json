@@ -14,7 +14,16 @@
       ]
     },
     "capability": {
-      "enum": ["idea", "product", "studio", "gameplay", "ui", "story", "asset", "sound"]
+      "enum": [
+        "idea",
+        "product",
+        "studio",
+        "gameplay",
+        "ui",
+        "story",
+        "asset",
+        "sound"
+      ]
     },
     "task": {
       "type": "string",
@@ -235,6 +244,29 @@
         "path",
         "sha256"
       ]
+    },
+    "director_note": {
+      "description": "factory_director_note.v1 (factory_core/docs/DIRECTOR_ROLE.md): the Director's judgment for this boundary. Required in AUTONOMOUS and CLOSED_BETA at DESIGN_COMPLETE, PRODUCING, EVIDENCE_READY, and (CLOSED_BETA) AUTHORIZED; the boundary advances only on CONTINUE.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
     }
   },
   "required": [

@@ -78,9 +78,24 @@ infer it from a model name or switch it on your own.
   that no material mechanism hides behind a not_a_design_idea label, and that
   coupled whole-game consequences were considered.
 
+- CLOSED_BETA (full delegation to a closed beta): AUTONOMOUS obligations plus the
+  USER's named seats (`delegation.seats`: DESIGN_APPROVAL, INTERNAL_PLAYTEST_VERDICT)
+  for the named product. The Director approves reviewed designs with an AI_DIRECTOR
+  ruling bound to its DESIGN_APPROVAL note; such rulings are never USER rulings and
+  are invalid in any other mode, so revoking the mode stops their authorizations.
+  The USER first plays the delivered closed-beta build; that verdict binds.
+
+In AUTONOMOUS and CLOSED_BETA the orchestrator is the Director
+(`factory_core/docs/DIRECTOR_ROLE.md`): it plays, judges fun and direction, and records
+a `factory_director_note.v1` at DESIGN_COMPLETE, PRODUCING, EVIDENCE_READY and (CLOSED_BETA)
+AUTHORIZED. A boundary advances only on the Director's CONTINUE; the latest STOP or KILL
+blocks production stages. The Factory checks that the judgment exists, played and decided;
+never whether it is right.
+
 The mode file joins every design closure, so switching modes invalidates earlier
-reviews; continue through a new draft. Neither mode changes USER ownership of
-commission, material design approval or playtest verdicts.
+reviews; continue through a new draft. COLLABORATIVE and AUTONOMOUS do not change USER
+ownership of commission, material design approval or playtest verdicts; CLOSED_BETA
+delegates only the seats the USER names.
 
 ## Persistent state and production
 

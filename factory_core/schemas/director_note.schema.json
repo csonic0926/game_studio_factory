@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Director note",
+  "description": "The Director's judgment at a major boundary (factory_core/docs/DIRECTOR_ROLE.md), written by the orchestrating session itself in AUTONOMOUS and CLOSED_BETA modes. Lives at design/factory/director/<task_id>/<NNNNNN>.json. The Factory checks existence, play evidence and the decision's effect, never whether the judgment is right.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "design",
+    "boundary",
+    "author_context_id",
+    "played",
+    "fun_judgment",
+    "biggest_risk",
+    "case_against",
+    "decision",
+    "next",
+    "calibration",
+    "written_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "factory_director_note.v1"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "boundary": {
+      "enum": [
+        "DESIGN_FREEZE",
+        "DESIGN_APPROVAL",
+        "PRODUCTION_START",
+        "USER_HANDOFF",
+        "EVIDENCE_CONTRADICTION"
+      ]
+    },
+    "author_context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "played": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "evidence",
+          "observations"
+        ],
+        "properties": {
+          "method": {
+            "description": "how the Director played from the player's seat (simulation decisions, build session, frames)",
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "scope",
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "scope": {
+                  "enum": [
+                    "game",
+                    "game_git"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          },
+          "observations": {
+            "description": "what each decision felt like: did it matter, what did it change",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "fun_judgment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "biggest_risk": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_against": {
+      "description": "the strongest reason to stop or change course",
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "enum": [
+        "CONTINUE",
+        "REDIRECT",
+        "STOP",
+        "KILL"
+      ]
+    },
+    "next": {
+      "type": "string",
+      "minLength": 1
+    },
+    "calibration": {
+      "description": "earlier USER verdicts this judgment was checked against",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "written_at": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

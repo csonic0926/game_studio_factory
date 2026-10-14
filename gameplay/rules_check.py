@@ -167,7 +167,8 @@ def summary(report: dict) -> dict:
 def validate_design(roots: dict, design: dict, mode: str) -> None:
     """Design gate: bound, current, violation-free; mandatory in AUTONOMOUS mode."""
     ref = design.get("rules_check")
-    autonomous = mode == "AUTONOMOUS"
+    from factory_core.authorship import AUTONOMOUS_MODES
+    autonomous = mode in AUTONOMOUS_MODES
     if ref is None:
         if autonomous and design["capability"] in COVERED_CAPABILITIES:
             fail("RULES_CHECK_REQUIRED", "AUTONOMOUS mode: bind an executable rules-model check (invariants and worked examples)")

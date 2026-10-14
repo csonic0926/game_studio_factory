@@ -1525,7 +1525,8 @@
       ],
       "disposition": "boundary_review",
       "modes": [
-        "AUTONOMOUS"
+        "AUTONOMOUS",
+        "CLOSED_BETA"
       ]
     },
     {
@@ -1541,7 +1542,8 @@
       ],
       "disposition": "boundary_review",
       "modes": [
-        "AUTONOMOUS"
+        "AUTONOMOUS",
+        "CLOSED_BETA"
       ]
     },
     {
@@ -1557,7 +1559,8 @@
       ],
       "disposition": "boundary_review",
       "modes": [
-        "AUTONOMOUS"
+        "AUTONOMOUS",
+        "CLOSED_BETA"
       ]
     },
     {

@@ -104,7 +104,8 @@ def validate_inquiry(data: dict, where: str = "inquiry") -> dict:
 def validate_coverage(roots: dict, design: dict, mode: str) -> None:
     """Check the design's idea coverage; AUTONOMOUS makes it mandatory and complete."""
     coverage = design.get("idea_coverage")
-    autonomous = mode == "AUTONOMOUS"
+    from factory_core.authorship import AUTONOMOUS_MODES
+    autonomous = mode in AUTONOMOUS_MODES
     if coverage is None:
         if autonomous and design["capability"] in COVERED_CAPABILITIES:
             fail("IDEA_INQUIRY_REQUIRED", "AUTONOMOUS mode: bind per-idea inquiry for every material decision; skipping Idea is not allowed")
