@@ -124,7 +124,7 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
     keys(d, {"schema_version", "design_id", "capability", "task", "author_context_id", "intent",
-             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage", "rules_check"})
+             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage", "rules_check", "ui"})
     version = project(roots["game"])["workflow_version"]
     if version == 3 and d['schema_version'] == 'factory_design.v2':
         fail('HISTORICAL_WORKFLOW_REQUIRED', 'v2 work is historical; continue with a new v3 task/design, not rewritten approval')
@@ -208,6 +208,11 @@ def load_design(roots: dict, ref: dict) -> dict:
     if d["capability"] in ("studio", "gameplay"):
         from gameplay.v2 import validate_design
         validate_design(roots, d)
+    if d["capability"] == "ui" or "ui" in d:
+        if version != 3:
+            fail("INVALID_DESIGN", "the UI design capability requires the explicitly migrated v3 workflow")
+        from ui.ui_design import validate_design as validate_ui_design
+        validate_ui_design(roots, d)
     if version == 3:
         from idea.inquiry import validate_coverage
         from gameplay.rules_check import validate_design as validate_rules_check

@@ -14,15 +14,7 @@
       ]
     },
     "capability": {
-      "enum": [
-        "idea",
-        "product",
-        "studio",
-        "gameplay",
-        "story",
-        "asset",
-        "sound"
-      ]
+      "enum": ["idea", "product", "studio", "gameplay", "ui", "story", "asset", "sound"]
     },
     "task": {
       "type": "string",

@@ -398,6 +398,7 @@ def validate_production_plan(
         raw_plans = []
 
     resolved_plans: list[_ResolvedPlan] = []
+    ui_design_bindings: list = []
     seen_plan_ids: set[str] = set()
     seen_plan_paths: set[Path] = set()
     planned_path_owner: dict[Path, str] = {}
@@ -448,6 +449,7 @@ def validate_production_plan(
             label=label,
             errors=errors,
         )
+        ui_design_bindings.append((label, ui_impact))
 
         if plan_id in seen_plan_ids:
             errors.append(f"duplicate plan_id: {plan_id}")
@@ -547,6 +549,10 @@ def validate_production_plan(
                         errors.append(f"plan {plan.plan_id} expands the v2 approved production scope")
         except FactoryError as error:
             errors.append(f"{error.code}: {error}")
+    if isinstance(verdict_ref, dict) and verdict_ref.get("path"):
+        # A gameplay with an authorized UI design: its UI plans realize that design.
+        from ui.ui_design import plan_binding_errors
+        errors.extend(plan_binding_errors(game_repo, verdict_ref["path"], ui_design_bindings))
     if native_design:
         from gameplay.native import production_units
         objective_rows = [item['row'] for item in production_units({'game': game_repo, 'factory': FACTORY_ROOT}, native_design)]

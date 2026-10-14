@@ -1559,6 +1559,174 @@
       "modes": [
         "AUTONOMOUS"
       ]
+    },
+    {
+      "id": "ui.gameplay_derived_not_invented",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.correct_over_pretty",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.every_acting_rule_visible",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.default_calm_disclosure_on_demand",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.disclosure_geometrically_legible",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.protected_information_never_covered",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.cue_timing_bounded",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.outcome_points_to_changeable_choice",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.preview_equals_outcome",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.every_input_answers_visibly",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.one_term_one_number",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.no_forbidden_fact_leaked",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.verification_layers_not_merged",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.feasible_with_adapter_and_visual_grammar",
+      "source": "ui/docs/UI_DESIGN_CAPABILITY.md",
+      "capabilities": [
+        "ui"
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
     }
   ]
 }

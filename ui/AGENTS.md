@@ -12,10 +12,15 @@ Gameplay stays focused on rules and system integrity.
   visual grammar. Gameplay and Studio designs still invoke it before a
   UI-changing plan, and its rules stay in their review closure.
 - `gameplay/ui.py` and `gameplay/ui_binding.py` remain compatibility entries.
-- Not yet designed: ownership of player readability (whether a player can see
-  and understand what the rules do). Today that is caught only by Studio's
-  runtime blind observation. Extending this department needs a USER-approved
-  design; do not invent that scope here.
-- UI is not yet a separate design capability (no `ui` design/review lifecycle).
+- The UI design capability (`ui`, `docs/UI_DESIGN_CAPABILITY.md`, `ui_design.py`)
+  owns player readability: what the player must, may and must not know, when,
+  through which channel, what draws attention and for how long, and how every
+  input answers. It starts only from an AUTHORIZED gameplay or studio design and
+  never changes rules, balance, art direction or the repo's build conventions.
+  Correct beats pretty: refuse a pretty UI that hides gameplay, never a plain UI
+  that plays correctly.
+- Mechanical checks (`ui_design.py`) prove coverage and bounds only; whether the
+  facts and the attention plan are right stays with the two reviewers, blind
+  observation and the USER playtest. Never merge those layers.
 - Never write game output here; execution success never constitutes USER
   acceptance.

@@ -17,6 +17,7 @@
         "product",
         "studio",
         "gameplay",
+        "ui",
         "story",
         "asset",
         "sound"
@@ -946,6 +947,134 @@
         "sha256": {
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ui": {
+      "description": "UI design binding (capability ui only, ui/docs/UI_DESIGN_CAPABILITY.md): the authorized gameplay or studio checkpoint it starts from (a design input) and the four artifacts (design artifacts). rules_model_absent_reason only when that gameplay design binds no rules check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gameplay_checkpoint",
+        "information_model",
+        "attention_plan",
+        "screen_contracts",
+        "verification_plan"
+      ],
+      "properties": {
+        "gameplay_checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "scope": {
+              "const": "game"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "information_model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "scope": {
+              "const": "game"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "attention_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "scope": {
+              "const": "game"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "screen_contracts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "scope": {
+              "const": "game"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "verification_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "scope": {
+              "const": "game"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "rules_model_absent_reason": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

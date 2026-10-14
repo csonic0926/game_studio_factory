@@ -1077,6 +1077,9 @@ def validate_runtime_player_surface_chain(
 
     comparison_ref, comparison_path, comparison = loaded["comparison_review"]
     comparison_required = {"schema_version", "review_id", "review_role", "project_id", "unit_id", "game_revision", "build_id", "factory_revision", "runtime_interaction_evidence", "blind_observation", "interaction_contract", "interaction_contract_review", "decision_card", "studio_gameplay_system", "reviewer_context_id", "reviewer_freshness", "context_independence", "beat_comparisons", "hypothesis_observations", "localization_readability", "blocking_findings", "verdict", "reviewed_at"}
+    # Optional: the UI design's MUST_KNOW facts judged for this chain (ui/docs/UI_DESIGN_CAPABILITY.md 3.4).
+    if isinstance(comparison, dict) and "ui_fact_observations" in comparison:
+        comparison_required = comparison_required | {"ui_fact_observations"}
     _keys(comparison, "player-facing comparison review", comparison_required, errors)
     if comparison.get("schema_version") != COMPARISON_REVIEW_VERSION:
         errors.append(f"player-facing comparison review schema_version must be {COMPARISON_REVIEW_VERSION}")
@@ -1210,6 +1213,9 @@ def validate_runtime_player_surface_chain(
     locale_citations = _strings(comparison_locale.get("observation_citations"), "comparison review.localization_readability.observation_citations", errors)
     if not set(locale_citations).issubset(sealed_attempt_ids):
         errors.append("comparison localization cites evidence absent from the sealed blind record")
+    if isinstance(comparison, dict) and "ui_fact_observations" in comparison:
+        from ui.ui_design import validate_fact_observations
+        validate_fact_observations(repo, comparison["ui_fact_observations"], sealed_attempt_ids, errors)
     if comparison.get("blocking_findings") != []:
         errors.append("comparison review.blocking_findings must be empty")
     if comparison.get("verdict") != PASS_PLAYER_FACING_COMPARISON:

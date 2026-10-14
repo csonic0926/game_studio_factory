@@ -1,0 +1,58 @@
+{
+  "schema_version": "ui_information_model.v1",
+  "objective_id": "<OBJECTIVE_ID>",
+  "interaction_contract": {
+    "scope": "game",
+    "path": "<GAME_RELATIVE_PATH>",
+    "sha256": "<SHA256>"
+  },
+  "rules": [
+    {
+      "rule_id": "<RULE_ID>",
+      "source": "<exact rule or system reference in the gameplay authority>",
+      "statement": "<what the rule does>",
+      "fact_ids": [
+        "<FACT_ID>"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "step_id": "<INTERACTION_CONTRACT_STEP_ID>",
+      "fact_ids": [
+        "<FACT_ID>"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "<FACT_ID>",
+      "statement": "<the fact, in player terms>",
+      "source": "<gameplay reference>",
+      "need": "MUST_KNOW",
+      "serves": [
+        "<BEAT_ID>"
+      ],
+      "when": [
+        "BEFORE_DECISION"
+      ],
+      "channel": "DISCLOSED",
+      "canonical_wording": "<the one term used on every surface>"
+    },
+    {
+      "fact_id": "<FORBIDDEN_FACT_ID>",
+      "statement": "<what the gameplay hides, e.g. the winner before the fight>",
+      "source": "<gameplay reference>",
+      "need": "FORBIDDEN",
+      "serves": [
+        "<BEAT_ID>"
+      ],
+      "when": [
+        "BEFORE_DECISION"
+      ],
+      "channel": null,
+      "canonical_wording": "<term>",
+      "guard": "<what in the UI could leak it and why it does not>"
+    }
+  ]
+}

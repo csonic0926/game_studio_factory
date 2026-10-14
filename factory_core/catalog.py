@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from .refs import confined, fail, reference, unique_refs
 
-CAPABILITIES = ("idea", "product", "studio", "gameplay", "story", "asset", "sound")
+CAPABILITIES = ("idea", "product", "studio", "gameplay", "ui", "story", "asset", "sound")
 STORY_TASKS = ("world", "character", "cast", "chapter", "branch", "craft", "beat-sheet", "delivery", "twin", "rules")
 DOCS = {
     "product": ["product/docs/VALUE_ASSESSMENT_WORKFLOW.md"],
@@ -13,9 +13,10 @@ DOCS = {
                "studio/docs/BASELINE_ADMISSION_WORKFLOW.md", "studio/docs/PRODUCT_AUTHORITY_LIFECYCLE.md"],
     "gameplay": ["gameplay/docs/WORKFLOW_V2.md", "gameplay/docs/PROJECT_CARD_AUTHORING_STANDARD_WORKFLOW.md",
                  "ui/docs/UI_PRODUCTION_WORKFLOW.md", "gameplay/docs/RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md"],
-    # UI Factory department: not a separate design capability yet; Gameplay and
-    # Studio designs still bind its production preflight.
-    "ui": ["ui/docs/UI_PRODUCTION_WORKFLOW.md"],
+    # UI Factory: the UI design capability (what to show, when, with what priority)
+    # starts from authorized gameplay; its production preflight (how this repo
+    # builds UI) is still bound by Gameplay and Studio designs as well.
+    "ui": ["ui/docs/UI_DESIGN_CAPABILITY.md", "ui/docs/UI_PRODUCTION_WORKFLOW.md"],
     "story": ["story/docs/WORKFLOW_V2.md", "story/docs/PROJECT_PROFILE_CONTRACT.md", "story/core/NARRATIVE_FOUNDATIONS.md"],
     "asset": ["asset/docs/AI_CALLER_LANDING.md"],
     "sound": ["sound/docs/AI_CALLER_LANDING.md"],
@@ -33,7 +34,12 @@ METHODS = {
 def departments(capability: str) -> list[str]:
     if capability not in CAPABILITIES:
         fail("UNKNOWN_CAPABILITY", capability)
-    return ["studio", "gameplay", "idea", "ui"] if capability in ("studio", "gameplay") else [capability]
+    if capability in ("studio", "gameplay"):
+        return ["studio", "gameplay", "idea", "ui"]
+    if capability == "ui":
+        # UI design is derived from the gameplay authority, so its closure carries it.
+        return ["ui", "gameplay", "studio", "idea"]
+    return [capability]
 
 
 def method_paths(factory: Path, capability: str, task: str) -> list[str]:

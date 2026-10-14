@@ -98,6 +98,8 @@ class UiImpactBinding:
     validation_scenario_ids: tuple[str, ...] = ()
     style_blast_radius_scope: str = ""
     style_blast_radius: tuple[UiStyleTarget, ...] = ()
+    # The authorized UI design checkpoint this plan realizes (ui/docs/UI_DESIGN_CAPABILITY.md).
+    ui_design_checkpoint: dict | None = None
 
 
 def _text_list(value: Any, label: str, errors: list[str]) -> list[str]:
@@ -433,7 +435,9 @@ def validate_ui_impact(
         "style_blast_radius_scope",
         "style_blast_radius",
     }
-    extra_fields = sorted(set(raw_impact) - allowed_fields)
+    # Optional: the authorized UI design checkpoint ({"path", "sha256"}); plan.py
+    # requires it when the plan's gameplay has an authorized UI design.
+    extra_fields = sorted(set(raw_impact) - allowed_fields - {"ui_design_checkpoint"})
     missing_fields = sorted(allowed_fields - set(raw_impact))
     if missing_fields:
         errors.append(
@@ -500,6 +504,7 @@ def validate_ui_impact(
             or scenario_ids
             or style_scope
             or raw_style_blast_radius not in ([], None)
+            or raw_impact.get("ui_design_checkpoint") is not None
         ):
             errors.append(
                 f"{label}.ui_impact must leave adapter, ids, and style blast radius empty when "
@@ -528,6 +533,7 @@ def validate_ui_impact(
         validation_scenario_ids=tuple(scenario_ids),
         style_blast_radius_scope=style_scope,
         style_blast_radius=tuple(style_targets),
+        ui_design_checkpoint=raw_impact.get("ui_design_checkpoint"),
     )
 
     expected_path = UI_ADAPTER_RELATIVE.as_posix()

@@ -1,0 +1,36 @@
+{
+  "schema_version": "ui_verification_plan.v1",
+  "mechanical_checks": [
+    {
+      "check_id": "<CHECK_ID>",
+      "kind": "<timing | preview_equality | occlusion | text_fit | terminology | coverage>",
+      "covers": [
+        "<EVENT_ID or SURFACE_ID:INPUT_ID or FACT_ID>"
+      ],
+      "method": "<test or command run on the exact build>"
+    }
+  ],
+  "blind_chains": [
+    {
+      "chain_id": "<CHAIN_ID>",
+      "must_know_fact_ids": [
+        "<FACT_ID>"
+      ],
+      "hypotheses": [
+        {
+          "hypothesis_id": "<ID>",
+          "statement": "<readability claim>",
+          "falsifier": "<what in the blind record rejects it>",
+          "fallback": "<the pre-declared UI change>"
+        }
+      ]
+    }
+  ],
+  "user_playtest_signals": [
+    {
+      "signal_id": "<SIGNAL_ID>",
+      "question": "<what only the USER can tell>",
+      "fact_ids": []
+    }
+  ]
+}

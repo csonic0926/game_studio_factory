@@ -1,0 +1,52 @@
+{
+  "schema_version": "ui_screen_contracts.v1",
+  "surfaces": [
+    {
+      "surface_id": "<SURFACE_ID>",
+      "beats": [
+        "<BEAT_ID>"
+      ],
+      "layers": [
+        {
+          "layer_id": "<LAYER_ID>",
+          "order": 10,
+          "protects": [
+            "<ELEMENT_ID>"
+          ]
+        }
+      ],
+      "placements": [
+        {
+          "fact_id": "<FACT_ID>",
+          "channel": "DISCLOSED",
+          "layer_id": "<LAYER_ID>",
+          "size_class": "<e.g. 30 px information text>"
+        }
+      ],
+      "density": {
+        "persistent_item_ceiling": 12,
+        "disclosure_controls": [
+          "<e.g. tap a unit>"
+        ]
+      },
+      "inputs": [
+        {
+          "input_id": "<INPUT_ID>",
+          "step_ids": [
+            "<STEP_ID>"
+          ],
+          "response": "<the visible response>",
+          "persistent_change": "<what stays changed>",
+          "preview": "<what the preview shows>",
+          "preview_equality_check": "<the check that preview == committed result>"
+        }
+      ],
+      "terminology": [
+        {
+          "fact_id": "<FACT_ID>",
+          "wording": "<canonical wording>"
+        }
+      ]
+    }
+  ]
+}

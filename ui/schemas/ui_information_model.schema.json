@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI Player Information Model",
+  "description": "What the player must, may and must not know, derived from the authorized gameplay (ui/docs/UI_DESIGN_CAPABILITY.md 3.1). Checked by ui/ui_design.py: every rule maps to a visible fact, every contract step lists the facts it needs, FORBIDDEN facts carry a guard and no channel, one wording per fact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "objective_id",
+    "interaction_contract",
+    "rules",
+    "decisions",
+    "facts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ui_information_model.v1"
+    },
+    "objective_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interaction_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "source",
+          "statement",
+          "fact_ids"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "description": "exact rule/system reference in the gameplay authority",
+            "type": "string",
+            "minLength": 1
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step_id",
+          "fact_ids"
+        ],
+        "properties": {
+          "step_id": {
+            "description": "interaction contract step id",
+            "type": "string",
+            "minLength": 1
+          },
+          "fact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "facts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fact_id",
+          "statement",
+          "source",
+          "need",
+          "serves",
+          "when",
+          "channel",
+          "canonical_wording"
+        ],
+        "properties": {
+          "fact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "need": {
+            "enum": [
+              "MUST_KNOW",
+              "ON_DEMAND",
+              "MAY_KNOW",
+              "FORBIDDEN"
+            ]
+          },
+          "serves": {
+            "description": "contract beat ids",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "when": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "BEFORE_DECISION",
+                "DURING_RESOLUTION",
+                "AFTER_OUTCOME",
+                "ALWAYS"
+              ]
+            }
+          },
+          "channel": {
+            "enum": [
+              "PERSISTENT",
+              "DISCLOSED",
+              "TRANSIENT_CUE",
+              "EXPLANATION",
+              null
+            ]
+          },
+          "canonical_wording": {
+            "type": "string",
+            "minLength": 1
+          },
+          "guard": {
+            "description": "FORBIDDEN only: what in the UI could leak it and why it does not",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

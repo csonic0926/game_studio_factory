@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI Screen Contracts",
+  "description": "Where each fact lives and how every input answers (3.3). MUST_KNOW/ON_DEMAND facts are placed on a surface of every beat they serve; FORBIDDEN facts are never placed; every contract step has an answering input; every preview names its equality check; terminology equals canonical wording.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "surfaces"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ui_screen_contracts.v1"
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "surface_id",
+          "beats",
+          "layers",
+          "placements",
+          "density",
+          "inputs",
+          "terminology"
+        ],
+        "properties": {
+          "surface_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "beats": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "layers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "layer_id",
+                "order",
+                "protects"
+              ],
+              "properties": {
+                "layer_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "order": {
+                  "type": "integer"
+                },
+                "protects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "placements": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "fact_id",
+                "channel",
+                "layer_id",
+                "size_class"
+              ],
+              "properties": {
+                "fact_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "channel": {
+                  "enum": [
+                    "PERSISTENT",
+                    "DISCLOSED",
+                    "TRANSIENT_CUE",
+                    "EXPLANATION"
+                  ]
+                },
+                "layer_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "size_class": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "density": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "persistent_item_ceiling",
+              "disclosure_controls"
+            ],
+            "properties": {
+              "persistent_item_ceiling": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "disclosure_controls": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "input_id",
+                "step_ids",
+                "response",
+                "persistent_change"
+              ],
+              "properties": {
+                "input_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "step_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "response": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "persistent_change": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preview": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preview_equality_check": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "terminology": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "fact_id",
+                "wording"
+              ],
+              "properties": {
+                "fact_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "wording": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

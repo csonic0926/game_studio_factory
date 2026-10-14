@@ -1,0 +1,37 @@
+{
+  "schema_version": "ui_attention_plan.v1",
+  "protected_elements": [
+    {
+      "element_id": "<ELEMENT_ID>",
+      "description": "<information no cue may cover>"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "<EVENT_ID>",
+      "source": "<log entry or system transition>",
+      "fact_ids": [
+        "<FACT_ID>"
+      ],
+      "cue": "<word, mark, motion, sound, haptic>",
+      "max_latency_ms": 500,
+      "min_readable_ms": 500,
+      "clock": "REAL_TIME",
+      "skip_behavior": "<what Skip does>",
+      "max_concurrent_per_object": 1,
+      "priority": 10,
+      "on_collision": "WAIT",
+      "max_wait_ms": 500,
+      "never_covers": [
+        "<ELEMENT_ID>"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "beat_id": "<BEAT_ID>",
+      "first_focus": "<where the eye lands first>",
+      "calm_until": "<what stays quiet until when>"
+    }
+  ]
+}
