@@ -19,6 +19,16 @@ class RegressionTests(unittest.TestCase):
     save_design=fixture.CoreTests.save_design
     reviews=fixture.CoreTests.reviews
 
+    def test_ui_adapter_refresh_does_not_invalidate_gameplay_authority(self):
+        self.migrate()
+        self.write('design/gameplay/adapter/PRODUCTION_ADAPTER.md','gameplay rules')
+        self.write('design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json',{'rules':[]})
+        paths=lambda capability:{r['path'] for r in authority_refs(self.game,capability)}
+        self.assertIn('design/gameplay/adapter/PRODUCTION_ADAPTER.md',paths('studio'))
+        self.assertNotIn('design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json',paths('studio'))
+        self.assertNotIn('design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json',paths('gameplay'))
+        self.assertIn('design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json',paths('ui'))
+
     def test_draft_to_complete_and_changed_design_restart(self):
         d,ref=self.design()
         out=checkpoint(self.roots,self.request())

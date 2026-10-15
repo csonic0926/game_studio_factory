@@ -112,6 +112,12 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
     return [reference(factory, p, "factory") for p in sorted(paths)]
 
 
+UI_PRODUCTION_ADAPTER_OUTPUTS = frozenset({
+    "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.json",
+    "design/gameplay/adapter/UI_PRODUCTION_ADAPTER.md",
+})
+
+
 def authority_paths(game: Path, capability: str, extra: list[str] = ()) -> list[str]:
     """All root/product rules plus domain authorities, never inferred approvals.
 
@@ -135,7 +141,13 @@ def authority_paths(game: Path, capability: str, extra: list[str] = ()) -> list[
     for dept in departments(capability):
         for p in (game / "design" / dept / "adapter").rglob("*"):
             if p.is_file():
-                paths.add(p.relative_to(game).as_posix())
+                relative = p.relative_to(game).as_posix()
+                # The UI production adapter is derived downstream of gameplay (the UI
+                # department refreshes it after gameplay is authorized); production plans
+                # bind it directly, so it is an authority only for the UI capability.
+                if capability != "ui" and relative in UI_PRODUCTION_ADAPTER_OUTPUTS:
+                    continue
+                paths.add(relative)
     if capability == "story":
         from .story_profile import resolve
         paths.update(resolve(game,extra)["authority_paths"])
