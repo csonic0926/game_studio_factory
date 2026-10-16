@@ -10,6 +10,12 @@ from `design/STUDIO_FACTORY.local.md`, legacy `design/AI_FACTORY.local.md`,
 installed manifest or this skill's real source path. If unlinked, invoke
 `init-game-studio-factory`. Never hardcode a developer path or scan sibling games.
 
+Standalone thinking: when the caller needs only ideas/options for a bounded
+task and product direction stays fixed (visual redesign, UI pass, naming,
+mood), use skill `idea-thinking` (`idea/idea.py think`) instead of steps 1–5.
+It needs no project state or migration and writes nothing. MIGRATION_REQUIRED
+blocks product work, not this thinking; never drop the thinking because of it.
+
 1. Run `python3 $STUDIO_ROOT/factory.py inspect --game-repo $GAME_REPO`.
 2. MIGRATION_REQUIRED: preview `migrate --check --project-id <id>`; apply only
    an explicitly authorized migration with its exact source digest. No automatic

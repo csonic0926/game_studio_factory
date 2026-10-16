@@ -19,9 +19,15 @@ Do not use it for one concrete objective, a known gameplay gap, chapter prose,
 asset production, or sound generation after product direction is already
 adequate. Route those to their owning factories.
 
+For idea thinking inside a bounded task whose product direction stays fixed
+(visual redesign, UI pass, naming, mood), use skill `idea-thinking`:
+`idea.py think` is read-only, needs no project state or migration, and returns
+non-binding options. See [`IDEA_THINKING.md`](IDEA_THINKING.md).
+
 Internal CLI:
 
 ```bash
+python3 idea/idea.py think --focus "<task focus>" [--game-repo <GAME_REPO>]
 python3 idea/idea.py start --game-repo <GAME_REPO>
 # add --reopen only for an explicit reconsider/rerun request
 python3 idea/idea.py explore --game-repo <GAME_REPO> \

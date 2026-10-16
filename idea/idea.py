@@ -30,6 +30,7 @@ EXPLORATION_SCHEMA_VERSION = "idea_exploration.v1"
 PROBE_SCHEMA_VERSION = "idea_factory_repo_probe.v2"
 CONSTRAINTS_SCHEMA_VERSION = "factory_constraints.v2"
 RESULT_SCHEMA_VERSION = "idea_factory_result.v1"
+THINKING_SCHEMA_VERSION = "idea_thinking_brief.v1"
 
 IDEA_EXPLORATION_REQUIRED = "IDEA_EXPLORATION_REQUIRED"
 IDEA_EXPLORATION_OPEN = "IDEA_EXPLORATION_OPEN"
@@ -41,6 +42,7 @@ IDEA_FACTORY_READY = "IDEA_FACTORY_READY"
 IDEA_FACTORY_ALREADY_READY = "IDEA_FACTORY_ALREADY_READY"
 BLOCKED_BY_IDEA_MATERIAL = "BLOCKED_BY_IDEA_MATERIAL"
 BLOCKED_BY_EXISTING_PRODUCT_STATE = "BLOCKED_BY_EXISTING_PRODUCT_STATE"
+IDEA_THINKING_READY = "IDEA_THINKING_READY"
 
 FACTORY_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_RELATIVE = Path("design/product/idea")
@@ -501,6 +503,74 @@ def probe_repository(
         IDEA_EXPLORATION_REQUIRED,
         created_paths=[PROBE_RELATIVE.as_posix()],
     )
+
+
+def thinking_brief(
+    game_repo_text: str | None,
+    *,
+    focus: str,
+    max_candidates: int = 40,
+) -> dict[str, Any]:
+    """Return a read-only, non-binding brief for standalone idea thinking.
+
+    Standalone thinking never inspects or requires Factory project state, never
+    migrates, and never writes into the game repository.  Existing product
+    authority is surfaced only as a boundary the thinking must respect.
+    """
+    if not isinstance(focus, str) or not focus.strip():
+        raise IdeaFactoryError("--focus must name what the thinking is for")
+    if max_candidates < 0 or max_candidates > 500:
+        raise IdeaFactoryError("max_candidates must be between 0 and 500")
+    repository: dict[str, Any] | None = None
+    product_boundaries: list[str] = []
+    candidates: list[dict[str, Any]] = []
+    if game_repo_text is not None:
+        game_repo = _resolve_game_repo(game_repo_text)
+        files = _repo_files(game_repo)
+        ranked = sorted(
+            (
+                (_candidate_score(relative), relative)
+                for relative in files
+                if Path(relative).suffix.lower() in TEXT_EXTENSIONS
+            ),
+            key=lambda item: (-item[0], item[1]),
+        )
+        candidates = [
+            {"path": relative, "score": score}
+            for score, relative in ranked
+            if score > 0
+        ][:max_candidates]
+        repository = {
+            "path": str(game_repo),
+            "revision": _repository_revision(game_repo),
+            "branch": _repository_branch(game_repo),
+            "project_markers": [marker for marker in PROJECT_MARKERS if (game_repo / marker).is_file()],
+        }
+        product_boundaries = [
+            path.as_posix()
+            for path in (THESIS_RELATIVE, CONSTRAINTS_RELATIVE)
+            if (game_repo / path).is_file()
+        ]
+    return {
+        "schema_version": THINKING_SCHEMA_VERSION,
+        "status": IDEA_THINKING_READY,
+        "mode": "STANDALONE_THINKING",
+        "binding": False,
+        "written_paths": [],
+        "focus": focus.strip(),
+        "repository": repository,
+        "product_boundaries": product_boundaries,
+        "candidate_materials": candidates,
+        "method": "idea/docs/IDEA_THINKING.md",
+        "rules": [
+            "Project state, migration status and v2 reviews are not required and are not changed.",
+            "Every output is AI_HYPOTHESIS for the caller; it is never USER, REPO or product authority.",
+            "Existing product_boundaries are read as limits on the focus; thinking must not revise them.",
+            "Write nothing under design/product/ and create no Exploration or Product Thesis artifact.",
+            "If the thinking shows product direction itself must change, report that and stop; "
+            "the full idea-factory flow owns that change.",
+        ],
+    }
 
 
 def _require_text(value: Any, label: str, errors: list[str]) -> str:
@@ -1640,6 +1710,13 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="open non-binding exploration beside existing product authority",
     )
+    think_parser = subparsers.add_parser(
+        "think",
+        help="read-only standalone idea thinking; no project state or migration",
+    )
+    think_parser.add_argument("--game-repo", help="optional game repo to read; nothing is written")
+    think_parser.add_argument("--focus", required=True, help="what the thinking is for")
+    think_parser.add_argument("--max-candidates", type=int, default=40)
     for command in ("explore", "check-exploration", "compile", "check"):
         command_parser = subparsers.add_parser(command)
         command_parser.add_argument("--game-repo", required=True)
@@ -1664,6 +1741,13 @@ def _print_result(result: IdeaFactoryResult) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
+        if args.command == "think":
+            print(_json_text(thinking_brief(
+                args.game_repo,
+                focus=args.focus,
+                max_candidates=args.max_candidates,
+            )), end="")
+            return 0
         if args.command == "start":
             result = start_idea_factory(
                 args.game_repo,

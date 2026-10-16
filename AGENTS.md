@@ -49,7 +49,7 @@ Game AI Factories     = idea / gameplay / story / asset / sound capabilities
 
 Specialist entry points:
 
-- `idea/` → skill `idea-factory`, `idea/AGENTS.md`
+- `idea/` → skill `idea-factory`, `idea/AGENTS.md`; standalone thinking → skill `idea-thinking`
 - `gameplay/` → skill `gameplay-factory`, `gameplay/AGENTS.md`
 - `story/` → skill `game-story-factory`, `story/AGENTS.md`
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`
