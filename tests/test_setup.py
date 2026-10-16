@@ -298,6 +298,9 @@ class ShippedSkillContractTest(unittest.TestCase):
             "idea-factory": os.path.join(
                 root, "idea", "skills", "idea-factory", "SKILL.md"
             ),
+            "idea-thinking": os.path.join(
+                root, "idea", "skills", "idea-thinking", "SKILL.md"
+            ),
             "init-game-ai-factory": os.path.join(
                 root, "skills", "init-game-ai-factory", "SKILL.md"
             ),
@@ -356,6 +359,7 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "game-studio-factory",
                 "gameplay-factory",
                 "idea-factory",
+                "idea-thinking",
                 "init-game-ai-factory",
                 "init-game-studio-factory",
                 "product-factory",

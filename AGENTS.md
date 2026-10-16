@@ -54,7 +54,7 @@ Game AI Factories     = idea / product / gameplay / story / asset / sound capabi
 
 Specialist entry points:
 
-- `idea/` → skill `idea-factory`, `idea/AGENTS.md`
+- `idea/` → skill `idea-factory`, `idea/AGENTS.md`; standalone thinking → skill `idea-thinking`
 - `product/` → skill `product-factory`, `product/AGENTS.md`
 - `gameplay/` → skill `gameplay-factory`, `gameplay/AGENTS.md`
 - `ui/` → `ui/AGENTS.md` (UI Production Adapter; invoked by Gameplay/Studio)

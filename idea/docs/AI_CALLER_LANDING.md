@@ -26,9 +26,15 @@ their owning factories. Any new or materially changed game-design premise within
 that work still needs the bounded Idea inquiry above; an unchanged-design
 technical repair does not require a full Idea restart.
 
+For idea thinking inside a bounded task whose product direction stays fixed
+(visual redesign, UI pass, naming, mood), use skill `idea-thinking`:
+`idea.py think` is read-only, needs no project state or migration, and returns
+non-binding options. See [`IDEA_THINKING.md`](IDEA_THINKING.md).
+
 Internal CLI:
 
 ```bash
+python3 idea/idea.py think --focus "<task focus>" [--game-repo <GAME_REPO>]
 python3 idea/idea.py start --game-repo <GAME_REPO>
 # --reopen only for explicit exploration/direction reconsideration, not routine idea iterations
 python3 idea/idea.py explore --game-repo <GAME_REPO> \

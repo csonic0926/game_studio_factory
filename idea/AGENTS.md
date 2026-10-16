@@ -14,5 +14,8 @@ For current operation use the `idea-factory` skill.
 - v1 compatibility/detail: `idea/docs/WORKFLOW_V1.md`. Its semantic
   requirements remain available; its per-step authors/review topology does not
   govern an explicitly migrated v2 project.
+- Standalone thinking (`idea.py think`, skill `idea-thinking`):
+  `docs/IDEA_THINKING.md`. Read-only, no project state or migration, output is
+  never authority.
 - Preserve USER authority, explicit project standards and accepted history.
   Execution success and AI review never constitute USER acceptance.

@@ -18,6 +18,7 @@ from idea.idea import (
     IDEA_FACTORY_ALREADY_READY,
     IDEA_FACTORY_READY,
     IDEA_REFERENCE_NO_FIT,
+    IDEA_THINKING_READY,
     INPUT_RELATIVE,
     PROBE_RELATIVE,
     PRODUCT_DIRECTION_REVIEW_REQUIRED,
@@ -29,6 +30,7 @@ from idea.idea import (
     compile_product_thesis,
     record_exploration,
     start_idea_factory,
+    thinking_brief,
 )
 
 
@@ -658,6 +660,54 @@ class IdeaFactoryTests(unittest.TestCase):
         with self.assertRaises(IdeaFactoryError):
             record_exploration(str(self.game_repo), str(outside))
         self.assertFalse((self.game_repo / EXPLORATION_MD_RELATIVE).exists())
+
+    def _tree(self) -> dict[str, bytes]:
+        return {
+            str(path.relative_to(self.game_repo)): path.read_bytes()
+            for path in self.game_repo.rglob("*")
+            if path.is_file() and ".git" not in path.relative_to(self.game_repo).parts
+        }
+
+    def test_think_is_read_only_and_ignores_project_state(self) -> None:
+        # An unmigrated legacy project marker must not block standalone thinking.
+        (self.game_repo / "design").mkdir(exist_ok=True)
+        (self.game_repo / "design" / "AI_FACTORY.local.md").write_text("legacy\n")
+        before = self._tree()
+        brief = thinking_brief(str(self.game_repo), focus="visual redesign of the title screen")
+        self.assertEqual(IDEA_THINKING_READY, brief["status"])
+        self.assertFalse(brief["binding"])
+        self.assertEqual([], brief["written_paths"])
+        self.assertEqual([], brief["product_boundaries"])
+        self.assertIn("README.md", [item["path"] for item in brief["candidate_materials"]])
+        self.assertEqual(before, self._tree())
+
+    def test_think_surfaces_existing_product_thesis_as_a_boundary(self) -> None:
+        (self.game_repo / THESIS_RELATIVE).parent.mkdir(parents=True, exist_ok=True)
+        (self.game_repo / THESIS_RELATIVE).write_text("# Thesis\n")
+        brief = thinking_brief(str(self.game_repo), focus="HUD color pass")
+        self.assertEqual([THESIS_RELATIVE.as_posix()], brief["product_boundaries"])
+
+    def test_think_runs_without_a_game_repo_and_requires_focus(self) -> None:
+        brief = thinking_brief(None, focus="names for a rain-themed level")
+        self.assertIsNone(brief["repository"])
+        with self.assertRaises(IdeaFactoryError):
+            thinking_brief(None, focus="  ")
+
+    def test_cli_think_prints_json_and_writes_nothing(self) -> None:
+        before = self._tree()
+        script = Path(__file__).resolve().parents[1] / "idea.py"
+        result = subprocess.run(
+            ["python3", str(script), "think", "--game-repo", str(self.game_repo),
+             "--focus", "pure visual redesign"],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(IDEA_THINKING_READY, json.loads(result.stdout)["status"])
+        self.assertEqual(before, self._tree())
 
     def test_schema_files_are_valid_json(self) -> None:
         schema_root = Path(__file__).resolve().parents[1] / "schemas"
