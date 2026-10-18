@@ -72,7 +72,18 @@ def inspect(roots: dict, task_id: str | None = None) -> dict:
                     item["status"], item["next_action"] = exc.code, "revalidate; do not rehash old reviews"
                     if exc.code == 'HISTORICAL_WORKFLOW_REQUIRED':
                         item['next_action'] = 'create a new v3 task citing historical sources; do not rewrite the old chain'
-                    result["blockers"].append({"code": exc.code, "message": str(exc), "task_id": identity})
+                    from .continuation import latest_receipt, verify as verify_continuation
+                    receipt, _ = latest_receipt(roots, identity)
+                    if receipt:
+                        try:
+                            item['continuation'] = verify_continuation(roots, identity)
+                            item['status'] = 'HISTORICAL_CONTRACT_CONTINUATION'
+                            item['next_action'] = 'produce only within unchanged historical scope; no acceptance authority'
+                            item['historical_checkpoint_status'] = exc.code
+                        except FactoryError as continuation_error:
+                            result['blockers'].append({'code': continuation_error.code, 'message': str(continuation_error), 'task_id': identity})
+                    else:
+                        result["blockers"].append({"code": exc.code, "message": str(exc), "task_id": identity})
                 tasks.append(item)
         result["tasks"] = tasks
         if task_id and not tasks:
@@ -155,6 +166,20 @@ def context(roots: dict, capability: str, task: str, role="author", task_id=None
                         # Return current authority and the failed work references,
                         # not a newly fingerprinted view of an old authorization.
                         design = None
+                    from .continuation import latest_receipt, verify as verify_continuation
+                    receipt, _ = latest_receipt(roots, task_id)
+                    if receipt and (not explicit_design or design == record.get('design')):
+                        try:
+                            continuation = verify_continuation(roots, task_id)
+                            result.update(work_status='HISTORICAL_CONTRACT_CONTINUATION',
+                                continuation=continuation, next_action='produce only within unchanged historical scope; no acceptance authority',
+                                blockers=[], authority=False)
+                            # Keep design=None: do not present a current-fingerprint
+                            # view of the old authorization as though newly approved.
+                            result['work'] = {k: continuation[k] for k in ('stage', 'summary', 'artifacts')}
+                            design = None
+                        except FactoryError as continuation_error:
+                            result['blockers'] = [{'code': continuation_error.code, 'message': str(continuation_error)}]
                 if explicit_design and design != record.get('design'):
                     result['next_action'] = 'checkpoint the proposed design as a new draft before review or production'
     if design:

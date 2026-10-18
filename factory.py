@@ -45,6 +45,18 @@ def parser():
     cmd.add_argument("--seat", action="append", default=[], help="closed_beta: delegated seat (DESIGN_APPROVAL, INTERNAL_PLAYTEST_VERDICT); default both")
     cmd.add_argument("--source", help="game-owned JSON of the raw USER message: {\"role\": \"user\", \"content\": ...}")
     cmd.add_argument("--quote", help="exact USER words selecting the mode")
+    cmd = sub.add_parser('continuation', help='explicit production-only historical-contract continuation; never renews old proof')
+    cmd.add_argument('--game-repo', '--project-root', dest='game_repo', default='.')
+    cmd.add_argument('--task-id', required=True)
+    actions = cmd.add_mutually_exclusive_group()
+    actions.add_argument('--check', action='store_true')
+    actions.add_argument('--apply', action='store_true')
+    actions.add_argument('--verify', action='store_true')
+    cmd.add_argument('--expected')
+    cmd.add_argument('--source')
+    cmd.add_argument('--quote')
+    cmd.add_argument('--summary')
+    cmd.add_argument('--artifact', action='append', default=[])
     cmd = sub.add_parser("benchmark")
     cmd.add_argument("--suite", default=str(ROOT / "factory_core/benchmarks/suite.json"))
     cmd.add_argument("--output-root", required=True)
@@ -92,6 +104,16 @@ def main(argv=None):
             elif args.command == "checkpoint":
                 from factory_core.state import checkpoint
                 result = checkpoint(roots, read_json(Path(args.input)))
+            elif args.command == 'continuation':
+                from factory_core.continuation import preview, apply, verify
+                if args.apply:
+                    if not all((args.expected, args.source, args.quote, args.summary)):
+                        raise FactoryError('CONTINUATION_REQUIRED', '--apply needs --expected, --source, --quote and --summary')
+                    result = apply(roots, args.task_id, args.expected, args.source, args.quote, args.summary, args.artifact)
+                elif args.verify:
+                    result = verify(roots, args.task_id)
+                else:
+                    result = preview(roots, args.task_id)
             else:
                 from factory_core.migration import preview, apply
                 if args.apply and not args.expected:

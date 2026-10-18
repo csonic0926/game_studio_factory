@@ -256,7 +256,8 @@ def requirement_ids(factory: Path, d: dict, role: str, mode: str = "COLLABORATIV
             mode in r.get("modes", (mode,))} | set(d["requirements"])
 
 
-def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: list):
+def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: list,
+                  historical_factory_revision=None):
     if not isinstance(refs, list) or len(refs) != 2:
         fail("REVIEW_REQUIRED", "exactly two independent first-pass boundary reviews required")
     contexts = {d["author_context_id"]}
@@ -291,7 +292,16 @@ def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: l
             if not isinstance(finding["evidence"], list) or not finding["evidence"]:
                 fail("INCOMPLETE_REVIEW", "finding requires exact design/source evidence")
             for source in finding["evidence"]:
-                resolve_ref(roots, source)
+                if historical_factory_revision and source.get('scope') == 'factory':
+                    # Only explicit historical-contract verification uses this path.
+                    # Ordinary checkpoints never pass this argument or renew old proof.
+                    from .refs import GitFile
+                    import hashlib
+                    raw = GitFile(roots['factory'], source['path'], historical_factory_revision).read_bytes()
+                    if hashlib.sha256(raw).hexdigest() != source['sha256']:
+                        fail('STALE_DEPENDENCY', 'historical review evidence differs from exact Git bytes')
+                else:
+                    resolve_ref(roots, source)
                 if source not in binding["references"]:
                     fail("INVALID_REVIEW", "finding evidence must be in sealed dependency closure")
         if set(texts(review["decision_coverage"])) != {x["id"] for x in d["decisions"]}:

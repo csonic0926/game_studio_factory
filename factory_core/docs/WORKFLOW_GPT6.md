@@ -153,3 +153,30 @@ task on a v3 project is HISTORICAL_WORKFLOW_REQUIRED, not newly valid authorizat
 Continue through a new task/design checkpoint citing the old sources; do not
 rewrite the old chain, manufacture fresh reviews, or re-ask settled product intent.
 Routing-only compatibility receipts preserve prior proofs, never renew reviews.
+
+### Explicit unchanged-contract production continuation
+
+For a collaborative v3 task whose latest checkpoint is already PRODUCING, an
+explicit USER instruction may preserve its original design approval while moving
+to a different Factory checkout. Use `factory.py continuation --task-id <id>
+--check`; publication additionally requires `--apply --expected <preview digest>
+--source <raw USER JSON> --quote <exact submission> --summary <progress>`.
+The source must preserve the actual USER message and the operator must retain the
+preceding compatibility request as provenance. This selects compatibility handling,
+not a new design approval, new review, changed product, or gameplay acceptance.
+
+The independent append-only continuation ledger preserves the checkpoint, original
+dependency fingerprint, exact historical Factory Git bytes, reviews and USER ruling.
+It rejects altered project inputs/authority/design, newly discovered project inputs,
+changed applicable review-rule membership, changed mode, archived authority, unavailable
+historical bytes and a later task checkpoint. Current design parsing must also pass.
+Both current resolver closure and original contract are bound and rechecked; future
+Factory changes invalidate the receipt. Historical output artifacts are not revived.
+Use repeated apply with approved `--artifact` paths to record new exact outputs.
+
+Inspect/context identify this as HISTORICAL_CONTRACT_CONTINUATION, never CURRENT_CHECKPOINT
+or refreshed authorization. Normal checkpoint/review/acceptance validators remain
+unchanged. The continuation permits only original-scope PRODUCING; it cannot publish
+COMPLETE, accept gameplay, or promote a baseline. New material design and final
+acceptance retain their own normal boundaries. A receipt is not a blanket exemption
+from newly applicable rules; incompatibility fails closed for a specific resolution.
