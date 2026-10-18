@@ -83,7 +83,11 @@ def project_lock(game: Path):
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
-def project(game: Path) -> dict:
+def project_metadata(game: Path) -> dict:
+    """Validate activation metadata without selecting a checkout (relink preflight).
+
+    This grants no task authority. Operational callers must use project().
+    """
     path = confined(game, PROJECT_PATH)
     if not path.exists():
         fail("MIGRATION_REQUIRED", "run factory.py migrate --check, then explicit --apply")
@@ -95,6 +99,11 @@ def project(game: Path) -> dict:
         fail("MIGRATION_REQUIRED", "unknown project format; no implicit migration")
     identifier(data["project_id"])
     texts(data["authority_paths"])
+    return data
+
+
+def project(game: Path) -> dict:
+    data = project_metadata(game)
     if data["workflow_version"] == 3:
         from .astra import check_checkout
         check_checkout(game, Path(__file__).resolve().parents[1])

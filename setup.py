@@ -367,8 +367,44 @@ CLAUDE_POINTER = (
 )
 
 
-def link_game_repo(factory_root, game_repo, dry_run=False):
+def reselect_game_repo(factory_root, game_repo, expected_root, dry_run=False):
+    """Explicit pointer-only v3 relink; never rewrite authority or renew proofs."""
+    from pathlib import Path
+    import re
+    from factory_core.state import project_lock, project_metadata
+    from factory_core.refs import confined, fail, sha
+    from factory_core.migration import replace_checked, split_routing
+    game = Path(game_repo).resolve()
+    factory = Path(factory_root).resolve()
+    if factory != Path(__file__).resolve().parent or game == factory or game.is_relative_to(factory):
+        fail('INVALID_PROJECT', 'reselect must use this checkout and an external game')
+    with project_lock(game):
+        for name in ('.migration.json', '.migration-gpt6.json'):
+            if confined(game, 'design/factory/' + name).exists():
+                fail('MIGRATION_RECOVERY_REQUIRED', 'finish prepared migration before relinking')
+        data = project_metadata(game)
+        if data['workflow_version'] != 3:
+            fail('INVALID_PROJECT', 'explicit reselect is only for an already activated v3 project')
+        pointer = confined(game, POINTER_REL_PATH.replace(os.sep, '/'))
+        before = sha(pointer)
+        values = re.findall(r'^STUDIO_ROOT:\s*(.+?)\s*$', pointer.read_text(), re.M)
+        if len(values) != 1 or Path(values[0]).expanduser().resolve() != Path(expected_root).expanduser().resolve():
+            fail('CONCURRENT_WRITE', 'selected checkout differs from --reselect-from')
+        # Preserve the exact existing routing, including its historical receipt.
+        agents = confined(game, 'AGENTS.md').read_text()
+        split_routing(agents)
+        if agents.count(BLOCK_BEGIN) != 1 or agents.count(BLOCK_END) != 1:
+            fail('INVALID_PROJECT', 'v3 relink requires existing managed routing')
+        if not dry_run:
+            replace_checked(pointer, before, render_pointer_file(str(factory)).encode())
+        return ['reselect local pointer only; routing, metadata, reviews and rulings unchanged',
+                'existing proof validity must be inspected; relink does not renew it']
+
+
+def link_game_repo(factory_root, game_repo, dry_run=False, reselect_from=None):
     """Preserve explicit v2 activation on ordinary relink; v1 remains compatible."""
+    if reselect_from is not None:
+        return reselect_game_repo(factory_root, game_repo, reselect_from, dry_run)
     if os.path.exists(os.path.join(game_repo, ".git")) and not dry_run:
         from pathlib import Path
         from factory_core.state import project_lock
@@ -503,6 +539,7 @@ def main(argv=None):
     link_parser = sub.add_parser("link", help="write factory routing into a game repo")
     link_parser.add_argument("--game-repo", "--project-root", dest="game_repo", required=True)
     link_parser.add_argument("--dry-run", action="store_true")
+    link_parser.add_argument("--reselect-from", help="explicit v3 checkout change from this exact old local root; pointer only, no proof renewal")
 
     init_parser = sub.add_parser("init", help="initialize Idea plus nonbinding Product value intent")
     init_parser.add_argument("--game-repo", "--project-root", dest="game_repo", required=True)
@@ -523,7 +560,8 @@ def main(argv=None):
         targets = args.target if args.target else DEFAULT_SKILL_TARGETS
         lines = sync_skills(FACTORY_ROOT, targets, copy=args.copy, dry_run=args.dry_run)
     else:
-        lines = link_game_repo(FACTORY_ROOT, args.game_repo, dry_run=args.dry_run)
+        lines = link_game_repo(FACTORY_ROOT, args.game_repo, dry_run=args.dry_run,
+                               reselect_from=args.reselect_from)
     prefix = "[dry-run] " if getattr(args, "dry_run", False) else ""
     for line in lines:
         print(prefix + line)

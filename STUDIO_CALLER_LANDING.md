@@ -42,6 +42,12 @@ process source is [WORKFLOW_GPT6](factory_core/docs/WORKFLOW_GPT6.md).
 `migrate --workflow gpt6 --check` previews the full opt-in; apply requires the
 exact authorized digest. The original checkout/global skills stay on main.
 Use `inspect` to select the version and follow the selected checkout's skill.
+An explicitly USER-authorized v3 checkout change can use `setup.py link
+--game-repo <GAME_REPO> --reselect-from <EXACT_OLD_LOCAL_ROOT>`. This compare-and-swap
+operation changes only the ignored local pointer, even if the old root no longer
+exists. It preserves routing, metadata, reviews and rulings byte-for-byte; it is
+not migration, proof renewal, or permission to ignore changed Factory dependencies.
+Ordinary `link` still rejects a foreign v3 checkout. Inspect again after reselection.
 `--project-root` aliases `--game-repo`; `context --method <id>` expands an
 optional v3 technique. No comparative/token-savings gate applies to v3.
 

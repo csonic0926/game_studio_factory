@@ -183,6 +183,64 @@ class MarkedBlockTest(unittest.TestCase):
 
 
 class LinkGameRepoTest(unittest.TestCase):
+    def test_explicit_v3_reselect_preserves_all_proof_surfaces(self):
+        import subprocess
+        from factory_core.refs import FactoryError
+        from factory_core.migration_gpt6 import routing_block
+        from factory_core.state import project
+        with tempfile.TemporaryDirectory() as temporary:
+            game = Path(temporary)
+            subprocess.run(['git', 'init', '-q', str(game)], check=True)
+            metadata = game / 'design/factory/PROJECT.json'
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text(json.dumps(dict(schema_version='factory_project.v3',
+                workflow_version=3, project_id='test-game', factory_revision='historical',
+                authority_paths=[], historical_inventory=[], migration_source_digest='old')))
+            pointer = game / 'design/STUDIO_FACTORY.local.md'
+            old = str(game / 'missing-old-checkout')
+            pointer.write_text(factory_setup.render_pointer_file(old))
+            (game / 'AGENTS.md').write_text('# User instructions\n' + routing_block())
+            (game / 'CLAUDE.md').write_text('keep exact bytes\n')
+            (metadata.parent / 'ROUTING_RECEIPT.json').write_text('{"historical":true}\n')
+            before = {str(p.relative_to(game)):p.read_bytes() for p in game.rglob('*')
+                      if p.is_file() and '.git' not in p.parts}
+            target = str(Path(SETUP_PATH).parent)
+            with self.assertRaises(FactoryError):
+                factory_setup.link_game_repo(target, str(game))
+            factory_setup.link_game_repo(target, str(game), dry_run=True, reselect_from=old)
+            self.assertEqual(pointer.read_bytes(), before['design/STUDIO_FACTORY.local.md'])
+            with self.assertRaises(FactoryError):
+                factory_setup.link_game_repo(target, str(game), reselect_from='wrong-root')
+            factory_setup.link_game_repo(target, str(game), reselect_from=old)
+            self.assertEqual(project(game)['workflow_version'], 3)
+            after = {str(p.relative_to(game)):p.read_bytes() for p in game.rglob('*')
+                     if p.is_file() and '.git' not in p.parts}
+            self.assertEqual(set(before), set(after))
+            for name in before:
+                if name != 'design/STUDIO_FACTORY.local.md':
+                    self.assertEqual(before[name], after[name], name)
+            first = pointer.read_bytes()
+            factory_setup.link_game_repo(target, str(game), reselect_from=target)
+            self.assertEqual(pointer.read_bytes(), first)
+            pending = metadata.parent / '.migration.json'
+            pending.write_text('{}')
+            with self.assertRaises(FactoryError):
+                factory_setup.link_game_repo(target, str(game), reselect_from=target)
+            self.assertEqual(pointer.read_bytes(), first)
+            pending.unlink()
+            original = metadata.read_text()
+            bad = json.loads(original)
+            bad.update(schema_version='factory_project.v2', workflow_version=2)
+            metadata.write_text(json.dumps(bad))
+            with self.assertRaises(FactoryError):
+                factory_setup.link_game_repo(target, str(game), reselect_from=target)
+            self.assertEqual(pointer.read_bytes(), first)
+            metadata.write_text(original)
+            (game / 'AGENTS.md').write_text('# missing managed routing\n')
+            with self.assertRaises(FactoryError):
+                factory_setup.link_game_repo(target, str(game), reselect_from=target)
+            self.assertEqual(pointer.read_bytes(), first)
+
     def test_all_routing_versions_require_substantive_per_idea_inquiry(self):
         from factory_core.migration import routing_block as v2_routing
         from factory_core.migration_gpt6 import routing_block as v3_routing
