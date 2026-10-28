@@ -1,0 +1,54 @@
+{
+ "schema_version": "score_mix_v1",
+ "name": "fair_example",
+ "video": "/abs/path/fair-v4e-16x9-30s-B.mp4",
+ "stems_dir": "/abs/path/composer_delivery/stems",
+ "out_dir": "/abs/path/scored/fair_example",
+ "length": 29.66,
+ "sample_rate": 48000,
+ "bpm": 100,
+
+ "vo": {
+  "path": "/abs/path/composer_delivery/voice/narration_isolated.wav",
+  "segments": [[0, 3.4], [9.06, 11.84], [12.48, 15.84], [18.0, 19.5], [21.86, 24.44], [25.14, 27.4, -1]],
+  "hall_send": -26, "db": 0
+ },
+ "duck": {"base_db": -3, "depth_db": -4, "attack": 0.8, "release": 1.8, "hold_gap": 1.5, "half_gap": 2.5, "end_fade": 1.5},
+
+ "groups": {
+  "Pads":    {"preset": "pads",    "members": ["violins", "violas", "cellos", "horn"]},
+  "Pulse":   {"preset": "pulse",   "members": ["spiccato", "pizzicato", "piano", "harp"]},
+  "Lead":    {"preset": "lead",    "members": ["flute"]},
+  "Sparkle": {"preset": "sparkle", "members": ["glockenspiel", "mark_trees"]},
+  "Perc":    {"preset": "perc",    "members": ["cymbal", "bass_drum"]}
+ },
+ "tracks": {
+  "violins": {"trim": 1, "pan": -0.35, "hall_send": -5}, "violas": {"pan": 0.2, "hall_send": -5},
+  "cellos": {"pan": 0.35, "hall_send": -8}, "horn": {"pan": 0.1, "hall_send": -5},
+  "spiccato": {"trim": -1, "pan": -0.5, "hall_send": -10}, "pizzicato": {"pan": 0.4, "hall_send": -12},
+  "piano": {"trim": 1, "pan": 0.1, "hall_send": -8}, "harp": {"pan": -0.25, "hall_send": -7},
+  "flute": {"trim": 1, "pan": -0.1, "hall_send": -5},
+  "glockenspiel": {"trim": 1, "pan": 0.45, "hall_send": -6}, "mark_trees": {"pan": -0.45, "hall_send": -5},
+  "cymbal": {"hall_send": -9}, "bass_drum": {"trim": -1}
+ },
+ "hall": {"plugin": "room_reverb", "params": {"decay": 3.2, "size": 90}},
+
+ "scene_ramp": 1.2,
+ "scenes": [
+  {"t": 0.0,   "label": "dark question, VO",  "values": {"Pads": -1, "Lead": -1, "Hall": -3.5}},
+  {"t": 4.9,   "label": "glow (fade-up)",     "values": {"Hall": -2}, "ramp": 1.7},
+  {"t": 7.4,   "label": "into the wipe",      "values": {"Pads": 1, "Lead": 0.5, "Sparkle": 1, "Perc": 0.5, "Hall": -0.5}},
+  {"t": 8.4,   "label": "bloom holds",        "values": {"Pads": 1, "Lead": 0.5, "Sparkle": 1, "Hall": 0.5}},
+  {"t": 8.95,  "label": "explanation VO",     "values": {"Pads": -1.5, "Lead": -1, "Hall": -3}},
+  {"t": 15.9,  "label": "melody rises",       "values": {"Pads": -0.5, "Lead": 1, "Hall": -1}},
+  {"t": 17.95, "label": "Slot 12 VO",         "values": {"Pads": -1, "Pulse": -0.5, "Lead": -1.5, "Hall": -3}},
+  {"t": 19.6,  "label": "reveal (cut 20.25)", "values": {"Pads": 0.5, "Lead": 0.5, "Sparkle": 1.5, "Hall": -0.5}},
+  {"t": 21.8,  "label": "statement VO",       "values": {"Pads": -0.5, "Pulse": -1, "Lead": -1, "Sparkle": -0.5, "Hall": -3}},
+  {"t": 24.45, "label": "breath",             "values": {"Pulse": -0.5, "Hall": -1.5}},
+  {"t": 25.1,  "label": "URL VO",             "values": {"Pads": -0.5, "Pulse": -1, "Lead": -1, "Hall": -3}},
+  {"t": 27.45, "label": "logo tail",          "values": {"Pads": 0.5, "Pulse": -1, "Sparkle": 0.5, "Hall": 1}}
+ ],
+ "rides": [{"track": "Pulse", "why": "ostinato enters from silence at 3.6 — fold in under the fade-up", "points": [[3.4, 0], [3.55, -6], [5.6, 0]]}],
+ "designed_hits": [7.75, 8.0, 27.5, 29.0],
+ "master": {"maximizer_threshold": -8.3, "ceiling": -1.5}
+}

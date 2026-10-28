@@ -60,7 +60,7 @@ Specialist entry points:
 - `ui/` → `ui/AGENTS.md` (UI Production Adapter; invoked by Gameplay/Studio)
 - `story/` → skill `game-story-factory`, `story/AGENTS.md`
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`
-- `sound/` → `sound/docs/AI_CALLER_LANDING.md`, `sound/sfx.py`
+- `sound/` → `sound/docs/AI_CALLER_LANDING.md`, `sound/sfx.py`; video scoring → `sound/docs/SCORING_WORKFLOW.md`, `sound/score.py`
 
 Studio hard boundary: a runnable interactive software demo is not whole-game
 delivery. Only an Accepted Playable Baseline promoted through new-gameplay
