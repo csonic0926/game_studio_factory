@@ -11,6 +11,9 @@ inspection habits apply.
 | Generate a game SFX (text prompt -> trimmed, peak-fit clip) | `python3 sfx.py run --spec <spec.json>` |
 | Only trim/normalize an existing audio file | `python3 sfx.py trim --in a.mp3 --out a.wav` |
 | Offline smoke (no ElevenLabs credits) | add `--provider mock` to `run` |
+| Score a video (music under picture, with or without narration) | read [`SCORING_WORKFLOW.md`](SCORING_WORKFLOW.md), then `python3 score.py analyze / mix` |
+| Mix a composer's printed stems to picture | `python3 score.py mix --config <score_mix_v1.json>` |
+| Verify a sample's real pitch/octave | `python3 score.py pitch <wav>` |
 
 ## Calling contract
 
@@ -62,6 +65,12 @@ Under `<output_root>/<run_id>/`:
 
 Copy only `deliverables/` into the game repo (e.g. a Godot `sound/` dir or the
 Vinci World cutscene `sfx` beat asset path).
+
+## Video scoring roles
+
+Recommended split: **compose with GPT Astra, mix with Claude Opus**. The composer delivers the
+score source, section clips and printed stems; the mixer works only from those and reports musical
+problems back rather than re-timing stems. Details and evidence are in `SCORING_WORKFLOW.md`.
 
 ## Not enough?
 

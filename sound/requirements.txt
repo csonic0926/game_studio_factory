@@ -1,2 +1,4 @@
 # No pip dependencies — stdlib urllib for HTTP, ffmpeg/ffprobe (external) for audio.
 # System requirement: ffmpeg + ffprobe on PATH.
+# Video scoring (score.py / scoring/): numpy; ffmpeg; a whisper CLI for narration timing;
+# soundcraft-cli (github.com/storytold/soundcraft releases) on PATH or $SOUNDCRAFT_CLI.
