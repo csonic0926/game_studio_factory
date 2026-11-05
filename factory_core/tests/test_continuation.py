@@ -5,8 +5,8 @@ import unittest
 from unittest.mock import patch
 
 from factory_core import continuation as api
-from factory_core.refs import FactoryError, read_json, reference, sha, digest
-from factory_core.state import checkpoint, latest, approval_action, verify_record
+from factory_core.refs import FactoryError, read_json, reference, sha, digest, encoded
+from factory_core.state import checkpoint, latest, approval_action, verify_record, load_design
 from factory_core.tests import test_gpt6 as fixtures
 
 
@@ -191,4 +191,148 @@ class ContinuationTests(unittest.TestCase):
         checkpoint(self.roots, self.request('DRAFT', previous, design=self.record['design']))
         with self.assertRaisesRegex(FactoryError, 'latest unblocked PRODUCING'):
             api.verify(self.roots, 'lantern')
+
+
+class PrePlayerTextContinuationTests(unittest.TestCase):
+    """Synthetic pre-feature contracts, not new approvals for a real game."""
+    setUpBase = ContinuationTests.setUpBase
+    write = ContinuationTests.write
+    request = ContinuationTests.request
+    reviews = ContinuationTests.reviews
+    migrate = ContinuationTests.migrate
+    design = ContinuationTests.design
+    publish = ContinuationTests.publish
+
+    def setUp(self):
+        ContinuationTests.setUp(self)
+        # Construct a synthetic historical contract in memory. Never edit the
+        # live Factory checkout or reinterpret an actual project's old proof.
+        old_ref = self.record['design']
+        d = read_json(self.game / old_ref['path'])
+        del d['player_text']
+        design_ref = self.write(old_ref['path'], d)
+        rules = json.loads(self.snapshot['factory_core/rule_map.json'])
+        rules['rules'] = [r for r in rules['rules'] if r['id'] != api.PLAYER_TEXT_RULE]
+        self.snapshot['factory_core/rule_map.json'] = encoded(rules)
+        schema = json.loads(self.snapshot['factory_core/schemas/design_v3.schema.json'])
+        schema['properties'].pop('player_text')
+        self.snapshot['factory_core/schemas/design_v3.schema.json'] = encoded(schema)
+        self.snapshot['factory_core/state.py'] = b'# Synthetic pre-player-text contract implementation.\n'
+        refs = []
+        for ref in self.record['dependencies']['references']:
+            if ref['scope'] == 'factory' and ref['path'].startswith('player_text/'):
+                continue
+            ref = dict(design_ref if ref == old_ref else ref)
+            if ref['scope'] == 'factory':
+                ref['sha256'] = hashlib.sha256(self.snapshot[ref['path']]).hexdigest()
+            refs.append(ref)
+        binding = dict(algorithm='sha256-content-closure.v2', references=refs, fingerprint=digest(refs))
+        by_path = {(ref['scope'], ref['path']): ref for ref in refs}
+        reviews = []
+        for ref in self.record['reviews']:
+            review = read_json(self.game / ref['path'])
+            review['design'] = design_ref
+            review['dependency_fingerprint'] = binding['fingerprint']
+            review['findings'].pop(api.PLAYER_TEXT_RULE)
+            for finding in review['findings'].values():
+                finding['evidence'] = [by_path[(r['scope'], r['path'])] for r in finding['evidence']]
+            reviews.append(self.write(ref['path'], review))
+        ruling = read_json(self.game / self.record['ruling']['path'])
+        quote = approval_action(design_ref, binding)
+        ruling.update(design=design_ref, dependency_fingerprint=binding['fingerprint'], quote=quote,
+                      source=self.write(ruling['source']['path'], {'role': 'user', 'content': quote}))
+        ruling_ref = self.write(self.record['ruling']['path'], ruling)
+        self.record.update(design=design_ref, dependencies=binding, reviews=reviews, ruling=ruling_ref)
+        paths = sorted((self.game / 'design/factory/checkpoints/lantern').glob('*.json'))
+        self.write(paths[-1].relative_to(self.game).as_posix(), self.record)
+
+    def test_explicit_legacy_production_preserves_old_proof_and_exposes_obligations(self):
+        before = {str(p): sha(p) for p in (self.game / 'design/factory/checkpoints').rglob('*.json')}
+        p = api.preview(self.roots, 'lantern')['preview']
+        obligation = p['compatibility_obligations']
+        self.assertEqual(obligation['historical_applicability'], 'UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE')
+        self.assertEqual(obligation['allowed_stage'], 'PRODUCING')
+        self.assertIn('EVIDENCE_READY', obligation['current_adoption_required_before'])
+        self.publish()
+        value = api.verify(self.roots, 'lantern')
+        self.assertEqual(value['compatibility_obligations'], obligation)
+        self.assertFalse(value['acceptance_authority_granted'])
+        self.assertEqual(before, {str(p): sha(p) for p in (self.game / 'design/factory/checkpoints').rglob('*.json')})
+        self.assertNotIn('player_text', read_json(self.game / self.record['design']['path']))
+        from factory_core.context import inspect, context
+        self.assertEqual(inspect(self.roots, 'lantern')['blockers'], [])
+        view = context(self.roots, 'asset', 'prop', task_id='lantern')
+        self.assertEqual(view['work_status'], 'HISTORICAL_CONTRACT_CONTINUATION')
+        self.assertEqual(view['continuation']['compatibility_obligations'], obligation)
+        self.assertNotIn('approval_action', view)
+
+    def test_normal_parser_new_draft_and_evidence_boundary_remain_strict(self):
+        self.publish()
+        with self.assertRaisesRegex(FactoryError, 'declare ALL, CHANGED or reviewed NONE'):
+            load_design(self.roots, self.record['design'])
+        _, previous = latest(self.game, 'lantern')
+        for stage in ('DRAFT', 'PRODUCING', 'EVIDENCE_READY'):
+            with self.subTest(stage=stage), self.assertRaisesRegex(FactoryError, 'declare ALL, CHANGED or reviewed NONE'):
+                checkpoint(self.roots, self.request(stage, previous, design=self.record['design']))
+
+    def test_explicit_binding_is_never_skipped_by_legacy_parser_path(self):
+        d = read_json(self.game / self.record['design']['path'])
+        d['player_text'] = dict(scope='NONE', scope_evidence={}, receipt_path=None)
+        ref = self.write(self.record['design']['path'], d)
+        with self.assertRaisesRegex(FactoryError, 'complete reviewed design artifact'):
+            load_design(self.roots, ref, _legacy_player_text=True)
+
+    def test_deferred_obligations_cannot_be_removed_from_receipt(self):
+        self.publish()
+        receipt, _ = api.latest_receipt(self.roots, 'lantern')
+        receipt['preview']['compatibility_obligations']['current_adoption_required_before'] = []
+        self.write('design/factory/continuations/lantern/000001.json', receipt)
+        with self.assertRaisesRegex(FactoryError, 'closure changed'):
+            api.verify(self.roots, 'lantern')
+
+    def test_other_added_or_removed_review_requirement_is_not_deferred(self):
+        original = api.requirement_ids
+        existing = next(r for r in original(self.roots['factory'],
+                        read_json(self.game / self.record['design']['path']), 'intent_experience')
+                        if r != api.PLAYER_TEXT_RULE)
+        for changed in (lambda *a: original(*a) | {'unrelated.new.rule'},
+                        lambda *a: original(*a) - {existing}):
+            with patch.object(api, 'requirement_ids', side_effect=changed):
+                with self.assertRaisesRegex(FactoryError, 'rule membership'):
+                    self.publish()
+
+    def test_feature_presence_in_any_historical_contract_surface_refuses_exception(self):
+        old_rules = json.loads(self.snapshot['factory_core/rule_map.json'])
+        schema_path = 'factory_core/schemas/design_v3.schema.json'
+        original = self.snapshot[schema_path]
+        schema = json.loads(original)
+        schema['properties']['player_text'] = {}
+        self.snapshot[schema_path] = encoded(schema)
+        self.assertIsNone(api._legacy_player_text_contract(self.roots, self.record, old_rules))
+        self.snapshot[schema_path] = original
+        self.assertIsNone(api._legacy_player_text_contract(self.roots, self.record,
+            {'rules': [*old_rules['rules'], {'id': api.PLAYER_TEXT_RULE}]}))
+        self.record['dependencies']['references'].append(
+            dict(scope='factory', path='player_text/workflow.py', sha256='not-used-as-proof'))
+        self.assertIsNone(api._legacy_player_text_contract(self.roots, self.record, old_rules))
+
+    def test_changed_project_rule_still_blocks_legacy_case(self):
+        self.write('RULES.md', 'Changed project authority.')
+        with self.assertRaises(FactoryError):
+            self.publish()
+
+    def test_revoked_original_user_ruling_still_blocks_legacy_case(self):
+        self.publish()
+        ruling = read_json(self.game / self.record['ruling']['path'])
+        self.write(ruling['source']['path'], {'role': 'user', 'content': 'I reject this design.'})
+        with self.assertRaises(FactoryError):
+            api.verify(self.roots, 'lantern')
+
+    def test_missing_explicit_selection_does_not_enable_legacy_production(self):
+        with self.assertRaisesRegex(FactoryError, 'no explicit production continuation'):
+            api.verify(self.roots, 'lantern')
+        p = api.preview(self.roots, 'lantern')
+        self.write(self.user, {'role': 'assistant', 'content': self.quote})
+        with self.assertRaisesRegex(FactoryError, 'raw USER'):
+            api.apply(self.roots, 'lantern', p['expected'], self.user, self.quote, 'test')
 

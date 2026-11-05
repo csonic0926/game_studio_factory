@@ -52,6 +52,14 @@ patterns cover the real game; a tool cannot prove an undeclared source exists.
   player-facing language or its comprehension context. Internal-only world
   records and non-text assets can qualify. Dialogue absence alone cannot.
 
+An already approved v3 PRODUCING contract from before this feature is not
+retroactively assigned NONE or given fresh reviews. The narrow, explicit
+[historical production compatibility](../factory_core/docs/WORKFLOW_GPT6.md#pre-player-text-production-compatibility-v1)
+can retain its original production authority while recording current text
+adoption as outstanding. It cannot publish EVIDENCE_READY/COMPLETE or a whole-game
+handoff; those boundaries still require the ordinary current applicability and
+text-evidence workflow. New designs receive no exception.
+
 Adapters export unsupported source formats to JSON/CSV/text with stable ids.
 Bind the actual engine source, composed examples, image/audio or build manifest
 using `rendered_paths` / `runtime_paths`, and verify export-to-runtime fidelity.

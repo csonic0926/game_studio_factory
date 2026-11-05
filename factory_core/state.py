@@ -128,7 +128,7 @@ def latest(game: Path, task_id: str) -> tuple[dict | None, str | None]:
     return previous, previous_digest
 
 
-def load_design(roots: dict, ref: dict) -> dict:
+def load_design(roots: dict, ref: dict, *, _legacy_player_text=False) -> dict:
     if ref.get("scope") != "game":
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
@@ -197,7 +197,11 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "exact-output acceptance obligations required")
     if version == 3 or "player_text" in d:
         from player_text.workflow import validate_design as validate_player_text_design
-        validate_player_text_design(roots, d)
+        # Only continuation.audit may select this after verifying the complete
+        # pre-feature historical closure. Never invent a reviewed NONE binding.
+        # Normal drafts/checkpoints and every explicit binding stay strict.
+        if not (_legacy_player_text and version == 3 and "player_text" not in d):
+            validate_player_text_design(roots, d)
     if "story" in d:
         if d["capability"] != "story": fail("INVALID_DESIGN", "Story applicability belongs only to Story")
         keys(d["story"], {"spoken_output_paths", "scope_evidence"}, {'runtime_output_paths'} if version == 3 else ())
@@ -251,9 +255,14 @@ def dependencies(roots: dict, design_ref: dict, d: dict) -> dict:
     return {"algorithm": "sha256-content-closure.v2", "references": refs, "fingerprint": digest(refs)}
 
 
-def requirement_ids(factory: Path, d: dict, role: str, mode: str = "COLLABORATIVE") -> set[str]:
+def requirement_ids(factory: Path, d: dict, role: str, mode: str = "COLLABORATIVE",
+                    *, historical_factory_revision=None) -> set[str]:
     """Mode-scoped rules (e.g. AUTONOMOUS per-idea inquiry) apply only in their mode."""
-    rule_map = read_json(factory / "factory_core/rule_map.json")
+    if historical_factory_revision:
+        from .refs import GitFile
+        rule_map = read_json(GitFile(factory, "factory_core/rule_map.json", historical_factory_revision))
+    else:
+        rule_map = read_json(factory / "factory_core/rule_map.json")
     return {r["id"] for r in rule_map["rules"] if role in r["reviewers"] and
             ("all" in r["capabilities"] or d["capability"] in r["capabilities"]) and
             int(d["schema_version"].rsplit("v", 1)[1]) in r.get("workflow_versions", (2, 3)) and
@@ -285,7 +294,8 @@ def check_reviews(roots: dict, design_ref: dict, d: dict, binding: dict, refs: l
         if review["verdict"] != "PASS":
             fail("DESIGN_REJECTED", f"{role} requires revision")
         findings = review["findings"]
-        required = requirement_ids(roots["factory"], d, role, current_mode)
+        required = requirement_ids(roots["factory"], d, role, current_mode,
+                                   historical_factory_revision=historical_factory_revision)
         if not isinstance(findings, dict) or set(findings) != required:
             fail("INCOMPLETE_REVIEW", f"{role}: cover exactly {sorted(required)}")
         for finding in findings.values():

@@ -13,6 +13,40 @@ from .state import (check_reviews, check_ruling, dependencies, identifier, lates
                     load_design, project, project_lock, requirement_ids, text, ensure_current_task)
 
 
+PLAYER_TEXT_RULE = 'player_text.complete_coverage_and_meaning'
+
+
+def _legacy_player_text_contract(roots, record, old_rules):
+    """Identify one pre-feature contract, not a general parser/rule waiver.
+
+    Called only after every historical dependency has been verified. Feature
+    support in either old schema, rule membership or closure defeats eligibility.
+    The unchanged design remains undeclared, never reclassified as reviewed NONE.
+    """
+    d = read_json(resolve_ref(roots, record['design']))
+    from player_text.workflow import PRODUCERS
+    if (d.get('schema_version') != 'factory_design.v3' or d.get('capability') not in PRODUCERS
+            or 'player_text' in d):
+        return None
+    refs = record['dependencies']['references']
+    paths = {r['path'] for r in refs if r['scope'] == 'factory'}
+    if (not {'factory_core/schemas/design_v3.schema.json', 'factory_core/rule_map.json'} <= paths
+            or any(p.startswith('player_text/') for p in paths)):
+        return None
+    schema = read_json(GitFile(roots['factory'], 'factory_core/schemas/design_v3.schema.json',
+                               record['factory_revision']))
+    if ('player_text' in schema.get('properties', {})
+            or any(r['id'] == PLAYER_TEXT_RULE for r in old_rules['rules'])):
+        return None
+    return {'schema_version': 'player_text_historical_production_compatibility.v1',
+            'historical_applicability': 'UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE',
+            'deferred_current_review_requirements': [PLAYER_TEXT_RULE],
+            'allowed_stage': 'PRODUCING',
+            'current_adoption_required_before': ['NEW_DESIGN', 'EVIDENCE_READY', 'COMPLETE',
+                                                  'WHOLE_GAME_HANDOFF'],
+            'normal_applicability_reviews_and_latest_text_evidence_not_waived': True}
+
+
 def audit(roots, task_id):
     """Read-only preflight. Output artifacts of the old checkpoint are NOT revived."""
     from .authorship import mode
@@ -25,7 +59,6 @@ def audit(roots, task_id):
     record, predecessor = latest(roots['game'], identifier(task_id))
     if not record or record['stage'] != 'PRODUCING' or record.get('unresolved'):
         fail('CONTINUATION_NOT_APPLICABLE', 'requires the latest unblocked PRODUCING checkpoint')
-    d = load_design(roots, record['design'])  # Current design parser must also accept it.
     old = record['dependencies']
     if old.get('algorithm') != 'sha256-content-closure.v2' or digest(old['references']) != old['fingerprint']:
         fail('INVALID_CHECKPOINT', 'invalid historical dependency fingerprint')
@@ -38,6 +71,9 @@ def audit(roots, task_id):
                 fail('STALE_DEPENDENCY', 'historical Factory bytes mismatch: ' + ref['path'])
         else:
             resolve_ref(roots, ref)  # Any game/authority/design mutation fails closed.
+    old_rules = read_json(GitFile(roots['factory'], 'factory_core/rule_map.json', factory_revision))
+    compatibility = _legacy_player_text_contract(roots, record, old_rules)
+    d = load_design(roots, record['design'], _legacy_player_text=bool(compatibility))
     current = dependencies(roots, record['design'], d)
     from .astra import selected_methods
     for ref in selected_methods(roots['factory'], d['capability'], d['task'], d.get('methods', [])):
@@ -48,23 +84,27 @@ def audit(roots, task_id):
         fail('NEW_PROJECT_DEPENDENCY', 'new project authority/input needs its own design boundary')
     # Requirement membership may not silently change. Historical sources remain
     # historical even where current docs have moved or gained explanations.
-    old_rules = read_json(GitFile(roots['factory'], 'factory_core/rule_map.json', factory_revision))
     for role in ('intent_experience', 'completeness_project'):
         required = {r['id'] for r in old_rules['rules'] if role in r['reviewers'] and
                     ('all' in r['capabilities'] or d['capability'] in r['capabilities']) and
                     3 in r.get('workflow_versions', (2, 3)) and
                     'COLLABORATIVE' in r.get('modes', ['COLLABORATIVE'])} | set(d['requirements'])
-        if required != requirement_ids(roots['factory'], d, role, 'COLLABORATIVE'):
+        current_required = requirement_ids(roots['factory'], d, role, 'COLLABORATIVE')
+        deferred = {PLAYER_TEXT_RULE} if compatibility else set()
+        if (required - current_required or current_required - required != deferred):
             fail('CHANGED_REVIEW_REQUIREMENTS', 'applicable rule membership changed')
     check_reviews(roots, record['design'], d, old, record['reviews'], factory_revision)
     check_ruling(roots, record['ruling'], record['design'], old)
-    return {'schema_version': 'factory_continuation_preview.v1', 'task_id': task_id,
+    value = {'schema_version': 'factory_continuation_preview.v1', 'task_id': task_id,
             'checkpoint_sha256': predecessor, 'design': record['design'],
             'historical_factory_revision': factory_revision,
             'historical_dependency_fingerprint': old['fingerprint'],
             'current_dependencies': current, 'production_scope': d['production_scope'],
             'historical_reviews_are_current': False, 'delivery_eligible': False,
             'allowed_stage': 'PRODUCING', 'acceptance_authority_granted': False}
+    if compatibility:
+        value['compatibility_obligations'] = compatibility
+    return value
 
 
 def preview(roots, task_id):
@@ -105,13 +145,16 @@ def verify(roots, task_id):
         if ref['scope'] != 'game' or ref['path'] not in current['production_scope']:
             fail('OUT_OF_SCOPE', 'invalid continuation output scope')
         resolve_ref(roots, ref)
-    return {'status': 'HISTORICAL_CONTRACT_CONTINUATION', 'receipt_sha256': receipt_hash,
+    value = {'status': 'HISTORICAL_CONTRACT_CONTINUATION', 'receipt_sha256': receipt_hash,
             'task_id': task_id, 'stage': 'PRODUCING', 'summary': receipt['summary'],
             'design': current['design'],
             'historical_dependency_fingerprint': current['historical_dependency_fingerprint'],
             'artifacts': receipt['artifacts'], 'production_scope': current['production_scope'],
             'historical_reviews_are_current': False, 'delivery_eligible': False,
             'acceptance_authority_granted': False}
+    if 'compatibility_obligations' in current:
+        value['compatibility_obligations'] = current['compatibility_obligations']
+    return value
 
 
 def apply(roots, task_id, expected, source_path, quote, summary, artifacts=()):

@@ -38,6 +38,10 @@ initialization/migration. It covers all shipped languages and all player-facing
 surfaces, not only speech. New v3 player-content designs declare ALL/CHANGED/NONE;
 nonempty scopes require exact latest-output reading/backcheck evidence. Whole-game
 handoff requires ALL coverage. See the shared workflow for ownership and exclusions.
+Pre-feature approved v3 production may use only the explicit, production-only
+[compatibility v1](factory_core/docs/WORKFLOW_GPT6.md#pre-player-text-production-compatibility-v1);
+old reviews are not renewed, and current text adoption remains due before evidence,
+completion or whole-game handoff.
 
 Open-ended whole-game intent routes to Studio; deliberately bounded specialist
 intent goes directly to its owner. A runnable interactive demo is not Studio

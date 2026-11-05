@@ -181,7 +181,8 @@ The independent append-only continuation ledger preserves the checkpoint, origin
 dependency fingerprint, exact historical Factory Git bytes, reviews and USER ruling.
 It rejects altered project inputs/authority/design, newly discovered project inputs,
 changed applicable review-rule membership, changed mode, archived authority, unavailable
-historical bytes and a later task checkpoint. Current design parsing must also pass.
+historical bytes and a later task checkpoint. Current design parsing must also pass,
+subject only to the versioned pre-player-text production compatibility below.
 Both current resolver closure and original contract are bound and rechecked; future
 Factory changes invalidate the receipt. Historical output artifacts are not revived.
 Use repeated apply with approved `--artifact` paths to record new exact outputs.
@@ -192,3 +193,28 @@ unchanged. The continuation permits only original-scope PRODUCING; it cannot pub
 COMPLETE, accept gameplay, or promote a baseline. New material design and final
 acceptance retain their own normal boundaries. A receipt is not a blanket exemption
 from newly applicable rules; incompatibility fails closed for a specific resolution.
+
+#### Pre-player-text production compatibility v1
+
+An immutable v3 design already in authorized collaborative PRODUCING may predate
+the shared player-text feature. Do not rewrite its design/reviews/ruling, invent
+reviewed NONE, or retroactively describe old reviews as covering the new rule.
+After verifying every byte of the original dependency closure, continuation may
+recognize this precise case only when the old bound v3 schema has no `player_text`
+property, its rule map lacks `player_text.complete_coverage_and_meaning`, and its
+closure contains no `player_text/` sources. An explicit existing binding is always
+validated normally. Every other current design/parser check remains applicable.
+
+The sole permitted membership addition is that player-text rule; removed rules or
+any other addition still fail closed. Historical reviews are checked against the
+exact historical rule map, not against newly added obligations. The preview and
+receipt expose `compatibility_obligations` with
+`UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE`; this is only original-scope PRODUCING.
+Current applicability, ordinary reviews and latest-output text evidence must be
+adopted before a new design, EVIDENCE_READY, COMPLETE or whole-game handoff. Normal
+checkpoint/acceptance paths remain strict and cannot consume this exception.
+
+This is not automatic grandfathering: a changed current closure makes every old
+continuation receipt stale. Explicit raw USER selection must append a fresh receipt
+binding the exact current preview and its deferred obligations. It grants no new
+design approval, text-language PASS, gameplay acceptance or baseline promotion.
