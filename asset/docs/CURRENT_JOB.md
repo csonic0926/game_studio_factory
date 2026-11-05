@@ -1,5 +1,39 @@
 # CURRENT_JOB.md
 
+## November 5, 2026 — VectorCraft / PhotoCraft production integration
+
+Status: completed and verified.
+
+- USER requested Sound Factory's tool-invocation approach for Art Asset Factory,
+  and confirmed both independent production and post-processing generated assets.
+- Added `craft_asset_workflow_v1`, a private MCP client, `craft-commands` discovery
+  and `run-craft-assets`; native source + exports + provenance + engineering checks.
+- SoundCraft pattern retained, with bounded request waits, EOF/error handling,
+  fresh non-overwriting runs and narrowly scoped read/write roots. No changes to
+  global MCP registrations, installed skills, linked consumers or generation providers.
+- Examples cover new VectorCraft, new PhotoCraft and existing PNG → PhotoCraft.
+  Verified local engines: VectorCraft 0.18.0 / PhotoCraft 0.17.0. Scratch evidence:
+  `/tmp/asset_factory_craft_runs/{vector_badge,photo_panel,photo_refine}`.
+- Native save/reopen and exports pass. Refined PNG pixel colours changed while
+  alpha remained byte-identical; reopened `.pcraft` retained the adjustment layer.
+  These are technical test fixtures, not approved game art.
+- Offline tests cover both editor routes, provenance, source isolation, stale-run
+  refusal, bad canvas/alpha/format, references, protocol failures/EOF/timeouts.
+- Verification completed:
+  - Full `asset/tests` suite with `FACTORY_CRAFT_LIVE_TESTS=1`: **61 passed**,
+    including three real-editor integration tests and 49 subtests. Used the
+    explicitly configured read-only sibling `asset/output/png` fixture directory
+    via `FACTORY_ASSET_REFERENCE_ROOT`; no reference copies or baseline updates.
+  - `tests/test_sound_scoring.py`: **10 passed**; `tests/test_setup.py`: **27 passed**.
+  - CLI help/error paths, Python compilation and `git diff --check` passed.
+  - 124 existing Pillow `getdata` deprecation warnings in legacy asset tests;
+    not new Craft failures and not changed in this task.
+- Dependencies for tests were installed only in `/tmp/asset-craft-test-venv`.
+  No global package, skill, MCP or consumer-pointer changes. Reusable changes
+  belong only to `frontier`; no merge into `main`.
+- No implementation follow-up required for this scope. Contract and opt-in test
+  commands: `docs/CRAFT_ASSET_WORKFLOW.md`. Visual acceptance remains per order.
+
 ## June 3 — Cross-repo requirement intake process
 
 Status: done.

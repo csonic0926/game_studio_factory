@@ -1,25 +1,40 @@
 # Asset Game AI Factory
 
-Blender-first game asset factory for **reference-pair generation, validation, and final selection** of floor/wall tiles, plus engineering-spec validation for prop/object assets.
+Game asset factory for **editable vector/raster art**, Blender reference-pair generation,
+validation and final selection of floor/wall tiles, plus engineering-spec validation for prop/object assets.
 
 ## Factory positioning
 
-Treat this repo as a **game asset factory** for isometric art workflows:
+Treat this repo as a **game asset factory** for general visual production and specialized isometric workflows:
 
 - caller places an order with a spec
 - factory prepares canonical references + prompts
 - factory runs generation
 - factory validates geometry
 - factory emits final handoff PNGs for tiles and prop/object assets
+- VectorCraft / PhotoCraft orders retain editable native sources plus validated exports
 
-The public order contract is the **reference-pair spec JSON** plus the CLI
-commands in `$STUDIO_ROOT/asset/itf.py`.
+The public order contracts are the owning workflow's **spec JSON** plus the CLI
+commands in `$STUDIO_ROOT/asset/itf.py`; reference-pair specs remain the tile contract.
 
 If you are an AI agent coming from another repo, start with
 [`docs/AI_CALLER_LANDING.md`](docs/AI_CALLER_LANDING.md). It separates direct
 tool calls from cross-repo requests that require factory-side changes.
 
 ## Use this workflow
+
+For editable vector art, icons, typography, layer composition or post-processing
+existing generated images, use **[VectorCraft / PhotoCraft](docs/CRAFT_ASSET_WORKFLOW.md)**:
+
+```bash
+python3 itf.py craft-commands --editor vectorcraft --filter shape.rectangle
+python3 itf.py craft-commands --editor photocraft --filter layer.newAdjustmentLayer
+python3 itf.py run-craft-assets --spec /absolute/game/design/art/order.spec.json
+```
+
+Set `VECTORCRAFT_CLI` / `PHOTOCRAFT_CLI` or install the CLIs on PATH. Each run uses
+its own headless MCP session; outputs stay in the target game repo. This is an
+additive editor workflow, not a replacement image provider or a creative-acceptance gate.
 
 For almost all tile-art work, use the **reference-pair workflow**.
 

@@ -2,7 +2,19 @@
 
 ## Goal
 
-Provide a Blender-backed factory for canonical isometric tile references, reference-validated image outputs, and engineering-spec-validated game prop assets.
+Provide editable vector/raster art production alongside Blender-backed canonical
+isometric tile references, reference-validated image outputs, and engineering-spec-validated game prop assets.
+
+## Editable vector/raster orders
+
+- Contract: [`CRAFT_ASSET_WORKFLOW.md`](CRAFT_ASSET_WORKFLOW.md), schema `craft_asset_workflow_v1`.
+- `editor = vectorcraft | photocraft` selects a production editor, **not** an image provider/model.
+- `craft-commands` discovers engine operations; `run-craft-assets` executes new-document
+  or existing-input recipes in private scoped MCP sessions.
+- Retain `.vectorcraft` / `.pcraft` source, declared PNG/SVG/JPG/WebP exports,
+  input hashes, warnings and validation. Technical success is not visual acceptance.
+- Existing tile/prop orders and the generation-provider contract below are unchanged;
+  edited bytes must receive the owning workflow's validation again.
 
 ## Primary product
 

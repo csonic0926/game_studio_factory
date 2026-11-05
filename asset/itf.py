@@ -10,6 +10,8 @@ import tempfile
 from pathlib import Path
 
 from pipeline.build_atlas import build_atlas
+from pipeline.craft_asset_workflow import discover_commands, run_craft_assets
+from pipeline.craft_client import CraftError, EDITORS
 from pipeline.inspect_manifest import build_summary
 from pipeline.reference_pair_workflow import (
     ReferencePairWorkflowError,
@@ -47,6 +49,20 @@ REFERENCE_PAIR_EXAMPLES_ROOT = REPO_ROOT / "examples" / "reference_pair_workflow
 def parse_arguments() -> argparse.Namespace:
     argument_parser = argparse.ArgumentParser(description="Asset Game AI Factory CLI")
     subparsers = argument_parser.add_subparsers(dest="command", required=True)
+
+    craft_commands = subparsers.add_parser(
+        "craft-commands", help="Discover VectorCraft/PhotoCraft engine commands in a private session",
+    )
+    craft_commands.add_argument("--editor", choices=sorted(EDITORS), required=True)
+    craft_commands.add_argument("--filter", default="", help="Narrow command ids/labels; no document is open")
+    craft_run = subparsers.add_parser(
+        "run-craft-assets", help="Run an editable VectorCraft/PhotoCraft recipe and validate its exports",
+    )
+    craft_run.add_argument("--spec", required=True, help="Path to craft_asset_workflow_v1 JSON")
+    craft_run.add_argument("--out", help="Override the complete run directory (must not already exist)")
+    for craft_parser in (craft_commands, craft_run):
+        craft_parser.add_argument("--cli", help="Editor executable; otherwise use *_CLI env, PATH, or ~/.local/bin")
+        craft_parser.add_argument("--timeout", type=float, default=120, help="Per-request timeout in seconds")
 
     validate_parser = subparsers.add_parser("validate", help="Validate config, manifest, or Blender scene")
     validate_parser.add_argument("--config", help="Path to config JSON")
@@ -871,6 +887,21 @@ def command_validate_prop_assets(arguments: argparse.Namespace) -> int:
 
 def main() -> None:
     arguments = parse_arguments()
+
+    if arguments.command in {"craft-commands", "run-craft-assets"}:
+        try:
+            if arguments.command == "craft-commands":
+                result = discover_commands(arguments.editor, query=arguments.filter,
+                                           cli=arguments.cli, timeout=arguments.timeout)
+            else:
+                result = run_craft_assets(Path(arguments.spec),
+                                          out=Path(arguments.out) if arguments.out else None,
+                                          cli=arguments.cli, timeout=arguments.timeout)
+        except (CraftError, OSError, ValueError) as error:
+            print(json.dumps({"ok": False, "mode": arguments.command, "error": str(error)}, indent=2))
+            raise SystemExit(1)
+        print(json.dumps({"ok": result["ok"], "mode": arguments.command, "result": result}, indent=2))
+        raise SystemExit(0 if result["ok"] else 1)
 
     if arguments.command == "validate":
         raise SystemExit(command_validate(arguments))

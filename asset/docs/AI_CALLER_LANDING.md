@@ -8,6 +8,7 @@ use the Asset specialist under Game Studio Factory.
 | Caller need | Do this |
 | --- | --- |
 | Use an existing factory workflow and get PNG deliverables | Call the CLI from this repo with a spec file. |
+| Make editable vector art/icons/type, or layer-compose/refine raster art (including generated images) | Use VectorCraft / PhotoCraft via `craft_asset_workflow_v1`; read [`CRAFT_ASSET_WORKFLOW.md`](CRAFT_ASSET_WORKFLOW.md). |
 | Re-skin an existing geometrically-correct tile/autotile set | Use `tile_reskin_workflow_v1`. |
 | Generate engineering-validated prop/object sprites | Use `prop_asset_workflow_v1`. |
 | Generate/validate floor or wall reference-pair tiles | Use `reference_pair_workflow_v1` or the wall helper. |
@@ -38,6 +39,26 @@ agent, prefer `agent_handoff` / native `image_gen.imagegen`; use `cliproxyapi`
 only as the non-agent/headless fallback.
 
 ## Common workflows
+
+### Editable vector/raster art
+
+VectorCraft and PhotoCraft are production editors, not image-generation providers.
+Use either a new document or declared existing inputs, including prior generated
+PNGs. The Factory launches a private, file-scoped headless MCP session; it never
+repoints another project's configured editor or touches its desktop document.
+
+```bash
+python3 itf.py craft-commands --editor vectorcraft --filter shape.rectangle
+python3 itf.py craft-commands --editor photocraft --filter layer.newAdjustmentLayer
+python3 itf.py run-craft-assets --spec /absolute/game/design/art/order.spec.json
+```
+
+Set `VECTORCRAFT_CLI` / `PHOTOCRAFT_CLI`, put the CLIs on PATH, or pass `--cli`.
+Delivery keeps `.vectorcraft` / `.pcraft` source, PNG (optional SVG/JPG/WebP),
+input hashes, command logs and engineering validation. Inspect `artifact_status.json`
+first, then `source/`, previews, warnings and `deliverables/`. Edited assets still
+need the original prop/tile/geometry validators and fresh visual acceptance.
+Read the [calling contract and examples](CRAFT_ASSET_WORKFLOW.md).
 
 ### Prop/object assets
 
@@ -181,11 +202,12 @@ files, commands, outputs, and blockers to that same request file.
 
 ## Minimal source-repo agent checklist
 
-1. Identify whether the job is prop, tile re-skin, reference-pair tile, or a new
+1. Identify whether the job is editable vector/raster art, prop, tile re-skin, reference-pair tile, or a new
    factory capability.
 2. If existing, create or reuse a spec and call `python3 itf.py ...` from the
    factory repo.
 3. Start review from `artifact_status.json`, then inspect `deliverables/`.
-4. Copy or import only validated deliverables into the source repo.
+4. Copy or import only validated deliverables into the source repo; for Craft
+   orders retain the editable `source/` too. Technical validation is not creative acceptance.
 5. If blocked by missing factory behavior, file a request under
    `requirement_from_other_repo/` instead of making ad hoc source-repo guesses.

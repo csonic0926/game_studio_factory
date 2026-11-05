@@ -1,5 +1,26 @@
 # REPO_MEMORY.md
 
+## Editable art editors (2026-11-05)
+
+- `craft_asset_workflow_v1`, `itf.py craft-commands` / `run-craft-assets` add
+  VectorCraft and PhotoCraft; contract: `docs/CRAFT_ASSET_WORKFLOW.md`.
+- These are editing/production tools, not generation-provider aliases. Existing
+  prop/tile/reference providers, geometry rules and v2/v3 approvals are unchanged.
+- Like SoundCraft, use private headless stdio MCP sessions. Never reuse/repoint
+  another project's MCP or inherit a PhotoCraft desktop bridge from environment.
+- PhotoCraft accepts only one read root: stage/hash declared inputs in the run,
+  grant read to that run and write only to `work/`. Do not grant a common ancestor
+  of arbitrary inputs. Use fresh run IDs; never overwrite source evidence.
+- Input IDs and export names must be unique ignoring case: macOS staging-name
+  collisions would otherwise replace one input snapshot and invalidate provenance.
+- New-document params differ: VectorCraft `file.new` uses `backgroundContents`;
+  PhotoCraft `doc_new` uses `background`. Discover engine command params locally.
+- Retain `.vectorcraft` / `.pcraft`, reopen native before export, retain warnings
+  and inspections. Flattened exports do not replace editable source. A raster
+  input does not regain missing original layers simply by opening it in an editor.
+- Artifact `ok` means engineering checks only. Visual acceptance and downstream
+  prop/tile/anchor/connectivity validation remain separate and must cover edited bytes.
+
 ## Cross-repo requirement intake
 
 - Other-repo AI agents that only need to call existing factory tools should start at `docs/AI_CALLER_LANDING.md`.

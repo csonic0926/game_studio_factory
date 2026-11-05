@@ -1,1 +1,3 @@
 Pillow>=10,<13
+# Optional editable-art workflow: vectorcraft-cli / photocraft-cli on PATH or
+# VECTORCRAFT_CLI / PHOTOCRAFT_CLI (upstream binaries, not Python packages).

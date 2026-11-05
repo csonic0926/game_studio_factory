@@ -1,0 +1,14 @@
+{
+  "schema_version": "craft_asset_workflow_v1",
+  "run_id": "photo_refine",
+  "output_root": "/tmp/asset_factory_craft_runs",
+  "editor": "photocraft",
+  "inputs": {"base": "/tmp/asset_factory_craft_runs/vector_badge/deliverables/badge.png"},
+  "document": {"input": "base"},
+  "steps": [
+    {"command": "layer.newAdjustmentLayer.brightnessContrast", "params": {"brightness": 20, "contrast": 10}}
+  ],
+  "exports": [
+    {"name": "refined.png", "width": 128, "height": 128, "alpha": "transparent"}
+  ]
+}

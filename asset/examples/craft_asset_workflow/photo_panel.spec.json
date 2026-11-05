@@ -1,0 +1,16 @@
+{
+  "schema_version": "craft_asset_workflow_v1",
+  "run_id": "photo_panel",
+  "output_root": "/tmp/asset_factory_craft_runs",
+  "editor": "photocraft",
+  "document": {
+    "new": {"width": 128, "height": 128, "background": "transparent", "mode": "rgb", "depth": 8}
+  },
+  "steps": [
+    {"command": "layer.newFillLayer.solidColor", "params": {"color": "#183A4A"}},
+    {"command": "layer.newAdjustmentLayer.brightnessContrast", "params": {"brightness": 15, "contrast": 8}}
+  ],
+  "exports": [
+    {"name": "panel.png", "width": 128, "height": 128, "alpha": "opaque"}
+  ]
+}

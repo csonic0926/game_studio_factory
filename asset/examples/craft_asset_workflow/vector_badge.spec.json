@@ -1,0 +1,19 @@
+{
+  "schema_version": "craft_asset_workflow_v1",
+  "run_id": "vector_badge",
+  "output_root": "/tmp/asset_factory_craft_runs",
+  "editor": "vectorcraft",
+  "document": {
+    "new": {"width": 128, "height": 128, "units": "Pixels", "backgroundContents": "transparent", "colorMode": "rgb"}
+  },
+  "steps": [
+    {"command": "shape.rectangle", "params": {"x": 12, "y": 12, "width": 104, "height": 104, "radius": 24}},
+    {"command": "paint.setFill", "params": {"color": "#183A4A", "ids": ["$step.0.id"]}},
+    {"command": "shape.ellipse", "params": {"x": 36, "y": 36, "width": 56, "height": 56}},
+    {"command": "paint.setFill", "params": {"color": "#F4BC68"}}
+  ],
+  "exports": [
+    {"name": "badge.png", "width": 128, "height": 128, "alpha": "transparent"},
+    {"name": "badge.svg"}
+  ]
+}
