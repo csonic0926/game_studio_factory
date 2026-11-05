@@ -17,6 +17,14 @@ inspection habits apply.
 
 ## Calling contract
 
+When a task includes player-audible words or subtitles, use the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md), binding the text
+to the exact audio/subtitle output and checking actual delivery timing. This
+does not add a speech provider or change Sound's SFX scope. Explicit v3 designs
+declare applicability; external/v1/v2 callers may use it without migration.
+Wordless SFX/music can declare reviewed NONE. Audio validation is not language
+or human comprehension acceptance.
+
 Resolve `$STUDIO_ROOT` from the linked game repo's
 `design/STUDIO_FACTORY.local.md` (legacy `design/AI_FACTORY.local.md` remains a
 fallback), then run:

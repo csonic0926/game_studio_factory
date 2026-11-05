@@ -365,6 +365,9 @@ class ShippedSkillContractTest(unittest.TestCase):
             "init-game-studio-factory": os.path.join(
                 root, "skills", "init-game-studio-factory", "SKILL.md"
             ),
+            "player-text-clarity": os.path.join(
+                root, "skills", "player-text-clarity", "SKILL.md"
+            ),
             "gameplay-factory": os.path.join(
                 root, "gameplay", "skills", "gameplay-factory", "SKILL.md"
             ),
@@ -420,6 +423,7 @@ class ShippedSkillContractTest(unittest.TestCase):
                 "idea-thinking",
                 "init-game-ai-factory",
                 "init-game-studio-factory",
+                "player-text-clarity",
                 "product-factory",
                 "product-value-reviewer",
                 "studio-blind-player-observer",

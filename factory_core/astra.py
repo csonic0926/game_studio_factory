@@ -57,6 +57,9 @@ def docs(capability):
         result = ['story/docs/WORKFLOW_GPT6.md', 'story/core/NARRATIVE_FOUNDATIONS.md']
     if capability == 'idea':
         result.insert(0, 'idea/docs/WORKFLOW_GPT6.md')
+    from player_text.workflow import PRODUCERS
+    if capability in PRODUCERS:
+        result.append('player_text/WORKFLOW.md')
     return result
 
 

@@ -150,10 +150,16 @@ def expand_references(roots: dict[str, Path], refs: list[dict]) -> list[dict]:
         found[key] = ref
         if ref["scope"] != "game" or path.suffix != ".json" or ref["path"] == "design/factory/PROJECT.json":
             continue
-        value = read_json(path)
-        if value.get("schema_version") == "product_authority_register.v1":
+        try:
+            value = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as exc:
+            fail("INVALID_JSON", f"{path}: {exc}")
+        # Runtime text exports can be arrays (or scalar JSON strings). They are
+        # still traversable evidence, not necessarily object-shaped protocols.
+        schema_version = value.get("schema_version", "") if isinstance(value, dict) else ""
+        if schema_version == "product_authority_register.v1":
             value = value.get("active_authority") if value.get("status") == "ACTIVE" else {}
-        elif "register" in str(value.get("schema_version", "")):
+        elif "register" in str(schema_version):
             # Pending/rejected history is not imported as active design. Explicit
             # selected dependencies must be in the current task package itself.
             continue

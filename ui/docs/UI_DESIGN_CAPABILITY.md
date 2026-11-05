@@ -160,6 +160,17 @@ Each became a mechanical check or a review question above.
 | The UI must not leak what gameplay hides | Lines may show first targets, never the predicted winner |
 | Verification layers stay separate | Typography scans caught overflow no reviewer saw; only blind observation caught comprehension; only the USER can count drags |
 
+## Player-facing language
+
+All player-facing wording also uses the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md). v3 UI designs
+declare `player_text` scope and preserve canonical facts/terms while treating
+labels, help, status and errors, not only narrative text. Layout, reveal timing
+or nearby-context changes can require new language evidence even when the words
+are unchanged. Readability backcheck uses actual presentation; a string-table
+PASS cannot prove wrapping, visibility or comprehension. This workflow neither
+changes Gameplay rules nor transfers Story's voice/canon ownership to UI.
+
 ## 6. Out of scope
 
 Rules and balance (Gameplay), product fit (Idea/Product), art and brand (Asset and

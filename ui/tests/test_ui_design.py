@@ -83,7 +83,8 @@ class UiDesignTests(unittest.TestCase):
             decisions=[dict(id="ui-1", source=doc, excerpt=text.strip(), consequence=text.strip())],
             requirements={}, production_scope=["scripts/unit_one_ui.gd"], acceptance=["Mechanical report, blind chain and USER playtest."],
             methods=[], decision_sections=[dict(id="ui-1", source=doc, text=text.strip(), decision_ids=["ui-1"])],
-            ui=dict(gameplay_checkpoint=gameplay_checkpoint or self.gameplay_checkpoint, **refs))
+            ui=dict(gameplay_checkpoint=gameplay_checkpoint or self.gameplay_checkpoint, **refs),
+            player_text=dict(scope="NONE", scope_evidence=doc, receipt_path=None))
         if reason is not None:
             design["ui"]["rules_model_absent_reason"] = reason
         return design, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design)

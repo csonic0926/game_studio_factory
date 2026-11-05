@@ -84,6 +84,15 @@ sibling meaning, without universally banning a word or inventing birth order.
 
 ## Acceptance and persistence
 
+All player-facing prose, not only quoted speech, also follows the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md). Declare the v3
+`player_text` scope and bind latest-output receipt evidence. Keep the existing
+dialogue clean-room production separate; its repaired text is reused, not
+compulsorily rewritten again. The independent final semantic-QA execution may
+perform the informed text backcheck, but not the fresh first reading. Internal
+world records or standalone non-player work can use reviewed NONE, never an
+automatic no-dialogue exemption.
+
 Two exact complete-design reviews remain required. Newly authored/revised quoted
 speech keeps fresh clean-room fluency packets, canon-aware backcheck and distinct
 latest-output semantic QA. No peer/design documents leak into the clean-room.

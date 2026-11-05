@@ -34,7 +34,8 @@ class Gpt6Tests(unittest.TestCase):
             author_context_id='author', intent='Readable lantern.', artifacts=[artifact], inputs=[],
             decisions=[dict(id='light', source=artifact, excerpt='The lantern is warm.', consequence='Its alpha border stays transparent.')],
             decision_sections=[dict(id='appearance', source=artifact, text=body, decision_ids=['light'])],
-            requirements={}, production_scope=['texture/lantern.png'], acceptance=['Technical and visual quality.'], methods=[])
+            requirements={}, production_scope=['texture/lantern.png'], acceptance=['Technical and visual quality.'], methods=[],
+            player_text=dict(scope='NONE', scope_evidence=artifact, receipt_path=None))
         return d, self.write('design/assets/PACKAGE.json', d)
 
     def test_cli_alias_and_explicit_default(self):

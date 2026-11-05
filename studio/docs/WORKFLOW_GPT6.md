@@ -28,6 +28,16 @@ brake as a generic Factory rule. New-play acceptance, exact-build USER playtest,
 applicable predecessor regression and blocking-gap clearance still own baseline
 promotion. AI reviews, Godot success and screenshots remain evidence only.
 
+## Whole-game player-text coverage
+
+Before a whole-game finished/polished/handoff claim, run the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md) with ALL scope.
+Inventory actual player-facing surfaces across departments and every shipped
+locale, including hardcoded, embedded and spoken text. CHANGED receipts support
+production slices but cannot prove whole-game coverage. Preserve each department's
+content authority; a valid language receipt is not gameplay acceptance or a
+replacement for Product's whole-value judgment below.
+
 ## Whole-product value supervision
 
 At a whole-product stopping boundary ("done", "polished", final product handoff,

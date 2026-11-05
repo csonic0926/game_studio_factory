@@ -52,6 +52,7 @@ def audit(roots, task_id):
     for role in ('intent_experience', 'completeness_project'):
         required = {r['id'] for r in old_rules['rules'] if role in r['reviewers'] and
                     ('all' in r['capabilities'] or d['capability'] in r['capabilities']) and
+                    3 in r.get('workflow_versions', (2, 3)) and
                     'COLLABORATIVE' in r.get('modes', ['COLLABORATIVE'])} | set(d['requirements'])
         if required != requirement_ids(roots['factory'], d, role, 'COLLABORATIVE'):
             fail('CHANGED_REVIEW_REQUIREMENTS', 'applicable rule membership changed')

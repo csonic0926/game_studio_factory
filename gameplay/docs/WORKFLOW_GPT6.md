@@ -35,6 +35,16 @@ RUNTIME_OBSERVATION_AND_ACCEPTANCE_CONTRACT.md and isolated blind/comparison
 protocols. Produce within the reviewed paths; implementation completion is not
 accepted gameplay. A failing test permits repair, not an invented design approval.
 
+## Player-facing language
+
+Player-facing rules explanations, choices, tooltips, tutorials and status/error
+copy use the shared [player-text clarity workflow](../../player_text/WORKFLOW.md).
+Declare `player_text` applicability and preserve rule conditions, numerical
+meaning, exclusions and recovery. A clearer sentence cannot change the game.
+Nonempty scope requires the exact receipt at the output-evidence boundary;
+layout/context changes count even with unchanged wording. UI owns presentation,
+while Gameplay retains rule meaning and the existing actual-play acceptance.
+
 ## Rules correctness (executable model)
 
 Prose rules and worked examples drift apart. A design can bind an executable

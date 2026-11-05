@@ -19,6 +19,13 @@ job. File a request only when the factory itself must change.
 
 ## Basic calling contract
 
+For player-visible words embedded in images/vector assets, use the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md), with transcripts
+bound to the exact rendered asset. Do not count an image pipeline PASS as text
+comprehension. This is required by explicit v3 player-text applicability;
+external/v1/v2 callers can invoke it independently without migration. Non-text
+art can declare reviewed NONE rather than inventing text work.
+
 Resolve `$STUDIO_ROOT` from the linked game repo's
 `design/STUDIO_FACTORY.local.md` (legacy `design/AI_FACTORY.local.md` remains a
 fallback), then run commands from the specialist folder:

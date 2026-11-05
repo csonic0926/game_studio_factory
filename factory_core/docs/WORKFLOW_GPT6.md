@@ -129,6 +129,18 @@ latest-output semantic QA in every shipped locale. No-dialogue and no-runtime
 scopes must be explicit in the reviewed design/profile, not invented at QA.
 Asset/Sound completion proves technical pipeline output, not creative acceptance.
 
+All player-facing language, not only dialogue, follows the shared
+[player-text clarity workflow](../../player_text/WORKFLOW.md). New v3 designs
+from Studio/Gameplay/UI/Story/Asset/Sound declare `player_text` applicability:
+ALL, CHANGED, or NONE with exact reviewed scope evidence. Both reviewers verify
+coverage and retained meaning. A nonempty scope binds an authorized receipt
+output path; EVIDENCE_READY/COMPLETE check its latest text, locales, reading,
+backcheck and presentation sources. NONE cannot exclude narration, functional
+copy, embedded/spoken words or unchanged wording with changed context. Studio
+must establish ALL coverage before a whole-game finished/handoff claim.
+This workflow is independently callable without migration and never replaces
+Story clean-room production, gameplay blind observation or USER acceptance.
+
 Gameplay uses factory_gameplay_acceptance_input.v2 through studio/v2.py and the
 existing baseline admission/human/runtime contracts. The production plan bridge
 still consumes factory_checkpoint.v2, verifies its v3 design and exact authorized

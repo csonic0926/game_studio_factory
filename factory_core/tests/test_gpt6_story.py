@@ -37,7 +37,8 @@ class NativeStoryTests(unittest.TestCase):
             decisions=[dict(id='memory', source=source, excerpt=body, consequence=body)],
             decision_sections=[dict(id='memory', source=source, text=body, decision_ids=['memory'])],
             requirements={}, production_scope=['narrative/output.json'], acceptance=['Exact-output knowledge/semantic QA.'],
-            story=dict(spoken_output_paths=[], runtime_output_paths=[], scope_evidence=source))
+            story=dict(spoken_output_paths=[], runtime_output_paths=[], scope_evidence=source),
+            player_text=dict(scope='NONE', scope_evidence=source, receipt_path=None))
         self.design_ref = self.write('narrative/package.json', self.design)
 
     def req(self, stage, previous=None, **kw):

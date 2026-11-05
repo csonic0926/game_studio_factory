@@ -133,7 +133,7 @@ def load_design(roots: dict, ref: dict) -> dict:
         fail("INVALID_DESIGN", "design must be game-owned")
     d = read_json(resolve_ref(roots, ref))
     keys(d, {"schema_version", "design_id", "capability", "task", "author_context_id", "intent",
-             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage", "rules_check", "ui"})
+             "artifacts", "inputs", "decisions", "requirements", "production_scope", "acceptance"}, {"gameplay", "story", "product", "methods", "decision_sections", "idea_coverage", "rules_check", "ui", "player_text"})
     version = project(roots["game"])["workflow_version"]
     if version == 3 and d['schema_version'] == 'factory_design.v2':
         fail('HISTORICAL_WORKFLOW_REQUIRED', 'v2 work is historical; continue with a new v3 task/design, not rewritten approval')
@@ -195,6 +195,9 @@ def load_design(roots: dict, ref: dict) -> dict:
     texts(d["acceptance"])
     if not d["acceptance"]:
         fail("INVALID_DESIGN", "exact-output acceptance obligations required")
+    if version == 3 or "player_text" in d:
+        from player_text.workflow import validate_design as validate_player_text_design
+        validate_player_text_design(roots, d)
     if "story" in d:
         if d["capability"] != "story": fail("INVALID_DESIGN", "Story applicability belongs only to Story")
         keys(d["story"], {"spoken_output_paths", "scope_evidence"}, {'runtime_output_paths'} if version == 3 else ())
@@ -253,6 +256,7 @@ def requirement_ids(factory: Path, d: dict, role: str, mode: str = "COLLABORATIV
     rule_map = read_json(factory / "factory_core/rule_map.json")
     return {r["id"] for r in rule_map["rules"] if role in r["reviewers"] and
             ("all" in r["capabilities"] or d["capability"] in r["capabilities"]) and
+            int(d["schema_version"].rsplit("v", 1)[1]) in r.get("workflow_versions", (2, 3)) and
             mode in r.get("modes", (mode,))} | set(d["requirements"])
 
 
@@ -364,6 +368,8 @@ def verify_record(roots: dict, record: dict):
         from .authorship import mode
         from .director import check_checkpoint
         check_checkpoint(roots, record, mode(roots))
+        from player_text.workflow import validate_checkpoint as validate_player_text_checkpoint
+        validate_player_text_checkpoint(roots, record, d)
     for ref in record["artifacts"]:
         resolve_ref(roots, ref)
     if record["stage"] == "COMPLETE":

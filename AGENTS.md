@@ -62,6 +62,12 @@ Specialist entry points:
 - `asset/` → `asset/AGENTS.md`, `asset/docs/AI_CALLER_LANDING.md`, `asset/itf.py`
 - `sound/` → `sound/docs/AI_CALLER_LANDING.md`, `sound/sfx.py`; video scoring → `sound/docs/SCORING_WORKFLOW.md`, `sound/score.py`
 
+Shared player-facing language work uses skill `player-text-clarity` and
+`player_text/WORKFLOW.md`, not a new content-owning Factory. All player-facing
+text and shipped locales receive treatment (retain or repair), including
+non-dialogue and functional copy. New v3 designs declare reviewed applicability;
+external/v1/v2 callers can use the workflow without migration or renewed old proof.
+
 Studio hard boundary: a runnable interactive software demo is not whole-game
 delivery. Only an Accepted Playable Baseline promoted through new-gameplay
 acceptance plus predecessor regression may be presented as Studio delivery.

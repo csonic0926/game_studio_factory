@@ -639,7 +639,7 @@ class InitializationTests(unittest.TestCase):
         if workflow == 3:
             data.update(methods=[], decision_sections=[{
                 "id": "appearance", "source": artifact, "text": body, "decision_ids": ["light"],
-            }])
+            }], player_text={"scope": "NONE", "scope_evidence": artifact, "receipt_path": None})
         design = self.write("design/assets/PACKAGE.json", data)
         out = checkpoint(self.roots, {"task_id": "synthetic-lantern", "previous": None, "capability": "asset", "task": "prop",
                                      "stage": "DESIGN_COMPLETE", "summary": "Synthetic contract fixture, no USER approval.",

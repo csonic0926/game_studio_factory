@@ -45,6 +45,7 @@ authority or proves the idea is good.
 ```text
 factory.py    inspect / context / checkpoint / migrate / benchmark
 factory_core/ versioned state, dependency closure and context views
+player_text/  shared all-player-text clarity workflow (also directly callable)
 studio/       whole-game operator
   Accepted Playable Baseline
   Gameplay Ratchet
@@ -110,6 +111,12 @@ Use Story Factory to produce the next chapter.
 ```
 
 Start at [`STUDIO_CALLER_LANDING.md`](STUDIO_CALLER_LANDING.md).
+
+For language work across departments or in an unlinked external game, use
+`player-text-clarity`: [workflow](player_text/WORKFLOW.md) and
+[standalone CLI contract](player_text/CONTRACT.md). It treats every player-facing
+text in every shipped locale, including non-dialogue and functional copy,
+without taking over content ownership or requiring Factory migration.
 
 ## Explicit workflow versions
 

@@ -1077,6 +1077,82 @@
           "minLength": 1
         }
       }
+    },
+    "player_text": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "enum": [
+            "ALL",
+            "CHANGED",
+            "NONE"
+          ]
+        },
+        "scope_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "enum": [
+                "game",
+                "factory"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "scope",
+            "path",
+            "sha256"
+          ]
+        },
+        "receipt_path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "scope",
+        "scope_evidence",
+        "receipt_path"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "NONE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "receipt_path": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "receipt_path": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "required": [
@@ -1114,6 +1190,27 @@
             "product"
           ]
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capability": {
+            "enum": [
+              "studio",
+              "gameplay",
+              "ui",
+              "story",
+              "asset",
+              "sound"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "player_text"
+        ]
       }
     }
   ]

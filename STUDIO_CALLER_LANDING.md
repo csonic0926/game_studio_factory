@@ -31,6 +31,13 @@ unchanged-design technical repairs do not require a discovery restart.
 | sound generation/trim/normalization | sound/sfx.py | sound/docs/AI_CALLER_LANDING.md |
 | initialize Idea + Product + routing | init-game-studio-factory | setup.py init |
 | routing-only link/relink | init-game-studio-factory | setup.py link |
+| all player-facing text / language clarity | player-text-clarity (shared workflow, not a new Factory) | [workflow](player_text/WORKFLOW.md) / [external CLI contract](player_text/CONTRACT.md) |
+
+Player-text clarity is callable by any department or an external project without
+initialization/migration. It covers all shipped languages and all player-facing
+surfaces, not only speech. New v3 player-content designs declare ALL/CHANGED/NONE;
+nonempty scopes require exact latest-output reading/backcheck evidence. Whole-game
+handoff requires ALL coverage. See the shared workflow for ownership and exclusions.
 
 Open-ended whole-game intent routes to Studio; deliberately bounded specialist
 intent goes directly to its owner. A runnable interactive demo is not Studio

@@ -66,6 +66,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
     paths = {"factory.py", WORKFLOW if native else "factory_core/docs/WORKFLOW.md", "factory_core/rule_map.json"}
     if native:
         paths.add(CATALOG)
+        paths.update(p.relative_to(factory).as_posix() for p in (factory / "player_text").glob("*.py"))
+        paths.update(("player_text/WORKFLOW.md", "player_text/CONTRACT.md"))
     paths.update(p.relative_to(factory).as_posix() for p in (factory / "factory_core").glob("*.py"))
     if native:
         paths = {p for p in paths if not Path(p).name.startswith('benchmark')}
@@ -90,6 +92,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
     # when a specialist method loads them only at the relevant boundary.
     from .refs import read_json
     for rule in read_json(factory / "factory_core/rule_map.json")["rules"]:
+        if workflow_version not in rule.get("workflow_versions", (2, 3)):
+            continue
         if "all" in rule["capabilities"] or capability in rule["capabilities"]:
             if rule["disposition"] != "on_demand_method_and_exact_output_acceptance":
                 paths.add(rule_source(rule) if native else rule["source"])

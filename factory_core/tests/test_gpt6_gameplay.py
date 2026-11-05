@@ -23,6 +23,8 @@ class NativeGameplayTests(unittest.TestCase):
         old=self.objective;self.objective=self.write(old['path'],body)
         self.design['artifacts']=[self.objective if r==old else r for r in self.design['artifacts']]
         self.design['schema_version']='factory_design.v3';self.design['methods']=[]
+        # This synthetic fixture exercises unchanged pre-existing UI copy, not a language verdict.
+        self.design['player_text']=dict(scope='NONE',scope_evidence=self.objective,receipt_path=None)
         self.design['gameplay']['objective']=self.objective
         self.design['decisions']=[dict(id=name,source=self.objective,excerpt=text,consequence=text) for name,text in sections.items()]
         self.design['decision_sections']=[dict(id=name,source=self.objective,text=text,decision_ids=[name]) for name,text in sections.items()]

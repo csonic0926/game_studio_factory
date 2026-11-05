@@ -1730,6 +1730,26 @@
         "completeness_project"
       ],
       "disposition": "boundary_review"
+    },
+    {
+      "id": "player_text.complete_coverage_and_meaning",
+      "source": "player_text/WORKFLOW.md",
+      "capabilities": [
+        "studio",
+        "gameplay",
+        "ui",
+        "story",
+        "asset",
+        "sound"
+      ],
+      "workflow_versions": [
+        3
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
     }
   ]
 }
