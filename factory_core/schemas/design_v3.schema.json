@@ -963,26 +963,57 @@
       ],
       "properties": {
         "gameplay_checkpoint": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "scope",
-            "path",
-            "sha256"
-          ],
-          "properties": {
-            "scope": {
-              "const": "game"
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "scope",
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "scope": {
+                  "const": "game"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
             },
-            "path": {
-              "type": "string",
-              "minLength": 1
-            },
-            "sha256": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{64}$"
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "scope",
+                "path",
+                "sha256",
+                "revision"
+              ],
+              "properties": {
+                "scope": {
+                  "const": "game_git"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40,64}$"
+                }
+              }
             }
-          }
+          ]
         },
         "information_model": {
           "type": "object",

@@ -209,3 +209,35 @@ Steps:
    readability hypotheses.
 6. Tests for the gate, the validators and the plan binding.
 7. Pilot: Simplest Auto Battler revision 18 authored as the first UI design.
+
+## Immutable upstream approval provenance (v3)
+
+A new UI design may bind `ui.gameplay_checkpoint` as an ordinary `game_git`
+reference (full immutable revision + SHA), also in its inputs, when the upstream
+production-time dependency closure is historical. This uses existing immutable
+Git-input semantics; it does not make old mutable preflights current, refresh an
+old approval, or grant production/acceptance. Live `game` references keep their
+existing strict transitive-closure behavior. There is no general stale-ref skip.
+
+The pinned receipt must byte-match its canonical live ledger path/generation.
+The current ledger must still select the exact same approved design, at an
+AUTHORIZED-or-later stage, with no unresolved questions in either record. A
+later draft/rejection, different design, tampered/missing receipt or invalid chain
+blocks. The approved design itself must still match its recorded SHA. Upstream project/product authority membership and hashes and the authorship-mode reference must also match the original receipt; changed or newly discovered authority/mode blocks rather than being hidden by the provenance boundary.
+
+For a pinned upstream receipt, the new UI package must explicitly seal every
+consumed semantic source: gameplay bindings (objective/system/interaction/
+project standard/composition), decision and requirement sources, and the rules
+check plus its unchanged model. The original rules check is validated, not merely
+assumed to exist. The interaction contract must match the exact approved ref,
+not just its path. These current inputs are recursively checked normally, so
+changed rules/models/contracts/standards still fail closed. Other old preflight
+and output receipts stay historical; they cannot be claimed as current evidence.
+Reviewers still inspect all applicable upstream sources and current runtime
+bindings; this projection is not permission to omit a relied-on input. Adding an
+unclassified semantic dependency requires sealing it and new review.
+
+After selecting this provenance form, publish a new UI draft, two fresh reviews
+on its exact current closure, and the normal exact USER ruling. Never edit old
+checkpoints, designs, reviews, rulings or accepted baselines. This option does not
+change v2 approvals or the upstream task's own stale status.

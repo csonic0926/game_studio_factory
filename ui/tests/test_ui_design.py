@@ -279,5 +279,172 @@ class UiDesignTests(unittest.TestCase):
             load_design(self.roots, self.write("design/gameplay/OTHER_DESIGN.json", gameplay))
 
 
+    def pinned_ui(self, *, stale_preflight=False, rules=False, nested_authority=False):
+        """Synthetic history, never a real USER ruling or renewed acceptance."""
+        from factory_core.refs import reference
+        from ui.ui_design import upstream_semantic_refs
+        if nested_authority:
+            self.write("optional/AGENTS.md", "# Optional nested authority at approval.\n")
+        if stale_preflight:
+            old = self.write("design/adapter.json", {"policy": "original"})
+            preflight = self.write("design/OLD_PREFLIGHT.json", {"sources": [old]})
+            self.design["artifacts"].append(preflight)
+        if rules:
+            model = self.write("rules/model.py", "# Synthetic invariant model.\n")
+            record = self.write("rules/CHECK.json", dict(schema_version="gameplay_rules_check.v1", model=model,
+                command=["python3", "rules/model.py"], report=dict(schema_version="gameplay_rules_report.v1",
+                invariants=[dict(id="finite", statement="Synthetic fixture is finite.", checked_cases=1, violations=0)],
+                examples=[dict(id="one", statement="One synthetic case.", status="CONSISTENT", detail="No game claim.")])))
+            self.design["inputs"] += [model, record]
+            self.design["rules_check"] = record
+        self.design_ref = self.write(self.design_ref["path"], self.design)
+        self.authorized_gameplay()
+        live = self.gameplay_checkpoint
+        subprocess.run(["git", "add", "--", live["path"]], cwd=self.game, check=True)
+        tree = subprocess.check_output(["git", "write-tree"], cwd=self.game, text=True).strip()
+        pinned = dict(live, scope="game_git", revision=tree)
+        if stale_preflight:
+            self.write("design/adapter.json", {"policy": "new current preflight"})
+        design, _ = self.ui_design(gameplay_checkpoint=pinned, reason=None if rules else "Synthetic: no rules model.")
+        for source in upstream_semantic_refs(self.roots, self.design):
+            if source not in design["inputs"]:
+                design["inputs"].append(source)
+        return design, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design), pinned
+
+    def test_pinned_upstream_keeps_receipt_not_stale_preflight_and_seals_semantics(self):
+        from factory_core.refs import sha
+        design, ref, pinned = self.pinned_ui(stale_preflight=True)
+        before = sha(self.game / pinned["path"])
+        load_design(self.roots, ref)
+        binding = dependencies(self.roots, ref, design)
+        paths = {r["path"] for r in binding["references"]}
+        self.assertIn(pinned, binding["references"])
+        self.assertIn(self.contract["path"], paths)
+        self.assertIn(self.system["path"], paths)
+        self.assertIn(self.objective["path"], paths)
+        self.assertNotIn("design/OLD_PREFLIGHT.json", paths)
+        self.assertNotIn("design/adapter.json", paths)
+        self.assertEqual(before, sha(self.game / pinned["path"]))
+        # Ordinary live closure stays strict. No blanket skip or old proof renewal.
+        with self.assertRaises(FactoryError):
+            dependencies(self.roots, self.design_ref, self.design)
+        design["inputs"] = [dict(pinned, scope="game") if r == pinned else r for r in design["inputs"]]
+        design["inputs"] = [{k:v for k,v in r.items() if k != "revision"} if r.get("scope") == "game" else r for r in design["inputs"]]
+        design["ui"]["gameplay_checkpoint"] = {k:v for k,v in pinned.items() if k != "revision"}
+        design["ui"]["gameplay_checkpoint"]["scope"] = "game"
+        ref = self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design)
+        with self.assertRaises(FactoryError):
+            dependencies(self.roots, ref, design)
+
+    def test_pinned_upstream_requires_every_current_semantic_input(self):
+        design, _, _ = self.pinned_ui()
+        design["inputs"] = [r for r in design["inputs"] if r != self.system]
+        with self.assertRaisesRegex(FactoryError, "explicit current semantic input"):
+            load_design(self.roots, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design))
+
+    def test_pinned_upstream_cannot_rehash_changed_contract(self):
+        design, _, _ = self.pinned_ui()
+        changed = read_json(self.game / self.contract["path"])
+        changed["target_player"] = "Changed after approval."
+        new = self.write(self.contract["path"], changed)
+        design["inputs"] = [new if r == self.contract else r for r in design["inputs"]]
+        model = read_json(self.game / design["ui"]["information_model"]["path"])
+        model["interaction_contract"] = new
+        old = design["ui"]["information_model"]
+        new_model = self.write(old["path"], model)
+        design["ui"]["information_model"] = new_model
+        design["artifacts"] = [new_model if r == old else r for r in design["artifacts"]]
+        with self.assertRaises(FactoryError):
+            load_design(self.roots, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design))
+
+    def test_pinned_upstream_does_not_reactivate_after_new_draft(self):
+        from factory_core.state import checkpoint, latest
+        design, ref, _ = self.pinned_ui()
+        _, previous = latest(self.game, "unit-one")
+        checkpoint(self.roots, self.req("DRAFT", previous))
+        with self.assertRaisesRegex(FactoryError, "no longer the current authorized design"):
+            load_design(self.roots, ref)
+
+    def test_pinned_upstream_requires_canonical_untampered_receipt(self):
+        from factory_core.refs import reference
+        design, _, pinned = self.pinned_ui()
+        fake = self.write("design/COPIED_APPROVAL.json", read_json(self.game / pinned["path"]))
+        subprocess.run(["git", "add", "--", fake["path"]], cwd=self.game, check=True)
+        tree = subprocess.check_output(["git", "write-tree"], cwd=self.game, text=True).strip()
+        fake = dict(fake, scope="game_git", revision=tree)
+        design["inputs"] = [fake if r == pinned else r for r in design["inputs"]]
+        design["ui"]["gameplay_checkpoint"] = fake
+        with self.assertRaisesRegex(FactoryError, "canonical ledger receipt"):
+            load_design(self.roots, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design))
+        # Changing the canonical live bytes also cannot validate the old pinned copy.
+        altered = read_json(self.game / pinned["path"])
+        altered["summary"] = "Tampered canonical receipt."
+        self.write(pinned["path"], altered)
+        design["inputs"] = [pinned if r == fake else r for r in design["inputs"]]
+        design["ui"]["gameplay_checkpoint"] = pinned
+        with self.assertRaises(FactoryError):
+            load_design(self.roots, self.write(f"{UI_DIR}/FACTORY_DESIGN.json", design))
+
+    def test_pinned_upstream_checks_latest_unresolved_not_only_old_receipt(self):
+        from unittest.mock import patch
+        from factory_core.state import latest
+        design, ref, _ = self.pinned_ui()
+        current, digest = latest(self.game, "unit-one")
+        current["unresolved"] = ["New rule question affects UI."]
+        with patch("factory_core.state.latest", return_value=(current, digest)):
+            with self.assertRaisesRegex(FactoryError, "unresolved questions"):
+                load_design(self.roots, ref)
+
+    def test_pinned_upstream_validates_and_tracks_rules_check_and_model(self):
+        design, ref, _ = self.pinned_ui(rules=True)
+        load_design(self.roots, ref)
+        paths = {r["path"] for r in dependencies(self.roots, ref, design)["references"]}
+        self.assertIn("rules/model.py", paths)
+        self.assertIn("rules/CHECK.json", paths)
+        self.write("rules/model.py", "# changed model after check\n")
+        with self.assertRaises(FactoryError):
+            load_design(self.roots, ref)
+
+
+    def test_pinned_upstream_rejects_changed_project_authority(self):
+        design, ref, _ = self.pinned_ui()
+        self.write("AGENTS.md", "# Materially changed project authority.\n")
+        with self.assertRaisesRegex(FactoryError, "upstream project authority changed"):
+            load_design(self.roots, ref)
+
+    def test_pinned_upstream_rejects_new_project_authority(self):
+        design, ref, _ = self.pinned_ui()
+        self.write("new/AGENTS.md", "# Newly discovered authority.\n")
+        with self.assertRaisesRegex(FactoryError, "upstream project authority changed"):
+            load_design(self.roots, ref)
+
+    def test_pinned_upstream_rejects_authorship_mode_switch(self):
+        from unittest.mock import patch
+        design, ref, _ = self.pinned_ui()
+        with patch("factory_core.authorship.mode_reference", return_value={"scope":"game", "path":"mode", "sha256":"f"*64}):
+            with self.assertRaisesRegex(FactoryError, "authorship mode changed"):
+                load_design(self.roots, ref)
+
+
+    def test_pinned_upstream_rejects_removed_project_authority(self):
+        design, ref, _ = self.pinned_ui()
+        (self.game / "AGENTS.md").unlink()
+        with self.assertRaises(FactoryError) as caught:
+            load_design(self.roots, ref)
+        self.assertEqual(caught.exception.code, "MISSING_REFERENCE")
+
+    def test_pinned_upstream_rejects_removed_nested_authority(self):
+        design, ref, _ = self.pinned_ui(nested_authority=True)
+        (self.game / "optional/AGENTS.md").unlink()
+        with self.assertRaisesRegex(FactoryError, "upstream project authority removed"):
+            load_design(self.roots, ref)
+
+    def test_pinned_upstream_rejects_missing_canonical_receipt(self):
+        design, ref, pinned = self.pinned_ui()
+        (self.game / pinned["path"]).unlink()
+        with self.assertRaises(FactoryError):
+            load_design(self.roots, ref)
+
+
 if __name__ == "__main__":
     unittest.main()

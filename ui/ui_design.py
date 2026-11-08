@@ -26,7 +26,7 @@ FACTORY = Path(__file__).resolve().parents[1]
 if str(FACTORY) not in sys.path:
     sys.path.insert(0, str(FACTORY))
 
-from factory_core.refs import FactoryError, fail, read_json, resolve_ref  # noqa: E402
+from factory_core.refs import FactoryError, fail, read_json, resolve_ref, unique_refs  # noqa: E402
 
 BINDING_KEYS = {"gameplay_checkpoint", "information_model", "attention_plan", "screen_contracts", "verification_plan"}
 BINDING_OPTIONAL = {"rules_model_absent_reason"}
@@ -89,14 +89,58 @@ def _game_ref(ref, where):
 
 # ---------------------------------------------------------------- entry gate
 
+def upstream_semantic_refs(roots: dict, gameplay: dict) -> list[dict]:
+    """Current rule/interaction sources consumed by a new UI design.
+
+    A historical approval is provenance, not a renewal of its old production
+    preflights. Its decision sources, gameplay bindings and rules model remain
+    explicit current inputs of the new UI review. Unknown/arbitrary gameplay
+    artifacts are not silently promoted to current evidence by this projection.
+    """
+    refs = []
+    def add(value):
+        if not isinstance(value, dict):
+            return
+        if "path" in value and "sha256" in value:
+            child = {"scope": value.get("scope", "game"),
+                     "path": value["path"], "sha256": value["sha256"]}
+            if child["scope"] == "game_git":
+                child["revision"] = value.get("revision")
+            refs.append(child)
+        else:
+            for child in value.values():
+                if isinstance(child, dict):
+                    add(child)
+                elif isinstance(child, list):
+                    for item in child:
+                        add(item)
+    add(gameplay.get("gameplay", {}))
+    for item in gameplay.get("decisions", []) + gameplay.get("decision_sections", []):
+        add(item.get("source"))
+    for item in gameplay.get("requirements", {}).values():
+        add(item.get("source"))
+    if "rules_check" in gameplay:
+        from gameplay.rules_check import validate_design as validate_rules_check
+        from factory_core.authorship import mode
+        validate_rules_check(roots, gameplay, mode(roots))
+        add(gameplay["rules_check"])
+        add(read_json(resolve_ref(roots, gameplay["rules_check"]))["model"])
+    return unique_refs(refs)
+
+
+def _checkpoint_ref(ref):
+    if not isinstance(ref, dict) or ref.get("scope") not in ("game", "game_git"):
+        fail("INVALID_UI_DESIGN", "ui.gameplay_checkpoint must be a game-owned live or immutable Git reference")
+    return ref
+
 def entry_gate(roots: dict, design: dict) -> dict:
     """UI design starts only from solid gameplay: a current AUTHORIZED (or later) gameplay
     or studio checkpoint with no unresolved questions, an executable rules check (or an
     explicit reason there is no rules model) and an existing interaction contract.
     Returns the gameplay design."""
-    from factory_core.state import latest
+    from factory_core.state import latest, identifier
     binding = design["ui"]
-    checkpoint_ref = _game_ref(binding["gameplay_checkpoint"], "ui.gameplay_checkpoint")
+    checkpoint_ref = _checkpoint_ref(binding["gameplay_checkpoint"])
     if checkpoint_ref not in design["inputs"]:
         fail("UI_GATE_GAMEPLAY", "the gameplay checkpoint must be a sealed design input")
     checkpoint = read_json(resolve_ref(roots, checkpoint_ref))
@@ -104,11 +148,21 @@ def entry_gate(roots: dict, design: dict) -> dict:
         fail("UI_GATE_GAMEPLAY", "the UI design must start from a gameplay or studio checkpoint")
     if checkpoint.get("stage") not in AUTHORIZED_OR_LATER:
         fail("UI_GATE_GAMEPLAY", f"gameplay must be AUTHORIZED before UI design (stage {checkpoint.get('stage')})")
-    current, _digest = latest(roots["game"], checkpoint["task_id"])
+    # An immutable Git object must be the actual canonical receipt, not an
+    # author-created JSON object claiming another task's approval.
+    task_id = identifier(checkpoint.get("task_id"))
+    generation = checkpoint.get("generation")
+    if not isinstance(generation, int) or isinstance(generation, bool) or generation < 1:
+        fail("UI_GATE_GAMEPLAY", "gameplay checkpoint must be a canonical ledger receipt")
+    canonical = f"design/factory/checkpoints/{task_id}/{generation:06d}.json"
+    if checkpoint_ref["path"] != canonical:
+        fail("UI_GATE_GAMEPLAY", "gameplay checkpoint must be a canonical ledger receipt")
+    resolve_ref(roots, {"scope": "game", "path": canonical, "sha256": checkpoint_ref["sha256"]})
+    current, _digest = latest(roots["game"], task_id)
     if current is None or current.get("design") != checkpoint.get("design") or current.get("stage") not in AUTHORIZED_OR_LATER:
         fail("UI_GATE_GAMEPLAY", "the bound gameplay checkpoint is no longer the current authorized design for its task")
-    if checkpoint.get("unresolved"):
-        fail("UI_GATE_GAMEPLAY", f"gameplay has unresolved questions: {checkpoint['unresolved']}")
+    if checkpoint.get("unresolved") or current.get("unresolved"):
+        fail("UI_GATE_GAMEPLAY", f"gameplay has unresolved questions: {checkpoint.get('unresolved') or current['unresolved']}")
     gameplay = read_json(resolve_ref(roots, checkpoint["design"]))
     if "rules_check" not in gameplay:
         reason = binding.get("rules_model_absent_reason")
@@ -116,6 +170,40 @@ def entry_gate(roots: dict, design: dict) -> dict:
             fail("UI_GATE_RULES", "the gameplay design binds no rules check; state rules_model_absent_reason or run gameplay/rules_check.py first")
     elif "rules_model_absent_reason" in binding:
         fail("UI_GATE_RULES", "rules_model_absent_reason is only for gameplay without a rules check")
+    if checkpoint_ref["scope"] == "game_git":
+        from factory_core.catalog import authority_refs, departments, UI_PRODUCTION_ADAPTER_OUTPUTS
+        from factory_core.authorship import mode_reference, MODE_PATH
+        from factory_core.state import project
+        historical = checkpoint.get("dependencies", {}).get("references", [])
+        old_refs = {(r.get("scope"), r.get("path")): r for r in historical}
+        # A provenance boundary never revives an archived/changed product,
+        # changed project standard, newly discovered authority or switched mode.
+        extra = project(roots["game"])["authority_paths"]
+        current_authorities = authority_refs(roots["game"], checkpoint["capability"], extra)
+        current_paths = {r["path"] for r in current_authorities}
+        common = {"AGENTS.md", "CLAUDE.md", "design/product/PRODUCT_AUTHORITY_REGISTER.json",
+                  "design/product/PRODUCT_THESIS.md", "design/product/FACTORY_CONSTRAINTS.json"}
+        prefixes = tuple(f"design/{dept}/adapter/" for dept in departments(checkpoint["capability"]))
+        for source in historical:
+            path = source.get("path", "")
+            was_authority = (path in common or path in extra or Path(path).name == "AGENTS.md" or
+                             (path.startswith(prefixes) and path not in UI_PRODUCTION_ADAPTER_OUTPUTS))
+            if source.get("scope") == "game" and was_authority and path not in current_paths:
+                fail("UI_GATE_GAMEPLAY", f"upstream project authority removed: {path}")
+        for source in current_authorities:
+            if old_refs.get((source["scope"], source["path"])) != source:
+                fail("UI_GATE_GAMEPLAY", f"upstream project authority changed: {source['path']}")
+        if old_refs.get(("game", MODE_PATH)) != mode_reference(roots["game"]):
+            fail("UI_GATE_GAMEPLAY", "upstream authorship mode changed; revalidate gameplay authority")
+        # Existing game_git semantics preserve the receipt as opaque immutable
+        # history. Do not expand/rehash its old production dependency ledger.
+        # Instead require every consumed semantic source in this new closure.
+        sealed = design["inputs"] + design["artifacts"] + [
+            item["source"] for item in design.get("requirements", {}).values()]
+        for source in upstream_semantic_refs(roots, gameplay):
+            if source not in sealed:
+                fail("UI_GATE_GAMEPLAY", f"historical gameplay requires an explicit current semantic input: {source['path']}")
+            resolve_ref(roots, source)
     return gameplay
 
 
@@ -409,7 +497,7 @@ def validate_artifacts(roots: dict, design: dict, gameplay: dict) -> dict:
     contract_ref = _game_ref(model.get("interaction_contract"), "information_model.interaction_contract")
     if contract_ref not in design["inputs"]:
         fail("UI_GATE_CONTRACT", "the interaction contract must be a sealed UI design input")
-    if contract_ref["path"] not in {r["path"] for r in gameplay["inputs"] + gameplay["artifacts"]}:
+    if contract_ref not in gameplay["inputs"] + gameplay["artifacts"]:
         fail("UI_GATE_CONTRACT", "the interaction contract must be the one the authorized gameplay design binds")
     contract = read_json(resolve_ref(roots, contract_ref))
     beats, steps = contract_ids(contract)
