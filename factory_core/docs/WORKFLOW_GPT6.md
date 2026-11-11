@@ -194,7 +194,7 @@ dependency fingerprint, exact historical Factory Git bytes, reviews and USER rul
 It rejects altered project inputs/authority/design, newly discovered project inputs,
 changed applicable review-rule membership, changed mode, archived authority, unavailable
 historical bytes and a later task checkpoint. Current design parsing must also pass,
-subject only to the versioned pre-player-text production compatibility below.
+subject only to the versioned pre-feature production compatibility below.
 Both current resolver closure and original contract are bound and rechecked; future
 Factory changes invalidate the receipt. Historical output artifacts are not revived.
 Use repeated apply with approved `--artifact` paths to record new exact outputs.
@@ -217,8 +217,9 @@ property, its rule map lacks `player_text.complete_coverage_and_meaning`, and it
 closure contains no `player_text/` sources. An explicit existing binding is always
 validated normally. Every other current design/parser check remains applicable.
 
-The sole permitted membership addition is that player-text rule; removed rules or
-any other addition still fail closed. Historical reviews are checked against the
+The sole permitted membership addition for this exception is that player-text rule;
+removed rules or other additions still fail closed unless independently eligible
+for the separate pre-UI-experience rule below. Historical reviews are checked against the
 exact historical rule map, not against newly added obligations. The preview and
 receipt expose `compatibility_obligations` with
 `UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE`; this is only original-scope PRODUCING.
@@ -230,3 +231,34 @@ This is not automatic grandfathering: a changed current closure makes every old
 continuation receipt stale. Explicit raw USER selection must append a fresh receipt
 binding the exact current preview and its deferred obligations. It grants no new
 design approval, text-language PASS, gameplay acceptance or baseline promotion.
+
+#### Pre-UI-experience Studio/Gameplay production compatibility v1
+
+An already authorized, immutable collaborative v3 Studio/Gameplay PRODUCING
+contract may predate the shared UI-experience feature. After verifying every byte
+of its original dependency closure, continuation may defer exactly
+`ui.genre_expectation_audit` only when the old bound schema does not support
+`ui.experience`, its rule map has none of the four new UI-experience rules, and
+its bound sources contain none of the new experience/readiness/visual providers,
+experience schema, experience workflow or Godot capture provider. An indirect or
+compound old UI schema is not proof of absence. Any explicit `ui.experience`
+binding defeats eligibility and still receives the normal current validation.
+
+No parser exemption is introduced. This does not apply to UI-owned designs or
+defer their presentation, capture/review or feedback rules. It does not alter
+the historical design, sources, reviews, ruling, acceptance or budget. The only
+allowed membership delta is the exact genre rule, plus the player-text rule only
+when that independent exception also qualifies. Removed or unrelated added rules,
+changed methods, project inputs, authority or mode still fail closed.
+
+The preview and receipt expose separate `ui_compatibility_obligations` with
+`UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE`, PRODUCING only, and current adoption
+required before NEW_DESIGN, EVIDENCE_READY, COMPLETE or WHOLE_GAME_HANDOFF. This
+is not a reviewed NONE, UI internal readiness or a renewed review. Normal
+checkpoint, UI evidence/readiness, gameplay acceptance and baseline validators
+remain strict and cannot use this production-only receipt as their evidence.
+
+Publication requires fresh explicit raw USER selection and the exact preview CAS,
+including these obligations. Every later current-closure change stales the receipt.
+Old receipt generations remain byte-identical; neither automatic grandfathering
+nor retrospective coverage of the new UI rule is claimed.

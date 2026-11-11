@@ -49,6 +49,10 @@ Pre-feature approved v3 production may use only the explicit, production-only
 [compatibility v1](factory_core/docs/WORKFLOW_GPT6.md#pre-player-text-production-compatibility-v1);
 old reviews are not renewed, and current text adoption remains due before evidence,
 completion or whole-game handoff.
+Separately, pre-feature approved Studio/Gameplay production may explicitly select
+the narrow [shared UI genre compatibility](factory_core/docs/WORKFLOW_GPT6.md#pre-ui-experience-studiogameplay-production-compatibility-v1).
+It preserves historical proof without claiming reviewed NONE or new UI readiness;
+current UI requirements still apply before a new design, evidence or completion.
 
 Open-ended whole-game intent routes to Studio; deliberately bounded specialist
 intent goes directly to its owner. A runnable interactive demo is not Studio

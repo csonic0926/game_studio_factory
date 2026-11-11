@@ -14,6 +14,51 @@ from .state import (check_reviews, check_ruling, dependencies, identifier, lates
 
 
 PLAYER_TEXT_RULE = 'player_text.complete_coverage_and_meaning'
+UI_GENRE_RULE = 'ui.genre_expectation_audit'
+UI_EXPERIENCE_RULES = frozenset({
+    UI_GENRE_RULE, 'ui.presentation_semantics_and_goals',
+    'ui.capture_first_and_proportionate_review', 'ui.feedback_disposition_and_retest'})
+UI_EXPERIENCE_SOURCES = frozenset({
+    'ui/experience.py', 'ui/readiness.py', 'ui/visual.py',
+    'ui/schemas/ui_experience.schema.json', 'ui/docs/UI_EXPERIENCE_WORKFLOW.md',
+    'ui/godot_engine/capture.gd'})
+
+
+def _legacy_ui_experience_contract(roots, record, old_rules):
+    """Recognize pre-feature Studio/Gameplay history, not reviewed UI NONE.
+
+    The caller first verifies the complete original closure. Only the new genre
+    rule shared with Studio/Gameplay can be deferred; UI-owned experience rules
+    and every explicit current binding remain outside this narrow exception.
+    """
+    d = read_json(resolve_ref(roots, record['design']))
+    binding = d.get('ui', {})
+    if (d.get('schema_version') != 'factory_design.v3'
+            or d.get('capability') not in ('studio', 'gameplay')
+            or not isinstance(binding, dict) or 'experience' in binding):
+        return None
+    paths = {r['path'] for r in record['dependencies']['references']
+             if r['scope'] == 'factory'}
+    if (not {'factory_core/schemas/design_v3.schema.json', 'factory_core/rule_map.json'} <= paths
+            or paths & UI_EXPERIENCE_SOURCES
+            or any(r['id'] in UI_EXPERIENCE_RULES for r in old_rules['rules'])):
+        return None
+    schema = read_json(GitFile(roots['factory'], 'factory_core/schemas/design_v3.schema.json',
+                               record['factory_revision']))
+    ui_schema = schema.get('properties', {}).get('ui', {})
+    # An indirect/compound old UI schema is not proof of feature absence.
+    if (not isinstance(ui_schema, dict)
+            or any(k in ui_schema for k in ('$ref', 'allOf', 'anyOf', 'oneOf'))
+            or 'experience' in ui_schema.get('properties', {})):
+        return None
+    return {'schema_version': 'ui_experience_historical_production_compatibility.v1',
+            'historical_applicability': 'UNDECLARED_PRE_FEATURE_NOT_REVIEWED_NONE',
+            'deferred_current_review_requirements': [UI_GENRE_RULE],
+            'allowed_stage': 'PRODUCING',
+            'current_adoption_required_before': ['NEW_DESIGN', 'EVIDENCE_READY', 'COMPLETE',
+                                                 'WHOLE_GAME_HANDOFF'],
+            'normal_UI_applicability_reviews_and_evidence_not_waived': True,
+            'explicit_UI_bindings_validated_normally': True}
 
 
 def _legacy_player_text_contract(roots, record, old_rules):
@@ -73,6 +118,8 @@ def audit(roots, task_id):
             resolve_ref(roots, ref)  # Any game/authority/design mutation fails closed.
     old_rules = read_json(GitFile(roots['factory'], 'factory_core/rule_map.json', factory_revision))
     compatibility = _legacy_player_text_contract(roots, record, old_rules)
+    ui_compatibility = _legacy_ui_experience_contract(
+        roots, {**record, 'factory_revision': factory_revision}, old_rules)
     d = load_design(roots, record['design'], _legacy_player_text=bool(compatibility))
     current = dependencies(roots, record['design'], d)
     from .astra import selected_methods
@@ -91,6 +138,8 @@ def audit(roots, task_id):
                     'COLLABORATIVE' in r.get('modes', ['COLLABORATIVE'])} | set(d['requirements'])
         current_required = requirement_ids(roots['factory'], d, role, 'COLLABORATIVE')
         deferred = {PLAYER_TEXT_RULE} if compatibility else set()
+        if ui_compatibility:
+            deferred.add(UI_GENRE_RULE)
         if (required - current_required or current_required - required != deferred):
             fail('CHANGED_REVIEW_REQUIREMENTS', 'applicable rule membership changed')
     check_reviews(roots, record['design'], d, old, record['reviews'], factory_revision)
@@ -104,6 +153,8 @@ def audit(roots, task_id):
             'allowed_stage': 'PRODUCING', 'acceptance_authority_granted': False}
     if compatibility:
         value['compatibility_obligations'] = compatibility
+    if ui_compatibility:
+        value['ui_compatibility_obligations'] = ui_compatibility
     return value
 
 
@@ -154,6 +205,8 @@ def verify(roots, task_id):
             'acceptance_authority_granted': False}
     if 'compatibility_obligations' in current:
         value['compatibility_obligations'] = current['compatibility_obligations']
+    if 'ui_compatibility_obligations' in current:
+        value['ui_compatibility_obligations'] = current['ui_compatibility_obligations']
     return value
 
 
