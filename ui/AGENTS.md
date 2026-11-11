@@ -24,3 +24,8 @@ Gameplay stays focused on rules and system integrity.
   observation and the USER playtest. Never merge those layers.
 - Never write game output here; execution success never constitutes USER
   acceptance.
+- New v3 design boundaries use `docs/UI_EXPERIENCE_WORKFLOW.md`. The same two
+  reviewers seal a capture-first pass before full context. Do not equate geometry,
+  a semantic annotation, a low overlay count or AI success with human comprehension.
+  In CLOSED_BETA the Director actively plays, discovers, disposes and retests;
+  lack of human feedback is not permission to defer quality until the USER plays.

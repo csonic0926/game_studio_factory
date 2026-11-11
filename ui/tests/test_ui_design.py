@@ -213,9 +213,17 @@ class UiDesignTests(unittest.TestCase):
 
     def authorize_ui(self, ref, design):
         """The ordinary v3 chain for the ui design: DESIGN_COMPLETE, two reviews, USER ruling."""
+        if "experience" not in design["ui"]:
+            from ui.tests.experience_fixture import attach
+            attach(self, design, ref)
         from factory_core.state import approval_action, checkpoint, latest
+        from ui.visual import visual_packet
+        packet = self.write("design/reviews/UI_VISUAL_PACKET.json", visual_packet(self.roots, ref, design))
+        passes = [self.write(f"design/reviews/{role}-visual.json", dict(schema_version="ui_visual_first_pass.v1",
+            packet=packet, reviewer_context_id=f"ui-{role}", role=role, authority_read=False, findings=[], sealed_at="2026-11-11T00:00:00Z"))
+            for role in ("intent_experience", "completeness_project")]
         req = lambda stage, previous=None, **kw: dict(task_id="unit-one-ui", previous=previous, capability="ui", task="ui_design",
-            stage=stage, summary="Synthetic UI design fixture.", unresolved=[], artifacts=[], design=ref, **kw)
+            stage=stage, summary="Synthetic UI design fixture.", unresolved=[], artifacts=passes if stage != "DESIGN_COMPLETE" else [], design=ref, **kw)
         out = checkpoint(self.roots, req("DESIGN_COMPLETE"))
         record, _ = latest(self.game, "unit-one-ui")
         binding = record["dependencies"]

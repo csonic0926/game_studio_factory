@@ -380,6 +380,8 @@ def verify_record(roots: dict, record: dict):
         check_checkpoint(roots, record, mode(roots))
         from player_text.workflow import validate_checkpoint as validate_player_text_checkpoint
         validate_player_text_checkpoint(roots, record, d)
+        from ui.readiness import validate_checkpoint as validate_ui_checkpoint
+        validate_ui_checkpoint(roots, record, d)
     for ref in record["artifacts"]:
         resolve_ref(roots, ref)
     if record["stage"] == "COMPLETE":
@@ -438,6 +440,9 @@ def checkpoint(roots: dict, request: dict) -> dict:
             resolve_ref(roots, ref)
         if stage == "EVIDENCE_READY" and not request["artifacts"]:
             fail("EVIDENCE_REQUIRED", "exact produced output/evidence references required")
+        if record.get("design"):
+            from ui.readiness import validate_checkpoint as validate_ui_transition
+            validate_ui_transition(roots, record, d, new_transition=True)
         verify_record(roots, record)
         if stage == "COMPLETE":
             from .acceptance import validate

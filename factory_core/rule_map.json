@@ -1750,6 +1750,68 @@
         "completeness_project"
       ],
       "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.presentation_semantics_and_goals",
+      "source": "ui/docs/UI_EXPERIENCE_WORKFLOW.md",
+      "capabilities": [
+        "ui"
+      ],
+      "workflow_versions": [
+        3
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.capture_first_and_proportionate_review",
+      "source": "ui/docs/UI_EXPERIENCE_WORKFLOW.md",
+      "capabilities": [
+        "ui"
+      ],
+      "workflow_versions": [
+        3
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.feedback_disposition_and_retest",
+      "source": "ui/docs/UI_EXPERIENCE_WORKFLOW.md",
+      "capabilities": [
+        "ui"
+      ],
+      "workflow_versions": [
+        3
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
+    },
+    {
+      "id": "ui.genre_expectation_audit",
+      "source": "ui/docs/UI_EXPERIENCE_WORKFLOW.md",
+      "capabilities": [
+        "ui",
+        "gameplay",
+        "studio"
+      ],
+      "workflow_versions": [
+        3
+      ],
+      "reviewers": [
+        "intent_experience",
+        "completeness_project"
+      ],
+      "disposition": "boundary_review"
     }
   ]
 }

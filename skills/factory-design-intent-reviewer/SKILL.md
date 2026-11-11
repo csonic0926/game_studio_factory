@@ -14,6 +14,15 @@ Write `factory_review.v2` under the supplied game-owned path using
 reasons. Report FAIL on omissions, proxies, authority amnesia or hidden expansion.
 The report binds the exact package/fingerprint and the actual fresh context id.
 
+For a new v3 UI package, BEFORE opening full context/design, use
+`ui/ui_design.py review-packet --game-repo <GAME> --design <DESIGN>` and inspect
+all raw captures/sequences. Seal your own `ui_visual_first_pass.v1` first; only
+then obtain full context. Follow `ui/docs/UI_EXPERIENCE_WORKFLOW.md`. Find what
+may be missed/misread even when the author never listed it. Goals need usable
+progress/next threshold/reward, not merely a visible counter. Every blocking
+finding must identify a player, implementation or verification consequence;
+harmless text precision is nonblocking. This is expert review, not blind Phase A.
+
 For an explicitly migrated v3 project, review `factory_design.v3`, including
 full `decision_sections` and selected methods. The review record remains
 `factory_review.v2`; do not invent a new record format or old step-review ids.

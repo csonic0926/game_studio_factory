@@ -32,6 +32,7 @@ unchanged-design technical repairs do not require a discovery restart.
 | early whole-value intent / experienced value judgment | product-factory | [initialization](product/docs/PROJECT_INITIALIZATION_WORKFLOW.md) / [assessment](product/docs/VALUE_ASSESSMENT_WORKFLOW.md) |
 | product exploration/commission | idea-factory | idea/docs/PRODUCT_DEFINITION_WORKFLOW.md |
 | gameplay/progression/repair | gameplay-factory | gameplay/docs/WORKFLOW_V2.md |
+| UI player readability / capture / decision entry | ui/ui_design.py | ui/docs/UI_EXPERIENCE_WORKFLOW.md (explicit v3); UI_DESIGN_CAPABILITY.md |
 | world/character/cast/chapter/branch and narrative tools | game-story-factory | story/docs/WORKFLOW_V2.md |
 | visual asset generation/cleanup/validation | asset/itf.py | asset/docs/AI_CALLER_LANDING.md |
 | sound generation/trim/normalization | sound/sfx.py | sound/docs/AI_CALLER_LANDING.md |

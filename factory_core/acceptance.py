@@ -8,6 +8,9 @@ def validate(roots, record, design, ref):
     if not ref:
         fail("SPECIALIST_ACCEPTANCE_REQUIRED", "exact specialist acceptance reference required")
     path = resolve_ref(roots, ref)
+    if design["capability"] == "ui":
+        from ui.readiness import validate as validate_ui_readiness
+        return validate_ui_readiness(roots, record, design, ref, complete=True)
     if design["capability"] == "product":
         from product.value import validate_acceptance
         return validate_acceptance(roots, record, design, ref)

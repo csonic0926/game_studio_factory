@@ -1,0 +1,1696 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI experience protocol definitions (v1)",
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "enum": [
+            "game",
+            "game_git"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        }
+      },
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ]
+    },
+    "anyref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "enum": [
+            "game",
+            "factory",
+            "game_git"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        }
+      },
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ]
+    },
+    "fact_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "element_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "fact_id",
+        "element_id"
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "viewport": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "step_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "scenario_id",
+        "surface_id",
+        "state_id",
+        "viewport",
+        "locale",
+        "step_ids"
+      ]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "PAIRING",
+            "ZONE",
+            "COLOR",
+            "PRIMARY",
+            "REDUNDANCY",
+            "DENSITY",
+            "GOAL"
+          ]
+        },
+        "scenario_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "parameters": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "check_id",
+        "kind",
+        "scenario_ids",
+        "parameters"
+      ]
+    },
+    "probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "probe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scenario_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "chain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fact_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "criterion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "falsifier": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "probe_id",
+        "scenario_ids",
+        "chain_id",
+        "fact_ids",
+        "criterion",
+        "falsifier"
+      ]
+    },
+    "genre": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "enum": [
+            "NONE",
+            "auto_battler.v1"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "item_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "disposition": {
+                "enum": [
+                  "PRESENT",
+                  "NOT_APPLICABLE",
+                  "GAP",
+                  "UPSTREAM_REQUIRED"
+                ]
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "item_id",
+              "disposition",
+              "rationale"
+            ]
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "profile",
+        "reason",
+        "items"
+      ]
+    },
+    "visual_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "consequence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        },
+        "before": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "after": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "risk": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320
+        }
+      },
+      "required": [
+        "decision_id",
+        "excerpt",
+        "consequence",
+        "before",
+        "after",
+        "risk"
+      ]
+    },
+    "pairing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "attribute": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "value",
+              "attribute"
+            ]
+          },
+          "minItems": 1
+        },
+        "layout": {
+          "enum": [
+            "SAME_ROW",
+            "GROUPED"
+          ]
+        },
+        "tolerance_px": {
+          "type": "number",
+          "minimum": 0
+        },
+        "group_element": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "pairs",
+        "layout",
+        "tolerance_px",
+        "group_element"
+      ]
+    },
+    "zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zone_element": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "element_id",
+        "zone_element"
+      ]
+    },
+    "color": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reserved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "type": "string",
+                "minLength": 1
+              },
+              "color": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 4,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "role",
+              "color"
+            ]
+          },
+          "minItems": 1
+        },
+        "element_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "reserved",
+        "element_roles",
+        "tolerance"
+      ]
+    },
+    "primary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flow_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "anchor": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "element_id",
+        "flow_id",
+        "anchor",
+        "tolerance"
+      ]
+    },
+    "redundancy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonical_element": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repeat_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "fact_id",
+        "canonical_element",
+        "repeat_reason"
+      ]
+    },
+    "density": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "overlay_group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_concurrent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_crossings": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "overlay_group",
+        "max_concurrent",
+        "max_crossings"
+      ]
+    },
+    "goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "current": {
+          "$ref": "#/$defs/fact_binding"
+        },
+        "threshold": {
+          "$ref": "#/$defs/fact_binding"
+        },
+        "reward": {
+          "$ref": "#/$defs/fact_binding"
+        }
+      },
+      "required": [
+        "current",
+        "threshold",
+        "reward"
+      ]
+    },
+    "element": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bounds": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "fact_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "color": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 0
+        },
+        "overlay_group": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "element_id",
+        "bounds",
+        "visible",
+        "enabled",
+        "fact_ids",
+        "color",
+        "points",
+        "overlay_group"
+      ]
+    },
+    "frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "time_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "image": {
+          "$ref": "#/$defs/ref"
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "overlays_complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "frame_id",
+        "time_ms",
+        "image",
+        "elements",
+        "overlays_complete"
+      ]
+    },
+    "raw_frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "time_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "image_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "overlays_complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "frame_id",
+        "time_ms",
+        "image_path",
+        "elements",
+        "overlays_complete"
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/ref"
+        },
+        "observation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "player_cost": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "BLOCKING",
+            "NON_BLOCKING"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "OPEN",
+            "REPAIRED",
+            "NOT_APPLICABLE",
+            "ACCEPT_RESIDUAL"
+          ]
+        },
+        "owner": {
+          "enum": [
+            "AI_DIRECTOR",
+            "USER"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retest": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 0
+        },
+        "revisit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supersedes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "finding_id",
+        "source",
+        "observation_id",
+        "problem",
+        "player_cost",
+        "severity",
+        "disposition",
+        "owner",
+        "rationale",
+        "retest",
+        "revisit",
+        "supersedes",
+        "authorization"
+      ]
+    },
+    "first_pass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_visual_first_pass.v1"
+        },
+        "packet": {
+          "$ref": "#/$defs/ref"
+        },
+        "reviewer_context_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "intent_experience",
+            "completeness_project"
+          ]
+        },
+        "authority_read": {
+          "const": false
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "observation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "player_cost": {
+                "type": "string",
+                "minLength": 1
+              },
+              "classification": {
+                "enum": [
+                  "BLOCKING",
+                  "NON_BLOCKING",
+                  "UNKNOWN"
+                ]
+              }
+            },
+            "required": [
+              "observation",
+              "player_cost",
+              "classification"
+            ]
+          },
+          "minItems": 0
+        },
+        "sealed_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "packet",
+        "reviewer_context_id",
+        "role",
+        "authority_read",
+        "findings",
+        "sealed_at"
+      ]
+    },
+    "visual_packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_visual_packet.v1"
+        },
+        "design": {
+          "$ref": "#/$defs/ref"
+        },
+        "captures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1
+        },
+        "instructions": {
+          "type": "string",
+          "minLength": 1
+        },
+        "presentations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "origin": {
+                "enum": [
+                  "RUNTIME",
+                  "DESIGN_PREVIEW",
+                  "ARCHIVE"
+                ]
+              },
+              "locale": {
+                "type": "string",
+                "minLength": 1
+              },
+              "viewport": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": [
+              "origin",
+              "locale",
+              "viewport"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "design",
+        "captures",
+        "instructions",
+        "presentations"
+      ]
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "probe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "SUPPORTED",
+            "REJECTED",
+            "NOT_OBSERVED"
+          ]
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "probe_id",
+        "chain_id",
+        "status",
+        "scenario_id",
+        "attempt_ids",
+        "rationale"
+      ]
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner": {
+          "enum": [
+            "AI_DIRECTOR",
+            "USER"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/ref"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "owner",
+        "source",
+        "rationale"
+      ]
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "chain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_input": {
+          "$ref": "#/$defs/ref"
+        }
+      },
+      "required": [
+        "chain_id",
+        "runtime_input"
+      ]
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_experience_contract.v1"
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scenario"
+          },
+          "minItems": 1
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/check"
+          },
+          "minItems": 0
+        },
+        "not_applicable": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "probes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/probe"
+          },
+          "minItems": 1
+        },
+        "genre": {
+          "$ref": "#/$defs/genre"
+        },
+        "design_captures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1
+        },
+        "feedback_inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 0
+        },
+        "visual_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/visual_decision"
+          },
+          "minItems": 1
+        },
+        "receipt_path": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "scenarios",
+        "checks",
+        "not_applicable",
+        "probes",
+        "genre",
+        "design_captures",
+        "feedback_inputs",
+        "visual_decisions",
+        "receipt_path"
+      ]
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_runtime_capture.v1"
+        },
+        "origin": {
+          "enum": [
+            "RUNTIME",
+            "DESIGN_PREVIEW",
+            "ARCHIVE"
+          ]
+        },
+        "game_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "build_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "build_artifact": {
+          "$ref": "#/$defs/ref"
+        },
+        "exporter": {
+          "$ref": "#/$defs/anyref"
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "viewport": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/frame"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "schema_version",
+        "origin",
+        "game_revision",
+        "build_id",
+        "build_artifact",
+        "exporter",
+        "scenario_id",
+        "state_id",
+        "surface_id",
+        "locale",
+        "viewport",
+        "frames"
+      ]
+    },
+    "raw_capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_capture_export.v1"
+        },
+        "origin": {
+          "enum": [
+            "RUNTIME",
+            "DESIGN_PREVIEW",
+            "ARCHIVE"
+          ]
+        },
+        "game_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "build_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "build_artifact": {
+          "$ref": "#/$defs/ref"
+        },
+        "exporter": {
+          "$ref": "#/$defs/anyref"
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "viewport": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/raw_frame"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "schema_version",
+        "origin",
+        "game_revision",
+        "build_id",
+        "build_artifact",
+        "exporter",
+        "scenario_id",
+        "state_id",
+        "surface_id",
+        "locale",
+        "viewport",
+        "frames"
+      ]
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_feedback.v1"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "findings"
+      ]
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_readiness.v1"
+        },
+        "design": {
+          "$ref": "#/$defs/ref"
+        },
+        "game_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "build_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "captures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1
+        },
+        "mechanical_report": {
+          "$ref": "#/$defs/ref"
+        },
+        "visual_first_passes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "comparisons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/comparison"
+          },
+          "minItems": 1
+        },
+        "outcome_reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1
+        },
+        "feedback": {
+          "$ref": "#/$defs/ref"
+        },
+        "director_note": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "design",
+        "game_revision",
+        "build_id",
+        "captures",
+        "mechanical_report",
+        "visual_first_passes",
+        "comparisons",
+        "outcome_reviews",
+        "feedback",
+        "director_note"
+      ]
+    },
+    "runtime_chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_runtime_chain.v1"
+        },
+        "chain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "player_facing_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runtime_interaction_evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "sha256"
+              ]
+            },
+            "blind_observation_input": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "sha256"
+              ]
+            },
+            "blind_observation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "sha256"
+              ]
+            },
+            "comparison_review": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "sha256"
+              ]
+            }
+          },
+          "required": [
+            "runtime_interaction_evidence",
+            "blind_observation_input",
+            "blind_observation",
+            "comparison_review"
+          ]
+        },
+        "producer_context_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "chain_id",
+        "player_facing_evidence",
+        "producer_context_ids"
+      ]
+    },
+    "outcome_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "ui_outcome_review.v1"
+        },
+        "ui_design": {
+          "$ref": "#/$defs/ref"
+        },
+        "chain_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer_context_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/outcome"
+          },
+          "minItems": 1
+        },
+        "observation_coverage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "attempt_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "finding_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "attempt_id",
+              "finding_ids",
+              "rationale"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "ui_design",
+        "chain_id",
+        "reviewer_context_id",
+        "results",
+        "observation_coverage"
+      ]
+    },
+    "retest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "ui_retest.v1"
+        },
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "design": {
+          "$ref": "#/$defs/ref"
+        },
+        "failure_scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variant_scenario_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "captures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "schema_version",
+        "finding_id",
+        "design",
+        "failure_scenario_id",
+        "variant_scenario_ids",
+        "captures"
+      ],
+      "additionalProperties": false
+    },
+    "build_manifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "ui_capture_build.v1"
+        },
+        "game_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "git_tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "entrypoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 2
+        },
+        "binary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "game_revision",
+        "git_tree",
+        "entrypoint",
+        "sources",
+        "binary"
+      ],
+      "additionalProperties": false
+    },
+    "acceptance": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "ui_acceptance.v1"
+        },
+        "readiness": {
+          "$ref": "#/$defs/ref"
+        },
+        "verdict": {
+          "$ref": "#/$defs/verdict"
+        }
+      },
+      "required": [
+        "schema_version",
+        "readiness",
+        "verdict"
+      ],
+      "additionalProperties": false
+    },
+    "mechanical_result": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "ui_check_result.v1"
+        },
+        "check_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "game_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "build_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "check_id",
+        "status",
+        "game_revision",
+        "build_id",
+        "method",
+        "evidence"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

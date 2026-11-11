@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI mechanical report v2 (exact build)",
+  "description": "New readiness report: each check references a ui_check_result.v1 with the same check, method, revision and build. Legacy v1 schema/CLI remain readable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "game_revision",
+    "ui_design",
+    "checks",
+    "build_id",
+    "build_artifact"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ui_mechanical_report.v2"
+    },
+    "game_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ui_design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "scope": {
+          "const": "game"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "check_id",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "check_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "scope",
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "scope": {
+                "const": "game"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "build_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "build_artifact": {
+      "$ref": "ui_experience.schema.json#/$defs/ref"
+    }
+  }
+}

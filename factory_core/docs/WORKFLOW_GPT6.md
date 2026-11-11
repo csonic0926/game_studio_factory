@@ -120,6 +120,18 @@ Unknown references and concurrent edits fail closed.
 
 ## Non-merged acceptance boundaries
 
+New UI designs also bind the thin `ui.experience` contract under
+`ui/docs/UI_EXPERIENCE_WORKFLOW.md`. The same two reviewers seal capture-first
+observations before full authority context; their original records accompany
+REVIEWED and later checkpoints. Required runtime measurements, existing isolated
+blind/comparison chains and explicit feedback dispositions are consumed at
+EVIDENCE_READY/COMPLETE. No added reviewer seat or automatic beauty score applies.
+In CLOSED_BETA the delegated internal-verdict seat can yield UI_INTERNAL_READY,
+never USER acceptance or an Accepted Playable Baseline. Human feedback is rare
+calibration; the Director must actively discover and retest UI risks before beta.
+Historical UI schemas remain readable; new transitions and changed relevant
+closures require current validation, not rewritten approval history.
+
 Runtime blind observation receives only the existing sanitized player packet;
 generic context refuses the blind role before opening project data. A separate
 informed comparison reads the immutable observation and design afterward.

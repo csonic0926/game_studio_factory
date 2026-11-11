@@ -23,13 +23,14 @@ import sys
 from pathlib import Path
 
 FACTORY = Path(__file__).resolve().parents[1]
-if str(FACTORY) not in sys.path:
-    sys.path.insert(0, str(FACTORY))
+if str(FACTORY) in sys.path:
+    sys.path.remove(str(FACTORY))
+sys.path.insert(0, str(FACTORY))
 
 from factory_core.refs import FactoryError, fail, read_json, resolve_ref, unique_refs  # noqa: E402
 
 BINDING_KEYS = {"gameplay_checkpoint", "information_model", "attention_plan", "screen_contracts", "verification_plan"}
-BINDING_OPTIONAL = {"rules_model_absent_reason"}
+BINDING_OPTIONAL = {"rules_model_absent_reason", "experience"}
 NEEDS = ("MUST_KNOW", "ON_DEMAND", "MAY_KNOW", "FORBIDDEN")
 CHANNELS = ("PERSISTENT", "DISCLOSED", "TRANSIENT_CUE", "EXPLANATION")
 MOMENTS = ("BEFORE_DECISION", "DURING_RESOLUTION", "AFTER_OUTCOME", "ALWAYS")
@@ -521,27 +522,46 @@ def validate_design(roots: dict, design: dict) -> dict:
         fail("INVALID_UI_DESIGN", "a ui design binds its gameplay checkpoint and four artifacts under 'ui'")
     _shape(design["ui"], BINDING_KEYS, BINDING_OPTIONAL, "ui")
     gameplay = entry_gate(roots, design)
-    return validate_artifacts(roots, design, gameplay)
+    result = validate_artifacts(roots, design, gameplay)
+    from ui.experience import contract
+    contract(roots, design)
+    return result
 
 
 # ---------------------------------------------------------------- exact-build mechanical report
 
 def validate_report(roots: dict, design: dict, report: dict) -> dict:
     """The mechanical layer on one exact build: every planned check ran and passed."""
-    _shape(report, {"schema_version", "game_revision", "ui_design", "checks"}, (), "mechanical report")
-    if report["schema_version"] != REPORT_VERSION:
-        fail("INVALID_UI_REPORT", f"schema_version must be {REPORT_VERSION}")
+    current = report.get("schema_version") == "ui_mechanical_report.v2"
+    _shape(report, {"schema_version", "game_revision", "ui_design", "checks"} |
+           ({"build_id", "build_artifact"} if current else set()), (), "mechanical report")
+    if report["schema_version"] not in (REPORT_VERSION, "ui_mechanical_report.v2"):
+        fail("INVALID_UI_REPORT", "schema_version must be ui_mechanical_report.v1 or v2")
     _text(report["game_revision"], "report.game_revision")
     if read_json(resolve_ref(roots, _game_ref(report["ui_design"], "report.ui_design"))) != design:
         fail("INVALID_UI_REPORT", "the report must bind this exact ui design")
     planned = set(validate_design(roots, design)["mechanical_checks"])
+    if current:
+        from ui.experience import game_file, shape
+        manifest = shape(read_json(game_file(roots, report["build_artifact"])), "build_manifest")
+        if report["build_id"] != report["build_artifact"]["sha256"] or manifest["game_revision"] != report["game_revision"]:
+            fail("INVALID_UI_REPORT", "mechanical report must identify the exact tested source manifest/build")
+        methods = {row["check_id"]: row["method"] for row in load_artifacts(roots, design)["verification_plan"]["mechanical_checks"]}
     results = _list(report["checks"], "report.checks")
     seen = {}
     for result in results:
         _shape(result, {"check_id", "status", "evidence"}, (), "report.checks[]")
+        if result["check_id"] in seen or result["check_id"] not in planned:
+            fail("INVALID_UI_REPORT", "one result per planned check; no duplicate or unknown check ids")
         if result["status"] not in ("PASS", "FAIL"):
             fail("INVALID_UI_REPORT", "check status is PASS or FAIL")
-        resolve_ref(roots, _game_ref(result["evidence"], f"check {result['check_id']}.evidence"))
+        evidence_path = resolve_ref(roots, _game_ref(result["evidence"], f"check {result['check_id']}.evidence"))
+        if current:
+            evidence = shape(read_json(evidence_path), "mechanical_result")
+            if any(evidence[key] != report[key] for key in ("build_id", "game_revision")) or evidence["check_id"] != result["check_id"] or evidence["status"] != result["status"] or evidence["method"] != methods[result["check_id"]]:
+                fail("INVALID_UI_REPORT", "each mechanical result must bind its actual check/method and this exact build")
+            for ref in evidence["evidence"]:
+                game_file(roots, ref)
         seen[result["check_id"]] = result["status"]
     missing = planned - set(seen)
     if missing:
@@ -651,6 +671,10 @@ def _roots(game: str) -> dict:
 
 
 def main(argv=None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] in ("capture-build", "capture", "evaluate", "review-packet", "decision-view"):
+        from ui.visual import main as visual_main
+        return visual_main(arguments)
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("check", "report"):
@@ -659,7 +683,7 @@ def main(argv=None) -> int:
         cmd.add_argument("--design", required=True, help="game-relative path of the ui design JSON")
         if name == "report":
             cmd.add_argument("--report", required=True, help="game-relative path of the mechanical report JSON")
-    args = parser.parse_args(argv)
+    args = parser.parse_args(arguments)
     try:
         roots = _roots(args.game_repo)
         from factory_core.refs import confined

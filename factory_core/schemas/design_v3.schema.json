@@ -1106,6 +1106,9 @@
         "rules_model_absent_reason": {
           "type": "string",
           "minLength": 1
+        },
+        "experience": {
+          "$ref": "../../ui/schemas/ui_experience.schema.json#/$defs/ref"
         }
       }
     },

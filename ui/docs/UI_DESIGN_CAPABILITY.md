@@ -125,6 +125,15 @@ shipped locales (the adapter's typography rules).
 
 ## 4. Lifecycle
 
+New explicit-v3 UI transitions additionally follow
+[UI experience workflow](UI_EXPERIENCE_WORKFLOW.md): a thin sealed `ui.experience`
+relation layer, capture-first passes by the same two reviewers, measured runtime
+guardrails, independent unprompted outcomes and mode-aware feedback disposition.
+At EVIDENCE_READY/COMPLETE its typed receipt is consumed mechanically, not merely
+mentioned in acceptance prose. Historical four-artifact designs remain readable;
+they do not acquire new readiness proof. In CLOSED_BETA a genuinely delegated
+internal verdict is AI_DIRECTOR, not USER or an Accepted Playable Baseline.
+
 Same v3 stages: DRAFT -> DESIGN_COMPLETE -> REVIEWED -> AUTHORIZED -> PRODUCING ->
 EVIDENCE_READY -> COMPLETE, with checkpoints, two fresh reviewers and the verbatim
 USER approval action.

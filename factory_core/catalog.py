@@ -77,6 +77,8 @@ def factory_dependencies(factory: Path, capability: str, task: str, workflow_ver
         paths.add(f"{dept}/AGENTS.md") if (factory / dept / "AGENTS.md").exists() else None
         paths.update(p.relative_to(factory).as_posix() for p in (factory / dept).glob("*.py"))
         paths.update(p.relative_to(factory).as_posix() for p in (factory / dept / "schemas").rglob("*.json"))
+        if dept == "ui" and native:
+            paths.update(p.relative_to(factory).as_posix() for p in (factory / dept / "profiles").glob("*.json"))
         for subdir in ("pipeline", "scripts", "godot_engine", "blender"):
             paths.update(p.relative_to(factory).as_posix() for p in (factory / dept / subdir).rglob("*")
                          if p.is_file() and p.suffix in (".py", ".gd", ".json", ".gdshader") and "__pycache__" not in p.parts)

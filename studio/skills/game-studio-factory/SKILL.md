@@ -117,3 +117,10 @@ Follow `$STUDIO_ROOT/factory_core/docs/DIRECTOR_ROLE.md`:
   deliver a complete closed-beta build with your own verdict, the weaknesses you chose to
   ship and the questions only the USER can answer, or report a KILL instead;
 - when the USER plays, record every difference from your notes as calibration.
+
+For v3 UI-changing work, use `ui/docs/UI_EXPERIENCE_WORKFLOW.md`: same-reviewer
+capture-first passes, actual runtime measurements and a Director-owned
+discovery/disposition/retest loop. Almost no human feedback in CLOSED_BETA makes
+proactive discovery essential, not optional. UI_INTERNAL_READY is only delegated
+internal specialist readiness; it never substitutes for whole-game baseline
+admission or the final exact-build USER verdict.

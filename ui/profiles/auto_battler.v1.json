@@ -1,0 +1,37 @@
+{
+  "schema_version": "ui_genre_expectations.v1",
+  "profile_id": "auto_battler.v1",
+  "authority": false,
+  "items": [
+    {
+      "item_id": "owned-copies",
+      "expectation": "Existing copies and merge opportunity readable at purchase.",
+      "owner": "UI"
+    },
+    {
+      "item_id": "shop-lock",
+      "expectation": "Retaining offers across rounds, when this economy needs it.",
+      "owner": "GAMEPLAY"
+    },
+    {
+      "item_id": "refresh",
+      "expectation": "Refresh availability, cost and consequences.",
+      "owner": "GAMEPLAY"
+    },
+    {
+      "item_id": "buy-experience",
+      "expectation": "Experience purchase, cost and resulting progress.",
+      "owner": "GAMEPLAY"
+    },
+    {
+      "item_id": "success-result",
+      "expectation": "Result reflects this product\u2019s actual success criterion; do not assume a universal Top-N.",
+      "owner": "GAMEPLAY"
+    },
+    {
+      "item_id": "opponent-readable",
+      "expectation": "Opponent composition and available inspection are readable.",
+      "owner": "UI"
+    }
+  ]
+}

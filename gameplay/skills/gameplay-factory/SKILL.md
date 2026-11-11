@@ -66,3 +66,9 @@ Follow `$STUDIO_ROOT/factory_core/docs/DIRECTOR_ROLE.md`:
   deliver a complete closed-beta build with your own verdict, the weaknesses you chose to
   ship and the questions only the USER can answer, or report a KILL instead;
 - when the USER plays, record every difference from your notes as calibration.
+
+For v3 UI-changing work, use `ui/docs/UI_EXPERIENCE_WORKFLOW.md`. Audit genre
+expectations while gameplay is being designed; UI cannot silently supply missing
+rules such as shop lock. In CLOSED_BETA actively play high-risk states and use
+unprompted AI observations to discover problems, then repair/retest or explicitly
+retain only delegated nonblocking risks. Do not wait for daily human feedback.

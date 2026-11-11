@@ -125,6 +125,15 @@ overrides it.
 
 ## 8. Implementation (done; item 6 is the first use)
 
+UI quality uses the [UI experience loop](../../ui/docs/UI_EXPERIENCE_WORKFLOW.md).
+Without daily human feedback, personally play important/uncertain/changed states,
+use independent unprompted observations as counterevidence, and act on the largest
+actual risk. Show what was repaired and retested, or the delegated nonblocking
+residual cost/revisit trigger. Do not substitute another reviewer's PASS for your
+own judgment or treat an absent prewritten hypothesis as permission to ignore an
+observed problem. Internal UI readiness consumes the actual delegated seat; it
+does not relax the final USER/baseline acceptance boundary.
+
 1. `factory_director_note.v1` schema and `factory_core/director.py` (existence, evidence and
    decision checks; STOP/KILL blocking).
 2. CLOSED_BETA in `factory_core/authorship.py`, AI_DIRECTOR rulings in `state.check_ruling`,

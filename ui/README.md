@@ -1,5 +1,11 @@
 # UI Factory
 
+For new explicit-v3 work, read the [UI experience loop](docs/UI_EXPERIENCE_WORKFLOW.md).
+It adds real capture measurements, capture-first reviews, genre-gap discovery,
+checked visual decision entries and Director-owned repair/retest in CLOSED_BETA.
+Use `ui/ui_design.py capture|evaluate|review-packet|decision-view`; existing
+`check|report` and Gameplay compatibility entries remain available.
+
 UI Factory makes UI **correct**, not pretty: the player sees what the gameplay needs
 them to know, when they need it, and never what it hides. It has two parts:
 
