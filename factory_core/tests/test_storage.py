@@ -1,6 +1,7 @@
 """Synthetic tiny fixtures only: no engine, repository mutation, or real cleanup."""
 from datetime import datetime, timezone
 import contextlib
+import copy
 import io
 import json
 import os
@@ -12,7 +13,7 @@ import unittest
 from unittest.mock import patch
 
 from factory_core.refs import FactoryError
-from factory_core.storage import SCHEMA, audit, load_manifest
+from factory_core.storage import PRIVATE_NAMES, PROTECTED_NAMES, SCHEMA, audit, load_manifest
 
 NOW = datetime(2026, 11, 9, tzinfo=timezone.utc)
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,6 +49,14 @@ class StorageTests(unittest.TestCase):
 
     def snapshot(self):
         return {str(p.relative_to(self.root)): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+
+    def case_alias(self, path):
+        alias = path.with_name(path.name.swapcase())
+        if not alias.exists() or not path.samefile(alias):
+            if os.environ.get("FACTORY_REQUIRE_CASE_INSENSITIVE_TESTS") == "1":
+                self.fail("This job requires a case-insensitive fixture filesystem")
+            self.skipTest("Fixture filesystem is case-sensitive")
+        return alias
 
     def test_read_only_and_rebuild_recipe_is_not_executed(self):
         before = self.snapshot()
@@ -86,6 +95,105 @@ class StorageTests(unittest.TestCase):
     def test_component_boundaries_not_string_prefixes(self):
         self.manifest["protected_paths"] = ["retired/runner-other"]
         self.assertEqual(1, len(self.run_audit()["review_candidates"]))
+
+    def test_protected_scope_case_aliases_hold_cache_and_preserve_exact_paths(self):
+        for path in ("Retired/RUNNER", "RETIRED/RUNNER/.GODOT/imported/A.CTEX"):
+            for source in ("manifest", "argument"):
+                with self.subTest(path=path, source=source):
+                    self.manifest["protected_paths"] = [path] if source == "manifest" else []
+                    result = self.run_audit(protected=[path] if source == "argument" else [])
+                    self.assertFalse(result["review_candidates"])
+                    held = result["held_candidates"][0]
+                    self.assertIn("protected_path_overlap", held["reasons"])
+                    self.assertEqual("retired/runner/.godot", held["path"])
+                    self.assertEqual([path], result["protected_paths"])
+
+    def test_canonical_unicode_scope_aliases_hold_cache(self):
+        self.write("caf\u00e9/runner/.godot/imported/item", b"cache")
+        self.manifest["runs"][0]["path"] = "caf\u00e9"
+        result = self.run_audit(protected=["CAFE\u0301/RUNNER"])
+        self.assertFalse(result["review_candidates"])
+        self.assertIn("protected_path_overlap", result["held_candidates"][0]["reasons"])
+        self.assertEqual("caf\u00e9/runner/.godot", result["held_candidates"][0]["path"])
+
+    def test_case_alias_comparisons_preserve_component_boundaries(self):
+        result = self.run_audit(protected=["RETIRED/RUNNER-other", "RETIRED-other"])
+        self.assertEqual(1, len(result["review_candidates"]))
+
+    def test_case_aliased_active_and_nested_run_roots_are_rejected(self):
+        original = copy.deepcopy(self.manifest)
+        for path in ("RETIRED", "RETIRED/RUNNER"):
+            for reverse in (False, True):
+                with self.subTest(path=path, reverse=reverse):
+                    manifest = copy.deepcopy(original)
+                    manifest["runs"].append({"id": "active", "path": path,
+                        "owner": "fixture-owner", "state": "active", "caches": []})
+                    if reverse:
+                        manifest["runs"].reverse()
+                    with self.assertRaisesRegex(FactoryError, "Run roots must not overlap"):
+                        self.run_audit(manifest=manifest)
+
+    def test_case_aliased_cache_roots_are_rejected(self):
+        cache = self.manifest["runs"][0]["caches"][0]
+        for path in ("RUNNER/.godot", "RUNNER/.GODOT/imported/.godot"):
+            with self.subTest(path=path):
+                manifest = copy.deepcopy(self.manifest)
+                manifest["runs"][0]["caches"].append(dict(cache, path=path))
+                with self.assertRaisesRegex(FactoryError, "Cache paths must not overlap"):
+                    self.run_audit(manifest=manifest)
+
+    def test_conventional_protected_ancestor_case_aliases_hold_cache(self):
+        for name in sorted(PROTECTED_NAMES):
+            with self.subTest(name=name):
+                relative = name.upper() + "/.godot"
+                self.write("retired/" + relative + "/original", b"retain")
+                self.manifest["runs"][0]["caches"][0]["path"] = relative
+                result = self.run_audit()
+                self.assertFalse(result["review_candidates"])
+                self.assertIn("protected_path_overlap", result["held_candidates"][0]["reasons"])
+
+    def test_conventional_protected_descendant_case_aliases_hold_cache(self):
+        for name in sorted(PROTECTED_NAMES):
+            with self.subTest(name=name):
+                fixture = self.write("retired/runner/.godot/" + name.upper() + "/original", b"retain")
+                result = self.run_audit()
+                self.assertFalse(result["review_candidates"])
+                self.assertIn("protected_descendant", result["held_candidates"][0]["reasons"])
+                fixture.unlink()
+                fixture.parent.rmdir()
+        self.write("retired/runner/.godot/.GIT", b"gitdir: retained source")
+        self.assertIn("protected_descendant", self.run_audit()["held_candidates"][0]["reasons"])
+
+    def test_private_directory_case_aliases_are_not_scanned(self):
+        paths = ["retired/runner/.godot/" + name.upper() for name in sorted(PRIVATE_NAMES)]
+        for path in paths:
+            self.write(path + "/private", b"must not be scanned")
+        result = self.run_audit()
+        self.assertEqual(3, result["totals"]["files"])
+        self.assertFalse(result["review_candidates"])
+        self.assertEqual(set(paths), {item["path"] for item in result["excluded_private_directories"]})
+        self.assertIn("uninspected_private_directory", result["held_candidates"][0]["reasons"])
+
+    def test_cache_observation_still_requires_exact_entry_spelling(self):
+        self.manifest["runs"][0]["caches"][0]["path"] = "RUNNER/.godot"
+        result = self.run_audit()
+        self.assertFalse(result["review_candidates"])
+        self.assertIn("cache_directory_not_observed", result["held_candidates"][0]["reasons"])
+
+    def test_native_case_alias_cannot_unprotect_active_runner(self):
+        runner = self.root / "retired/runner"
+        alias = self.case_alias(self.root / "retired") / "RUNNER"
+        self.assertTrue(runner.samefile(alias))
+        result = self.run_audit(protected=[str(alias.relative_to(self.root))])
+        self.assertFalse(result["review_candidates"])
+        self.assertIn("protected_path_overlap", result["held_candidates"][0]["reasons"])
+
+    def test_native_case_alias_cannot_register_active_run_as_disjoint(self):
+        alias = self.case_alias(self.root / "retired")
+        self.manifest["runs"].append({"id": "active", "path": alias.name,
+            "owner": "fixture-owner", "state": "active", "caches": []})
+        with self.assertRaisesRegex(FactoryError, "Run roots must not overlap"):
+            self.run_audit()
 
     def test_evidence_cache_is_protected_even_if_declared_retired(self):
         self.write("retired/evidence/.godot/item", b"original evidence")
@@ -223,6 +331,59 @@ class StorageTests(unittest.TestCase):
             audit("/")
         with self.assertRaises(FactoryError):
             audit(Path.home())
+
+    def test_home_identity_is_rejected_before_scan_and_descriptor_is_closed(self):
+        from factory_core import storage
+        home = Path(self.temp.name) / "synthetic-home-alias"
+        home.symlink_to(self.root, target_is_directory=True)
+        self.assertTrue(home.samefile(self.root))
+        opened = []
+        original = storage._open_root
+        def record_open(path):
+            descriptor = original(path)
+            opened.append(descriptor)
+            return descriptor
+        with patch("factory_core.storage.Path.home", return_value=home), \
+                patch("factory_core.storage._open_root", side_effect=record_open), \
+                patch("factory_core.storage.os.scandir", wraps=os.scandir) as scan:
+            with patch("factory_core.storage.os.supports_fd", os.supports_fd | {scan}):
+                with self.assertRaisesRegex(FactoryError, "home directory"):
+                    self.run_audit()
+            scan.assert_not_called()
+        self.assertEqual(1, len(opened))
+        with self.assertRaises(OSError):
+            os.fstat(opened[0])
+
+    def test_home_guard_checks_opened_root_not_replaced_pathname(self):
+        from factory_core import storage
+        home = self.root.with_name("synthetic-home")
+        original = storage._open_root
+        def replace_root(path):
+            descriptor = original(path)
+            self.root.rename(home)
+            self.root.mkdir()
+            return descriptor
+        with patch("factory_core.storage.Path.home", return_value=home), \
+                patch("factory_core.storage._open_root", side_effect=replace_root):
+            with self.assertRaisesRegex(FactoryError, "home directory"):
+                self.run_audit()
+
+    def test_unavailable_home_identity_fails_closed_before_scan(self):
+        with patch("factory_core.storage.Path.home", return_value=self.root / "missing-home"), \
+                patch("factory_core.storage.os.scandir", wraps=os.scandir) as scan:
+            with patch("factory_core.storage.os.supports_fd", os.supports_fd | {scan}):
+                with self.assertRaises(OSError):
+                    self.run_audit()
+            scan.assert_not_called()
+
+    def test_native_case_alias_cannot_bypass_home_guard(self):
+        alias = self.case_alias(self.root)
+        with patch("factory_core.storage.Path.home", return_value=self.root), \
+                patch("factory_core.storage.os.scandir", wraps=os.scandir) as scan:
+            with patch("factory_core.storage.os.supports_fd", os.supports_fd | {scan}):
+                with self.assertRaisesRegex(FactoryError, "home directory"):
+                    audit(alias, reserve_bytes=0)
+            scan.assert_not_called()
 
     def test_manifest_loader_rejects_duplicate_keys_and_oversize(self):
         path = self.write("manifest.json", b'{"runs": [], "runs": []}')

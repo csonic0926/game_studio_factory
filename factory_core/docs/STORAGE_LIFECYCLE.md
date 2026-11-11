@@ -111,6 +111,9 @@ regular-file manifest is read as JSON (maximum 1 MiB); links, pipes, devices
 and changing manifests are rejected. No command, cache recipe or file deletion
 is executed. There is no `--apply`, `--delete`, background job or automatic purge.
 Use a physical workspace path, not a symlink, filesystem root or home directory.
+The opened workspace is checked against the home directory's device/inode
+identity before enumeration, so alternate spellings cannot bypass that guard.
+An unavailable home identity blocks the scan rather than weakening the guard.
 Save the JSON only if useful, to a small task-owned location outside the scanned
 root so the report itself does not race the scan. Do not copy the workspace to
 make an inventory.
@@ -172,9 +175,15 @@ Supported cache kinds are `godot_import` (`.godot`), `python_bytecode`
 confined, never globs. Cache and run roots must not overlap. Duplicate IDs/keys,
 unknown fields/versions, malformed dates and ambiguous paths fail closed.
 Protected ancestors **and descendants** hold the whole nominated cache.
+Protection and run/cache overlap checks conservatively compare case-folded,
+Unicode-normalized path components on every platform, including case-sensitive
+volumes. This can hold distinct similarly named paths; it never grants cleanup
+authority. Original paths and no-follow traversal remain unchanged. Cache
+declarations must match the exact observed entry spelling to be nominated.
 Conventional evidence, design, saves, checkpoints, archives, Git and private-state
 components, including protected entries found inside a cache, are protected as
-an additional guard. Custom evidence locations must
+an additional guard, with the same alias comparisons. Private directory aliases
+such as `.SSH` are excluded without enumeration. Custom evidence locations must
 be declared explicitly; the tool cannot discover all semantic dependencies.
 
 `review_candidates` means only that the declarations and conservative metadata
@@ -249,6 +258,9 @@ The tests use tiny synthetic fixtures and no engine/GUI. They cover active old
 runners, protection in both directions, age not granting permission, malformed
 manifests, traversal and links, missing reconstruction declarations, private
 exclusions, limits/read failures, capacity budgeting and the absence of deletion
-or recipe execution. Run the existing non-engine Factory core regressions before
+or recipe execution. Alias regressions cover protected scopes, overlapping runs
+and caches, conventional/private names, and opened-root home identity. Native
+case-insensitive fixtures also verify actual filesystem aliases; macOS CI requires
+these fixtures to run rather than skip. Run the existing non-engine Factory core regressions before
 publication; engine-only cases require their own execution lease. Project engine/gameplay regressions are separate from these storage
 checks and must not be represented as tested by this suite.

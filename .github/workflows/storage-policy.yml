@@ -35,4 +35,5 @@ jobs:
       - name: Read-only storage and existing core regressions (no engine)
         env:
           PYTHONDONTWRITEBYTECODE: "1"
+          FACTORY_REQUIRE_CASE_INSENSITIVE_TESTS: ${{ runner.os == 'macOS' && '1' || '0' }}
         run: python -B -m unittest factory_core.tests.test_storage factory_core.tests.test_core -v

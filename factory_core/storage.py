@@ -8,6 +8,7 @@ import os
 from pathlib import Path, PurePosixPath
 import stat
 import time
+import unicodedata
 
 from factory_core.refs import FactoryError
 
@@ -33,8 +34,21 @@ def _relative(value, allow_root=False):
     return value
 
 
+def _name_key(value):
+    # Compare conservatively on every platform: macOS volumes can alias case
+    # and canonically equivalent Unicode. Never use this key for filesystem I/O.
+    return unicodedata.normalize("NFD", unicodedata.normalize("NFD", value).casefold())
+
+
+def _scope_parts(value):
+    return tuple(_name_key(part) for part in value.split("/"))
+
+
 def _overlap(left, right):
-    return left == "." or right == "." or left == right or left.startswith(right + "/") or right.startswith(left + "/")
+    if left == "." or right == ".":
+        return True
+    left, right = _scope_parts(left), _scope_parts(right)
+    return left[:len(right)] == right or right[:len(left)] == left
 
 
 def _text(value, field):
@@ -195,7 +209,8 @@ def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0
         if type(value) is not int or value < minimum:
             _invalid(f"{name} must be an integer >= {minimum}")
     root = Path(os.path.abspath(Path(workspace_root).expanduser()))
-    if root == Path(root.anchor) or root == Path.home():
+    home = Path.home()
+    if root == Path(root.anchor) or root == home:
         _invalid("Pass a specific workspace, not the filesystem root or home directory")
     value, protected, declared = _manifest(manifest, protected)
     now = now or datetime.now(timezone.utc)
@@ -206,8 +221,6 @@ def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0
     identities, issues, exclusions = {}, [], []
     entries = 0
     started = time.monotonic()
-    fd = _open_root(root)
-    root_stat = os.fstat(fd)
 
     def issue(path, reason):
         # Bound JSON output even when many unreadable directories are present.
@@ -234,21 +247,24 @@ def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0
                         issue(rel, "stat_failed")
                         continue
                     parts = rel.split("/")
-                    category = next((part for part in parts if part in {".git", ".godot", "__pycache__", ".pytest_cache", "node_modules"}), "other")
+                    scope_parts = _scope_parts(rel)
+                    category = next((part for part in scope_parts if part in {".git", ".godot", "__pycache__", ".pytest_cache", "node_modules"}), "other")
                     metrics = [totals, top.setdefault(parts[0], _metric()), categories.setdefault(category, _metric())]
+                    # Cache observations stay exact. Normalized aliases only
+                    # add protection; they must never nominate another entry.
                     for length in range(1, len(parts) + 1):
                         ancestor = "/".join(parts[:length])
                         if ancestor in measurements:
                             metrics.append(measurements[ancestor])
                     for metric in metrics:
                         _record(metric, info)
-                        if item.name in PROTECTED_NAMES:
+                        if scope_parts[-1] in PROTECTED_NAMES:
                             metric["protected_entries"] += 1
                     if rel in declared:
                         identities[rel] = _identity(info)
                     if not stat.S_ISDIR(info.st_mode):
                         continue
-                    if item.name in PRIVATE_NAMES:
+                    if scope_parts[-1] in PRIVATE_NAMES:
                         for metric in metrics:
                             metric["excluded_directories"] += 1
                         if len(exclusions) < 100:
@@ -274,7 +290,15 @@ def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0
         if _identity(before) != _identity(os.fstat(directory)):
             issue(prefix or ".", "directory_changed_during_scan")
 
+    fd = _open_root(root)
     try:
+        root_stat = os.fstat(fd)
+        # Stat only home metadata, never enumerate it. Compare with the opened
+        # root so case aliases and pathname replacement cannot bypass the guard.
+        # An unavailable home identity fails closed, and the descriptor closes.
+        home_stat = home.stat()
+        if (root_stat.st_dev, root_stat.st_ino) == (home_stat.st_dev, home_stat.st_ino):
+            _invalid("Pass a specific workspace, not the filesystem root or home directory")
         try:
             visit(fd)
         except _Limit:
@@ -294,7 +318,7 @@ def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0
         retired = declaration["retired_at"]
         if retired is None or (now - retired).total_seconds() < min_retired_days * 86400:
             reasons.append("retirement_grace_not_met")
-        if any(p in PROTECTED_NAMES for p in path.split("/")) or any(_overlap(path, p) for p in protected):
+        if any(p in PROTECTED_NAMES for p in _scope_parts(path)) or any(_overlap(path, p) for p in protected):
             reasons.append("protected_path_overlap")
         if metric["protected_entries"]:
             reasons.append("protected_descendant")
