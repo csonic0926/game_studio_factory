@@ -118,6 +118,16 @@ For language work across departments or in an unlinked external game, use
 text in every shipped locale, including non-dialogue and functional copy,
 without taking over content ownership or requiring Factory migration.
 
+## Workspace storage and cleanup
+
+Before bulk copies, engine imports or evidence capture, read the shared
+[storage lifecycle policy](factory_core/docs/STORAGE_LIFECYCLE.md).
+`python3 -B factory.py storage --workspace-root <WORKSPACE>` provides a bounded,
+read-only inventory and capacity check without requiring a migrated game repo.
+An optional local manifest nominates only explicitly retired caches for operator
+review. Active runners, source, saves and evidence remain protected; there is no
+automatic deletion or cleanup permission implied by a successful audit.
+
 ## Explicit workflow versions
 
 `python3 factory.py inspect --game-repo <root>` is read-only. Unmigrated games

@@ -1,0 +1,39 @@
+name: Storage Policy
+
+on:
+  push:
+    paths:
+      - "factory.py"
+      - "factory_core/storage.py"
+      - "factory_core/tests/test_storage.py"
+      - "factory_core/docs/STORAGE_LIFECYCLE.md"
+      - ".github/workflows/storage-policy.yml"
+  pull_request:
+    paths:
+      - "factory.py"
+      - "factory_core/storage.py"
+      - "factory_core/tests/test_storage.py"
+      - "factory_core/docs/STORAGE_LIFECYCLE.md"
+      - ".github/workflows/storage-policy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  storage:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Read-only storage and existing core regressions (no engine)
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          FACTORY_REQUIRE_CASE_INSENSITIVE_TESTS: ${{ runner.os == 'macOS' && '1' || '0' }}
+        run: python -B -m unittest factory_core.tests.test_storage factory_core.tests.test_core -v

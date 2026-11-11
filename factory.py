@@ -57,6 +57,15 @@ def parser():
     cmd.add_argument('--quote')
     cmd.add_argument('--summary')
     cmd.add_argument('--artifact', action='append', default=[])
+    cmd = sub.add_parser("storage", help="read-only workspace inventory and cache review queue; never deletes")
+    cmd.add_argument("--workspace-root", required=True)
+    cmd.add_argument("--manifest", help="explicit factory_storage_manifest.v1 JSON; absent means no cache candidates")
+    cmd.add_argument("--protect", action="append", default=[], help="workspace-relative path to preserve, repeatable")
+    cmd.add_argument("--expected-write-bytes", type=int, default=0)
+    cmd.add_argument("--reserve-bytes", type=int, default=2 * 1024 ** 3)
+    cmd.add_argument("--min-retired-days", type=int, default=7)
+    cmd.add_argument("--max-entries", type=int, default=500000)
+    cmd.add_argument("--max-seconds", type=int, default=30)
     cmd = sub.add_parser("benchmark")
     cmd.add_argument("--suite", default=str(ROOT / "factory_core/benchmarks/suite.json"))
     cmd.add_argument("--output-root", required=True)
@@ -71,7 +80,14 @@ def parser():
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
-        if args.command == "benchmark":
+        if args.command == "storage":
+            from factory_core.storage import audit, load_manifest
+            result = audit(args.workspace_root,
+                manifest=load_manifest(args.manifest) if args.manifest else None,
+                protected=args.protect, expected_write_bytes=args.expected_write_bytes,
+                reserve_bytes=args.reserve_bytes, min_retired_days=args.min_retired_days,
+                max_entries=args.max_entries, max_seconds=args.max_seconds)
+        elif args.command == "benchmark":
             from factory_core.benchmark import run, summarize
             suite = read_json(Path(args.suite))
             output = Path(args.output_root).expanduser().resolve()

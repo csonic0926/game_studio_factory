@@ -11,6 +11,12 @@ Read the separately exposed nonbinding Product intent before material planning.
 `MIGRATION_REQUIRED` never means silently apply new approval rules or require a
 migration just to continue standalone Idea exploration/Product intent.
 
+Before bulk runner materialization, imports, capture batches or archives, read
+[the storage lifecycle policy](factory_core/docs/STORAGE_LIFECYCLE.md). Use
+`factory.py storage --workspace-root <WORKSPACE>` for a bounded read-only audit,
+protect current/reused runners and evidence, and budget peak writes plus reserve.
+Cleanup is a separately scoped and authorized operation, never an age-based sweep.
+
 Before using any proposed game-design idea as a premise, invoke `idea-factory`
 for substantive per-idea inquiry, including AI-generated mechanisms and later
 iterations. Preserve each judgment/reason/open question and examine their coupled

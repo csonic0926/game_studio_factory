@@ -52,6 +52,11 @@ Game AI Factories     = idea / product / gameplay / story / asset / sound capabi
    Unmigrated/historical v1 contracts remain readable; never silently convert
    their approvals, rejections or baselines.
 
+8. Before bulk runner copies, imports, captures or archives, follow the shared
+   [storage lifecycle and safe-cleanup policy](factory_core/docs/STORAGE_LIFECYCLE.md).
+   Pin active/reused runners and evidence, budget peak allocation, and keep cleanup
+   separately authorized. `factory.py storage` is read-only and never deletes.
+
 Specialist entry points:
 
 - `idea/` → skill `idea-factory`, `idea/AGENTS.md`; standalone thinking → skill `idea-thinking`
