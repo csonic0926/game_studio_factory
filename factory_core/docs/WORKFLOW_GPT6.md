@@ -27,6 +27,35 @@ or semantic obligations. The obligation map lives in knowledge.json and the
 stable rule_map ids. Unknown/missing method or dependency blocks rather than
 being silently dropped.
 
+### Proportionate verification during production
+
+Choose the smallest check that can answer the current question, then return to
+the game. A local repair normally needs its focused tests and affected actual
+player flow first. Run the broader relevant suite when shared behavior changes
+or at integration/delivery boundaries; do not restart it for an unchanged build,
+receipt formatting, archive creation or a monitoring-only edit. A changed test
+harness must itself be checked, and any result it could have invalidated rerun.
+The selected acceptance contract still owns final exact-build evidence, ALL
+coverage where required, predecessor regression and the USER verdict. A focused
+pass must never be relabelled as those broader results.
+
+Prefer the project's existing test runner, ordinary process timeout/wait, native
+interaction and original relevant captures. Custom recorders, continuous tree
+scans, per-step release protocols and extra independent reviews are not default
+Factory prerequisites. Add instrumentation only for a concrete unanswered risk
+that the existing tools cannot resolve. If the harness prevents play, simplify
+the harness before building another validation layer around it. Keep necessary
+source identity, save isolation, process ownership and honest failures intact.
+
+Distinguish a product assertion failure from a harness interruption or an
+unobserved result. A recorder timeout or incomplete storage inventory does not
+prove a game defect. Preserve the attempt, repair or replace the failing method,
+and rerun the affected check; do not turn the interrupted attempt into PASS.
+Reuse valid evidence by reference only when its source/build, inputs and claimed
+scope still match. No copying, rehashing or unchanged screenshot can renew stale
+acceptance. Save raw artifacts once and index them from the existing task record;
+do not create another mandatory checklist, approval seat or artifact per step.
+
 ## Complete design and independent review
 
 factory_design.v3 preserves the v2 identity, full artifacts/inputs, requirements,

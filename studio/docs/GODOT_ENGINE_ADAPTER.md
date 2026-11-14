@@ -7,6 +7,16 @@ and debug/release build smoke verification.
 
 It never decides whether gameplay is good, substitutes for an exact-build human
 playtest, issues a gameplay verdict, or promotes an Accepted Playable Baseline.
+
+The adapter is a reusable way to obtain technical evidence, not a requirement to
+build a second recorder around every run. During diagnosis, use the existing
+runner and the smallest useful native interaction/capture; formal acceptance
+still requires the selected contract's complete evidence. Keep process ownership,
+isolated test saves, bounded execution and the real exit/log result. A CUA/manual
+focus step needs an interactive readiness window, not a short machine-response
+deadline that expires while the operator inspects the screen. Classify such an
+expiry as an unobserved/harness-interrupted attempt, never a game failure.
+
 Every v2 terminal record retains:
 
 ```json

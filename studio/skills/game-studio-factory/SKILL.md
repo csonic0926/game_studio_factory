@@ -27,6 +27,9 @@ installed manifest or this skill's real source path. If unlinked, invoke
    repair FAILs continuously within authority, obtain required USER rulings,
    produce within scope, then exact-output
    evidence and specialist acceptance. Ordinary replies do not create reviews.
+   For v3, apply the process's proportionate-verification guidance: focused checks and
+   actual player flow during repairs, broader required checks at integration;
+   do not let a custom recorder or evidence packaging become a new play gate.
 5. Checkpoint validated references, progress and unresolved questions. A resumed
    session rechecks the ledger; context views and technical success are not
    authority or whole-game delivery.

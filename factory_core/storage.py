@@ -200,6 +200,42 @@ class _Limit(Exception):
     pass
 
 
+def capacity(workspace_root, *, expected_write_bytes, reserve_bytes=2 * GIB):
+    """One filesystem observation, not a recursive inventory or a reservation."""
+    for name, value in (("expected_write_bytes", expected_write_bytes), ("reserve_bytes", reserve_bytes)):
+        if type(value) is not int or value < 0:
+            _invalid(f"{name} must be an integer >= 0")
+    root = Path(os.path.abspath(Path(workspace_root).expanduser()))
+    home = Path.home()
+    if root == Path(root.anchor) or root == home:
+        _invalid("Pass a specific workspace, not the filesystem root or home directory")
+    fd = _open_root(root)
+    try:
+        identity = os.fstat(fd)
+        home_stat = home.stat()
+        if (identity.st_dev, identity.st_ino) == (home_stat.st_dev, home_stat.st_ino):
+            _invalid("Pass a specific workspace, not the filesystem root or home directory")
+        filesystem = os.fstatvfs(fd)
+    finally:
+        os.close(fd)
+    fragment = filesystem.f_frsize or filesystem.f_bsize
+    free = filesystem.f_bavail * fragment
+    required = expected_write_bytes + reserve_bytes
+    return {"schema_version": "factory_storage_capacity.v1", "status": "STORAGE_CAPACITY",
+        "advisory_only": True, "generated_at": datetime.now(timezone.utc).isoformat(),
+        "workspace_root": str(root),
+        "filesystem_identity": {"device": identity.st_dev, "root_inode": identity.st_ino},
+        "inventory_performed": False, "entries_scanned": 0,
+        "capacity": {"total_bytes": filesystem.f_blocks * fragment, "free_bytes": free,
+            "expected_write_bytes": expected_write_bytes, "reserve_bytes": reserve_bytes,
+            "required_free_bytes": required, "sufficient": free >= required},
+        "review_candidates": [], "held_candidates": [], "cleanup_authorized": False,
+        "blockers": [] if free >= required else ["Free space is below expected writes plus reserve; pause new bulky work"],
+        "notes": ["No directory entries or file contents were read; no files were changed or deleted",
+            "The caller supplies peak additional allocation; this observation does not reserve space against concurrent writers",
+            "No inventory, preservation, cleanup authorization or gameplay acceptance is established"]}
+
+
 def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0,
           reserve_bytes=2 * GIB, min_retired_days=7, max_entries=500000, max_seconds=30, now=None):
     """Inventory metadata only. A review candidate is NEVER permission to delete."""
