@@ -1,10 +1,14 @@
 """Typed, append-only work ledger. A checkpoint is never product authority."""
 from __future__ import annotations
 
+from collections import OrderedDict
 from contextlib import contextmanager
+import hashlib
+import json
 import os
 from pathlib import Path
 import re
+from threading import Lock
 
 from .catalog import authority_refs, factory_dependencies, CAPABILITIES
 from .refs import (FactoryError, confined, digest, encoded, exclusive_json, fail,
@@ -14,6 +18,13 @@ PROJECT_PATH = "design/factory/PROJECT.json"
 STAGES = ("DRAFT", "DESIGN_COMPLETE", "REVIEWED", "AUTHORIZED", "PRODUCING", "EVIDENCE_READY", "COMPLETE")
 ROLES = ("intent_experience", "completeness_project")
 ID = re.compile(r"^[a-z0-9][a-z0-9_-]{0,95}$")
+
+# Only validated link syntax is memoized, never file identity, the latest record,
+# a dependency check, a review/ruling or an authorization decision. Every latest()
+# call still enumerates, confines, reads and hashes the entire current chain.
+_CHECKPOINT_LINKS = OrderedDict()
+_CHECKPOINT_LINK_LOCK = Lock()
+_CHECKPOINT_LINK_LIMIT = 4096
 
 
 def identifier(value):
@@ -110,6 +121,34 @@ def project(game: Path) -> dict:
     return data
 
 
+def _checkpoint_snapshot(path: Path) -> tuple[bytes, str]:
+    try:
+        with path.open("rb") as handle:
+            before = os.fstat(handle.fileno())
+            raw = handle.read()
+            after = os.fstat(handle.fileno())
+        current = path.stat()
+    except OSError as exc:
+        fail("INVALID_JSON", f"{path}: {exc}")
+    def identity(value):
+        return (value.st_dev, value.st_ino, value.st_size,
+                value.st_mtime_ns, value.st_ctime_ns)
+    if identity(before) != identity(after) or identity(after) != identity(current):
+        fail("BROKEN_CHECKPOINT_CHAIN", str(path))
+    return raw, hashlib.sha256(raw).hexdigest()
+
+
+def _checkpoint_record(path: Path, raw: bytes) -> dict:
+    try:
+        # Preserve refs.read_json's strict UTF-8 and universal newline behavior.
+        value = json.loads(raw.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n"))
+    except ValueError as exc:
+        fail("INVALID_JSON", f"{path}: {exc}")
+    if not isinstance(value, dict):
+        fail("INVALID_JSON", f"{path}: expected object")
+    return value
+
+
 def latest(game: Path, task_id: str) -> tuple[dict | None, str | None]:
     identifier(task_id)
     game = game.resolve()
@@ -119,12 +158,26 @@ def latest(game: Path, task_id: str) -> tuple[dict | None, str | None]:
     previous_digest = None
     for generation, path in enumerate(paths, 1):
         confined(game, path.relative_to(game).as_posix())
-        record = read_json(path)
-        if (path.name != f"{generation:06d}.json" or record.get("generation") != generation
-                or record.get("task_id") != task_id or record.get("previous") != previous_digest
-                or record.get("schema_version") != "factory_checkpoint.v2"):
+        raw, current_digest = _checkpoint_snapshot(path)
+        with _CHECKPOINT_LINK_LOCK:
+            link = _CHECKPOINT_LINKS.get(current_digest)
+            if link is not None:
+                _CHECKPOINT_LINKS.move_to_end(current_digest)
+        record = None
+        # A fresh full latest record prevents caller mutations poisoning a cache.
+        if link is None or generation == len(paths):
+            record = _checkpoint_record(path, raw)
+            link = (record.get("generation"), record.get("task_id"),
+                    record.get("previous"), record.get("schema_version"))
+        if (path.name != f"{generation:06d}.json"
+                or link != (generation, task_id, previous_digest, "factory_checkpoint.v2")):
             fail("BROKEN_CHECKPOINT_CHAIN", str(path))
-        previous, previous_digest = record, sha(path)
+        with _CHECKPOINT_LINK_LOCK:
+            _CHECKPOINT_LINKS[current_digest] = link
+            _CHECKPOINT_LINKS.move_to_end(current_digest)
+            if len(_CHECKPOINT_LINKS) > _CHECKPOINT_LINK_LIMIT:
+                _CHECKPOINT_LINKS.popitem(last=False)
+        previous, previous_digest = record, current_digest
     return previous, previous_digest
 
 
