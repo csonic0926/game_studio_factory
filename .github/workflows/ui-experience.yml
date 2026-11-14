@@ -7,12 +7,14 @@ on:
     paths:
       - "ui/**"
       - "factory_core/**"
+      - "studio/tests/install_godot_ci.py"
       - "skills/factory-design-*/**"
       - ".github/workflows/ui-experience.yml"
   pull_request:
     paths:
       - "ui/**"
       - "factory_core/**"
+      - "studio/tests/install_godot_ci.py"
       - ".github/workflows/ui-experience.yml"
 
 permissions:

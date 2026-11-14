@@ -48,8 +48,8 @@ Before a new runner, engine import, full test matrix, archive or capture batch:
    source materialization, imported assets, simultaneous workers, evidence,
    archive staging, compression output and upload staging. Compression can need
    both the original and archive at once. Check output filesystems separately.
-3. Require `free >= expected_peak_new_bytes + reserve_bytes`. The audit defaults
-   to a 2 GiB reserve; an existing project-specific budget may be supplied
+3. Require `free >= expected_peak_new_bytes + reserve_bytes`. The capacity check
+   defaults to a 2 GiB reserve; an existing project-specific budget may be supplied
    explicitly. Record why a smaller reserve is sufficient. Do not lower it just
    to obtain a passing check. Recheck before each expensive phase, since other
    workers can spend the same space.
@@ -57,6 +57,23 @@ Before a new runner, engine import, full test matrix, archive or capture batch:
    available, and report the exact capacity shortfall. Do not skip required
    tests, overwrite previous evidence, fabricate PASS, or perform emergency
    deletion without the required authorization.
+
+Capacity admission and cleanup inventory answer different questions. For an
+already identified output filesystem, use the capacity-only path below; no
+recursive inventory, cleanup manifest, exact per-file allocation ledger or
+continuous monitor is required before an ordinary bounded run. Existing retained
+bytes are already reflected in current free space. Count remaining future writes
+and concurrent commitments once; do not add an entire historical budget again
+merely because its receipt is unresolved. If a real writer or its future demand
+is unresolved, bound that specific risk or pause the affected bulky work.
+
+An inventory race (for example a test deleting its temporary file) invalidates
+cleanup nominations, not an independent filesystem free-space measurement or a
+game assertion. Keep cleanup fail-closed. Do not kill a healthy test merely to
+obtain a complete inventory. Use before/after capacity checks for bounded work;
+continuous capacity monitoring is warranted only by a concrete exhaustion risk,
+with sampling independent of per-file traversal. A capacity observation is not a
+reservation, so coordinate concurrent writers and keep sufficient headroom.
 
 Use one deliberately allocated mutable runner per active execution lane when
 possible. Prefer source-controlled changes or a small exact overlay over full
@@ -93,6 +110,27 @@ For a genuine storage emergency, the owner may review exact retired cache paths
 sooner using an explicitly documented exception and the same preservation and
 authorization checks. Do not falsify retirement dates or remove protection to
 make the tool nominate a path.
+
+## Fast read-only capacity check
+
+For a known output directory, supply its remaining peak additional allocation:
+
+```bash
+python3 -B factory.py storage --capacity-only \
+  --workspace-root /physical/path/to/output-directory \
+  --expected-write-bytes 1073741824 --reserve-bytes 2147483648
+```
+
+This reads filesystem capacity through the opened directory, without enumerating
+descendants, reading a manifest, hashing files or nominating cleanup candidates.
+It requires no-follow directory access, but not descriptor-based enumeration;
+only the inventory mode requires that scanning capability.
+The write estimate is explicit, including zero for a genuinely read-only step.
+Manifest/protection and inventory-only options are rejected in this mode.
+Exit 2 reports invalid input, unavailable capacity or insufficient headroom;
+success only means the supplied budget fits the observed free space. It grants
+no execution, deletion or acceptance authority. Check each output filesystem
+separately; no project migration, new recorder or preserved report is required.
 
 ## Read-only inventory and review queue
 
@@ -247,6 +285,14 @@ which run remains active and when retired caches can next be reviewed. Revisit
 retired runs at task closure or before a space-heavy phase; no timer or scheduled
 purge is installed by this change. Longer-term retention of evidence requires an
 explicit project decision, not a universal age-based rule.
+
+Create a new recovery archive at a meaningful handoff, a required durable save or
+an actual loss risk, not after every diagnostic action. A verified existing
+checkpoint plus a small exact delta is preferable to another full source/evidence
+bundle when the supported restore path can use it. Keep required failed attempts
+and originals, but reference their retained location rather than copying them
+into each successor package. This changes future allocation, not retention or
+permission to delete anything already saved.
 
 ## Verification
 

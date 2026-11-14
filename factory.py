@@ -57,15 +57,16 @@ def parser():
     cmd.add_argument('--quote')
     cmd.add_argument('--summary')
     cmd.add_argument('--artifact', action='append', default=[])
-    cmd = sub.add_parser("storage", help="read-only workspace inventory and cache review queue; never deletes")
+    cmd = sub.add_parser("storage", help="read-only capacity check or workspace inventory and cache review; never deletes")
     cmd.add_argument("--workspace-root", required=True)
+    cmd.add_argument("--capacity-only", action="store_true", help="check free space without inventory or cleanup candidates; requires an explicit write estimate")
     cmd.add_argument("--manifest", help="explicit factory_storage_manifest.v1 JSON; absent means no cache candidates")
     cmd.add_argument("--protect", action="append", default=[], help="workspace-relative path to preserve, repeatable")
-    cmd.add_argument("--expected-write-bytes", type=int, default=0)
+    cmd.add_argument("--expected-write-bytes", type=int)
     cmd.add_argument("--reserve-bytes", type=int, default=2 * 1024 ** 3)
-    cmd.add_argument("--min-retired-days", type=int, default=7)
-    cmd.add_argument("--max-entries", type=int, default=500000)
-    cmd.add_argument("--max-seconds", type=int, default=30)
+    cmd.add_argument("--min-retired-days", type=int)
+    cmd.add_argument("--max-entries", type=int)
+    cmd.add_argument("--max-seconds", type=int)
     cmd = sub.add_parser("benchmark")
     cmd.add_argument("--suite", default=str(ROOT / "factory_core/benchmarks/suite.json"))
     cmd.add_argument("--output-root", required=True)
@@ -81,12 +82,23 @@ def main(argv=None):
     args = parser().parse_args(argv)
     try:
         if args.command == "storage":
-            from factory_core.storage import audit, load_manifest
-            result = audit(args.workspace_root,
-                manifest=load_manifest(args.manifest) if args.manifest else None,
-                protected=args.protect, expected_write_bytes=args.expected_write_bytes,
-                reserve_bytes=args.reserve_bytes, min_retired_days=args.min_retired_days,
-                max_entries=args.max_entries, max_seconds=args.max_seconds)
+            from factory_core.storage import audit, capacity, load_manifest
+            if args.capacity_only:
+                if (args.manifest is not None or args.protect or args.min_retired_days is not None
+                        or args.max_entries is not None or args.max_seconds is not None):
+                    raise FactoryError("INVALID_STORAGE_INPUT", "--capacity-only cannot use manifest, protect or inventory controls")
+                if args.expected_write_bytes is None:
+                    raise FactoryError("INVALID_STORAGE_INPUT", "--capacity-only requires explicit --expected-write-bytes")
+                result = capacity(args.workspace_root, expected_write_bytes=args.expected_write_bytes,
+                    reserve_bytes=args.reserve_bytes)
+            else:
+                result = audit(args.workspace_root,
+                    manifest=load_manifest(args.manifest) if args.manifest else None,
+                    protected=args.protect, expected_write_bytes=args.expected_write_bytes if args.expected_write_bytes is not None else 0,
+                    reserve_bytes=args.reserve_bytes,
+                    min_retired_days=args.min_retired_days if args.min_retired_days is not None else 7,
+                    max_entries=args.max_entries if args.max_entries is not None else 500000,
+                    max_seconds=args.max_seconds if args.max_seconds is not None else 30)
         elif args.command == "benchmark":
             from factory_core.benchmark import run, summarize
             suite = read_json(Path(args.suite))

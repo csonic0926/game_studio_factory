@@ -41,7 +41,9 @@ def main() -> int:
     elif system == "Windows":
         source = next(root.glob("Godot*.exe"))
     else:
-        source = next(path for path in root.glob("Godot*linux*x86_64*") if path.is_file())
+        # The downloaded .zip matches the old glob too; never depend on
+        # filesystem enumeration order to choose an executable.
+        source = root / f"Godot_v{version}-stable_linux.x86_64"
     source.chmod(source.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     bin_dir = root / "bin"
     bin_dir.mkdir(exist_ok=True)

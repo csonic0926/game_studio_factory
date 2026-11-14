@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import patch
 
 from factory_core.refs import FactoryError
-from factory_core.storage import PRIVATE_NAMES, PROTECTED_NAMES, SCHEMA, audit, load_manifest
+from factory_core.storage import PRIVATE_NAMES, PROTECTED_NAMES, SCHEMA, audit, capacity, load_manifest
 
 NOW = datetime(2026, 11, 9, tzinfo=timezone.utc)
 ROOT = Path(__file__).resolve().parents[2]
@@ -534,6 +534,130 @@ class StorageTests(unittest.TestCase):
             status = factory.main(["storage", "--workspace-root", str(self.root), "--max-entries", "0"])
         self.assertEqual(2, status)
         self.assertEqual("INVALID_STORAGE_INPUT", json.loads(output.getvalue())["status"])
+
+    def capacity_cli(self, *options):
+        import factory
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            status = factory.main(["storage", "--capacity-only", "--workspace-root", str(self.root), *options])
+        return status, json.loads(output.getvalue())
+
+    def test_capacity_does_not_enumerate_or_read_contents(self):
+        with patch("factory_core.storage.os.scandir", side_effect=AssertionError("must not scan")), \
+                patch("factory_core.storage.os.supports_fd", set()), \
+                patch("builtins.open", side_effect=AssertionError("must not read content")), \
+                patch("factory_core.storage.os.fdopen", side_effect=AssertionError("must not read manifest")):
+            result = capacity(self.root, expected_write_bytes=123)
+        self.assertEqual("STORAGE_CAPACITY", result["status"])
+        self.assertFalse(result["inventory_performed"])
+        self.assertFalse(result["cleanup_authorized"])
+        self.assertEqual(0, result["entries_scanned"])
+        self.assertEqual([], result["review_candidates"])
+        self.assertEqual({"device": self.root.stat().st_dev, "root_inode": self.root.stat().st_ino},
+            result["filesystem_identity"])
+        self.assertEqual(2 * 1024 ** 3, result["capacity"]["reserve_bytes"])
+
+    def test_capacity_still_requires_no_follow_directory_support(self):
+        with patch("factory_core.storage.os.supports_dir_fd", set()):
+            status, result = self.capacity_cli("--expected-write-bytes", "0")
+        self.assertEqual(2, status)
+        self.assertEqual("STORAGE_UNSUPPORTED", result["status"])
+
+    def test_capacity_unavailable_fails_closed_and_closes_descriptor(self):
+        opened = []
+        def unavailable(fd):
+            opened.append(fd)
+            raise OSError("capacity unavailable")
+        with patch("factory_core.storage.os.fstatvfs", side_effect=unavailable):
+            status, result = self.capacity_cli("--expected-write-bytes", "0")
+        self.assertEqual(2, status)
+        self.assertEqual("INVALID_INPUT", result["status"])
+        self.assertIn("capacity unavailable", result["message"])
+        with self.assertRaises(OSError):
+            os.fstat(opened[0])
+
+    def test_capacity_threshold_uses_available_not_free_blocks(self):
+        from types import SimpleNamespace
+        disk = SimpleNamespace(f_frsize=4, f_bsize=8, f_blocks=100, f_bavail=10, f_bfree=90)
+        with patch("factory_core.storage.os.fstatvfs", return_value=disk):
+            equal = capacity(self.root, expected_write_bytes=30, reserve_bytes=10)
+            over = capacity(self.root, expected_write_bytes=31, reserve_bytes=10)
+            disk.f_frsize = 0
+            fallback = capacity(self.root, expected_write_bytes=80, reserve_bytes=0)
+        self.assertEqual(40, equal["capacity"]["free_bytes"])
+        self.assertTrue(equal["capacity"]["sufficient"])
+        self.assertFalse(over["capacity"]["sufficient"])
+        self.assertTrue(over["blockers"])
+        self.assertEqual(80, fallback["capacity"]["free_bytes"])
+
+    def test_capacity_rejects_invalid_byte_estimates(self):
+        for name in ("expected_write_bytes", "reserve_bytes"):
+            for value in (-1, True, 1.5, "100", None):
+                with self.subTest(name=name, value=value):
+                    args = {"expected_write_bytes": 0, name: value}
+                    with self.assertRaises(FactoryError):
+                        capacity(self.root, **args)
+
+    def test_capacity_rejects_unsafe_or_missing_roots(self):
+        alias = self.root.parent / "workspace-link"
+        os.symlink(self.root, alias)
+        for root in (Path(self.root.anchor), Path.home(), alias, alias / "retired", self.root / "missing"):
+            with self.subTest(root=root), self.assertRaises((FactoryError, OSError)):
+                capacity(root, expected_write_bytes=0)
+
+    def test_capacity_rejects_home_alias_identity_and_closes_descriptor(self):
+        from factory_core import storage
+        original = storage._open_root
+        opened = []
+        def capture(root):
+            fd = original(root)
+            opened.append(fd)
+            return fd
+        # A different spelling resolving to the same inode must not bypass home protection.
+        with patch("factory_core.storage.Path.home", return_value=self.root / "retired/.."), \
+                patch("factory_core.storage._open_root", side_effect=capture):
+            with self.assertRaises(FactoryError):
+                capacity(self.root, expected_write_bytes=0)
+        with self.assertRaises(OSError):
+            os.fstat(opened[0])
+
+    def test_capacity_ignores_descendant_churn_without_hiding_audit_failure(self):
+        original = os.fstatvfs
+        temporary = self.write("retired/runner/transient.json", b"temporary")
+        def changing(fd):
+            temporary.unlink()
+            self.write("retired/runner/new-transient.json", b"new")
+            return original(fd)
+        with patch("factory_core.storage.os.fstatvfs", side_effect=changing):
+            result = capacity(self.root, expected_write_bytes=0, reserve_bytes=0)
+        self.assertTrue(result["capacity"]["sufficient"])
+        self.assertEqual([], result["blockers"])
+        self.assertFalse(result["inventory_performed"])
+        # Full inventory keeps its existing fail-closed behavior.
+        self.assertTrue(self.run_audit(max_entries=1)["blockers"])
+
+    def test_capacity_cli_requires_estimate_and_rejects_inventory_options_before_reading(self):
+        with patch("factory_core.storage.load_manifest", side_effect=AssertionError("must not read")):
+            status, result = self.capacity_cli()
+            self.assertEqual(2, status)
+            self.assertEqual("INVALID_STORAGE_INPUT", result["status"])
+            for options in (("--manifest", "missing.json"), ("--protect", "retired"),
+                    ("--min-retired-days", "7"), ("--max-entries", "500000"), ("--max-seconds", "30")):
+                with self.subTest(options=options):
+                    status, result = self.capacity_cli("--expected-write-bytes", "0", *options)
+                    self.assertEqual(2, status)
+                    self.assertEqual("INVALID_STORAGE_INPUT", result["status"])
+
+    def test_capacity_cli_success_and_insufficient_space(self):
+        status, result = self.capacity_cli("--expected-write-bytes", "0", "--reserve-bytes", "0")
+        self.assertEqual(0, status)
+        self.assertEqual("STORAGE_CAPACITY", result["status"])
+        status, result = self.capacity_cli("--expected-write-bytes", str(result["capacity"]["total_bytes"] + 1))
+        self.assertEqual(2, status)
+        self.assertFalse(result["capacity"]["sufficient"])
+        status, result = self.capacity_cli("--expected-write-bytes", "-1")
+        self.assertEqual(2, status)
+        self.assertEqual("INVALID_STORAGE_INPUT", result["status"])
 
 
 if __name__ == "__main__":
