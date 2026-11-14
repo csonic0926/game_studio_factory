@@ -1,4 +1,4 @@
-"""Bounded, read-only workspace inventory and non-authorizing cache review queue."""
+"""Read-only capacity checks, bounded inventory and non-authorizing cache review."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -181,7 +181,7 @@ def _identity(info):
 def _open_root(root):
     # Descriptor-relative no-follow traversal also rejects symlinks in ancestors.
     if (not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY")
-            or os.open not in os.supports_dir_fd or os.scandir not in os.supports_fd):
+            or os.open not in os.supports_dir_fd):
         raise FactoryError("STORAGE_UNSUPPORTED", "No-follow directory descriptors are required (Linux/macOS)")
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     fd = os.open(root.anchor, flags)
@@ -239,6 +239,8 @@ def capacity(workspace_root, *, expected_write_bytes, reserve_bytes=2 * GIB):
 def audit(workspace_root, *, manifest=None, protected=(), expected_write_bytes=0,
           reserve_bytes=2 * GIB, min_retired_days=7, max_entries=500000, max_seconds=30, now=None):
     """Inventory metadata only. A review candidate is NEVER permission to delete."""
+    if os.scandir not in os.supports_fd:
+        raise FactoryError("STORAGE_UNSUPPORTED", "Directory enumeration through descriptors is required (Linux/macOS)")
     for name, value, minimum in (("expected_write_bytes", expected_write_bytes, 0),
             ("reserve_bytes", reserve_bytes, 0), ("min_retired_days", min_retired_days, 0),
             ("max_entries", max_entries, 1), ("max_seconds", max_seconds, 1)):

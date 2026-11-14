@@ -123,6 +123,8 @@ python3 -B factory.py storage --capacity-only \
 
 This reads filesystem capacity through the opened directory, without enumerating
 descendants, reading a manifest, hashing files or nominating cleanup candidates.
+It requires no-follow directory access, but not descriptor-based enumeration;
+only the inventory mode requires that scanning capability.
 The write estimate is explicit, including zero for a genuinely read-only step.
 Manifest/protection and inventory-only options are rejected in this mode.
 Exit 2 reports invalid input, unavailable capacity or insufficient headroom;

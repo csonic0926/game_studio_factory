@@ -543,11 +543,11 @@ class StorageTests(unittest.TestCase):
         return status, json.loads(output.getvalue())
 
     def test_capacity_does_not_enumerate_or_read_contents(self):
-        with patch("factory_core.storage.os.scandir", side_effect=AssertionError("must not scan")) as scan, \
+        with patch("factory_core.storage.os.scandir", side_effect=AssertionError("must not scan")), \
+                patch("factory_core.storage.os.supports_fd", set()), \
                 patch("builtins.open", side_effect=AssertionError("must not read content")), \
                 patch("factory_core.storage.os.fdopen", side_effect=AssertionError("must not read manifest")):
-            with patch("factory_core.storage.os.supports_fd", os.supports_fd | {scan}):
-                result = capacity(self.root, expected_write_bytes=123)
+            result = capacity(self.root, expected_write_bytes=123)
         self.assertEqual("STORAGE_CAPACITY", result["status"])
         self.assertFalse(result["inventory_performed"])
         self.assertFalse(result["cleanup_authorized"])
@@ -556,6 +556,25 @@ class StorageTests(unittest.TestCase):
         self.assertEqual({"device": self.root.stat().st_dev, "root_inode": self.root.stat().st_ino},
             result["filesystem_identity"])
         self.assertEqual(2 * 1024 ** 3, result["capacity"]["reserve_bytes"])
+
+    def test_capacity_still_requires_no_follow_directory_support(self):
+        with patch("factory_core.storage.os.supports_dir_fd", set()):
+            status, result = self.capacity_cli("--expected-write-bytes", "0")
+        self.assertEqual(2, status)
+        self.assertEqual("STORAGE_UNSUPPORTED", result["status"])
+
+    def test_capacity_unavailable_fails_closed_and_closes_descriptor(self):
+        opened = []
+        def unavailable(fd):
+            opened.append(fd)
+            raise OSError("capacity unavailable")
+        with patch("factory_core.storage.os.fstatvfs", side_effect=unavailable):
+            status, result = self.capacity_cli("--expected-write-bytes", "0")
+        self.assertEqual(2, status)
+        self.assertEqual("INVALID_INPUT", result["status"])
+        self.assertIn("capacity unavailable", result["message"])
+        with self.assertRaises(OSError):
+            os.fstat(opened[0])
 
     def test_capacity_threshold_uses_available_not_free_blocks(self):
         from types import SimpleNamespace

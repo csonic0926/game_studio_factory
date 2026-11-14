@@ -13,8 +13,10 @@ migration just to continue standalone Idea exploration/Product intent.
 
 Before bulk runner materialization, imports, capture batches or archives, read
 [the storage lifecycle policy](factory_core/docs/STORAGE_LIFECYCLE.md). Use
-`factory.py storage --workspace-root <WORKSPACE>` for a bounded read-only audit,
-protect current/reused runners and evidence, and budget peak writes plus reserve.
+`factory.py storage --capacity-only --workspace-root <OUTPUT_DIR> --expected-write-bytes <BYTES>`
+to check peak additional writes plus reserve without scanning descendants.
+Protect current/reused runners and evidence. Use the separate inventory mode
+only for storage investigation or cleanup review, not as a prerequisite to run.
 Cleanup is a separately scoped and authorized operation, never an age-based sweep.
 
 Before using any proposed game-design idea as a premise, invoke `idea-factory`

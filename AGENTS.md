@@ -54,8 +54,10 @@ Game AI Factories     = idea / product / gameplay / story / asset / sound capabi
 
 8. Before bulk runner copies, imports, captures or archives, follow the shared
    [storage lifecycle and safe-cleanup policy](factory_core/docs/STORAGE_LIFECYCLE.md).
-   Pin active/reused runners and evidence, budget peak allocation, and keep cleanup
-   separately authorized. `factory.py storage` is read-only and never deletes.
+   Pin active/reused runners and evidence. Check peak additional allocation with
+   `factory.py storage --capacity-only --workspace-root <OUTPUT_DIR> --expected-write-bytes <BYTES>`;
+   reserve recursive inventory for storage investigation or cleanup review.
+   Keep cleanup separately authorized. `factory.py storage` never deletes.
 
 Specialist entry points:
 

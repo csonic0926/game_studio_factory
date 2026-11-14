@@ -57,7 +57,7 @@ def parser():
     cmd.add_argument('--quote')
     cmd.add_argument('--summary')
     cmd.add_argument('--artifact', action='append', default=[])
-    cmd = sub.add_parser("storage", help="read-only workspace inventory and cache review queue; never deletes")
+    cmd = sub.add_parser("storage", help="read-only capacity check or workspace inventory and cache review; never deletes")
     cmd.add_argument("--workspace-root", required=True)
     cmd.add_argument("--capacity-only", action="store_true", help="check free space without inventory or cleanup candidates; requires an explicit write estimate")
     cmd.add_argument("--manifest", help="explicit factory_storage_manifest.v1 JSON; absent means no cache candidates")

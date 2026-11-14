@@ -122,11 +122,20 @@ without taking over content ownership or requiring Factory migration.
 
 Before bulk copies, engine imports or evidence capture, read the shared
 [storage lifecycle policy](factory_core/docs/STORAGE_LIFECYCLE.md).
-`python3 -B factory.py storage --workspace-root <WORKSPACE>` provides a bounded,
-read-only inventory and capacity check without requiring a migrated game repo.
-An optional local manifest nominates only explicitly retired caches for operator
-review. Active runners, source, saves and evidence remain protected; there is no
-automatic deletion or cleanup permission implied by a successful audit.
+For a known output directory, check peak additional writes plus reserve without
+scanning its contents:
+
+```bash
+python3 -B factory.py storage --capacity-only --workspace-root <OUTPUT_DIR> \
+  --expected-write-bytes <BYTES>
+```
+
+Use `python3 -B factory.py storage --workspace-root <WORKSPACE>` only when a
+bounded, read-only inventory is needed for storage investigation or cleanup
+review. Neither mode requires a migrated game repo. An optional local manifest
+nominates only explicitly retired caches for operator review. Active runners,
+source, saves and evidence remain protected; neither a successful capacity check
+nor an audit authorizes execution or cleanup.
 
 ## Explicit workflow versions
 
