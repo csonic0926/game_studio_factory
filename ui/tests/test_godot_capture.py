@@ -1,4 +1,5 @@
 """Render an isolated synthetic scene through the real exporter; no game copies."""
+import io
 import json
 import os
 from pathlib import Path
@@ -7,8 +8,50 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+class GodotInstallerTests(unittest.TestCase):
+    """Exercise CI packaging without downloading or launching an engine."""
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.binary_name = "Godot_v4.7.2-stable_linux.x86_64"
+
+    def install(self, entry):
+        from studio.tests import install_godot_ci
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, "w") as bundle:
+            bundle.writestr(entry, b"synthetic executable; never run")
+        archive.seek(0)
+        original_glob = Path.glob
+        def archive_first(path, pattern):
+            # Directory enumeration order is unspecified. Reproduce the order
+            # that made CI try to execute its downloaded ZIP instead of Godot.
+            return iter(sorted(original_glob(path, pattern), key=lambda item: item.suffix != ".zip"))
+        with patch.object(install_godot_ci.platform, "system", return_value="Linux"), \
+                patch.object(install_godot_ci.urllib.request, "urlopen", return_value=archive), \
+                patch.object(Path, "glob", archive_first), \
+                patch.object(sys, "argv", ["install_godot_ci.py", "--version", "4.7.2"]), \
+                patch.dict(os.environ, {"RUNNER_TEMP": str(self.root),
+                    "GITHUB_PATH": str(self.root / "github_path"), "GITHUB_ENV": str(self.root / "github_env")}):
+            return install_godot_ci.main()
+
+    def test_linux_installer_selects_executable_not_download_archive(self):
+        self.assertEqual(0, self.install(self.binary_name))
+        launcher = self.root / "godot-4.7.2/bin/godot"
+        self.assertEqual((launcher.parents[1] / self.binary_name).resolve(), launcher.resolve())
+        self.assertEqual(b"synthetic executable; never run", launcher.read_bytes())
+        self.assertIn(f"GODOT_BIN={launcher}\n", (self.root / "github_env").read_text())
+
+    def test_linux_installer_does_not_substitute_archive_for_missing_executable(self):
+        with self.assertRaises(FileNotFoundError):
+            self.install("unrelated.txt")
+        self.assertFalse((self.root / "github_env").exists())
 
 
 class GodotCaptureTests(unittest.TestCase):
