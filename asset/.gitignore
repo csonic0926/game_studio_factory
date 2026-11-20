@@ -7,3 +7,6 @@ __pycache__/
 output/
 output_square/
 texture_cache/
+
+# Optional, package-local pixel-snap runtime
+/pipeline/pixel_snap/node_modules/

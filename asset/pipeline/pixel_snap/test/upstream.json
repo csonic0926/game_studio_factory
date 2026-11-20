@@ -1,0 +1,162 @@
+{
+  "conservative": {
+    "icon.png": {
+      "rgba256": "8080d6b5875507af09ed4b4b85b5bd8f389cbcf2a78cb9aa8ecce8c89ad9ef6d",
+      "profile": "conservative",
+      "targetScale": 2,
+      "gridW": 10,
+      "gridH": 8,
+      "finalColors": 24,
+      "sourceUniqueColors": 4,
+      "gridRgba256": "2a602e29dec68b620360bf814c00517afefbe566cb13683cb5df5a81b8f897f5"
+    },
+    "room.png": {
+      "rgba256": "6fe146ba5a94b5fa97f029075114c78927e8464d15b7118c71de47f5b8eb6362",
+      "profile": "conservative",
+      "targetScale": 2,
+      "gridW": 130,
+      "gridH": 66,
+      "finalColors": 42,
+      "sourceUniqueColors": 1776,
+      "gridRgba256": "4ec46878a6664aaad7406805bd8b05595245195645feb3f6be8f570c3ca9ef11"
+    },
+    "sprite.png": {
+      "rgba256": "0566b67a94e7b9f1d2458af03f13c8f9b524a793024d10082080f29fc336139e",
+      "profile": "conservative",
+      "targetScale": 2,
+      "gridW": 24,
+      "gridH": 30,
+      "finalColors": 42,
+      "sourceUniqueColors": 480,
+      "gridRgba256": "9f6a6889e4979f4567de2852d4b0be149b120d2c1646942ccbb9b52c60e7d0fc"
+    }
+  },
+  "balanced": {
+    "icon.png": {
+      "rgba256": "c8284942903477d8d45a1590e0cebc86372676f1631f9db06f8ab489ffff0a7d",
+      "profile": "balanced",
+      "targetScale": 3,
+      "gridW": 6,
+      "gridH": 5,
+      "finalColors": 20,
+      "sourceUniqueColors": 4,
+      "gridRgba256": "98f4fd907ef55f067765323bf37b564c41c8ea64ebb9f586858b89b2259e4fbb"
+    },
+    "room.png": {
+      "rgba256": "16c2b0ec31305034ae8bfae7bb069b23fac452433591337cfee788645e5705c2",
+      "profile": "balanced",
+      "targetScale": 3,
+      "gridW": 86,
+      "gridH": 44,
+      "finalColors": 36,
+      "sourceUniqueColors": 1776,
+      "gridRgba256": "954d48addce6e3ea861c75734b411284b6fc3c7e0d46d77363b098492d812af8"
+    },
+    "sprite.png": {
+      "rgba256": "94b790b378e0ed4b7b3e381a393915529ae314e411a8a6b2c62d4a6ba60d0a0b",
+      "profile": "balanced",
+      "targetScale": 3,
+      "gridW": 16,
+      "gridH": 20,
+      "finalColors": 36,
+      "sourceUniqueColors": 480,
+      "gridRgba256": "3542f01c2b59f6079327ebcc506c9c01097326733347d89c3c55ecf94b8a5c73"
+    }
+  },
+  "chunky": {
+    "icon.png": {
+      "rgba256": "c8d15c9d22056b6a86200f087853b243ff036367a290b1b4a76a4ebfb8d9723f",
+      "profile": "chunky",
+      "targetScale": 4,
+      "gridW": 5,
+      "gridH": 4,
+      "finalColors": 18,
+      "sourceUniqueColors": 4,
+      "gridRgba256": "541c51321589b30561610f46daf4d0f7c99408a1bb374332f1bac8b18648e871"
+    },
+    "room.png": {
+      "rgba256": "12d4306a881797796a1bf32f64fe9f7cb31a657dcf2c04c4e4761df3ca881bff",
+      "profile": "chunky",
+      "targetScale": 4,
+      "gridW": 65,
+      "gridH": 33,
+      "finalColors": 32,
+      "sourceUniqueColors": 1776,
+      "gridRgba256": "f21e5905e5319733e33795c5f0853ab44b3eb6c9e46d3972a7972f856439546a"
+    },
+    "sprite.png": {
+      "rgba256": "389e9774e5be5ef23e150fd7ff52530c93ec8b89357adefd0be3993fe8597b14",
+      "profile": "chunky",
+      "targetScale": 4,
+      "gridW": 12,
+      "gridH": 15,
+      "finalColors": 32,
+      "sourceUniqueColors": 480,
+      "gridRgba256": "ebc02c66a60c699c2d33292de1d2b1f80e92c5c50d01b5578d9240e621467161"
+    }
+  },
+  "auto": {
+    "icon.png": {
+      "rgba256": "8080d6b5875507af09ed4b4b85b5bd8f389cbcf2a78cb9aa8ecce8c89ad9ef6d",
+      "profile": "conservative",
+      "targetScale": 2,
+      "gridW": 10,
+      "gridH": 8,
+      "finalColors": 24,
+      "sourceUniqueColors": 4,
+      "gridRgba256": "2a602e29dec68b620360bf814c00517afefbe566cb13683cb5df5a81b8f897f5"
+    },
+    "room.png": {
+      "rgba256": "16c2b0ec31305034ae8bfae7bb069b23fac452433591337cfee788645e5705c2",
+      "profile": "balanced",
+      "targetScale": 3,
+      "gridW": 86,
+      "gridH": 44,
+      "finalColors": 36,
+      "sourceUniqueColors": 1776,
+      "gridRgba256": "954d48addce6e3ea861c75734b411284b6fc3c7e0d46d77363b098492d812af8"
+    },
+    "sprite.png": {
+      "rgba256": "0566b67a94e7b9f1d2458af03f13c8f9b524a793024d10082080f29fc336139e",
+      "profile": "conservative",
+      "targetScale": 2,
+      "gridW": 24,
+      "gridH": 30,
+      "finalColors": 42,
+      "sourceUniqueColors": 480,
+      "gridRgba256": "9f6a6889e4979f4567de2852d4b0be149b120d2c1646942ccbb9b52c60e7d0fc"
+    }
+  },
+  "scale5": {
+    "icon.png": {
+      "rgba256": "79529d364628ef14770fe5508111223efba1db725e5324ad393221346ff44b9d",
+      "profile": "balanced",
+      "targetScale": 5,
+      "gridW": 4,
+      "gridH": 3,
+      "finalColors": 10,
+      "sourceUniqueColors": 4,
+      "gridRgba256": "7ea8933bea05e9781b4c2dc03456cce81efc2d064c27673aaf0a476193495d95"
+    },
+    "room.png": {
+      "rgba256": "6541cdbd1bcf93af97c60a04cc7d4f1c1ac79c531f8f028d9415f7ac7cb40e5f",
+      "profile": "balanced",
+      "targetScale": 5,
+      "gridW": 52,
+      "gridH": 26,
+      "finalColors": 36,
+      "sourceUniqueColors": 1776,
+      "gridRgba256": "ea07f2cabae5e243e2f3bd459cf8245e79f853e49afb14c68324b252e7c5b4bf"
+    },
+    "sprite.png": {
+      "rgba256": "42edf5c2a24f1aeae536142b74b73b335f68808d9b11357f279f494e7700177c",
+      "profile": "balanced",
+      "targetScale": 5,
+      "gridW": 9,
+      "gridH": 12,
+      "finalColors": 36,
+      "sourceUniqueColors": 480,
+      "gridRgba256": "2d8de50639fbe92494cce12b2dd8eee70868f91705c6bda335651c58b036afaf"
+    }
+  }
+}

@@ -13,15 +13,28 @@ Treat this repo as a **game asset factory** for general visual production and sp
 - factory validates geometry
 - factory emits final handoff PNGs for tiles and prop/object assets
 - VectorCraft / PhotoCraft orders retain editable native sources plus validated exports
+- **[Pixel-snap cleanup](docs/AI_CALLER_LANDING.md#pixel-snap-cleanup)** snaps AI-generated PNGs to a real pixel grid. It is a standalone tool, not a required stage.
 
 The public order contracts are the owning workflow's **spec JSON** plus the CLI
 commands in `$STUDIO_ROOT/asset/itf.py`; reference-pair specs remain the tile contract.
+Standalone pixel-snap cleanup takes explicit paths instead of an order spec.
 
 If you are an AI agent coming from another repo, start with
 [`docs/AI_CALLER_LANDING.md`](docs/AI_CALLER_LANDING.md). It separates direct
 tool calls from cross-repo requests that require factory-side changes.
 
 ## Use this workflow
+
+For pixel-art cleanup, call the same command on **one PNG or a directory**.
+From `asset/` with Python/Pillow and Node.js ≥20.3:
+
+```bash
+npm ci --prefix pipeline/pixel_snap --include=optional
+python3 itf.py pixel-snap --input /game/raw/sprites --out /game/export/grid --profile chunky --true-grid
+```
+
+Omit `--true-grid` to keep source canvas size. See the
+[profile selection table and JSON output contract](docs/AI_CALLER_LANDING.md#pixel-snap-cleanup).
 
 For editable vector art, icons, typography, layer composition or post-processing
 existing generated images, use **[VectorCraft / PhotoCraft](docs/CRAFT_ASSET_WORKFLOW.md)**:

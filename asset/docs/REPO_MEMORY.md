@@ -656,3 +656,12 @@ Asset mapping tests consume generated Blender PNGs, which are untracked and thus
 not present in a fresh worktree. `FACTORY_ASSET_REFERENCE_ROOT` can explicitly
 point at an existing reference PNG directory for tests only. No automatic sibling
 search, fixture copies or provider changes; a missing fixture remains a failure.
+
+## Pixel-snap: logical canvas vs. native grid
+
+For a small runtime texture, use [pixel-snap](AI_CALLER_LANDING.md#pixel-snap-cleanup)
+with `--true-grid`; do not downscale the already enlarged PNG. Rounded grid
+dimensions need not divide the source canvas. The receipt distinguishes source,
+grid and actual output sizes; keep the logical draw size and pivot in the caller.
+`finalColors` is palette capacity actually constructed, not a guarantee that
+every slot appears as a distinct colour in the output.

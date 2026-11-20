@@ -227,7 +227,7 @@ Both preserve the minimum accepted-gameplay floor.
 | Nonbinding whole-value intent and experienced purchase judgment | `product-factory` |
 | Progression gameplay, new systems, repair, UI production, runtime evidence | `gameplay-factory` |
 | World, character, cast, chapter, staged narrative | `game-story-factory` |
-| Tiles, walls, props, sprites | `asset/docs/AI_CALLER_LANDING.md` |
+| Tiles, walls, props, sprites, opt-in pixel-snap PNG cleanup | [Asset caller landing](asset/docs/AI_CALLER_LANDING.md) |
 | SFX generation and normalization | `sound/docs/AI_CALLER_LANDING.md` |
 
 Specialist maturity and detailed workflows remain documented in their own

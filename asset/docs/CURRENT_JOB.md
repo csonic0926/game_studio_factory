@@ -1,5 +1,23 @@
 # CURRENT_JOB.md
 
+## November 20, 2026 — Pixel-snap PNG cleanup (`frontier` only)
+
+Status: completed and verified. [Request and Factory response](../requirement_from_other_repo/2026-11-20_wall_street_campaign_pixel_snap_cleanup_tool.md).
+
+- After cross-repo copy approval, verified a verbatim port of the Node/Sharp
+  engine at `d413e7f5` before adapting it. Cell, palette, profile and alpha
+  behavior are unchanged. The Factory adapter adds explicit no-clobber paths,
+  directory processing, JSON receipts, and direct native-grid output.
+- The final CLI matched **15/15** upstream PNGs and original metadata (three
+  fixtures × four profiles plus a scale override); **15/15** true-grid RGBA
+  buffers matched the upstream cells before enlargement. A separate read-only
+  smoke on the caller's 1440×768 shop room matched every pixel at `chunky`.
+- The package-local `npm test` passed. Existing `asset/tests`: **58 passed,
+  3 opt-in live Craft tests skipped**. No model calls, atlas writes, game-repo
+  changes, skill installs or default workflow changes.
+- [Commands and profile guidance](AI_CALLER_LANDING.md#pixel-snap-cleanup).
+  Animated GIF/WebP encoding and the comparison/atlas tools are not included.
+
 ## November 5, 2026 — VectorCraft / PhotoCraft production integration
 
 Status: completed and verified.

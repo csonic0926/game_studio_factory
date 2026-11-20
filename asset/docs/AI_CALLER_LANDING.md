@@ -7,7 +7,8 @@ use the Asset specialist under Game Studio Factory.
 
 | Caller need | Do this |
 | --- | --- |
-| Use an existing factory workflow and get PNG deliverables | Call the CLI from this repo with a spec file. |
+| Generate PNG deliverables with a spec-based factory workflow | Call the CLI from this repo with a spec file. |
+| Clean AI-generated, pixel-looking PNGs into a real grid with a small palette | Use [pixel-snap cleanup](#pixel-snap-cleanup): a single PNG or directory; no spec or provider. |
 | Make editable vector art/icons/type, or layer-compose/refine raster art (including generated images) | Use VectorCraft / PhotoCraft via `craft_asset_workflow_v1`; read [`CRAFT_ASSET_WORKFLOW.md`](CRAFT_ASSET_WORKFLOW.md). |
 | Re-skin an existing geometrically-correct tile/autotile set | Use `tile_reskin_workflow_v1`. |
 | Generate engineering-validated prop/object sprites | Use `prop_asset_workflow_v1`. |
@@ -46,6 +47,57 @@ agent, prefer `agent_handoff` / native `image_gen.imagegen`; use `cliproxyapi`
 only as the non-agent/headless fallback.
 
 ## Common workflows
+
+### Pixel-snap cleanup
+
+Use `itf.py pixel-snap` when a generated scene, sprite or icon has uneven pixels,
+soft edges or many near-duplicate colours. It is an **opt-in still-PNG tool**,
+not a generation provider or an automatic prop/tile/wall/floor step.
+
+From `$STUDIO_ROOT/asset`, use the normal Python/Pillow setup above. Only this
+tool also needs **Node.js ≥20.3, npm and the pinned Sharp 0.34.5**:
+
+```bash
+npm ci --prefix pipeline/pixel_snap --include=optional
+
+# Keep the logical canvas size; write one new PNG at the explicit destination.
+python3 itf.py pixel-snap --input /game/raw/icon.png --out /game/export/icon.png
+
+# Write native-grid textures. Redirect stdout if you want to keep the JSON receipt.
+python3 itf.py pixel-snap --input /game/raw/customers --out /game/export/customer-grid \
+  --profile chunky --scale 4 --true-grid
+```
+
+| Profile | Grid scale | Palette target | When to use it |
+| --- | ---: | ---: | --- |
+| `conservative` (default) | 2 | 24–42 | Small icons and sprites where thin details matter. |
+| `balanced` | 3 | 20–36 | Mid-size illustrations; keep recognisable features with fewer cells. |
+| `chunky` | 4 | 18–32 | Coarse scenes and large props with broad shapes. |
+| `auto` | by size | selected preset | Mixed batches: conservative if short side ≤128 **or** long side ≤256; otherwise chunky if long side ≥768, balanced otherwise. |
+
+- By default the optimized grid is enlarged with nearest-neighbour sampling to
+  the original canvas. `--true-grid` writes the cells directly, **instead of**
+  the enlargement. Each grid dimension is `max(1, round(source / scale))`
+  (halves round up); `--scale N` overrides just the preset scale (`N ≥ 1`).
+  For small textures keep the logical draw size and normalized pivot in the
+  caller; no anchors, atlas rectangles or engine settings are edited.
+- Alpha ≤24 is treated as transparent; the silhouette/fringe pass emits binary
+  alpha. Fully opaque inputs stay opaque. Inspect fine outlines at game size;
+  existing geometry/anchor checks still apply to the delivered art.
+- A directory is processed in sorted filename order, **not recursively**, into
+  a separate directory with the same basenames. Hidden files, names beginning
+  with `_` and `*_snapped.png` are skipped. An explicit single PNG may use any
+  basename. Output parents can be created, but existing files are never replaced.
+- A successful JSON receipt lists one `files[]` record per PNG: input/output
+  paths, source `width/height`, written `outputWidth/outputHeight`, resolved
+  `profile`, `targetScale`, `gridW/gridH`, `finalColors` (palette slots, not a
+  count of distinct output RGBs), and `sourceUniqueColors` (distinct input RGBA
+  values above the alpha threshold). A failed batch exits nonzero; any records
+  already completed remain listed. No metadata sidecar or caller-repo import is implicit.
+
+Use `PIXEL_SNAP_NODE` to select a Node executable if it isn't on the caller's
+PATH. To verify the installation, run `npm --prefix pipeline/pixel_snap test`;
+the [regression fixtures](../pipeline/pixel_snap/test/README.md) need no game checkout.
 
 ### Editable vector/raster art
 
@@ -209,11 +261,12 @@ files, commands, outputs, and blockers to that same request file.
 
 ## Minimal source-repo agent checklist
 
-1. Identify whether the job is editable vector/raster art, prop, tile re-skin, reference-pair tile, or a new
+1. Identify whether the job is pixel-snap cleanup, editable vector/raster art, prop, tile re-skin, reference-pair tile, or a new
    factory capability.
-2. If existing, create or reuse a spec and call `python3 itf.py ...` from the
-   factory repo.
-3. Start review from `artifact_status.json`, then inspect `deliverables/`.
+2. Call `python3 itf.py ...` from the factory repo. For pixel-snap pass explicit
+   input/output paths; for spec-based orders create or reuse a spec.
+3. For pixel-snap inspect the JSON receipt and named PNGs; for orders start from
+   `artifact_status.json`, then inspect `deliverables/`.
 4. Copy or import only validated deliverables into the source repo; for Craft
    orders retain the editable `source/` too. Technical validation is not creative acceptance.
 5. If blocked by missing factory behavior, file a request under

@@ -13,6 +13,7 @@ from pipeline.build_atlas import build_atlas
 from pipeline.craft_asset_workflow import discover_commands, run_craft_assets
 from pipeline.craft_client import CraftError, EDITORS
 from pipeline.inspect_manifest import build_summary
+from pipeline.pixel_snap_workflow import PROFILES as PIXEL_SNAP_PROFILES, run_pixel_snap
 from pipeline.reference_pair_workflow import (
     ReferencePairWorkflowError,
     generate_reference_pair,
@@ -49,6 +50,13 @@ REFERENCE_PAIR_EXAMPLES_ROOT = REPO_ROOT / "examples" / "reference_pair_workflow
 def parse_arguments() -> argparse.Namespace:
     argument_parser = argparse.ArgumentParser(description="Asset Game AI Factory CLI")
     subparsers = argument_parser.add_subparsers(dest="command", required=True)
+
+    snap = subparsers.add_parser("pixel-snap", help="Clean AI pixel art on a fixed grid (opt-in, still PNGs)")
+    snap.add_argument("--input", type=Path, required=True, help="One PNG or a nonrecursive directory of PNGs")
+    snap.add_argument("--out", type=Path, required=True, help="New PNG or separate output directory; never overwrite")
+    snap.add_argument("--profile", choices=PIXEL_SNAP_PROFILES, default="conservative")
+    snap.add_argument("--scale", type=float, help="Override the profile's grid scale (>= 1)")
+    snap.add_argument("--true-grid", action="store_true", help="Write the actual small grid instead of enlarging it")
 
     craft_commands = subparsers.add_parser(
         "craft-commands", help="Discover VectorCraft/PhotoCraft engine commands in a private session",
@@ -887,6 +895,15 @@ def command_validate_prop_assets(arguments: argparse.Namespace) -> int:
 
 def main() -> None:
     arguments = parse_arguments()
+
+    if arguments.command == "pixel-snap":
+        try:
+            result = run_pixel_snap(arguments.input, arguments.out, profile=arguments.profile,
+                                    scale=arguments.scale, true_grid=arguments.true_grid)
+        except (OSError, ValueError) as error:
+            result = {"ok": False, "mode": "pixel-snap", "error": str(error), "files": []}
+        print(json.dumps(result, indent=2))
+        raise SystemExit(0 if result["ok"] else 1)
 
     if arguments.command in {"craft-commands", "run-craft-assets"}:
         try:
